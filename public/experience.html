@@ -1,0 +1,866 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Karthikeyan Selvam | Digital Workplace & AI Consultant</title>
+    
+    <!-- SEO Meta Tags -->
+    <meta name="description" content="Karthikeyan Selvam - DWP Consultant with 18+ years' experience in Digital Workplace Solutions, Microsoft Copilot, RPA, AIOps, and Enterprise IT Management.">
+    <meta name="keywords" content="Digital Workplace, Microsoft Copilot, AI Consultant, RPA, AIOps, Product Management, Karthikeyan Selvam">
+    
+    <!-- Open Graph -->
+    <meta property="og:title" content="Karthikeyan Selvam | Digital Workplace & AI Consultant">
+    <meta property="og:description" content="18+ years driving digital transformation through innovative workplace solutions and AI implementation">
+    <meta property="og:url" content="https://karthikeyanselvam.com">
+    
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700;900&family=Work+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+    
+    <style>
+        :root {
+            --primary: #1a1a2e;
+            --secondary: #16213e;
+            --accent: #0f3460;
+            --highlight: #e94560;
+            --text: #eee;
+            --text-dim: #aaa;
+        }
+        
+        * { 
+            margin: 0; 
+            padding: 0; 
+            box-sizing: border-box; 
+        }
+        
+        html {
+            scroll-behavior: smooth;
+        }
+        
+        body { 
+            font-family: 'Work Sans', sans-serif;
+            background: var(--primary);
+            color: var(--text);
+            line-height: 1.6;
+            overflow-x: hidden;
+        }
+        
+        /* Navigation */
+        nav {
+            position: fixed;
+            top: 0;
+            width: 100%;
+            background: rgba(26, 26, 46, 0.95);
+            backdrop-filter: blur(10px);
+            z-index: 1000;
+            border-bottom: 1px solid rgba(233, 69, 96, 0.1);
+        }
+        
+        nav .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 1.5rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        nav .logo {
+            font-family: 'Playfair Display', serif;
+            font-size: 1.5rem;
+            font-weight: 900;
+            color: var(--highlight);
+            letter-spacing: -0.5px;
+        }
+        
+        nav ul {
+            display: flex;
+            gap: 2rem;
+            list-style: none;
+        }
+        
+        nav a {
+            color: var(--text);
+            text-decoration: none;
+            font-weight: 500;
+            font-size: 0.95rem;
+            transition: color 0.3s;
+        }
+        
+        nav a:hover {
+            color: var(--highlight);
+        }
+        
+        /* Hero Section */
+        .hero {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            padding: 8rem 2rem 4rem;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .hero::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            right: 0;
+            width: 50%;
+            height: 100%;
+            background: linear-gradient(135deg, var(--accent) 0%, var(--secondary) 100%);
+            clip-path: polygon(30% 0, 100% 0, 100% 100%, 0 100%);
+            opacity: 0.5;
+            z-index: -1;
+        }
+        
+        .hero-content {
+            max-width: 1400px;
+            margin: 0 auto;
+            width: 100%;
+        }
+        
+        .hero-label {
+            font-size: 0.85rem;
+            text-transform: uppercase;
+            letter-spacing: 3px;
+            color: var(--highlight);
+            margin-bottom: 1rem;
+            font-weight: 600;
+        }
+        
+        .hero h1 {
+            font-family: 'Playfair Display', serif;
+            font-size: clamp(3rem, 8vw, 6rem);
+            font-weight: 900;
+            line-height: 1.1;
+            margin-bottom: 1.5rem;
+            letter-spacing: -2px;
+        }
+        
+        .hero .subtitle {
+            font-size: clamp(1.2rem, 3vw, 1.8rem);
+            color: var(--text-dim);
+            max-width: 800px;
+            margin-bottom: 2rem;
+            font-weight: 300;
+        }
+        
+        .hero .stats {
+            display: flex;
+            gap: 4rem;
+            margin: 3rem 0;
+            flex-wrap: wrap;
+        }
+        
+        .stat {
+            border-left: 3px solid var(--highlight);
+            padding-left: 1.5rem;
+        }
+        
+        .stat-number {
+            font-family: 'Playfair Display', serif;
+            font-size: 3rem;
+            font-weight: 900;
+            color: var(--highlight);
+            line-height: 1;
+        }
+        
+        .stat-label {
+            font-size: 0.9rem;
+            color: var(--text-dim);
+            margin-top: 0.5rem;
+        }
+        
+        .cta-group {
+            display: flex;
+            gap: 1rem;
+            margin-top: 3rem;
+            flex-wrap: wrap;
+        }
+        
+        .btn {
+            padding: 1rem 2.5rem;
+            border: none;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            text-decoration: none;
+            display: inline-block;
+            transition: all 0.3s;
+            font-family: 'Work Sans', sans-serif;
+        }
+        
+        .btn-primary {
+            background: var(--highlight);
+            color: white;
+        }
+        
+        .btn-primary:hover {
+            background: #d63651;
+            transform: translateY(-2px);
+        }
+        
+        .btn-secondary {
+            background: transparent;
+            color: var(--text);
+            border: 2px solid var(--text);
+        }
+        
+        .btn-secondary:hover {
+            background: var(--text);
+            color: var(--primary);
+        }
+        
+        /* Sections */
+        section {
+            padding: 6rem 2rem;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+        
+        .section-header {
+            margin-bottom: 4rem;
+        }
+        
+        .section-label {
+            font-size: 0.85rem;
+            text-transform: uppercase;
+            letter-spacing: 3px;
+            color: var(--highlight);
+            margin-bottom: 1rem;
+            font-weight: 600;
+        }
+        
+        .section-title {
+            font-family: 'Playfair Display', serif;
+            font-size: clamp(2.5rem, 5vw, 4rem);
+            font-weight: 900;
+            line-height: 1.2;
+            margin-bottom: 1.5rem;
+        }
+        
+        /* Experience Timeline */
+        .timeline {
+            position: relative;
+            padding-left: 3rem;
+        }
+        
+        .timeline::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 0;
+            bottom: 0;
+            width: 2px;
+            background: linear-gradient(180deg, var(--highlight) 0%, transparent 100%);
+        }
+        
+        .timeline-item {
+            margin-bottom: 4rem;
+            position: relative;
+        }
+        
+        .timeline-item::before {
+            content: '';
+            position: absolute;
+            left: -3.5rem;
+            top: 0.5rem;
+            width: 12px;
+            height: 12px;
+            background: var(--highlight);
+            border-radius: 50%;
+            border: 3px solid var(--primary);
+        }
+        
+        .timeline-date {
+            font-size: 0.9rem;
+            color: var(--highlight);
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+        }
+        
+        .timeline-company {
+            font-size: 1.3rem;
+            font-weight: 700;
+            margin-bottom: 0.3rem;
+        }
+        
+        .timeline-role {
+            font-size: 1.1rem;
+            color: var(--text-dim);
+            margin-bottom: 1rem;
+        }
+        
+        .timeline-project {
+            background: rgba(233, 69, 96, 0.05);
+            border-left: 3px solid var(--highlight);
+            padding: 1.5rem;
+            margin: 1.5rem 0;
+        }
+        
+        .timeline-project h4 {
+            font-size: 1.1rem;
+            margin-bottom: 0.5rem;
+            color: var(--highlight);
+        }
+        
+        .timeline-project .client {
+            font-size: 0.85rem;
+            color: var(--text-dim);
+            font-style: italic;
+            margin-bottom: 1rem;
+        }
+        
+        .timeline-project ul {
+            list-style: none;
+            padding-left: 0;
+        }
+        
+        .timeline-project li {
+            padding-left: 1.5rem;
+            margin-bottom: 0.5rem;
+            position: relative;
+            color: var(--text-dim);
+            font-size: 0.95rem;
+        }
+        
+        .timeline-project li::before {
+            content: '→';
+            position: absolute;
+            left: 0;
+            color: var(--highlight);
+        }
+        
+        /* Skills Grid */
+        .skills-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 2rem;
+        }
+        
+        .skill-category {
+            background: rgba(233, 69, 96, 0.05);
+            padding: 2rem;
+            border-left: 3px solid var(--highlight);
+        }
+        
+        .skill-category h3 {
+            font-size: 1.3rem;
+            margin-bottom: 1rem;
+            color: var(--highlight);
+        }
+        
+        .skill-tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+        }
+        
+        .skill-tag {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 0.5rem 1rem;
+            font-size: 0.85rem;
+            border-radius: 2px;
+            color: var(--text);
+        }
+        
+        /* Certifications Grid */
+        .cert-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 2rem;
+        }
+        
+        .cert-card {
+            background: rgba(233, 69, 96, 0.05);
+            padding: 2rem;
+            border-left: 3px solid var(--highlight);
+            transition: all 0.3s;
+        }
+        
+        .cert-card:hover {
+            transform: translateY(-5px);
+            background: rgba(233, 69, 96, 0.1);
+        }
+        
+        .cert-card h3 {
+            font-size: 1.2rem;
+            margin-bottom: 0.5rem;
+            color: var(--text);
+        }
+        
+        .cert-card .issuer {
+            font-size: 0.9rem;
+            color: var(--text-dim);
+            margin-bottom: 1.5rem;
+        }
+        
+        .cert-card .verify-btn {
+            display: inline-block;
+            padding: 0.6rem 1.5rem;
+            background: transparent;
+            border: 2px solid var(--highlight);
+            color: var(--highlight);
+            text-decoration: none;
+            font-size: 0.85rem;
+            font-weight: 600;
+            transition: all 0.3s;
+        }
+        
+        .cert-card .verify-btn:hover {
+            background: var(--highlight);
+            color: white;
+        }
+        
+        /* Contact Section */
+        .contact {
+            background: linear-gradient(135deg, var(--accent) 0%, var(--secondary) 100%);
+            padding: 6rem 2rem;
+            text-align: center;
+        }
+        
+        .contact h2 {
+            font-family: 'Playfair Display', serif;
+            font-size: clamp(2.5rem, 5vw, 4rem);
+            margin-bottom: 1.5rem;
+        }
+        
+        .contact p {
+            font-size: 1.2rem;
+            color: var(--text-dim);
+            max-width: 600px;
+            margin: 0 auto 3rem;
+        }
+        
+        .contact-buttons {
+            display: flex;
+            gap: 1rem;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+        
+        /* Footer */
+        footer {
+            background: var(--secondary);
+            padding: 3rem 2rem;
+            text-align: center;
+        }
+        
+        footer p {
+            color: var(--text-dim);
+            font-size: 0.9rem;
+        }
+        
+        /* Responsive */
+        @media (max-width: 768px) {
+            nav ul {
+                gap: 1rem;
+            }
+            
+            nav a {
+                font-size: 0.85rem;
+            }
+            
+            .hero .stats {
+                gap: 2rem;
+            }
+            
+            .timeline {
+                padding-left: 2rem;
+            }
+            
+            .timeline-item::before {
+                left: -2.5rem;
+            }
+            
+            .skills-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+        
+        /* Animations */
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        .fade-in {
+            animation: fadeInUp 0.8s ease-out forwards;
+        }
+        
+        .delay-1 { animation-delay: 0.1s; opacity: 0; }
+        .delay-2 { animation-delay: 0.2s; opacity: 0; }
+        .delay-3 { animation-delay: 0.3s; opacity: 0; }
+        .delay-4 { animation-delay: 0.4s; opacity: 0; }
+    </style>
+</head>
+<body>
+    <!-- Navigation -->
+    <nav>
+        <div class="container">
+            <div class="logo">KS</div>
+            <ul>
+                <li><a href="#about">About</a></li>
+                <li><a href="#experience">Experience</a></li>
+                <li><a href="#skills">Skills</a></li>
+                <li><a href="#certifications">Certifications</a></li>
+                <li><a href="#contact">Contact</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section class="hero">
+        <div class="hero-content">
+            <div class="hero-label fade-in">Digital Workplace Consultant</div>
+            <h1 class="fade-in delay-1">Karthikeyan<br>Selvam</h1>
+            <p class="subtitle fade-in delay-2">Driving digital transformation through innovative workplace solutions, AI implementation, and enterprise automation</p>
+            
+            <div class="stats fade-in delay-3">
+                <div class="stat">
+                    <div class="stat-number">18+</div>
+                    <div class="stat-label">Years Experience</div>
+                </div>
+                <div class="stat">
+                    <div class="stat-number">50+</div>
+                    <div class="stat-label">RPA Automations</div>
+                </div>
+                <div class="stat">
+                    <div class="stat-number">10+</div>
+                    <div class="stat-label">FTE Savings</div>
+                </div>
+            </div>
+            
+            <div class="cta-group fade-in delay-4">
+                <a href="#contact" class="btn btn-primary">Get In Touch</a>
+                <a href="#experience" class="btn btn-secondary">View Experience</a>
+            </div>
+        </div>
+    </section>
+
+    <!-- About Section -->
+    <section id="about">
+        <div class="section-header">
+            <div class="section-label">Overview</div>
+            <h2 class="section-title">About Me</h2>
+        </div>
+        <div style="max-width: 900px;">
+            <p style="font-size: 1.2rem; line-height: 1.8; color: var(--text-dim); margin-bottom: 1.5rem;">
+                DWP Consultant with <strong style="color: var(--highlight);">18+ years of experience</strong> in IT Industry with expertise in Product Management (Microsoft Copilot), extensive experience in delivering innovative Digital Workplace Solutions, RPA solutions, ITSM automations, AIOps - IT Operations Management, and Enterprise Backup and Recovery.
+            </p>
+            <p style="font-size: 1.2rem; line-height: 1.8; color: var(--text-dim);">
+                Proven ability to manage cross-functional teams, lead change management, develop end-user adoption strategies for IT implementations, and drive strategic initiatives that enhance customer experience and deliver measurable business value.
+            </p>
+        </div>
+    </section>
+
+    <!-- Experience Section -->
+    <section id="experience">
+        <div class="section-header">
+            <div class="section-label">Career</div>
+            <h2 class="section-title">Work Experience</h2>
+        </div>
+        
+        <div class="timeline">
+            <!-- Atos -->
+            <div class="timeline-item">
+                <div class="timeline-date">Mar 2015 - Present</div>
+                <h3 class="timeline-company">Atos IT Solutions and Service Inc</h3>
+                <p class="timeline-role">Senior Consultant - Various Leadership Roles</p>
+                
+                <div class="timeline-project">
+                    <h4>Project Manager – Windows 11 Migration</h4>
+                    <p class="client">Large Healthcare Network</p>
+                    <ul>
+                        <li>Planning and execution of Windows 11 migration for enterprise devices, ensuring minimal business disruption</li>
+                        <li>Coordinated cross-functional teams to manage hardware compatibility assessments, application readiness, and user communications</li>
+                        <li>Partnered with senior leadership to design and execute adoption strategies including in-place upgrades, White Glove provisioning, and LTSC fallback</li>
+                        <li>Measured change readiness, tracked adoption metrics, and reported transformation success to stakeholders</li>
+                    </ul>
+                </div>
+                
+                <div class="timeline-project">
+                    <h4>Technical Product Manager – Copilot for Security - Entra</h4>
+                    <p class="client">Major Technology Corporation</p>
+                    <ul>
+                        <li>Lead the assessment and grading of Copilot Entra responses, ensuring high standards of accuracy and relevance</li>
+                        <li>Developed comprehensive rubric for evaluating responses, focusing on language accuracy, technical correctness, and user satisfaction</li>
+                        <li>Collaborated directly with Engineering teams to improve overall RSAT score by 20%</li>
+                        <li>Played pivotal role in product release decisions with data-driven insights</li>
+                    </ul>
+                </div>
+                
+                <div class="timeline-project">
+                    <h4>Product Manager – AI Ops - ITOM</h4>
+                    <p class="client">Large Energy Company</p>
+                    <ul>
+                        <li>Developed proactive digital experience management system using Nexthink to monitor potential issues and resolve them before they became problems</li>
+                        <li>Managed end-to-end product management of IT Operations Management solutions with successful integration of Nexthink analytics</li>
+                        <li>Oversaw Agile development teams, delivering products that consistently met quality, time, and budgetary constraints</li>
+                    </ul>
+                </div>
+                
+                <div class="timeline-project">
+                    <h4>Project Manager – Quest Enterprise Backup and Recovery</h4>
+                    <p class="client">Large Energy Company</p>
+                    <ul>
+                        <li>Developed and executed comprehensive project plans, managing timelines, budgets, resources, and vendor relationships</li>
+                        <li>Directed configuration, testing, and validation of Quest Backup and Recovery functionalities</li>
+                        <li>Served as primary point of contact for all project communications, providing regular status updates and risk assessments</li>
+                    </ul>
+                </div>
+                
+                <div class="timeline-project">
+                    <h4>Automation Consultant</h4>
+                    <p class="client">Atos Internal Functions</p>
+                    <ul>
+                        <li>Lead team of Automation Consultants, Business Analysts, and Automation Developers</li>
+                        <li>Designed implementable process improvements leveraging process automation technologies</li>
+                        <li>Delivered 50+ RPA Automations achieving 10+ FTE effort savings across HR, Finance, Procurement functions</li>
+                        <li>Assessment of infrastructure and application provisioning processes identifying RPA opportunities</li>
+                    </ul>
+                </div>
+            </div>
+            
+            <!-- HP -->
+            <div class="timeline-item">
+                <div class="timeline-date">Dec 2011 - Mar 2015</div>
+                <h3 class="timeline-company">Hewlett-Packard</h3>
+                <p class="timeline-role">Assistant Manager</p>
+                <ul style="list-style: none; padding-left: 0;">
+                    <li style="padding-left: 1.5rem; margin-bottom: 0.5rem; position: relative; color: var(--text-dim);">
+                        <span style="position: absolute; left: 0; color: var(--highlight);">→</span>
+                        Data analysis, Process Assessment and promoting best practice concepts and solutions
+                    </li>
+                    <li style="padding-left: 1.5rem; margin-bottom: 0.5rem; position: relative; color: var(--text-dim);">
+                        <span style="position: absolute; left: 0; color: var(--highlight);">→</span>
+                        Translated business requirements to functional design supporting technology development
+                    </li>
+                    <li style="padding-left: 1.5rem; margin-bottom: 0.5rem; position: relative; color: var(--text-dim);">
+                        <span style="position: absolute; left: 0; color: var(--highlight);">→</span>
+                        Designed test plans, change controls, execution, and results
+                    </li>
+                </ul>
+            </div>
+            
+            <!-- TCS -->
+            <div class="timeline-item">
+                <div class="timeline-date">May 2007 - Dec 2011</div>
+                <h3 class="timeline-company">Tata Consultancy Services</h3>
+                <p class="timeline-role">Senior Process Associate</p>
+                <ul style="list-style: none; padding-left: 0;">
+                    <li style="padding-left: 1.5rem; margin-bottom: 0.5rem; position: relative; color: var(--text-dim);">
+                        <span style="position: absolute; left: 0; color: var(--highlight);">→</span>
+                        Sales information reconciliation from Stores and Bank files in AS400 and Oracle Systems
+                    </li>
+                    <li style="padding-left: 1.5rem; margin-bottom: 0.5rem; position: relative; color: var(--text-dim);">
+                        <span style="position: absolute; left: 0; color: var(--highlight);">→</span>
+                        Handled weekly customer calls and internal quality checks
+                    </li>
+                    <li style="padding-left: 1.5rem; margin-bottom: 0.5rem; position: relative; color: var(--text-dim);">
+                        <span style="position: absolute; left: 0; color: var(--highlight);">→</span>
+                        Root cause analysis for defects
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </section>
+
+    <!-- Skills Section -->
+    <section id="skills">
+        <div class="section-header">
+            <div class="section-label">Expertise</div>
+            <h2 class="section-title">Skills & Technologies</h2>
+        </div>
+        
+        <div class="skills-grid">
+            <div class="skill-category">
+                <h3>Product Management</h3>
+                <div class="skill-tags">
+                    <span class="skill-tag">Microsoft Copilot</span>
+                    <span class="skill-tag">AI Ops</span>
+                    <span class="skill-tag">ITOM</span>
+                    <span class="skill-tag">Nexthink</span>
+                    <span class="skill-tag">Agile</span>
+                </div>
+            </div>
+            
+            <div class="skill-category">
+                <h3>Automation & RPA</h3>
+                <div class="skill-tags">
+                    <span class="skill-tag">UiPath</span>
+                    <span class="skill-tag">Process Automation</span>
+                    <span class="skill-tag">ITSM Automation</span>
+                    <span class="skill-tag">50+ Implementations</span>
+                </div>
+            </div>
+            
+            <div class="skill-category">
+                <h3>Cloud & Enterprise</h3>
+                <div class="skill-tags">
+                    <span class="skill-tag">Microsoft Azure</span>
+                    <span class="skill-tag">Google Cloud</span>
+                    <span class="skill-tag">Enterprise Backup</span>
+                    <span class="skill-tag">Quest Recovery</span>
+                </div>
+            </div>
+            
+            <div class="skill-category">
+                <h3>Leadership & Management</h3>
+                <div class="skill-tags">
+                    <span class="skill-tag">Project Management</span>
+                    <span class="skill-tag">PRINCE2</span>
+                    <span class="skill-tag">Change Management</span>
+                    <span class="skill-tag">Team Leadership</span>
+                    <span class="skill-tag">Six Sigma</span>
+                </div>
+            </div>
+            
+            <div class="skill-category">
+                <h3>Microsoft Platforms</h3>
+                <div class="skill-tags">
+                    <span class="skill-tag">Power Platform</span>
+                    <span class="skill-tag">Windows 11</span>
+                    <span class="skill-tag">Entra ID</span>
+                    <span class="skill-tag">Copilot Security</span>
+                </div>
+            </div>
+            
+            <div class="skill-category">
+                <h3>Methodologies</h3>
+                <div class="skill-tags">
+                    <span class="skill-tag">Agile</span>
+                    <span class="skill-tag">Problem Solving</span>
+                    <span class="skill-tag">User Adoption</span>
+                    <span class="skill-tag">Digital Transformation</span>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Certifications -->
+    <section id="certifications">
+        <div class="section-header">
+            <div class="section-label">Credentials</div>
+            <h2 class="section-title">Certifications</h2>
+        </div>
+        
+        <div class="cert-grid">
+            <div class="cert-card">
+                <h3>Google Gen AI Leader</h3>
+                <p class="issuer">Google Cloud</p>
+                <a href="YOUR_GOOGLE_GENAI_URL" class="verify-btn" target="_blank">Verify →</a>
+            </div>
+            
+            <div class="cert-card">
+                <h3>Microsoft Azure AI Fundamentals</h3>
+                <p class="issuer">Microsoft Azure | AI-900</p>
+                <a href="YOUR_AZURE_AI_URL" class="verify-btn" target="_blank">Verify →</a>
+            </div>
+            
+            <div class="cert-card">
+                <h3>Microsoft Azure Fundamentals</h3>
+                <p class="issuer">Microsoft Azure | AZ-900</p>
+                <a href="YOUR_AZURE_FUNDAMENTALS_URL" class="verify-btn" target="_blank">Verify →</a>
+            </div>
+            
+            <div class="cert-card">
+                <h3>PRINCE2 Project Management</h3>
+                <p class="issuer">AXELOS</p>
+                <a href="#" class="verify-btn">Certified</a>
+            </div>
+            
+            <div class="cert-card">
+                <h3>UiPath Business Analyst</h3>
+                <p class="issuer">UiPath</p>
+                <a href="#" class="verify-btn">Certified</a>
+            </div>
+            
+            <div class="cert-card">
+                <h3>UiPath RPA Developer Foundation</h3>
+                <p class="issuer">UiPath</p>
+                <a href="#" class="verify-btn">Certified</a>
+            </div>
+            
+            <div class="cert-card">
+                <h3>Microsoft Power Platforms</h3>
+                <p class="issuer">Microsoft</p>
+                <a href="#" class="verify-btn">Certified</a>
+            </div>
+            
+            <div class="cert-card">
+                <h3>Six Sigma</h3>
+                <p class="issuer">Quality Management</p>
+                <a href="#" class="verify-btn">Certified</a>
+            </div>
+            
+            <div class="cert-card">
+                <h3>Change Management</h3>
+                <p class="issuer">Professional Certification</p>
+                <a href="#" class="verify-btn">Certified</a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Contact Section -->
+    <section class="contact" id="contact">
+        <h2>Let's Work Together</h2>
+        <p>Ready to transform your digital workplace? Let's discuss how I can help drive your next initiative.</p>
+        <div class="contact-buttons">
+            <a href="https://www.linkedin.com/in/karthikeyan-selvam-567b52157/" class="btn btn-primary" target="_blank">Connect on LinkedIn</a>
+            <a href="mailto:contact@karthikeyanselvam.com" class="btn btn-secondary">Send Email</a>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer>
+        <p>&copy; 2026 Karthikeyan Selvam | Digital Workplace & AI Consultant</p>
+        <p style="margin-top: 0.5rem;">Middletown, DE, USA</p>
+    </footer>
+
+    <script>
+        // Smooth scroll for navigation
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                }
+            });
+        });
+        
+        // Scroll animations
+        const observerOptions = {
+            threshold: 0.1,
+            rootMargin: '0px 0px -50px 0px'
+        };
+        
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.style.opacity = '1';
+                    entry.target.style.transform = 'translateY(0)';
+                }
+            });
+        }, observerOptions);
+        
+        // Observe sections
+        document.querySelectorAll('section').forEach(section => {
+            section.style.opacity = '0';
+            section.style.transform = 'translateY(20px)';
+            section.style.transition = 'opacity 0.6s ease-out, transform 0.6s ease-out';
+            observer.observe(section);
+        });
+    </script>
+</body>
+</html>
