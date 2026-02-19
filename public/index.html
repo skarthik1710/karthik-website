@@ -96,6 +96,47 @@
         section { padding: 6rem 2rem; max-width: 1400px; margin: 0 auto; }
         h2 { font-size: clamp(2rem, 5vw, 4rem); text-align: center; margin-bottom: 4rem; background: var(--primary); -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent; }
         
+        /* Video Introduction Section */
+        .video-intro {
+            background: rgba(20,20,40,0.6);
+            backdrop-filter: blur(20px);
+            border-radius: 20px;
+            padding: 4rem 2rem;
+            margin: 2rem auto;
+            max-width: 900px;
+        }
+        
+        .video-intro h2 {
+            margin-bottom: 2rem;
+        }
+        
+        .video-container {
+            position: relative;
+            padding-bottom: 56.25%; /* 16:9 aspect ratio */
+            height: 0;
+            overflow: hidden;
+            border-radius: 12px;
+            box-shadow: 0 8px 32px rgba(31, 38, 135, 0.5);
+        }
+        
+        .video-container iframe {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            border: none;
+            border-radius: 12px;
+        }
+        
+        .video-description {
+            text-align: center;
+            margin-top: 2rem;
+            font-size: 1.1rem;
+            line-height: 1.6;
+            color: rgba(255,255,255,0.8);
+        }
+        
         /* About */
         .about { background: rgba(20,20,40,0.8); backdrop-filter: blur(20px); border-radius: 20px; margin: 2rem auto; max-width: 800px; padding: 3rem; }
         .about p { font-size: 1.2rem; line-height: 1.8; text-align: center; opacity: 0.9; margin-bottom: 1.5rem; }
@@ -268,6 +309,7 @@
             .contact-btn { width: 80%; }
             .certifications-grid { grid-template-columns: 1fr; }
             .cta-group { flex-direction: column; align-items: center; }
+            .video-intro { padding: 2rem 1rem; }
         }
     </style>
 </head>
@@ -277,9 +319,27 @@
         <h1>Karthikeyan Selvam</h1>
         <p class="hero-subtitle">AI-Digital Workplace Consultant</p>
         <div class="cta-group">
+            <a href="#video" class="cta">Watch Introduction</a>
             <a href="#certifications" class="cta">View Certifications</a>
             <a href="experience.html" class="cta cta-secondary" target="_blank">Full Work Experience</a>
         </div>
+    </section>
+
+    <!-- Video Introduction Section -->
+    <section id="video" class="video-intro fade-in">
+        <h2>Introduction Video</h2>
+        <div class="video-container">
+            <!-- Replace YOUR_VIDEO_ID with your actual YouTube video ID -->
+            <iframe 
+                src="https://www.youtube.com/embed/YOUR_VIDEO_ID" 
+                title="Karthikeyan Selvam - Professional Introduction"
+                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
+                allowfullscreen>
+            </iframe>
+        </div>
+        <p class="video-description">
+            Learn more about my journey in Digital Workplace Solutions, AI implementation, and enterprise automation.
+        </p>
     </section>
 
     <section id="about" class="about fade-in">
@@ -353,7 +413,7 @@
         <p>Ready to collaborate? Reach out on LinkedIn or send me an email.</p>
         <div class="contact-buttons">
             <a href="https://www.linkedin.com/in/karthikeyan-selvam-567b52157/" class="contact-btn" target="_blank" rel="noopener noreferrer">Connect on LinkedIn</a>
-            <a href="mailto:skarthik1710@gmail.com" class="contact-btn">Send Email</a>
+            <a href="mailto:contact@karthikeyanselvam.com" class="contact-btn">Send Email</a>
         </div>
     </section>
 
@@ -367,7 +427,7 @@
     </section>
 
     <footer>
-        <p>&copy; 2026 Karthikeyan Selvam. Hosted on Firebase </p>
+        <p>&copy; 2026 Karthikeyan Selvam. Hosted on Firebase. Made with ❤️</p>
     </footer>
 
     <script>
