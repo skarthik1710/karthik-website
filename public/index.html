@@ -3,26 +3,19 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Karthikeyan Selvam | AI-Digital Workplace Consultant</title>
+    <title>Karthikeyan Selvam | Digital Workplace & AI Consultant</title>
     
     <!-- SEO Meta Tags -->
-    <meta name="description" content="Karthikeyan Selvam - AI-Digital Workplace Consultant specializing in modern web applications, AI-driven solutions, and seamless user experiences. Microsoft Azure & Google Cloud certified.">
-    <meta name="keywords" content="AI Consultant, Digital Workplace, Azure Certified, Google Cloud, Gen AI, Karthikeyan Selvam">
+    <meta name="description" content="Karthikeyan Selvam - Digital Workplace Consultant with 18+ years in AI, Microsoft Copilot, RPA. Azure & Google Cloud certified.">
+    <meta name="keywords" content="Digital Workplace Consultant, AI, Microsoft Copilot, RPA, Azure, Karthikeyan Selvam">
     <meta name="author" content="Karthikeyan Selvam">
     
-    <!-- Open Graph / Social Media Meta Tags -->
+    <!-- Open Graph -->
     <meta property="og:type" content="website">
     <meta property="og:url" content="https://karthikeyanselvam.com">
-    <meta property="og:title" content="Karthikeyan Selvam | AI-Digital Workplace Consultant">
-    <meta property="og:description" content="Crafting Digital Workplace and AI-driven solutions. Microsoft Azure & Google Cloud certified professional.">
+    <meta property="og:title" content="Karthikeyan Selvam | Digital Workplace & AI Consultant">
+    <meta property="og:description" content="18+ years driving digital transformation">
     <meta property="og:image" content="https://karthikeyanselvam.com/Profile.jpg">
-    
-    <!-- Twitter Card Meta Tags -->
-    <meta name="twitter:card" content="summary_large_image">
-    <meta name="twitter:url" content="https://karthikeyanselvam.com">
-    <meta name="twitter:title" content="Karthikeyan Selvam | AI-Digital Workplace Consultant">
-    <meta name="twitter:description" content="Crafting Digital Workplace and AI-driven solutions">
-    <meta name="twitter:image" content="https://karthikeyanselvam.com/Profile.jpg">
     
     <!-- Favicon -->
     <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>👨‍💻</text></svg>">
@@ -40,6 +33,7 @@
             background: #0a0a0a;
             color: white;
         }
+        
         /* Hero Section */
         .profile-photo {
             width: 200px; 
@@ -52,13 +46,15 @@
             z-index: 2;
         }
         .hero {
-            height: 100vh;
+            min-height: 100vh;
             background: var(--primary), radial-gradient(circle at 20% 80%, rgba(120,119,198,0.3) 0%, transparent 50%), radial-gradient(circle at 80% 20%, rgba(255,255,255,0.3) 0%, transparent 50%);
             display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center; position: relative;
             overflow: hidden;
+            padding: 4rem 2rem;
         }
         .hero::before {
-            content: ''; position: absolute; top: 0; left: 0; right: 0; bottom: 0; background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 1000"><defs><radialGradient id="a" cx="50%" cy="50%"><stop offset="0%" stop-color="%23ffffff" stop-opacity="0.1"/><stop offset="100%" stop-opacity="0"/></radialGradient></defs><circle cx="300" cy="200" r="100" fill="url(%23a)"><animate attributeName="r" values="100;150;100" dur="3s" repeatCount="indefinite"/></circle><circle cx="700" cy="800" r="80" fill="url(%23a)"><animate attributeName="r" values="80;120;80" dur="4s" repeatCount="indefinite"/></circle></svg>') no-repeat center/cover;
+            content: ''; position: absolute; top: 0; left: 0; right: 0; bottom: 0; 
+            background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 1000"><defs><radialGradient id="a" cx="50%" cy="50%"><stop offset="0%" stop-color="%23ffffff" stop-opacity="0.1"/><stop offset="100%" stop-opacity="0"/></radialGradient></defs><circle cx="300" cy="200" r="100" fill="url(%23a)"><animate attributeName="r" values="100;150;100" dur="3s" repeatCount="indefinite"/></circle><circle cx="700" cy="800" r="80" fill="url(%23a)"><animate attributeName="r" values="80;120;80" dur="4s" repeatCount="indefinite"/></circle></svg>') no-repeat center/cover;
             animation: float 6s ease-in-out infinite;
         }
         @keyframes float { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-20px); } }
@@ -69,34 +65,76 @@
             animation: slideIn 1s ease-out;
         }
         @keyframes slideIn { from { opacity: 0; transform: translateY(50px); } to { opacity: 1; transform: translateY(0); } }
-        .hero-subtitle { font-size: 1.3rem; margin: 1rem 0 2rem; opacity: 0.9; animation: slideIn 1s 0.3s ease-out both; }
+        .hero-subtitle { 
+            font-size: 1.3rem; 
+            margin: 1rem 0 1rem; 
+            opacity: 0.9; 
+            animation: slideIn 1s 0.3s ease-out both; 
+        }
+        .hero-stats {
+            display: flex;
+            gap: 3rem;
+            margin: 2rem 0;
+            flex-wrap: wrap;
+            justify-content: center;
+            animation: slideIn 1s 0.4s ease-out both;
+        }
+        .stat {
+            text-align: center;
+        }
+        .stat-number {
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: #a8b4ff;
+        }
+        .stat-label {
+            font-size: 0.9rem;
+            opacity: 0.8;
+        }
         .cta { 
-            padding: 1rem 2.5rem; background: rgba(255,255,255,0.2); backdrop-filter: blur(10px); 
-            border: 1px solid rgba(255,255,255,0.2); border-radius: 50px; color: white; 
-            font-weight: 600; text-decoration: none; transition: all 0.3s; animation: slideIn 1s 0.6s ease-out both;
+            padding: 1rem 2.5rem; 
+            background: rgba(255,255,255,0.2); 
+            backdrop-filter: blur(10px); 
+            border: 1px solid rgba(255,255,255,0.2); 
+            border-radius: 50px; 
+            color: white; 
+            font-weight: 600; 
+            text-decoration: none; 
+            transition: all 0.3s; 
+            animation: slideIn 1s 0.6s ease-out both;
             display: inline-block;
             margin: 0.5rem;
         }
-        .cta:hover { background: rgba(255,255,255,0.3); transform: translateY(-3px); box-shadow: var(--shadow); }
-        
+        .cta:hover { 
+            background: rgba(255,255,255,0.3); 
+            transform: translateY(-3px); 
+            box-shadow: var(--shadow); 
+        }
         .cta-secondary {
             background: transparent;
             border: 2px solid rgba(255,255,255,0.4);
         }
-        
         .cta-group {
             display: flex;
             gap: 1rem;
             justify-content: center;
             flex-wrap: wrap;
-            margin-top: 1rem;
+            margin-top: 2rem;
         }
         
         /* Sections */
-        section { padding: 6rem 2rem; max-width: 1400px; margin: 0 auto; }
-        h2 { font-size: clamp(2rem, 5vw, 4rem); text-align: center; margin-bottom: 4rem; background: var(--primary); -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent; }
+        section { padding: 6rem 2rem; max-width: 1200px; margin: 0 auto; }
+        h2 { 
+            font-size: clamp(2rem, 5vw, 3.5rem); 
+            text-align: center; 
+            margin-bottom: 3rem; 
+            background: var(--primary); 
+            -webkit-background-clip: text; 
+            background-clip: text; 
+            -webkit-text-fill-color: transparent; 
+        }
         
-        /* Video Introduction Section */
+        /* Video Section */
         .video-intro {
             background: rgba(20,20,40,0.6);
             backdrop-filter: blur(20px);
@@ -105,20 +143,17 @@
             margin: 2rem auto;
             max-width: 900px;
         }
-        
         .video-intro h2 {
             margin-bottom: 2rem;
         }
-        
         .video-container {
             position: relative;
-            padding-bottom: 56.25%; /* 16:9 aspect ratio */
+            padding-bottom: 56.25%;
             height: 0;
             overflow: hidden;
             border-radius: 12px;
             box-shadow: 0 8px 32px rgba(31, 38, 135, 0.5);
         }
-        
         .video-container iframe {
             position: absolute;
             top: 0;
@@ -128,7 +163,6 @@
             border: none;
             border-radius: 12px;
         }
-        
         .video-description {
             text-align: center;
             margin-top: 2rem;
@@ -137,13 +171,86 @@
             color: rgba(255,255,255,0.8);
         }
         
-        /* About */
-        .about { background: rgba(20,20,40,0.8); backdrop-filter: blur(20px); border-radius: 20px; margin: 2rem auto; max-width: 800px; padding: 3rem; }
-        .about p { font-size: 1.2rem; line-height: 1.8; text-align: center; opacity: 0.9; margin-bottom: 1.5rem; }
-        
-        .about .experience-link {
+        /* About Section - Simplified */
+        .about { 
+            background: rgba(20,20,40,0.8); 
+            backdrop-filter: blur(20px); 
+            border-radius: 20px; 
+            margin: 2rem auto; 
+            max-width: 800px; 
+            padding: 3rem; 
+            text-align: center;
+        }
+        .about p { 
+            font-size: 1.3rem; 
+            line-height: 1.8; 
+            opacity: 0.9; 
+            margin-bottom: 2rem; 
+        }
+        .experience-link {
             display: inline-block;
-            margin-top: 1.5rem;
+            padding: 1rem 2.5rem;
+            background: rgba(102, 126, 234, 0.2);
+            border: 2px solid #667eea;
+            border-radius: 25px;
+            color: #a8b4ff;
+            text-decoration: none;
+            font-weight: 600;
+            transition: all 0.3s;
+            font-size: 1.1rem;
+        }
+        .experience-link:hover {
+            background: rgba(102, 126, 234, 0.3);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+        }
+        
+        /* Certifications - Compact Badge Version */
+        .cert-summary {
+            background: rgba(20,20,40,0.8);
+            backdrop-filter: blur(20px);
+            border-radius: 20px;
+            padding: 3rem 2rem;
+            text-align: center;
+        }
+        .cert-badges {
+            display: flex;
+            gap: 2rem;
+            justify-content: center;
+            flex-wrap: wrap;
+            margin: 2rem 0 3rem;
+        }
+        .cert-badge-item {
+            background: rgba(102, 126, 234, 0.15);
+            padding: 1.5rem 2rem;
+            border-radius: 12px;
+            border: 2px solid rgba(102, 126, 234, 0.3);
+            transition: all 0.3s;
+            text-align: center;
+        }
+        .cert-badge-item:hover {
+            transform: translateY(-5px);
+            background: rgba(102, 126, 234, 0.25);
+            border-color: rgba(102, 126, 234, 0.5);
+        }
+        .cert-icon {
+            font-size: 2.5rem;
+            display: block;
+            margin-bottom: 0.8rem;
+        }
+        .cert-name {
+            font-weight: 600;
+            font-size: 1rem;
+            color: #a8b4ff;
+            margin-bottom: 0.3rem;
+        }
+        .cert-code {
+            font-size: 0.85rem;
+            opacity: 0.7;
+        }
+        .cert-link {
+            display: inline-block;
+            margin-top: 2rem;
             padding: 0.8rem 2rem;
             background: rgba(102, 126, 234, 0.2);
             border: 2px solid #667eea;
@@ -153,100 +260,9 @@
             font-weight: 600;
             transition: all 0.3s;
         }
-        
-        .about .experience-link:hover {
+        .cert-link:hover {
             background: rgba(102, 126, 234, 0.3);
             transform: translateY(-2px);
-            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
-        }
-        
-        /* Certifications Section */
-        .certifications-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-            gap: 2rem;
-            margin-top: 2rem;
-        }
-        
-        .cert-card {
-            background: var(--glass);
-            backdrop-filter: blur(20px);
-            border-radius: 20px;
-            padding: 2.5rem;
-            border: 1px solid rgba(255,255,255,0.1);
-            transition: all 0.4s;
-            position: relative;
-            overflow: hidden;
-            text-align: center;
-        }
-        
-        .cert-card::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: -100%;
-            width: 100%;
-            height: 100%;
-            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.1), transparent);
-            transition: left 0.5s;
-        }
-        
-        .cert-card:hover::before {
-            left: 100%;
-        }
-        
-        .cert-card:hover {
-            transform: translateY(-10px) scale(1.02);
-            box-shadow: var(--shadow);
-            border-color: rgba(255,255,255,0.3);
-        }
-        
-        .cert-icon {
-            font-size: 3rem;
-            margin-bottom: 1.5rem;
-            display: block;
-        }
-        
-        .cert-card h3 {
-            font-size: 1.4rem;
-            margin-bottom: 0.5rem;
-            color: #a8b4ff;
-        }
-        
-        .cert-card .provider {
-            font-size: 1rem;
-            color: rgba(255,255,255,0.7);
-            margin-bottom: 1.5rem;
-        }
-        
-        .cert-badge {
-            display: inline-block;
-            background: rgba(102, 126, 234, 0.2);
-            color: #a8b4ff;
-            padding: 0.4rem 1rem;
-            border-radius: 20px;
-            font-size: 0.85rem;
-            margin-bottom: 1.5rem;
-            font-weight: 600;
-        }
-        
-        .verify-btn {
-            display: inline-block;
-            padding: 0.8rem 2rem;
-            background: rgba(255,255,255,0.1);
-            border: 1px solid rgba(255,255,255,0.2);
-            border-radius: 25px;
-            color: white;
-            text-decoration: none;
-            font-weight: 600;
-            transition: all 0.3s;
-            font-size: 0.9rem;
-        }
-        
-        .verify-btn:hover {
-            background: rgba(255,255,255,0.2);
-            transform: translateY(-2px);
-            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
         }
         
         /* Projects */
@@ -260,8 +276,6 @@
         .project:hover { transform: translateY(-10px) scale(1.02); box-shadow: var(--shadow); }
         .project h3 { font-size: 1.6rem; margin-bottom: 1rem; color: #a8b4ff; }
         .project p { margin-bottom: 1rem; line-height: 1.6; }
-        .project a { color: #667eea; font-weight: 600; text-decoration: none; }
-        .project a:hover { color: #a8b4ff; }
         .project.coming-soon { opacity: 0.7; }
         .project.coming-soon .badge { 
             display: inline-block; 
@@ -272,15 +286,31 @@
             margin-top: 0.5rem;
         }
         
-        /* Contact */
+        /* Contact Section */
         .contact { text-align: center; }
-        .contact-buttons { display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap; margin-top: 2rem; }
-        .contact-btn { 
-            display: inline-block; background: var(--glass); backdrop-filter: blur(10px); padding: 1.2rem 3rem; 
-            border: 1px solid rgba(255,255,255,0.2); border-radius: 50px; color: white; font-weight: 600; 
-            text-decoration: none; transition: all 0.3s;
+        .contact-buttons { 
+            display: flex; 
+            gap: 1rem; 
+            justify-content: center; 
+            flex-wrap: wrap; 
+            margin-top: 2rem; 
         }
-        .contact-btn:hover { background: rgba(255,255,255,0.3); transform: translateY(-3px); }
+        .contact-btn { 
+            display: inline-block; 
+            background: var(--glass); 
+            backdrop-filter: blur(10px); 
+            padding: 1.2rem 3rem; 
+            border: 1px solid rgba(255,255,255,0.2); 
+            border-radius: 50px; 
+            color: white; 
+            font-weight: 600; 
+            text-decoration: none; 
+            transition: all 0.3s;
+        }
+        .contact-btn:hover { 
+            background: rgba(255,255,255,0.3); 
+            transform: translateY(-3px); 
+        }
         
         /* Chatbot */
         .chatbot { 
@@ -296,32 +326,63 @@
         }
         
         /* Footer */
-        footer { background: rgba(0,0,0,0.8); text-align: center; padding: 2rem; }
+        footer { 
+            background: rgba(0,0,0,0.8); 
+            text-align: center; 
+            padding: 2rem; 
+        }
         footer p { opacity: 0.7; }
         
-        /* Scroll animations */
-        .fade-in { opacity: 0; transform: translateY(30px); transition: all 0.8s; }
-        .fade-in.visible { opacity: 1; transform: translateY(0); }
+        /* Animations */
+        .fade-in { 
+            opacity: 0; 
+            transform: translateY(30px); 
+            transition: all 0.8s; 
+        }
+        .fade-in.visible { 
+            opacity: 1; 
+            transform: translateY(0); 
+        }
         
+        /* Responsive */
         @media (max-width: 768px) { 
             section { padding: 4rem 1rem; }
+            .hero-stats { gap: 1.5rem; }
+            .stat-number { font-size: 2rem; }
             .contact-buttons { flex-direction: column; align-items: center; }
             .contact-btn { width: 80%; }
-            .certifications-grid { grid-template-columns: 1fr; }
             .cta-group { flex-direction: column; align-items: center; }
             .video-intro { padding: 2rem 1rem; }
+            .cert-badges { gap: 1rem; }
         }
     </style>
 </head>
 <body>
+    <!-- Hero Section -->
     <section class="hero">
-        <img src="Profile.jpg" alt="Karthikeyan Selvam - AI-Digital Workplace Consultant" class="profile-photo">
+        <img src="Profile.jpg" alt="Karthikeyan Selvam - Digital Workplace Consultant" class="profile-photo">
         <h1>Karthikeyan Selvam</h1>
-        <p class="hero-subtitle">AI-Digital Workplace Consultant</p>
+        <p class="hero-subtitle">Digital Workplace & AI Consultant</p>
+        
+        <!-- Key Stats -->
+        <div class="hero-stats">
+            <div class="stat">
+                <div class="stat-number">18+</div>
+                <div class="stat-label">Years Experience</div>
+            </div>
+            <div class="stat">
+                <div class="stat-number">50+</div>
+                <div class="stat-label">RPA Automations</div>
+            </div>
+            <div class="stat">
+                <div class="stat-number">10+</div>
+                <div class="stat-label">FTE Savings</div>
+            </div>
+        </div>
+        
         <div class="cta-group">
             <a href="#video" class="cta">Watch Introduction</a>
-            <a href="#certifications" class="cta">View Certifications</a>
-            <a href="experience.html" class="cta cta-secondary" target="_blank">Full Work Experience</a>
+            <a href="experience.html" class="cta cta-secondary" target="_blank">Full Profile & Experience</a>
         </div>
     </section>
 
@@ -338,55 +399,43 @@
             </iframe>
         </div>
         <p class="video-description">
-            Learn more about my journey in Digital Workplace Solutions, AI implementation, and enterprise automation.
+            Learn about my journey in Digital Workplace Solutions, AI implementation, and enterprise automation.
         </p>
     </section>
 
+    <!-- About Section - Simplified -->
     <section id="about" class="about fade-in">
         <h2>About</h2>
         <p>
-            DWP Consultant with <strong style="color: #a8b4ff;">18+ years of experience</strong> in IT Industry with expertise in Product Management (Microsoft Copilot), extensive experience in delivering innovative Digital Workplace Solutions, RPA solutions, ITSM automations, AIOps, and Enterprise IT Management.
+            Digital Workplace Consultant with <strong style="color: #a8b4ff;">18+ years</strong> driving transformation through Microsoft Copilot, RPA, AI Ops, and Enterprise IT solutions. Azure & Google Cloud certified.
         </p>
-        <p>
-            Microsoft Azure and Google Cloud certified professional with proven ability to manage cross-functional teams, lead change management, and drive strategic initiatives that deliver measurable business value.
-        </p>
-        <div style="text-align: center;">
-            <a href="experience.html" class="experience-link" target="_blank">View Detailed Work Experience →</a>
-        </div>
+        <a href="experience.html" class="experience-link" target="_blank">View Full Work Experience & Skills →</a>
     </section>
 
-    <section id="certifications" class="fade-in">
+    <!-- Certifications - Compact Version -->
+    <section id="certifications" class="cert-summary fade-in">
         <h2>Certifications</h2>
-        <div class="certifications-grid">
-            <div class="cert-card">
+        <div class="cert-badges">
+            <div class="cert-badge-item">
                 <span class="cert-icon">☁️</span>
-                <h3>Azure Fundamentals</h3>
-                <p class="provider">Microsoft Azure</p>
-                <span class="cert-badge">AZ-900</span>
-                <br><br>
-                <a href="https://learn.microsoft.com/api/credentials/share/en-us/KarthikeyanSelvam-7865/86B6B6FDBFEA89A5?sharingId=8397069763C1D18C" class="verify-btn" target="_blank" rel="noopener noreferrer">Verify Credential →</a>
+                <div class="cert-name">Azure Fundamentals</div>
+                <div class="cert-code">AZ-900</div>
             </div>
-            
-            <div class="cert-card">
+            <div class="cert-badge-item">
                 <span class="cert-icon">🤖</span>
-                <h3>Azure AI Fundamentals</h3>
-                <p class="provider">Microsoft Azure</p>
-                <span class="cert-badge">AI-900</span>
-                <br><br>
-                <a href="https://learn.microsoft.com/api/credentials/share/en-us/KarthikeyanSelvam-7865/837726215F2543DC?sharingId=8397069763C1D18C" class="verify-btn" target="_blank" rel="noopener noreferrer">Verify Credential →</a>
+                <div class="cert-name">Azure AI Fundamentals</div>
+                <div class="cert-code">AI-900</div>
             </div>
-            
-            <div class="cert-card">
+            <div class="cert-badge-item">
                 <span class="cert-icon">🎓</span>
-                <h3>Gen AI Leader</h3>
-                <p class="provider">Google Cloud</p>
-                <span class="cert-badge">Generative AI</span>
-                <br><br>
-                <a href="https://www.credly.com/badges/f3a5804e-f533-4481-b8fa-097ef03bd9ef/public_url" class="verify-btn" target="_blank" rel="noopener noreferrer">Verify Credential →</a>
+                <div class="cert-name">Gen AI Leader</div>
+                <div class="cert-code">Google Cloud</div>
             </div>
         </div>
+        <a href="experience.html#certifications" class="cert-link" target="_blank">View All Certifications & Verify Credentials →</a>
     </section>
 
+    <!-- Featured Projects -->
     <section id="projects" class="projects fade-in">
         <h2>Featured Projects</h2>
         <div class="projects">
@@ -408,6 +457,7 @@
         </div>
     </section>
 
+    <!-- Contact Section -->
     <section class="contact fade-in">
         <h2>Let's Connect</h2>
         <p>Ready to collaborate? Reach out on LinkedIn or send me an email.</p>
@@ -417,6 +467,7 @@
         </div>
     </section>
 
+    <!-- AI Professional Assistant -->
     <section class="chatbot fade-in">
         <h2>AI Professional Assistant</h2>
         <p>Ask me anything about my projects, experience, or skills.</p>
@@ -426,8 +477,10 @@
         </div>
     </section>
 
+    <!-- Footer -->
     <footer>
-        <p>&copy; 2026 Karthikeyan Selvam. Hosted on Firebase. Made with ❤️</p>
+        <p>&copy; 2026 Karthikeyan Selvam | Digital Workplace & AI Consultant</p>
+        <p style="margin-top: 0.5rem; font-size: 0.9rem;">Middletown, DE, USA</p>
     </footer>
 
     <script>
