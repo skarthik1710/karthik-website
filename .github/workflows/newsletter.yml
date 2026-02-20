@@ -1,1 +1,42 @@
+name: Daily Newsletter Update
+
+on:
+  schedule:
+    - cron: '0 6 * * *'   # Every day at 6 AM UTC (11:30 PM IST)
+  workflow_dispatch:        # Manual trigger from GitHub UI
+
+jobs:
+  update-newsletter:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v3
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.11'
+
+      - name: Install dependencies
+        run: pip install feedparser google-generativeai requests beautifulsoup4
+
+      - name: Generate newsletter articles
+        env:
+          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+        run: python scripts/generate_newsletter.py
+
+      - name: Commit updated newsletter.html
+        run: |
+          git config --global user.email "newsletter-bot@karthikeyan.dev"
+          git config --global user.name "Newsletter Bot"
+          git add public/newsletter.html
+          git commit -m "🗞️ Auto newsletter update - $(date +'%Y-%m-%d')" || echo "No new articles today"
+          git push
+
+      - name: Deploy to Firebase Hosting
+        uses: w9jds/firebase-action@master
+        with:
+          args: deploy --only hosting
+        env:
+          FIREBASE_TOKEN: ${{ secrets.FIREBASE_TOKEN }}
 
