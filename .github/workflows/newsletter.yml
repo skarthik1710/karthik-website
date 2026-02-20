@@ -2,8 +2,11 @@ name: Daily Newsletter Update
 
 on:
   schedule:
-    - cron: '0 6 * * *'   # Every day at 6 AM UTC (11:30 PM IST)
-  workflow_dispatch:        # Manual trigger from GitHub UI
+    - cron: '0 6 * * *'
+  workflow_dispatch:
+
+permissions:
+  contents: write
 
 jobs:
   update-newsletter:
