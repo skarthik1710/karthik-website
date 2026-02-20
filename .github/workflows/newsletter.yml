@@ -21,7 +21,7 @@ jobs:
           python-version: '3.11'
 
       - name: Install dependencies
-        run: pip install google-genai requests beautifulsoup4
+        run: pip install google-genai firebase-admin requests beautifulsoup4
 
       - name: Generate newsletter articles
         env:
