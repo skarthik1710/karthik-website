@@ -26,15 +26,16 @@ jobs:
       - name: Generate newsletter articles
         env:
           GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+          FIREBASE_SERVICE_ACCOUNT: ${{ secrets.FIREBASE_SERVICE_ACCOUNT }}
         run: python scripts/generate_newsletter.py
 
       - name: Commit updated newsletter.html
         run: |
-          git config --global user.email "newsletter-bot@karthikeyan.dev"
+          git config --global user.email "newsletter-bot@karthikeyanselvam.com"
           git config --global user.name "Newsletter Bot"
           git add public/newsletter.html
-          git commit -m "🗞️ Auto newsletter update - $(date +'%Y-%m-%d')" || echo "No new articles today"
-          git push
+          git commit -m "🗞️ Auto newsletter update - $(date +'%Y-%m-%d')" || echo "No changes"
+          git push https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/skarthik1710/karthik-website.git main
 
       - name: Deploy to Firebase Hosting
         uses: w9jds/firebase-action@master
@@ -42,4 +43,3 @@ jobs:
           args: deploy --only hosting
         env:
           FIREBASE_TOKEN: ${{ secrets.FIREBASE_TOKEN }}
-
