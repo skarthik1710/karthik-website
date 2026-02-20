@@ -1,13 +1,12 @@
 import feedparser
-import google.generativeai as genai
+from google import genai
 import os
 import re
 from datetime import datetime
 from bs4 import BeautifulSoup
 
 # --- Config ---
-genai.configure(api_key=os.environ["GEMINI_API_KEY"])
-model = genai.GenerativeModel("gemini-1.5-flash")  # Free tier
+client = genai.Client(api_key=os.environ["GEMINI_API_KEY"])
 
 RSS_FEEDS = [
     "https://feeds.feedburner.com/TechCrunch/",
@@ -49,8 +48,11 @@ Write in a warm, expert, and analytical tone. No bullet points — flowing parag
 Article Title: {article['title']}
 Article Summary: {article['summary']}
 """
-    response = model.generate_content(prompt)
-    return response.text
+    response = client.models.generate_content(
+    model="gemini-2.0-flash",
+    contents=prompt
+)
+return response.text
 
 def build_article_card(article, analysis, date_str):
     excerpt = analysis[:180].rsplit(' ', 1)[0] + "..."
