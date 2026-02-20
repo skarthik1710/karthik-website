@@ -116,6 +116,28 @@
             z-index: 2;
             border: 1px solid rgba(102, 126, 234, 0.3);
         }
+        .close-btn {
+            position: absolute;
+            top: 1rem;
+            right: 1rem;
+            background: rgba(255, 255, 255, 0.1);
+            border: none;
+            width: 35px;
+            height: 35px;
+            border-radius: 50%;
+            color: white;
+            font-size: 1.5rem;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s;
+            line-height: 1;
+        }
+        .close-btn:hover {
+            background: rgba(233, 69, 96, 0.3);
+            transform: rotate(90deg);
+        }
         .newsletter-signup h2 {
             font-size: 1.8rem;
             margin-bottom: 1rem;
@@ -335,6 +357,7 @@
 
     <!-- Newsletter Signup -->
     <section class="newsletter-signup" id="subscribe">
+        <button class="close-btn" onclick="closeSignup()" title="Close">&times;</button>
         <h2>📬 Subscribe to Updates</h2>
         <p>Get the latest AI insights delivered to your inbox</p>
         <form class="signup-form" onsubmit="handleSubscribe(event)">
@@ -451,7 +474,7 @@
             <a href="/">Home</a>
             <a href="/experience.html">Experience</a>
             <a href="https://www.linkedin.com/in/karthikeyan-selvam-567b52157/" target="_blank">LinkedIn</a>
-            <a href="/cdn-cgi/l/email-protection#593a36372d383a2d1932382b2d3130323c2038372a3c352f3834773a3634">Contact</a>
+            <a href="/cdn-cgi/l/email-protection#5e3d31302a3f3d2a1e353f2c2a3637353b273f302d3b32283f33703d3133">Contact</a>
         </div>
     </footer>
 
@@ -476,4 +499,23 @@
             // Filter articles
             articles.forEach(article => {
                 if (category === 'all' || article.dataset.category === category) {
-                    article.style.display = 
+                    article.style.display = 'block';
+                } else {
+                    article.style.display = 'none';
+                }
+            });
+        }
+
+        // Close signup box
+        function closeSignup() {
+            const signupBox = document.querySelector('.newsletter-signup');
+            signupBox.style.transition = 'all 0.3s';
+            signupBox.style.transform = 'scale(0.8)';
+            signupBox.style.opacity = '0';
+            setTimeout(() => {
+                signupBox.style.display = 'none';
+            }, 300);
+        }
+    </script>
+</body>
+</html>
