@@ -1,14 +1,15 @@
 <!DOCTYPE html>
+
 <html lang="en">
 <head>
-    <meta charset="UTF-8"/>
-    <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
-    <title>AI Insights Newsletter | Karthikeyan Selvam</title>
-    <meta content="Stay updated with AI and Digital Workplace insights from Karthikeyan Selvam." name="description"/>
-    <meta content="AI Newsletter, Digital Workplace News, Microsoft Copilot, RPA Insights, Enterprise AI" name="keywords"/>
-    <meta content="AI Insights Newsletter | Karthikeyan Selvam" property="og:title"/>
-    <meta content="Expert insights on AI, Digital Workplace, and Enterprise Technology" property="og:description"/>
-    <style>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>AI Insights Newsletter | Karthikeyan Selvam</title>
+<meta content="Stay updated with AI and Digital Workplace insights from Karthikeyan Selvam." name="description"/>
+<meta content="AI Newsletter, Digital Workplace News, Microsoft Copilot, RPA Insights, Enterprise AI" name="keywords"/>
+<meta content="AI Insights Newsletter | Karthikeyan Selvam" property="og:title"/>
+<meta content="Expert insights on AI, Digital Workplace, and Enterprise Technology" property="og:description"/>
+<style>
         :root {
             --primary: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
         }
@@ -199,148 +200,176 @@
     </style>
 </head>
 <body>
-
 <!-- Header -->
 <header class="header">
-    <div class="header-content">
-        <div class="logo">KS | AI Insights</div>
-        <nav>
-            <ul class="nav-links">
-                <li><a href="/">Home</a></li>
-                <li><a href="/experience.html">Experience</a></li>
-                <li><a href="#subscribe">Subscribe</a></li>
-            </ul>
-        </nav>
-    </div>
+<div class="header-content">
+<div class="logo">KS | AI Insights</div>
+<nav>
+<ul class="nav-links">
+<li><a href="/">Home</a></li>
+<li><a href="/experience.html">Experience</a></li>
+<li><a href="#subscribe">Subscribe</a></li>
+</ul>
+</nav>
+</div>
 </header>
-
 <!-- Hero -->
 <section class="hero">
-    <h1>AI &amp; Digital Workplace Insights</h1>
-    <p>Curated AI news and trends with expert analysis from an 18-year industry veteran</p>
+<h1>AI &amp; Digital Workplace Insights</h1>
+<p>Curated AI news and trends with expert analysis from an 18-year industry veteran</p>
 </section>
-
 <!-- Subscribe Form -->
 <section class="newsletter-signup" id="subscribe">
-    <button class="close-btn" onclick="closeSignup()" title="Close">&times;</button>
-    <h2>📬 Subscribe to Updates</h2>
-    <p>Get the latest AI insights delivered to your inbox</p>
-    <form class="signup-form" onsubmit="handleSubscribe(event)">
-        <input placeholder="Your Name" required type="text"/>
-        <input placeholder="Your Email" required type="email"/>
-        <button type="submit">Subscribe Now</button>
-    </form>
-    <p style="font-size:0.85rem; margin-top:1rem;">Join 500+ professionals staying ahead in AI</p>
+<button class="close-btn" onclick="closeSignup()" title="Close">×</button>
+<h2>📬 Subscribe to Updates</h2>
+<p>Get the latest AI insights delivered to your inbox</p>
+<form class="signup-form" onsubmit="handleSubscribe(event)">
+<input placeholder="Your Name" required="" type="text"/>
+<input placeholder="Your Email" required="" type="email"/>
+<button type="submit">Subscribe Now</button>
+</form>
+<p style="font-size:0.85rem; margin-top:1rem;">Join 500+ professionals staying ahead in AI</p>
 </section>
-
 <!-- Articles -->
 <div class="container">
-    <div class="filter-tabs">
-        <div class="filter-tab active" onclick="filterArticles('all', event)">All Articles</div>
-        <div class="filter-tab" onclick="filterArticles('ai', event)">AI &amp; Machine Learning</div>
-        <div class="filter-tab" onclick="filterArticles('copilot', event)">Microsoft Copilot</div>
-        <div class="filter-tab" onclick="filterArticles('rpa', event)">RPA &amp; Automation</div>
-        <div class="filter-tab" onclick="filterArticles('enterprise', event)">Enterprise Tech</div>
-    </div>
-
-    <!-- AUTO-GENERATED ARTICLES INJECTED HERE BY SCRIPT -->
-    <div class="articles-grid" id="newsletter-articles">
-
-        <!-- Fallback articles shown until automation builds up -->
-        <article class="article-card" data-category="copilot">
-            <div class="article-image" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);">🤖</div>
-            <div class="article-content">
-                <div class="article-meta">
-                    <span class="article-category">Microsoft Copilot</span>
-                    <span class="article-date">Feb 18, 2026</span>
+<div class="filter-tabs">
+<div class="filter-tab active" onclick="filterArticles('all', event)">All Articles</div>
+<div class="filter-tab" onclick="filterArticles('ai', event)">AI &amp; Machine Learning</div>
+<div class="filter-tab" onclick="filterArticles('copilot', event)">Microsoft Copilot</div>
+<div class="filter-tab" onclick="filterArticles('rpa', event)">RPA &amp; Automation</div>
+<div class="filter-tab" onclick="filterArticles('enterprise', event)">Enterprise Tech</div>
+</div>
+<!-- AUTO-GENERATED ARTICLES INJECTED HERE BY SCRIPT -->
+<div class="articles-grid" id="newsletter-articles">
+<article class="article-card" data-category="copilot">
+<div class="article-image" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); display: flex; align-items: center; justify-content: center; font-size: 4rem;">
+                    🤖
                 </div>
-                <h3 class="article-title">Microsoft Copilot's New Enterprise Features Transform Workplace Productivity</h3>
-                <p class="article-excerpt">Microsoft's Copilot updates are revolutionizing how enterprises handle daily workflows. Here's what this means for your organization...</p>
-                <p class="article-source">Analysis by Karthikeyan Selvam | karthikeyanselvam.com</p>
-                <span class="read-more" onclick="alert('Full article coming soon!')">Read Full Analysis →</span>
-            </div>
-        </article>
-
-        <article class="article-card" data-category="ai">
-            <div class="article-image" style="background: linear-gradient(135deg, #764ba2 0%, #667eea 100%);">🧠</div>
-            <div class="article-content">
-                <div class="article-meta">
-                    <span class="article-category">AI &amp; ML</span>
-                    <span class="article-date">Feb 15, 2026</span>
+<div class="article-content">
+<div class="article-meta">
+<span class="article-category">Microsoft Copilot</span>
+<span class="article-date">Feb 20, 2026</span>
+</div>
+<h3 class="article-title">Beyond Hype: Navigating Microsoft Copilot's Strategic Evolution in 2026</h3>
+<p class="article-excerpt">As we step further into 2026, Microsoft Copilot has transcended its initial hype, embedding itself as a pivotal tool transforming workplace productivity. Organizations are now navigating its deeper integration, seeking genuine strategic advantage from AI-driven collaboration.</p>
+<p class="article-source">Analysis by Karthikeyan Selvam | karthikeyanselvam.com</p>
+<a class="read-more" onclick="openArticle('C8BLTc0eq3EUBouIvP7O')" style="cursor:pointer;">Read Full Analysis →</a>
+</div>
+</article>
+<article class="article-card" data-category="ai">
+<div class="article-image" style="background: linear-gradient(135deg, #764ba2 0%, #667eea 100%); display: flex; align-items: center; justify-content: center; font-size: 4rem;">
+                    🧠
                 </div>
-                <h3 class="article-title">Enterprise AI in 2026: From Pilots to Pervasive Transformation</h3>
-                <p class="article-excerpt">The conversation around Enterprise AI has shifted from pilots to strategic, pervasive adoption. Here's what leaders need to know...</p>
-                <p class="article-source">Analysis by Karthikeyan Selvam | karthikeyanselvam.com</p>
-                <span class="read-more" onclick="alert('Full article coming soon!')">Read Full Analysis →</span>
-            </div>
-        </article>
-
-        <article class="article-card" data-category="rpa">
-            <div class="article-image" style="background: linear-gradient(135deg, #e94560 0%, #764ba2 100%);">⚙️</div>
-            <div class="article-content">
-                <div class="article-meta">
-                    <span class="article-category">RPA &amp; Automation</span>
-                    <span class="article-date">Feb 12, 2026</span>
+<div class="article-content">
+<div class="article-meta">
+<span class="article-category">AI &amp; ML</span>
+<span class="article-date">Feb 20, 2026</span>
+</div>
+<h3 class="article-title">The Intelligent Evolution: Mastering Google Workspace AI for Collaborative Excellence</h3>
+<p class="article-excerpt">Google Workspace AI is rapidly transforming how teams collaborate, moving beyond simple automation to deeply integrated intelligence. Organizations now stand at a pivotal moment to harness these tools for unprecedented productivity and innovation.</p>
+<p class="article-source">Analysis by Karthikeyan Selvam | karthikeyanselvam.com</p>
+<a class="read-more" onclick="openArticle('gJC0ABzkN3HYHMSdPiY5')" style="cursor:pointer;">Read Full Analysis →</a>
+</div>
+</article>
+<article class="article-card" data-category="rpa">
+<div class="article-image" style="background: linear-gradient(135deg, #e94560 0%, #764ba2 100%); display: flex; align-items: center; justify-content: center; font-size: 4rem;">
+                    ⚙️
                 </div>
-                <h3 class="article-title">RPA Meets AI: The Rise of the Autonomous Enterprise in 2026</h3>
-                <p class="article-excerpt">Based on 50+ automation implementations, here's what organizations should focus on as RPA evolves with AI capabilities...</p>
-                <p class="article-source">Analysis by Karthikeyan Selvam | karthikeyanselvam.com</p>
-                <span class="read-more" onclick="alert('Full article coming soon!')">Read Full Analysis →</span>
-            </div>
-        </article>
-
-        <article class="article-card" data-category="enterprise">
-            <div class="article-image" style="background: linear-gradient(135deg, #667eea 0%, #e94560 100%);">🏢</div>
-            <div class="article-content">
-                <div class="article-meta">
-                    <span class="article-category">Enterprise Tech</span>
-                    <span class="article-date">Feb 10, 2026</span>
-                </div>
-                <h3 class="article-title">Azure AI Services: Real-World Implementation Lessons</h3>
-                <p class="article-excerpt">Practical insights from recent enterprise deployments — common pitfalls, best practices, and what actually works at scale...</p>
-                <p class="article-source">Analysis by Karthikeyan Selvam | karthikeyanselvam.com</p>
-                <span class="read-more" onclick="alert('Full article coming soon!')">Read Full Analysis →</span>
-            </div>
-        </article>
-
-    </div>
-
-    <div style="text-align:center; margin:3rem 0;">
-        <button
-            onmouseover="this.style.background='rgba(102,126,234,0.2)'"
-            onmouseout="this.style.background='transparent'"
-            style="padding:1rem 3rem; border-radius:25px; border:2px solid #667eea; background:transparent; color:#a8b4ff; font-weight:600; cursor:pointer; transition:all 0.3s;">
+<div class="article-content">
+<div class="article-meta">
+<span class="article-category">RPA &amp; Automation</span>
+<span class="article-date">Feb 20, 2026</span>
+</div>
+<h3 class="article-title">The Intelligent Automation Nexus: Navigating RPA's Evolution in 2026</h3>
+<p class="article-excerpt">Robotic Process Automation has transcended its origins, now deeply entwined with advanced AI to redefine operational efficiency. This convergence offers unprecedented opportunities, but also complex challenges for today’s digital workplaces.</p>
+<p class="article-source">Analysis by Karthikeyan Selvam | karthikeyanselvam.com</p>
+<a class="read-more" onclick="openArticle('aewzNRJFsls1vBUZCnLc')" style="cursor:pointer;">Read Full Analysis →</a>
+</div>
+</article>
+<!-- Fallback articles shown until automation builds up -->
+<article class="article-card" data-category="copilot">
+<div class="article-image" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);">🤖</div>
+<div class="article-content">
+<div class="article-meta">
+<span class="article-category">Microsoft Copilot</span>
+<span class="article-date">Feb 18, 2026</span>
+</div>
+<h3 class="article-title">Microsoft Copilot's New Enterprise Features Transform Workplace Productivity</h3>
+<p class="article-excerpt">Microsoft's Copilot updates are revolutionizing how enterprises handle daily workflows. Here's what this means for your organization...</p>
+<p class="article-source">Analysis by Karthikeyan Selvam | karthikeyanselvam.com</p>
+<span class="read-more" onclick="alert('Full article coming soon!')">Read Full Analysis →</span>
+</div>
+</article>
+<article class="article-card" data-category="ai">
+<div class="article-image" style="background: linear-gradient(135deg, #764ba2 0%, #667eea 100%);">🧠</div>
+<div class="article-content">
+<div class="article-meta">
+<span class="article-category">AI &amp; ML</span>
+<span class="article-date">Feb 15, 2026</span>
+</div>
+<h3 class="article-title">Enterprise AI in 2026: From Pilots to Pervasive Transformation</h3>
+<p class="article-excerpt">The conversation around Enterprise AI has shifted from pilots to strategic, pervasive adoption. Here's what leaders need to know...</p>
+<p class="article-source">Analysis by Karthikeyan Selvam | karthikeyanselvam.com</p>
+<span class="read-more" onclick="alert('Full article coming soon!')">Read Full Analysis →</span>
+</div>
+</article>
+<article class="article-card" data-category="rpa">
+<div class="article-image" style="background: linear-gradient(135deg, #e94560 0%, #764ba2 100%);">⚙️</div>
+<div class="article-content">
+<div class="article-meta">
+<span class="article-category">RPA &amp; Automation</span>
+<span class="article-date">Feb 12, 2026</span>
+</div>
+<h3 class="article-title">RPA Meets AI: The Rise of the Autonomous Enterprise in 2026</h3>
+<p class="article-excerpt">Based on 50+ automation implementations, here's what organizations should focus on as RPA evolves with AI capabilities...</p>
+<p class="article-source">Analysis by Karthikeyan Selvam | karthikeyanselvam.com</p>
+<span class="read-more" onclick="alert('Full article coming soon!')">Read Full Analysis →</span>
+</div>
+</article>
+<article class="article-card" data-category="enterprise">
+<div class="article-image" style="background: linear-gradient(135deg, #667eea 0%, #e94560 100%);">🏢</div>
+<div class="article-content">
+<div class="article-meta">
+<span class="article-category">Enterprise Tech</span>
+<span class="article-date">Feb 10, 2026</span>
+</div>
+<h3 class="article-title">Azure AI Services: Real-World Implementation Lessons</h3>
+<p class="article-excerpt">Practical insights from recent enterprise deployments — common pitfalls, best practices, and what actually works at scale...</p>
+<p class="article-source">Analysis by Karthikeyan Selvam | karthikeyanselvam.com</p>
+<span class="read-more" onclick="alert('Full article coming soon!')">Read Full Analysis →</span>
+</div>
+</article>
+</div>
+<div style="text-align:center; margin:3rem 0;">
+<button onmouseout="this.style.background='transparent'" onmouseover="this.style.background='rgba(102,126,234,0.2)'" style="padding:1rem 3rem; border-radius:25px; border:2px solid #667eea; background:transparent; color:#a8b4ff; font-weight:600; cursor:pointer; transition:all 0.3s;">
             Load More Articles
         </button>
-    </div>
 </div>
-
+</div>
 <!-- Full Article Modal -->
 <div class="modal-overlay" id="article-modal">
-    <div class="modal-box">
-        <button class="modal-close" onclick="closeArticle()">✕</button>
-        <div class="modal-loading" id="modal-loading">⏳ Loading article...</div>
-        <div id="modal-content" style="display:none;">
-            <div class="modal-category" id="modal-category"></div>
-            <h2 class="modal-title" id="modal-title"></h2>
-            <div class="modal-date" id="modal-date"></div>
-            <div class="modal-body" id="modal-body"></div>
-            <p class="modal-footer">Analysis by Karthikeyan Selvam | karthikeyanselvam.com</p>
-        </div>
-    </div>
+<div class="modal-box">
+<button class="modal-close" onclick="closeArticle()">✕</button>
+<div class="modal-loading" id="modal-loading">⏳ Loading article...</div>
+<div id="modal-content" style="display:none;">
+<div class="modal-category" id="modal-category"></div>
+<h2 class="modal-title" id="modal-title"></h2>
+<div class="modal-date" id="modal-date"></div>
+<div class="modal-body" id="modal-body"></div>
+<p class="modal-footer">Analysis by Karthikeyan Selvam | karthikeyanselvam.com</p>
 </div>
-
+</div>
+</div>
 <!-- Footer -->
 <footer>
-    <p>&copy; 2026 Karthikeyan Selvam | AI &amp; Digital Workplace Insights</p>
-    <div class="footer-links">
-        <a href="/">Home</a>
-        <a href="/experience.html">Experience</a>
-        <a href="https://www.linkedin.com/in/karthikeyan-selvam-567b52157/" target="_blank">LinkedIn</a>
-        <a href="mailto:skarthik1710@gmail.com">Contact</a>
-    </div>
+<p>© 2026 Karthikeyan Selvam | AI &amp; Digital Workplace Insights</p>
+<div class="footer-links">
+<a href="/">Home</a>
+<a href="/experience.html">Experience</a>
+<a href="https://www.linkedin.com/in/karthikeyan-selvam-567b52157/" target="_blank">LinkedIn</a>
+<a href="mailto:skarthik1710@gmail.com">Contact</a>
+</div>
 </footer>
-
 <script>
     function handleSubscribe(event) {
         event.preventDefault();
@@ -374,7 +403,6 @@
         if (e.target === this) closeArticle();
     });
 </script>
-
 <!-- Firebase SDK for Firestore (dynamic article loading) -->
 <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.0/firebase-app.js";
@@ -417,6 +445,5 @@
         }
     }
 </script>
-
 </body>
 </html>
