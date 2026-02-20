@@ -31,12 +31,13 @@ def fetch_articles():
                                   "source": feed.feed.get("title", "Tech News")})
     return articles[:3]  # Top 3 relevant articles
 
+# ✅ CORRECT - everything indented inside the function
 def generate_analysis(article):
     prompt = f"""
-You are Karthikeyan Selvam, a Digital Workplace & AI Consultant with 18+ years of experience 
-in Microsoft Copilot, RPA, AI Ops, and Enterprise IT. 
+You are Karthikeyan Selvam, a Digital Workplace & AI Consultant with 18+ years of experience
+in Microsoft Copilot, RPA, AI Ops, and Enterprise IT.
 
-Analyze this news article and write a 200-word newsletter piece for professionals. 
+Analyze this news article and write a 200-word newsletter piece for professionals.
 Structure it as:
 1. What happened (1-2 sentences)
 2. The Opportunity: Why this is exciting for digital workplaces
@@ -49,11 +50,10 @@ Article Title: {article['title']}
 Article Summary: {article['summary']}
 """
     response = client.models.generate_content(
-    model="gemini-2.0-flash",
-    contents=prompt
-)
-return response.text
-
+        model="gemini-2.0-flash",
+        contents=prompt
+    )
+    return response.text
 def build_article_card(article, analysis, date_str):
     excerpt = analysis[:180].rsplit(' ', 1)[0] + "..."
     card = f"""
