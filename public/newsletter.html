@@ -393,7 +393,7 @@
     async function loadArticles() {
         const grid = document.getElementById('newsletter-articles');
         try {
-            const q = query(collection(db, "newsletter_articles"), orderBy("timestamp", "desc"), limit(9));
+            const q = query(collection(db, "newsletter_articles"), orderBy("created_at", "desc"), limit(9));
             const snapshot = await getDocs(q);
             if (snapshot.empty) {
                 grid.innerHTML = '<div class="articles-empty"><p>Fresh articles are on their way!</p><span>New AI insights published every Friday</span></div>';
@@ -420,7 +420,7 @@
         btn.textContent = 'Loading...';
         btn.disabled = true;
         try {
-            const q = query(collection(db, "newsletter_articles"), orderBy("timestamp", "desc"), startAfter(lastVisible), limit(9));
+            const q = query(collection(db, "newsletter_articles"), orderBy("created_at", "desc"), startAfter(lastVisible), limit(9));
             const snapshot = await getDocs(q);
             if (snapshot.empty) { btn.style.display = 'none'; return; }
             let html = '';
