@@ -1,517 +1,539 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta charset="UTF-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
     <title>Karthikeyan Selvam | Digital Workplace & AI Consultant</title>
-    
-    <!-- SEO Meta Tags -->
-    <meta name="description" content="Karthikeyan Selvam - Digital Workplace Consultant with 18+ years in AI, Microsoft Copilot, RPA. Azure & Google Cloud certified.">
-    <meta name="keywords" content="Digital Workplace Consultant, AI, Microsoft Copilot, RPA, Azure, Karthikeyan Selvam">
-    <meta name="author" content="Karthikeyan Selvam">
-    
-    <!-- Open Graph -->
-    <meta property="og:type" content="website">
-    <meta property="og:url" content="https://karthikeyanselvam.com">
-    <meta property="og:title" content="Karthikeyan Selvam | Digital Workplace & AI Consultant">
-    <meta property="og:description" content="18+ years driving digital transformation">
-    <meta property="og:image" content="https://karthikeyanselvam.com/Profile.jpg">
-    
-    <!-- Favicon -->
-    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>👨‍💻</text></svg>">
+    <meta name="description" content="Karthikeyan Selvam — 18 years turning enterprise chaos into intelligent, automated workplaces. Microsoft Copilot, RPA, AIOps, Azure & Google Cloud."/>
+    <meta name="keywords" content="Digital Workplace Consultant, Microsoft Copilot, RPA, AIOps, Enterprise AI, Karthikeyan Selvam"/>
+    <meta property="og:title" content="Karthikeyan Selvam | Digital Workplace & AI Consultant"/>
+    <meta property="og:description" content="18 years turning enterprise chaos into intelligent workplaces."/>
     
     <style>
         :root {
-            --primary: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            --glass: rgba(255, 255, 255, 0.1);
-            --shadow: 0 8px 32px rgba(31, 38, 135, 0.37);
+            --teal: #00C9A7;
+            --gold: #C9A84C;
+            --teal-glow: rgba(0, 201, 167, 0.15);
+            --gold-glow: rgba(201, 168, 76, 0.15);
+            --bg: #060810;
+            --bg-card: #0D1117;
+            --bg-elevated: #161B22;
+            --text: #E6EDF3;
+            --text-muted: #8B949E;
+            --border: rgba(0, 201, 167, 0.15);
+            --border-gold: rgba(201, 168, 76, 0.2);
         }
         * { margin: 0; padding: 0; box-sizing: border-box; }
-        body { 
-            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif; 
-            overflow-x: hidden; 
-            background: #0a0a0a;
-            color: white;
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            line-height: 1.7;
         }
-        
-        /* Hero Section */
-        .profile-photo {
-            width: 200px; 
-            height: 200px; 
-            border-radius: 50%;
-            margin-bottom: 2rem;
-            border: 4px solid rgba(255,255,255,0.3);
-            box-shadow: 0 8px 32px rgba(31, 38, 135, 0.5);
-            object-fit: cover;
-            z-index: 2;
+        /* ── NAV ── */
+        .header {
+            background: rgba(6, 8, 16, 0.92);
+            backdrop-filter: blur(12px);
+            position: sticky; top: 0; z-index: 1000;
+            border-bottom: 1px solid var(--border);
         }
-        .hero {
-            min-height: 100vh;
-            background: var(--primary), radial-gradient(circle at 20% 80%, rgba(120,119,198,0.3) 0%, transparent 50%), radial-gradient(circle at 80% 20%, rgba(255,255,255,0.3) 0%, transparent 50%);
-            display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center; position: relative;
-            overflow: hidden;
-            padding: 4rem 2rem;
+        .header-content {
+            max-width: 1300px; margin: 0 auto;
+            padding: 1.2rem 2rem;
+            display: flex; justify-content: space-between; align-items: center;
         }
-        .hero::before {
-            content: ''; position: absolute; top: 0; left: 0; right: 0; bottom: 0; 
-            background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 1000"><defs><radialGradient id="a" cx="50%" cy="50%"><stop offset="0%" stop-color="%23ffffff" stop-opacity="0.1"/><stop offset="100%" stop-opacity="0"/></radialGradient></defs><circle cx="300" cy="200" r="100" fill="url(%23a)"><animate attributeName="r" values="100;150;100" dur="3s" repeatCount="indefinite"/></circle><circle cx="700" cy="800" r="80" fill="url(%23a)"><animate attributeName="r" values="80;120;80" dur="4s" repeatCount="indefinite"/></circle></svg>') no-repeat center/cover;
-            animation: float 6s ease-in-out infinite;
-        }
-        @keyframes float { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-20px); } }
-        .hero h1 { 
-            font-size: clamp(2.5rem, 8vw, 6rem); z-index: 2; 
-            background: linear-gradient(45deg, white, #a8b4ff); 
-            -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent;
-            animation: slideIn 1s ease-out;
-        }
-        @keyframes slideIn { from { opacity: 0; transform: translateY(50px); } to { opacity: 1; transform: translateY(0); } }
-        .hero-subtitle { 
-            font-size: 1.3rem; 
-            margin: 1rem 0 1rem; 
-            opacity: 0.9; 
-            animation: slideIn 1s 0.3s ease-out both; 
-        }
-        .hero-stats {
-            display: flex;
-            gap: 3rem;
-            margin: 2rem 0;
-            flex-wrap: wrap;
-            justify-content: center;
-            animation: slideIn 1s 0.4s ease-out both;
-        }
-        .stat {
-            text-align: center;
-        }
-        .stat-number {
-            font-size: 2.5rem;
-            font-weight: 700;
-            color: #a8b4ff;
-        }
-        .stat-label {
-            font-size: 0.9rem;
-            opacity: 0.8;
-        }
-        .cta { 
-            padding: 1rem 2.5rem; 
-            background: rgba(255,255,255,0.2); 
-            backdrop-filter: blur(10px); 
-            border: 1px solid rgba(255,255,255,0.2); 
-            border-radius: 50px; 
-            color: white; 
-            font-weight: 600; 
-            text-decoration: none; 
-            transition: all 0.3s; 
-            animation: slideIn 1s 0.6s ease-out both;
-            display: inline-block;
-            margin: 0.5rem;
-        }
-        .cta:hover { 
-            background: rgba(255,255,255,0.3); 
-            transform: translateY(-3px); 
-            box-shadow: var(--shadow); 
-        }
-        .cta-secondary {
-            background: transparent;
-            border: 2px solid rgba(255,255,255,0.4);
-        }
-        .cta-newsletter {
-            background: rgba(233, 69, 96, 0.3);
-            border: 2px solid rgba(233, 69, 96, 0.5);
-        }
-        .cta-newsletter:hover {
-            background: rgba(233, 69, 96, 0.4);
-        }
-        .cta-group {
-            display: flex;
-            gap: 1rem;
-            justify-content: center;
-            flex-wrap: wrap;
-            margin-top: 2rem;
-        }
-        
-        /* Sections */
-        section { padding: 6rem 2rem; max-width: 1200px; margin: 0 auto; }
-        h2 { 
-            font-size: clamp(2rem, 5vw, 3.5rem); 
-            text-align: center; 
-            margin-bottom: 3rem; 
-            background: var(--primary); 
-            -webkit-background-clip: text; 
-            background-clip: text; 
-            -webkit-text-fill-color: transparent; 
-        }
-        
-        /* Video Section */
-        .video-intro {
-            background: rgba(20,20,40,0.6);
-            backdrop-filter: blur(20px);
-            border-radius: 20px;
-            padding: 4rem 2rem;
-            margin: 2rem auto;
-            max-width: 900px;
-        }
-        .video-intro h2 {
-            margin-bottom: 2rem;
-        }
-        .video-container {
-            position: relative;
-            padding-bottom: 56.25%;
-            height: 0;
-            overflow: hidden;
-            border-radius: 12px;
-            box-shadow: 0 8px 32px rgba(31, 38, 135, 0.5);
-        }
-        .video-container iframe {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            border: none;
-            border-radius: 12px;
-        }
-        .video-description {
-            text-align: center;
-            margin-top: 2rem;
-            font-size: 1.1rem;
-            line-height: 1.6;
-            color: rgba(255,255,255,0.8);
-        }
-        
-        /* About Section - Simplified */
-        .about { 
-            background: rgba(20,20,40,0.8); 
-            backdrop-filter: blur(20px); 
-            border-radius: 20px; 
-            margin: 2rem auto; 
-            max-width: 800px; 
-            padding: 3rem; 
-            text-align: center;
-        }
-        .about p { 
-            font-size: 1.3rem; 
-            line-height: 1.8; 
-            opacity: 0.9; 
-            margin-bottom: 2rem; 
-        }
-        .experience-link {
-            display: inline-block;
-            padding: 1rem 2.5rem;
-            background: rgba(102, 126, 234, 0.2);
-            border: 2px solid #667eea;
-            border-radius: 25px;
-            color: #a8b4ff;
+        .logo {
+            font-size: 1.3rem; font-weight: 800; letter-spacing: -0.5px;
+            color: var(--teal);
             text-decoration: none;
-            font-weight: 600;
-            transition: all 0.3s;
-            font-size: 1.1rem;
         }
-        .experience-link:hover {
-            background: rgba(102, 126, 234, 0.3);
-            transform: translateY(-2px);
-            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+        .logo span { color: var(--gold); }
+        .nav-links { display: flex; gap: 2rem; list-style: none; }
+        .nav-links a {
+            color: var(--text-muted); text-decoration: none;
+            font-size: 0.9rem; font-weight: 500;
+            transition: color 0.2s; letter-spacing: 0.3px;
         }
-        
-        /* Certifications - Compact Badge Version */
-        .cert-summary {
-            background: rgba(20,20,40,0.8);
-            backdrop-filter: blur(20px);
-            border-radius: 20px;
-            padding: 3rem 2rem;
-            text-align: center;
+        .nav-links a:hover, .nav-links a.active { color: var(--teal); }
+        /* ── FOOTER ── */
+        footer {
+            background: var(--bg-card);
+            border-top: 1px solid var(--border);
+            text-align: center; padding: 3rem 2rem; margin-top: 6rem;
         }
-        .cert-badges {
-            display: flex;
-            gap: 2rem;
-            justify-content: center;
-            flex-wrap: wrap;
-            margin: 2rem 0 3rem;
+        footer p { color: var(--text-muted); font-size: 0.9rem; margin-bottom: 1rem; }
+        .footer-links { display: flex; gap: 2rem; justify-content: center; flex-wrap: wrap; }
+        .footer-links a {
+            color: var(--text-muted); text-decoration: none;
+            font-size: 0.85rem; transition: color 0.2s;
         }
-        .cert-badge-item {
-            background: rgba(102, 126, 234, 0.15);
-            padding: 1.5rem 2rem;
-            border-radius: 12px;
-            border: 2px solid rgba(102, 126, 234, 0.3);
-            transition: all 0.3s;
-            text-align: center;
+        .footer-links a:hover { color: var(--teal); }
+        /* ── SCROLLBAR ── */
+        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar-track { background: var(--bg); }
+        ::-webkit-scrollbar-thumb { background: var(--teal); border-radius: 3px; }
+        /* ── RESPONSIVE ── */
+        @media (max-width: 768px) {
+            .nav-links { gap: 1rem; }
+            .header-content { padding: 1rem; }
         }
-        .cert-badge-item:hover {
-            transform: translateY(-5px);
-            background: rgba(102, 126, 234, 0.25);
-            border-color: rgba(102, 126, 234, 0.5);
+    </style>
+
+    <style>
+        /* ── THINKING TICKER ── */
+        .thinking-bar {
+            background: var(--bg-card);
+            border-bottom: 1px solid var(--border);
+            padding: 0.6rem 2rem;
+            display: flex; align-items: center; gap: 1.5rem;
+            overflow: hidden;
         }
-        .cert-icon {
-            font-size: 2.5rem;
-            display: block;
-            margin-bottom: 0.8rem;
+        .thinking-label {
+            color: var(--teal); font-weight: 700;
+            font-size: 0.78rem; white-space: nowrap;
+            letter-spacing: 0.5px; text-transform: uppercase;
         }
-        .cert-name {
-            font-weight: 600;
-            font-size: 1rem;
-            color: #a8b4ff;
+        .ticker-wrap { overflow: hidden; flex: 1; }
+        .ticker {
+            display: flex; width: max-content;
+            animation: ticker 28s linear infinite;
+        }
+        .ticker span {
+            padding: 0 3rem; color: var(--text-muted);
+            font-size: 0.82rem; white-space: nowrap;
+        }
+        .ticker span::before { content: '◆ '; color: var(--gold); }
+        @keyframes ticker { 0% { transform: translateX(0); } 100% { transform: translateX(-50%); } }
+
+        /* ── HERO ── */
+        .hero {
+            max-width: 1300px; margin: 0 auto;
+            padding: 7rem 2rem 5rem;
+            display: grid; grid-template-columns: 1fr 1fr;
+            gap: 4rem; align-items: center;
+        }
+        .hero-eyebrow {
+            font-size: 0.78rem; font-weight: 700;
+            color: var(--teal); letter-spacing: 2px;
+            text-transform: uppercase; margin-bottom: 1.2rem;
+            display: flex; align-items: center; gap: 0.5rem;
+        }
+        .hero-eyebrow::before {
+            content: ''; display: block;
+            width: 30px; height: 2px; background: var(--teal);
+        }
+        .hero h1 {
+            font-size: clamp(2.2rem, 4vw, 3.4rem);
+            font-weight: 800; line-height: 1.15;
+            letter-spacing: -1px; margin-bottom: 1.5rem;
+        }
+        .hero h1 em {
+            font-style: normal; color: var(--teal);
+        }
+        .hero h1 strong {
+            font-style: normal; color: var(--gold);
+        }
+        .hero-desc {
+            color: var(--text-muted); font-size: 1.05rem;
+            max-width: 500px; margin-bottom: 2.5rem;
+            line-height: 1.8;
+        }
+        .hero-ctas { display: flex; gap: 1rem; flex-wrap: wrap; }
+        .btn-primary {
+            padding: 0.85rem 2rem; border-radius: 8px;
+            background: var(--teal); color: #060810;
+            font-weight: 700; text-decoration: none;
+            font-size: 0.9rem; transition: all 0.2s;
+            letter-spacing: 0.3px;
+        }
+        .btn-primary:hover { background: #00e8c0; transform: translateY(-2px); }
+        .btn-outline {
+            padding: 0.85rem 2rem; border-radius: 8px;
+            border: 1px solid var(--border-gold);
+            color: var(--gold); font-weight: 600;
+            text-decoration: none; font-size: 0.9rem;
+            transition: all 0.2s;
+        }
+        .btn-outline:hover { background: var(--gold-glow); transform: translateY(-2px); }
+
+        /* ── HERO VISUAL ── */
+        .hero-visual {
+            display: flex; justify-content: center; align-items: center;
+        }
+        .hero-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 20px; padding: 2.5rem;
+            width: 100%; max-width: 420px;
+            position: relative; overflow: hidden;
+        }
+        .hero-card::before {
+            content: '';
+            position: absolute; top: -50%; left: -50%;
+            width: 200%; height: 200%;
+            background: radial-gradient(circle at 60% 40%, var(--teal-glow) 0%, transparent 60%);
+            pointer-events: none;
+        }
+        .stat-grid {
+            display: grid; grid-template-columns: 1fr 1fr;
+            gap: 1.5rem; margin-bottom: 2rem;
+        }
+        .stat-item { text-align: center; }
+        .stat-number {
+            font-size: 2.2rem; font-weight: 800;
+            color: var(--teal); line-height: 1;
             margin-bottom: 0.3rem;
         }
-        .cert-code {
-            font-size: 0.85rem;
-            opacity: 0.7;
+        .stat-number.gold { color: var(--gold); }
+        .stat-label {
+            font-size: 0.78rem; color: var(--text-muted);
+            text-transform: uppercase; letter-spacing: 0.5px;
         }
-        .cert-link {
-            display: inline-block;
-            margin-top: 2rem;
-            padding: 0.8rem 2rem;
-            background: rgba(102, 126, 234, 0.2);
-            border: 2px solid #667eea;
-            border-radius: 25px;
-            color: #a8b4ff;
-            text-decoration: none;
+        .cert-row {
+            display: flex; flex-wrap: wrap; gap: 0.5rem;
+            border-top: 1px solid var(--border);
+            padding-top: 1.5rem;
+        }
+        .cert-badge {
+            padding: 0.3rem 0.7rem; border-radius: 20px;
+            background: var(--teal-glow);
+            border: 1px solid var(--border);
+            font-size: 0.75rem; color: var(--teal);
             font-weight: 600;
+        }
+
+        /* ── ABOUT ── */
+        .section { max-width: 1300px; margin: 0 auto; padding: 5rem 2rem; }
+        .section-label {
+            font-size: 0.78rem; font-weight: 700;
+            color: var(--gold); letter-spacing: 2px;
+            text-transform: uppercase; margin-bottom: 0.8rem;
+            display: flex; align-items: center; gap: 0.5rem;
+        }
+        .section-label::before {
+            content: ''; display: block;
+            width: 20px; height: 2px; background: var(--gold);
+        }
+        .section-title {
+            font-size: clamp(1.8rem, 3vw, 2.5rem);
+            font-weight: 800; margin-bottom: 1.5rem;
+            letter-spacing: -0.5px; line-height: 1.2;
+        }
+
+        /* ── EXPERTISE CARDS ── */
+        .expertise-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 1.5rem; margin-top: 3rem;
+        }
+        .expertise-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 16px; padding: 2rem;
+            transition: all 0.3s; position: relative; overflow: hidden;
+            cursor: default;
+        }
+        .expertise-card::after {
+            content: '';
+            position: absolute; inset: 0;
+            background: radial-gradient(circle at var(--mouse-x, 50%) var(--mouse-y, 50%), var(--teal-glow), transparent 60%);
+            opacity: 0; transition: opacity 0.3s;
+        }
+        .expertise-card:hover { border-color: var(--teal); transform: translateY(-4px); }
+        .expertise-card:hover::after { opacity: 1; }
+        .expertise-icon {
+            font-size: 1.8rem; margin-bottom: 1rem;
+            display: block;
+        }
+        .expertise-card h3 {
+            font-size: 1.1rem; font-weight: 700;
+            margin-bottom: 0.7rem; color: var(--text);
+        }
+        .expertise-card p {
+            color: var(--text-muted); font-size: 0.9rem; line-height: 1.7;
+        }
+
+        /* ── PROJECTS ── */
+        .projects-grid {
+            display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+            gap: 1.5rem; margin-top: 3rem;
+        }
+        .project-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border-gold);
+            border-radius: 16px; padding: 2rem;
             transition: all 0.3s;
         }
-        .cert-link:hover {
-            background: rgba(102, 126, 234, 0.3);
-            transform: translateY(-2px);
+        .project-card:hover {
+            border-color: var(--gold); transform: translateY(-4px);
+            box-shadow: 0 8px 30px var(--gold-glow);
         }
-        
-        /* Projects */
-        .projects { display: grid; grid-template-columns: repeat(auto-fit, minmax(350px, 1fr)); gap: 2rem; }
-        .project { 
-            background: var(--glass); backdrop-filter: blur(20px); border-radius: 20px; padding: 2rem; 
-            border: 1px solid rgba(255,255,255,0.1); transition: all 0.4s; position: relative; overflow: hidden;
+        .project-status {
+            display: inline-block; padding: 0.25rem 0.7rem;
+            border-radius: 20px; font-size: 0.72rem; font-weight: 700;
+            background: var(--gold-glow); color: var(--gold);
+            border: 1px solid var(--border-gold);
+            text-transform: uppercase; letter-spacing: 0.5px;
+            margin-bottom: 1rem;
         }
-        .project::before { content: ''; position: absolute; top: 0; left: -100%; width: 100%; height: 100%; background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent); transition: left 0.5s; }
-        .project:hover::before { left: 100%; }
-        .project:hover { transform: translateY(-10px) scale(1.02); box-shadow: var(--shadow); }
-        .project h3 { font-size: 1.6rem; margin-bottom: 1rem; color: #a8b4ff; }
-        .project p { margin-bottom: 1rem; line-height: 1.6; }
-        .project.coming-soon { opacity: 0.7; }
-        .project.coming-soon .badge { 
-            display: inline-block; 
-            background: rgba(255,255,255,0.2); 
-            padding: 0.3rem 0.8rem; 
-            border-radius: 20px; 
-            font-size: 0.8rem; 
-            margin-top: 0.5rem;
+        .project-card h3 { font-size: 1.1rem; font-weight: 700; margin-bottom: 0.7rem; }
+        .project-card p { color: var(--text-muted); font-size: 0.9rem; line-height: 1.7; }
+
+        /* ── CONNECT ── */
+        .connect-box {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 20px; padding: 4rem;
+            text-align: center; position: relative; overflow: hidden;
         }
-        
-        /* Contact Section */
-        .contact { text-align: center; }
-        .contact-buttons { 
-            display: flex; 
-            gap: 1rem; 
-            justify-content: center; 
-            flex-wrap: wrap; 
-            margin-top: 2rem; 
+        .connect-box::before {
+            content: '';
+            position: absolute; top: -100px; left: 50%;
+            transform: translateX(-50%);
+            width: 400px; height: 400px;
+            background: radial-gradient(circle, var(--teal-glow), transparent 70%);
+            pointer-events: none;
         }
-        .contact-btn { 
-            display: inline-block; 
-            background: var(--glass); 
-            backdrop-filter: blur(10px); 
-            padding: 1.2rem 3rem; 
-            border: 1px solid rgba(255,255,255,0.2); 
-            border-radius: 50px; 
-            color: white; 
-            font-weight: 600; 
-            text-decoration: none; 
-            transition: all 0.3s;
+        .connect-box h2 { font-size: 2rem; font-weight: 800; margin-bottom: 1rem; }
+        .connect-box p { color: var(--text-muted); max-width: 500px; margin: 0 auto 2.5rem; }
+        .connect-links { display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap; }
+
+        /* ── CHATBOT ── */
+        .chatbot-section {
+            background: var(--bg-elevated);
+            border: 1px solid var(--border);
+            border-radius: 16px; padding: 2.5rem;
+            margin-top: 3rem;
         }
-        .contact-btn:hover { 
-            background: rgba(255,255,255,0.3); 
-            transform: translateY(-3px); 
+        .chatbot-header { display: flex; align-items: center; gap: 1rem; margin-bottom: 1.5rem; }
+        .chatbot-dot {
+            width: 10px; height: 10px; border-radius: 50%;
+            background: var(--teal); animation: blink 1.5s ease infinite;
         }
-        
-        /* Chatbot */
-        .chatbot { 
-            background: var(--glass); backdrop-filter: blur(20px); border-radius: 20px; padding: 3rem; 
-            text-align: center; margin: 4rem auto; max-width: 600px; border: 1px solid rgba(255,255,255,0.1);
-        }
-        .chatbot-placeholder {
-            margin-top: 2rem; 
-            padding: 2rem; 
-            background: rgba(255,255,255,0.05); 
-            border-radius: 10px;
-            border: 2px dashed rgba(255,255,255,0.2);
-        }
-        
-        /* Footer */
-        footer { 
-            background: rgba(0,0,0,0.8); 
-            text-align: center; 
-            padding: 2rem; 
-        }
-        footer p { opacity: 0.7; }
-        
-        /* Animations */
-        .fade-in { 
-            opacity: 0; 
-            transform: translateY(30px); 
-            transition: all 0.8s; 
-        }
-        .fade-in.visible { 
-            opacity: 1; 
-            transform: translateY(0); 
-        }
-        
-        /* Responsive */
-        @media (max-width: 768px) { 
-            section { padding: 4rem 1rem; }
-            .hero-stats { gap: 1.5rem; }
-            .stat-number { font-size: 2rem; }
-            .contact-buttons { flex-direction: column; align-items: center; }
-            .contact-btn { width: 80%; }
-            .cta-group { flex-direction: column; align-items: center; }
-            .video-intro { padding: 2rem 1rem; }
-            .cert-badges { gap: 1rem; }
+        @keyframes blink { 0%,100% { opacity: 1; } 50% { opacity: 0.3; } }
+        .chatbot-header h3 { font-size: 1rem; font-weight: 700; }
+        .chatbot-coming { color: var(--text-muted); font-size: 0.9rem; font-style: italic; }
+
+        @media (max-width: 768px) {
+            .hero { grid-template-columns: 1fr; padding: 4rem 1rem 3rem; gap: 2rem; }
+            .hero-visual { order: -1; }
+            .connect-box { padding: 2.5rem 1.5rem; }
         }
     </style>
 </head>
 <body>
-    <!-- Hero Section -->
-    <section class="hero">
-        <img src="Profile.jpg" alt="Karthikeyan Selvam - Digital Workplace Consultant" class="profile-photo">
-        <h1>Karthikeyan Selvam</h1>
-        <p class="hero-subtitle">Digital Workplace & AI Consultant</p>
-        
-        <!-- Key Stats -->
-        <div class="hero-stats">
-            <div class="stat">
-                <div class="stat-number">18+</div>
-                <div class="stat-label">Years Experience</div>
-            </div>
-            <div class="stat">
-                <div class="stat-number">50+</div>
-                <div class="stat-label">RPA Automations</div>
-            </div>
-            <div class="stat">
-                <div class="stat-number">10+</div>
-                <div class="stat-label">FTE Savings</div>
-            </div>
-        </div>
-        
-        <div class="cta-group">
-            <a href="#video" class="cta">Watch Introduction</a>
-            <a href="newsletter.html" class="cta cta-newsletter">📰 AI Insights</a>
-            <a href="experience.html" class="cta cta-secondary" target="_blank">Full Profile</a>
-        </div>
-    </section>
 
-    <!-- Video Introduction Section -->
-    <section id="video" class="video-intro fade-in">
-        <h2>Introduction Video</h2>
-        <div class="video-container">
-            <!-- Replace YOUR_VIDEO_ID with your actual YouTube video ID -->
-            <iframe 
-                src="https://www.youtube.com/embed/YOUR_VIDEO_ID" 
-                title="Karthikeyan Selvam - Professional Introduction"
-                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
-                allowfullscreen>
-            </iframe>
+<!-- Header -->
+<header class="header">
+    <div class="header-content">
+        <a class="logo" href="/">KS<span>.</span></a>
+        <nav>
+            <ul class="nav-links">
+                <li><a href="/" class="active">Home</a></li>
+                <li><a href="/experience.html">Experience</a></li>
+                <li><a href="/newsletter.html">Newsletter</a></li>
+            </ul>
+        </nav>
+    </div>
+</header>
+
+<!-- Thinking Ticker -->
+<div class="thinking-bar">
+    <span class="thinking-label">⚡ On my mind</span>
+    <div class="ticker-wrap">
+        <div class="ticker">
+            <span>Why most Copilot rollouts fail in month 3 — and how to prevent it</span>
+            <span>The real ROI of enterprise AI isn't efficiency, it's decision quality</span>
+            <span>RPA without a process mining strategy is just expensive scripting</span>
+            <span>AIOps is only as smart as the telemetry feeding it</span>
+            <span>18 years in — the problems haven't changed, only the tools have</span>
+            <span>Why most Copilot rollouts fail in month 3 — and how to prevent it</span>
+            <span>The real ROI of enterprise AI isn't efficiency, it's decision quality</span>
+            <span>RPA without a process mining strategy is just expensive scripting</span>
+            <span>AIOps is only as smart as the telemetry feeding it</span>
+            <span>18 years in — the problems haven't changed, only the tools have</span>
         </div>
-        <p class="video-description">
-            Learn about my journey in Digital Workplace Solutions, AI implementation, and enterprise automation.
+    </div>
+</div>
+
+<!-- Hero -->
+<section>
+    <div class="hero">
+        <div class="hero-text">
+            <div class="hero-eyebrow">Digital Workplace & AI Consultant</div>
+            <h1>I help enterprises <em>stop buying</em> AI and <strong>start using</strong> it.</h1>
+            <p class="hero-desc">
+                18 years across healthcare, energy, and technology sectors. 
+                I've seen what works at scale — and what looks great in a slide deck but breaks in production.
+                Microsoft Copilot, RPA, AIOps, Azure & Google Cloud.
+            </p>
+            <div class="hero-ctas">
+                <a href="/experience.html" class="btn-primary">View My Work</a>
+                <a href="/newsletter.html" class="btn-outline">Read My Insights</a>
+            </div>
+        </div>
+        <div class="hero-visual">
+            <div class="hero-card">
+                <div class="stat-grid">
+                    <div class="stat-item">
+                        <div class="stat-number">18+</div>
+                        <div class="stat-label">Years in Enterprise IT</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-number gold">50+</div>
+                        <div class="stat-label">Automation Deployments</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-number">3</div>
+                        <div class="stat-label">Continents Deployed</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-number gold">9</div>
+                        <div class="stat-label">Certifications</div>
+                    </div>
+                </div>
+                <div class="cert-row">
+                    <span class="cert-badge">Azure AI-900</span>
+                    <span class="cert-badge">AZ-900</span>
+                    <span class="cert-badge">Google Cloud</span>
+                    <span class="cert-badge">ITIL</span>
+                    <span class="cert-badge">UiPath RPA</span>
+                    <span class="cert-badge">MS Copilot</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Expertise -->
+<section class="section">
+    <div class="section-label">What I Do</div>
+    <h2 class="section-title">Where I add real value</h2>
+    <p style="color: var(--text-muted); max-width: 600px; font-size: 1rem;">
+        Not buzzwords. Actual disciplines I've practiced across dozens of enterprise environments — 
+        from 500-person teams to global organisations.
+    </p>
+    <div class="expertise-grid">
+        <div class="expertise-card">
+            <span class="expertise-icon">🪟</span>
+            <h3>Microsoft Copilot</h3>
+            <p>Product management and adoption strategy for Copilot across M365. I've seen the adoption curve — and how to flatten it.</p>
+        </div>
+        <div class="expertise-card">
+            <span class="expertise-icon">⚙️</span>
+            <h3>RPA & Intelligent Automation</h3>
+            <p>50+ automation implementations using UiPath and Power Automate. Process mining first, automation second — always.</p>
+        </div>
+        <div class="expertise-card">
+            <span class="expertise-icon">🔭</span>
+            <h3>AIOps</h3>
+            <p>IT Operations intelligence — turning alert noise into actionable signal. Deployed across healthcare and energy sectors.</p>
+        </div>
+        <div class="expertise-card">
+            <span class="expertise-icon">☁️</span>
+            <h3>Cloud Architecture</h3>
+            <p>Azure and Google Cloud certified. Designed resilient enterprise architectures that survive a Monday morning in production.</p>
+        </div>
+        <div class="expertise-card">
+            <span class="expertise-icon">🛡️</span>
+            <h3>Enterprise Backup & Recovery</h3>
+            <p>Because no one cares about backup until they need it. I've built recovery strategies that actually work under pressure.</p>
+        </div>
+        <div class="expertise-card">
+            <span class="expertise-icon">🧭</span>
+            <h3>Change Management</h3>
+            <p>Technology is only 30% of a transformation. The other 70% is people. I've led adoption programs across 3 continents.</p>
+        </div>
+    </div>
+</section>
+
+<!-- Projects -->
+<section class="section" style="padding-top: 0;">
+    <div class="section-label">Building</div>
+    <h2 class="section-title">Things I'm working on</h2>
+    <p style="color: var(--text-muted); max-width: 600px; font-size: 1rem;">
+        Side projects that scratch itches I've had for years consulting in the field.
+    </p>
+    <div class="projects-grid">
+        <div class="project-card">
+            <span class="project-status">Coming Soon</span>
+            <h3>AI Workplace Assistant</h3>
+            <p>A conversational interface that actually understands enterprise context — not just generic chat. Built from patterns I've seen across 50+ deployments.</p>
+        </div>
+        <div class="project-card">
+            <span class="project-status">Coming Soon</span>
+            <h3>Automation ROI Dashboard</h3>
+            <p>Real-time analytics tool for measuring what your automation portfolio is actually delivering — beyond the vanity metrics.</p>
+        </div>
+        <div class="project-card">
+            <span class="project-status">Coming Soon</span>
+            <h3>Portfolio Generator</h3>
+            <p>AI-powered tool that transforms a consultant's project history into a compelling narrative. Built the hard way — by doing it manually first.</p>
+        </div>
+    </div>
+</section>
+
+<!-- Chatbot Placeholder -->
+<section class="section" style="padding-top: 0;">
+    <div class="chatbot-section">
+        <div class="chatbot-header">
+            <div class="chatbot-dot"></div>
+            <h3>Ask me anything</h3>
+        </div>
+        <p class="chatbot-coming">
+            An AI assistant trained on 18 years of Digital Workplace consulting experience is coming soon. 
+            Ask it about RPA strategy, Copilot adoption, or what I'd do differently if I started over.
         </p>
-    </section>
+    </div>
+</section>
 
-    <!-- About Section - Simplified -->
-    <section id="about" class="about fade-in">
-        <h2>About</h2>
-        <p>
-            Digital Workplace Consultant with <strong style="color: #a8b4ff;">18+ years</strong> driving transformation through Microsoft Copilot, RPA, AI Ops, and Enterprise IT solutions. Azure & Google Cloud certified.
-        </p>
-        <a href="experience.html" class="experience-link" target="_blank">View Full Work Experience & Skills →</a>
-    </section>
-
-    <!-- Certifications - Compact Version -->
-    <section id="certifications" class="cert-summary fade-in">
-        <h2>Certifications</h2>
-        <div class="cert-badges">
-            <div class="cert-badge-item">
-                <span class="cert-icon">☁️</span>
-                <div class="cert-name">Azure Fundamentals</div>
-                <div class="cert-code">AZ-900</div>
-            </div>
-            <div class="cert-badge-item">
-                <span class="cert-icon">🤖</span>
-                <div class="cert-name">Azure AI Fundamentals</div>
-                <div class="cert-code">AI-900</div>
-            </div>
-            <div class="cert-badge-item">
-                <span class="cert-icon">🎓</span>
-                <div class="cert-name">Gen AI Leader</div>
-                <div class="cert-code">Google Cloud</div>
-            </div>
+<!-- Connect -->
+<section class="section" style="padding-top: 0;">
+    <div class="connect-box">
+        <h2>Let's build something that actually works.</h2>
+        <p>Consulting engagement, speaking, or just a conversation about where enterprise AI is really headed — I'm open to all three.</p>
+        <div class="connect-links">
+            <a href="https://www.linkedin.com/in/karthikeyan-selvam-567b52157/" target="_blank" class="btn-primary">Connect on LinkedIn</a>
+            <a href="/newsletter.html" class="btn-outline">Read My Newsletter</a>
         </div>
-        <a href="experience.html#certifications" class="cert-link" target="_blank">View All Certifications & Verify Credentials →</a>
-    </section>
+    </div>
+</section>
 
-    <!-- Featured Projects -->
-    <section id="projects" class="projects fade-in">
-        <h2>Featured Projects</h2>
-        <div class="projects">
-            <div class="project coming-soon">
-                <h3>AI Chat Demo</h3>
-                <p>Real-time conversational AI interface with natural language processing.</p>
-                <span class="badge">Coming Soon</span>
-            </div>
-            <div class="project coming-soon">
-                <h3>Interactive Dashboard</h3>
-                <p>Data visualization tool with real-time analytics and custom charts.</p>
-                <span class="badge">Coming Soon</span>
-            </div>
-            <div class="project coming-soon">
-                <h3>Portfolio Generator</h3>
-                <p>AI-powered tool that auto-generates personalized portfolios from your data.</p>
-                <span class="badge">Coming Soon</span>
-            </div>
-        </div>
-    </section>
+<!-- Footer -->
+<footer>
+    <p>Karthikeyan Selvam &mdash; Digital Workplace & AI Consultant</p>
+    <div class="footer-links">
+        <a href="/">Home</a>
+        <a href="/experience.html">Experience</a>
+        <a href="/newsletter.html">Newsletter</a>
+        <a href="https://www.linkedin.com/in/karthikeyan-selvam-567b52157/" target="_blank">LinkedIn</a>
+        <a href="mailto:hello@karthikeyanselvam.com">Contact</a>
+    </div>
+</footer>
 
-    <!-- Contact Section -->
-    <section class="contact fade-in">
-        <h2>Let's Connect</h2>
-        <p>Ready to collaborate? Reach out on LinkedIn, subscribe to my newsletter, or send me an email.</p>
-        <div class="contact-buttons">
-            <a href="https://www.linkedin.com/in/karthikeyan-selvam-567b52157/" class="contact-btn" target="_blank" rel="noopener noreferrer">Connect on LinkedIn</a>
-            <a href="newsletter.html" class="contact-btn">📰 Subscribe to Newsletter</a>
-            <a href="mailto:contact@karthikeyanselvam.com" class="contact-btn">Send Email</a>
-        </div>
-    </section>
-
-    <!-- AI Professional Assistant -->
-    <section class="chatbot fade-in">
-        <h2>AI Professional Assistant</h2>
-        <p>Ask me anything about my projects, experience, or skills.</p>
-        <div class="chatbot-placeholder">
-            <p>🤖 AI Assistant Integration</p>
-            <p style="font-size: 0.9rem; opacity: 0.7; margin-top: 0.5rem;">Chatbot coming soon...</p>
-        </div>
-    </section>
-
-    <!-- Footer -->
-    <footer>
-        <p>&copy; 2026 Karthikeyan Selvam | Digital Workplace & AI Consultant</p>
-        <p style="margin-top: 0.5rem; font-size: 0.9rem;">Middletown, DE, USA</p>
-    </footer>
-
-    <script>
-        // Smooth scroll
-        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
-            anchor.addEventListener('click', function (e) {
-                e.preventDefault();
-                const target = document.querySelector(this.getAttribute('href'));
-                if (target) {
-                    target.scrollIntoView({ behavior: 'smooth' });
-                }
-            });
+<script>
+    // Mouse glow effect on expertise cards
+    document.querySelectorAll('.expertise-card').forEach(card => {
+        card.addEventListener('mousemove', (e) => {
+            const rect = card.getBoundingClientRect();
+            card.style.setProperty('--mouse-x', `${e.clientX - rect.left}px`);
+            card.style.setProperty('--mouse-y', `${e.clientY - rect.top}px`);
         });
-        
-        // Intersection Observer for animations
-        const observer = new IntersectionObserver(entries => {
-            entries.forEach(entry => {
-                if (entry.isIntersecting) entry.target.classList.add('visible');
-            });
-        }, { threshold: 0.1 });
-        
-        document.querySelectorAll('.fade-in').forEach(el => observer.observe(el));
-    </script>
+    });
+
+    // Console easter egg
+    console.log(
+        '%c KS | karthikeyanselvam.com \n' +
+        '%c Built with purpose, not a template. \n' +
+        '%c 18 years of enterprise consulting → distilled into pixels. \n' +
+        '%c Yes, I used AI as a tool. Just like I use Excel. \n' +
+        '%c The thinking? Still mine.',
+        'color: #00C9A7; font-size: 18px; font-weight: bold;',
+        'color: #C9A84C; font-size: 13px;',
+        'color: #8B949E; font-size: 12px;',
+        'color: #8B949E; font-size: 12px;',
+        'color: #00C9A7; font-size: 12px; font-style: italic;'
+    );
+</script>
 </body>
 </html>

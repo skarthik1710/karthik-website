@@ -1,820 +1,543 @@
 <!DOCTYPE html>
-
 <html lang="en">
 <head>
-<meta charset="utf-8"/>
-<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
-<title>AI Insights Newsletter | Karthikeyan Selvam</title>
-<meta content="Stay updated with AI and Digital Workplace insights from Karthikeyan Selvam." name="description"/>
-<meta content="AI Newsletter, Digital Workplace News, Microsoft Copilot, RPA Insights, Enterprise AI" name="keywords"/>
-<meta content="AI Insights Newsletter | Karthikeyan Selvam" property="og:title"/>
-<meta content="Expert insights on AI, Digital Workplace, and Enterprise Technology" property="og:description"/>
-<style>
+    <meta charset="UTF-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>AI Insights Newsletter | Karthikeyan Selvam</title>
+    <meta name="description" content="Weekly AI and Digital Workplace analysis from Karthikeyan Selvam — 18 years of enterprise experience distilled into honest, practical insights."/>
+    <meta name="keywords" content="AI Newsletter, Digital Workplace, Microsoft Copilot, RPA, Enterprise AI, Karthikeyan Selvam"/>
+    <meta property="og:title" content="AI Insights Newsletter | Karthikeyan Selvam"/>
+    <meta property="og:description" content="Honest AI and Digital Workplace analysis from 18 years in the field."/>
+    
+    <style>
         :root {
-            --primary: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            --teal: #00C9A7;
+            --gold: #C9A84C;
+            --teal-glow: rgba(0, 201, 167, 0.15);
+            --gold-glow: rgba(201, 168, 76, 0.15);
+            --bg: #060810;
+            --bg-card: #0D1117;
+            --bg-elevated: #161B22;
+            --text: #E6EDF3;
+            --text-muted: #8B949E;
+            --border: rgba(0, 201, 167, 0.15);
+            --border-gold: rgba(201, 168, 76, 0.2);
         }
         * { margin: 0; padding: 0; box-sizing: border-box; }
-        body {
-            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
-            background: #0a0a0a;
-            color: white;
-            line-height: 1.6;
-        }
-        .header {
-            background: rgba(10, 10, 10, 0.95);
-            backdrop-filter: blur(10px);
-            position: sticky;
-            top: 0;
-            z-index: 1000;
-            border-bottom: 1px solid rgba(102, 126, 234, 0.2);
-        }
-        .header-content {
-            max-width: 1400px;
-            margin: 0 auto;
-            padding: 1.5rem 2rem;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-        .logo {
-            font-size: 1.5rem;
-            font-weight: 700;
-            background: var(--primary);
-            -webkit-background-clip: text;
-            background-clip: text;
-            -webkit-text-fill-color: transparent;
-        }
+        body { font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif; background: var(--bg); color: var(--text); line-height: 1.7; }
+        .header { background: rgba(6,8,16,0.92); backdrop-filter: blur(12px); position: sticky; top: 0; z-index: 1000; border-bottom: 1px solid var(--border); }
+        .header-content { max-width: 1300px; margin: 0 auto; padding: 1.2rem 2rem; display: flex; justify-content: space-between; align-items: center; }
+        .logo { font-size: 1.3rem; font-weight: 800; color: var(--teal); text-decoration: none; }
+        .logo span { color: var(--gold); }
         .nav-links { display: flex; gap: 2rem; list-style: none; }
-        .nav-links a { color: white; text-decoration: none; font-weight: 500; transition: color 0.3s; }
-        .nav-links a:hover { color: #a8b4ff; }
-        .hero {
-            padding: 6rem 2rem 4rem;
-            text-align: center;
-            background: var(--primary);
-            position: relative;
-            overflow: hidden;
+        .nav-links a { color: var(--text-muted); text-decoration: none; font-size: 0.9rem; font-weight: 500; transition: color 0.2s; }
+        .nav-links a:hover, .nav-links a.active { color: var(--teal); }
+        footer { background: var(--bg-card); border-top: 1px solid var(--border); text-align: center; padding: 3rem 2rem; margin-top: 6rem; }
+        footer p { color: var(--text-muted); font-size: 0.9rem; margin-bottom: 1rem; }
+        .footer-links { display: flex; gap: 2rem; justify-content: center; flex-wrap: wrap; }
+        .footer-links a { color: var(--text-muted); text-decoration: none; font-size: 0.85rem; transition: color 0.2s; }
+        .footer-links a:hover { color: var(--teal); }
+        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar-track { background: var(--bg); }
+        ::-webkit-scrollbar-thumb { background: var(--teal); border-radius: 3px; }
+        @media (max-width: 768px) { .nav-links { gap: 1rem; } }
+    </style>
+
+    <style>
+        /* ── HERO ── */
+        .newsletter-hero {
+            background: var(--bg-card);
+            border-bottom: 1px solid var(--border);
+            padding: 5rem 2rem 4rem; text-align: center;
+            position: relative; overflow: hidden;
         }
-        .hero::before {
+        .newsletter-hero::before {
             content: '';
-            position: absolute;
-            inset: 0;
-            background: radial-gradient(circle at 30% 50%, rgba(255,255,255,0.1) 0%, transparent 50%);
-            animation: pulse 4s ease-in-out infinite;
+            position: absolute; top: -200px; left: 50%;
+            transform: translateX(-50%);
+            width: 600px; height: 600px;
+            background: radial-gradient(circle, var(--teal-glow), transparent 65%);
+            pointer-events: none;
         }
-        @keyframes pulse { 0%, 100% { opacity: 0.5; } 50% { opacity: 0.8; } }
-        .hero h1 { font-size: clamp(2.5rem, 6vw, 4rem); margin-bottom: 1rem; position: relative; z-index: 1; }
-        .hero p { font-size: 1.3rem; opacity: 0.9; max-width: 800px; margin: 0 auto 2rem; position: relative; z-index: 1; }
-        .newsletter-signup {
-            background: rgba(20, 20, 40, 0.8);
-            backdrop-filter: blur(20px);
-            border-radius: 20px;
-            padding: 3rem;
-            max-width: 600px;
-            margin: -3rem auto 4rem;
-            position: relative;
-            z-index: 2;
-            border: 1px solid rgba(102, 126, 234, 0.3);
+        .newsletter-hero .eyebrow {
+            font-size: 0.78rem; font-weight: 700; color: var(--teal);
+            letter-spacing: 2px; text-transform: uppercase;
+            margin-bottom: 1rem;
         }
-        .close-btn {
-            position: absolute; top: 1rem; right: 1rem;
-            background: rgba(255,255,255,0.1); border: none;
-            width: 35px; height: 35px; border-radius: 50%;
-            color: white; font-size: 1.5rem; cursor: pointer;
-            display: flex; align-items: center; justify-content: center;
-            transition: all 0.3s; line-height: 1;
+        .newsletter-hero h1 {
+            font-size: clamp(2rem, 5vw, 3.2rem);
+            font-weight: 800; letter-spacing: -1px;
+            margin-bottom: 1rem; line-height: 1.15;
         }
-        .close-btn:hover { background: rgba(233,69,96,0.3); transform: rotate(90deg); }
-        .newsletter-signup h2 { font-size: 1.8rem; margin-bottom: 1rem; text-align: center; }
-        .newsletter-signup p { text-align: center; opacity: 0.8; margin-bottom: 2rem; }
-        .signup-form { display: flex; flex-direction: column; gap: 1rem; }
-        .signup-form input {
-            padding: 1rem; border-radius: 10px;
-            border: 1px solid rgba(255,255,255,0.2);
-            background: rgba(255,255,255,0.05);
-            color: white; font-size: 1rem;
+        .newsletter-hero h1 em { font-style: normal; color: var(--teal); }
+        .newsletter-hero p {
+            color: var(--text-muted); max-width: 600px;
+            margin: 0 auto 2rem; font-size: 1.05rem;
         }
-        .signup-form input::placeholder { color: rgba(255,255,255,0.5); }
-        .signup-form button {
-            padding: 1rem 2rem; border-radius: 10px; border: none;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white; font-size: 1.1rem; font-weight: 600;
-            cursor: pointer; transition: all 0.3s;
+
+        /* ── SUBSCRIBE FORM ── */
+        .subscribe-form {
+            display: flex; gap: 0.8rem; justify-content: center;
+            flex-wrap: wrap; max-width: 500px; margin: 0 auto;
         }
-        .signup-form button:hover { transform: translateY(-2px); box-shadow: 0 8px 20px rgba(102,126,234,0.4); }
-        .container { max-width: 1400px; margin: 0 auto; padding: 4rem 2rem; }
-        .filter-tabs { display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap; margin-bottom: 3rem; }
+        .subscribe-form input {
+            flex: 1; min-width: 200px;
+            padding: 0.85rem 1.2rem; border-radius: 8px;
+            border: 1px solid var(--border);
+            background: var(--bg-elevated);
+            color: var(--text); font-size: 0.9rem;
+        }
+        .subscribe-form input::placeholder { color: var(--text-muted); }
+        .subscribe-form button {
+            padding: 0.85rem 1.8rem; border-radius: 8px;
+            background: var(--teal); border: none;
+            color: #060810; font-weight: 700;
+            font-size: 0.9rem; cursor: pointer; transition: all 0.2s;
+        }
+        .subscribe-form button:hover { background: #00e8c0; }
+        .subscribe-note {
+            color: var(--text-muted); font-size: 0.78rem;
+            margin-top: 0.8rem; position: relative; z-index: 1;
+        }
+
+        /* ── FILTER TABS ── */
+        .container { max-width: 1300px; margin: 0 auto; padding: 4rem 2rem; }
+        .filter-row {
+            display: flex; gap: 0.8rem; flex-wrap: wrap;
+            margin-bottom: 3rem; align-items: center;
+        }
+        .filter-label {
+            font-size: 0.78rem; color: var(--text-muted);
+            text-transform: uppercase; letter-spacing: 1px;
+            font-weight: 600; margin-right: 0.5rem;
+        }
         .filter-tab {
-            padding: 0.8rem 1.5rem; border-radius: 25px;
-            background: rgba(255,255,255,0.05);
-            border: 1px solid rgba(255,255,255,0.1);
-            color: white; cursor: pointer; transition: all 0.3s;
+            padding: 0.5rem 1.2rem; border-radius: 20px;
+            background: transparent;
+            border: 1px solid var(--border);
+            color: var(--text-muted); cursor: pointer;
+            font-size: 0.82rem; font-weight: 500;
+            transition: all 0.2s;
         }
         .filter-tab:hover, .filter-tab.active {
-            background: rgba(102,126,234,0.2);
-            border-color: #667eea; color: #a8b4ff;
+            background: var(--teal-glow);
+            border-color: var(--teal); color: var(--teal);
         }
+
+        /* ── ARTICLES GRID ── */
         .articles-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
-            gap: 2rem; margin-bottom: 4rem;
+            grid-template-columns: repeat(12, 1fr);
+            gap: 1.5rem; margin-bottom: 4rem;
         }
-        .article-card {
-            background: rgba(20, 20, 40, 0.6);
-            backdrop-filter: blur(20px);
-            border-radius: 15px; overflow: hidden;
-            border: 1px solid rgba(102,126,234,0.2);
-            transition: all 0.4s; cursor: pointer;
-        }
-        .article-card:hover {
-            transform: translateY(-8px);
-            border-color: #667eea;
-            box-shadow: 0 12px 32px rgba(102,126,234,0.3);
-        }
-        .article-image {
-            width: 100%; height: 200px;
-            display: flex; align-items: center;
-            justify-content: center; font-size: 4rem;
-        }
-        .article-content { padding: 1.5rem; }
-        .article-meta { display: flex; gap: 1rem; margin-bottom: 1rem; font-size: 0.85rem; opacity: 0.7; }
-        .article-category {
-            background: rgba(102,126,234,0.2);
-            padding: 0.3rem 0.8rem; border-radius: 12px;
-            color: #a8b4ff; font-weight: 600;
-        }
-        .article-date { display: flex; align-items: center; }
-        .article-title { font-size: 1.4rem; font-weight: 700; margin-bottom: 0.8rem; line-height: 1.3; }
-        .article-excerpt { opacity: 0.8; margin-bottom: 1rem; line-height: 1.6; }
-        .article-source { font-size: 0.85rem; opacity: 0.6; font-style: italic; margin-bottom: 1rem; }
-        .read-more {
-            display: inline-block; color: #667eea;
-            font-weight: 600; text-decoration: none;
-            transition: color 0.3s; cursor: pointer;
-        }
-        .read-more:hover { color: #a8b4ff; }
 
-        /* Modal Styles */
+        /* ── ARTICLE CARD ── */
+        .article-card {
+            grid-column: span 4;
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 16px; overflow: hidden;
+            transition: all 0.3s; cursor: pointer;
+            display: flex; flex-direction: column;
+            position: relative;
+        }
+        .article-card.featured { grid-column: span 8; flex-direction: row; }
+        .article-card:hover {
+            border-color: var(--teal); transform: translateY(-5px);
+            box-shadow: 0 12px 40px var(--teal-glow);
+        }
+        .article-card::after {
+            content: '';
+            position: absolute; inset: 0;
+            background: radial-gradient(circle at var(--mx, 50%) var(--my, 50%), var(--teal-glow), transparent 60%);
+            opacity: 0; transition: opacity 0.3s; pointer-events: none;
+        }
+        .article-card:hover::after { opacity: 1; }
+
+        /* ── ARTICLE BANNER ── */
+        .article-banner {
+            width: 100%; height: 180px; flex-shrink: 0;
+            display: flex; align-items: center; justify-content: center;
+            position: relative; overflow: hidden;
+        }
+        .article-card.featured .article-banner {
+            width: 280px; height: 100%;
+        }
+        .banner-svg {
+            width: 100%; height: 100%;
+        }
+        .banner-label {
+            position: absolute;
+            font-size: 0.65rem; font-weight: 800;
+            letter-spacing: 3px; text-transform: uppercase;
+            color: rgba(255,255,255,0.5);
+        }
+
+        /* ── ARTICLE CONTENT ── */
+        .article-content { padding: 1.5rem; flex: 1; display: flex; flex-direction: column; }
+        .article-meta {
+            display: flex; gap: 0.8rem; align-items: center;
+            margin-bottom: 0.8rem; flex-wrap: wrap;
+        }
+        .article-cat {
+            padding: 0.25rem 0.7rem; border-radius: 12px;
+            font-size: 0.72rem; font-weight: 700;
+            background: var(--teal-glow); color: var(--teal);
+            border: 1px solid var(--border);
+            text-transform: uppercase; letter-spacing: 0.5px;
+        }
+        .article-date {
+            font-size: 0.78rem; color: var(--text-muted);
+        }
+        .article-title {
+            font-size: 1.15rem; font-weight: 700; line-height: 1.3;
+            margin-bottom: 0.7rem; color: var(--text);
+        }
+        .article-card.featured .article-title { font-size: 1.4rem; }
+        .article-excerpt {
+            color: var(--text-muted); font-size: 0.88rem;
+            line-height: 1.7; margin-bottom: 1.2rem; flex: 1;
+        }
+        .article-footer {
+            display: flex; justify-content: space-between;
+            align-items: center; margin-top: auto;
+            padding-top: 1rem;
+            border-top: 1px solid var(--border);
+        }
+        .article-source { font-size: 0.75rem; color: var(--text-muted); font-style: italic; }
+        .read-more {
+            font-size: 0.82rem; font-weight: 700;
+            color: var(--teal); cursor: pointer;
+            transition: color 0.2s; white-space: nowrap;
+            background: none; border: none;
+        }
+        .read-more:hover { color: #00e8c0; }
+
+        /* ── LOAD MORE ── */
+        .load-more-row { text-align: center; margin: 2rem 0 4rem; }
+        .load-more-btn {
+            padding: 0.85rem 2.5rem; border-radius: 8px;
+            border: 1px solid var(--border-gold);
+            background: transparent; color: var(--gold);
+            font-weight: 600; font-size: 0.9rem;
+            cursor: pointer; transition: all 0.2s;
+        }
+        .load-more-btn:hover { background: var(--gold-glow); }
+
+        /* ── MODAL ── */
         .modal-overlay {
-            display: none; position: fixed;
-            inset: 0; background: rgba(0,0,0,0.85);
-            z-index: 9999; overflow-y: auto;
-            padding: 2rem 1rem;
+            display: none; position: fixed; inset: 0;
+            background: rgba(0,0,0,0.88); z-index: 9999;
+            overflow-y: auto; padding: 2rem 1rem;
         }
         .modal-overlay.active { display: block; }
         .modal-box {
-            max-width: 800px; margin: 2rem auto;
-            background: rgba(20,20,40,0.98);
+            max-width: 780px; margin: 2rem auto;
+            background: var(--bg-card);
+            border: 1px solid var(--border);
             border-radius: 20px; padding: 3rem;
-            border: 1px solid rgba(102,126,234,0.3);
             position: relative;
         }
         .modal-close {
-            position: absolute; top: 1rem; right: 1rem;
-            background: rgba(255,255,255,0.1); border: none;
-            color: white; width: 35px; height: 35px;
-            border-radius: 50%; font-size: 1.2rem;
-            cursor: pointer; transition: all 0.3s;
+            position: absolute; top: 1.2rem; right: 1.2rem;
+            background: var(--bg-elevated); border: 1px solid var(--border);
+            color: var(--text-muted); width: 34px; height: 34px;
+            border-radius: 50%; font-size: 1rem;
+            cursor: pointer; transition: all 0.2s;
+            display: flex; align-items: center; justify-content: center;
         }
-        .modal-close:hover { background: rgba(233,69,96,0.3); }
-        .modal-category { color: #a8b4ff; font-size: 0.85rem; margin-bottom: 0.5rem; }
-        .modal-title { font-size: 1.8rem; margin-bottom: 0.5rem; line-height: 1.3; }
-        .modal-date { opacity: 0.6; font-size: 0.85rem; margin-bottom: 2rem; }
-        .modal-body { line-height: 1.9; opacity: 0.9; white-space: pre-wrap; }
-        .modal-footer { margin-top: 2rem; opacity: 0.5; font-size: 0.85rem; }
-        .modal-loading { text-align: center; padding: 3rem; opacity: 0.6; font-size: 1.1rem; }
+        .modal-close:hover { border-color: var(--teal); color: var(--teal); }
+        .modal-cat {
+            font-size: 0.72rem; font-weight: 700; color: var(--teal);
+            text-transform: uppercase; letter-spacing: 1.5px;
+            margin-bottom: 0.8rem;
+        }
+        .modal-title {
+            font-size: 1.9rem; font-weight: 800;
+            line-height: 1.2; margin-bottom: 0.6rem;
+            letter-spacing: -0.5px;
+        }
+        .modal-date {
+            font-size: 0.82rem; color: var(--text-muted);
+            margin-bottom: 2rem;
+            padding-bottom: 1.5rem;
+            border-bottom: 1px solid var(--border);
+        }
+        .modal-body {
+            line-height: 1.9; color: var(--text-muted);
+            white-space: pre-wrap; font-size: 0.95rem;
+        }
+        .modal-byline {
+            margin-top: 2.5rem; padding-top: 1.5rem;
+            border-top: 1px solid var(--border);
+            font-size: 0.82rem; color: var(--text-muted);
+        }
+        .modal-byline strong { color: var(--teal); }
+        .modal-loading {
+            text-align: center; padding: 4rem;
+            color: var(--text-muted); font-size: 0.95rem;
+        }
 
-        footer {
-            background: rgba(0,0,0,0.8);
-            text-align: center; padding: 3rem 2rem; margin-top: 4rem;
+        @media (max-width: 900px) {
+            .article-card { grid-column: span 6; }
+            .article-card.featured { grid-column: span 12; flex-direction: column; }
+            .article-card.featured .article-banner { width: 100%; height: 200px; }
         }
-        footer p { opacity: 0.7; margin-bottom: 1rem; }
-        .footer-links { display: flex; gap: 2rem; justify-content: center; margin-top: 1rem; }
-        .footer-links a { color: white; text-decoration: none; opacity: 0.7; transition: opacity 0.3s; }
-        .footer-links a:hover { opacity: 1; }
-        @media (max-width: 768px) {
-            .nav-links { gap: 1rem; }
-            .articles-grid { grid-template-columns: 1fr; }
-            .newsletter-signup { margin: -2rem 1rem 2rem; padding: 2rem; }
-            .container { padding: 2rem 1rem; }
+        @media (max-width: 600px) {
+            .article-card { grid-column: span 12; }
+            .modal-box { padding: 2rem 1.5rem; }
+            .modal-title { font-size: 1.4rem; }
         }
     </style>
 </head>
 <body>
-<!-- Header -->
+
 <header class="header">
-<div class="header-content">
-<div class="logo">KS | AI Insights</div>
-<nav>
-<ul class="nav-links">
-<li><a href="/">Home</a></li>
-<li><a href="/experience.html">Experience</a></li>
-<li><a href="#subscribe">Subscribe</a></li>
-</ul>
-</nav>
-</div>
+    <div class="header-content">
+        <a class="logo" href="/">KS<span>.</span></a>
+        <nav>
+            <ul class="nav-links">
+                <li><a href="/">Home</a></li>
+                <li><a href="/experience.html">Experience</a></li>
+                <li><a href="/newsletter.html" class="active">Newsletter</a></li>
+            </ul>
+        </nav>
+    </div>
 </header>
+
 <!-- Hero -->
-<section class="hero">
-<h1>AI &amp; Digital Workplace Insights</h1>
-<p>Curated AI news and trends with expert analysis from an 18-year industry veteran</p>
+<section class="newsletter-hero">
+    <div class="eyebrow">Weekly Analysis</div>
+    <h1>AI & Digital Workplace <em>Insights</em></h1>
+    <p>
+        Not hype. Not press releases. Just honest analysis from someone who's
+        been implementing this technology in real enterprises for 18 years.
+    </p>
+    <form class="subscribe-form" onsubmit="handleSubscribe(event)">
+        <input type="email" placeholder="your@email.com" required/>
+        <button type="submit">Subscribe</button>
+    </form>
+    <p class="subscribe-note">Join professionals who want substance over spin.</p>
 </section>
-<!-- Subscribe Form -->
-<section class="newsletter-signup" id="subscribe">
-<button class="close-btn" onclick="closeSignup()" title="Close">×</button>
-<h2>📬 Subscribe to Updates</h2>
-<p>Get the latest AI insights delivered to your inbox</p>
-<form class="signup-form" onsubmit="handleSubscribe(event)">
-<input placeholder="Your Name" required="" type="text"/>
-<input placeholder="Your Email" required="" type="email"/>
-<button type="submit">Subscribe Now</button>
-</form>
-<p style="font-size:0.85rem; margin-top:1rem;">Join 500+ professionals staying ahead in AI</p>
-</section>
+
 <!-- Articles -->
 <div class="container">
-<div class="filter-tabs">
-<div class="filter-tab active" onclick="filterArticles('all', event)">All Articles</div>
-<div class="filter-tab" onclick="filterArticles('ai', event)">AI &amp; Machine Learning</div>
-<div class="filter-tab" onclick="filterArticles('copilot', event)">Microsoft Copilot</div>
-<div class="filter-tab" onclick="filterArticles('rpa', event)">RPA &amp; Automation</div>
-<div class="filter-tab" onclick="filterArticles('enterprise', event)">Enterprise Tech</div>
-</div>
-<!-- AUTO-GENERATED ARTICLES INJECTED HERE BY SCRIPT -->
-<div class="articles-grid" id="newsletter-articles">
-<article class="article-card" data-category="ai">
-<div class="article-image" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); display: flex; align-items: center; justify-content: center; font-size: 4rem;">
-                    🤖
+    <div class="filter-row">
+        <span class="filter-label">Filter:</span>
+        <button class="filter-tab active" onclick="filterArticles('all', event)">All</button>
+        <button class="filter-tab" onclick="filterArticles('copilot', event)">Copilot</button>
+        <button class="filter-tab" onclick="filterArticles('ai', event)">AI & ML</button>
+        <button class="filter-tab" onclick="filterArticles('rpa', event)">RPA</button>
+        <button class="filter-tab" onclick="filterArticles('enterprise', event)">Enterprise</button>
+    </div>
+
+    <!-- AUTO-INJECTED ARTICLES GO HERE -->
+    <div class="articles-grid" id="newsletter-articles">
+
+        <!-- Fallback Article 1 - Featured -->
+        <article class="article-card featured" data-category="copilot">
+            <div class="article-banner">
+                <svg class="banner-svg" viewBox="0 0 400 300" xmlns="http://www.w3.org/2000/svg">
+                    <rect width="400" height="300" fill="#0D1117"/>
+                    <defs>
+                        <pattern id="g1" width="40" height="40" patternUnits="userSpaceOnUse">
+                            <path d="M 40 0 L 0 0 0 40" fill="none" stroke="#00C9A715" stroke-width="1"/>
+                        </pattern>
+                    </defs>
+                    <rect width="400" height="300" fill="url(#g1)"/>
+                    <circle cx="200" cy="150" r="80" fill="none" stroke="#00C9A7" stroke-width="1" opacity="0.4"/>
+                    <circle cx="200" cy="150" r="50" fill="none" stroke="#C9A84C" stroke-width="1" opacity="0.3"/>
+                    <circle cx="200" cy="150" r="20" fill="#00C9A720"/>
+                    <text x="200" y="155" text-anchor="middle" fill="#00C9A7" font-size="11" font-family="monospace" letter-spacing="2">COPILOT</text>
+                </svg>
+            </div>
+            <div class="article-content">
+                <div class="article-meta">
+                    <span class="article-cat">Microsoft Copilot</span>
+                    <span class="article-date">Feb 18, 2026</span>
                 </div>
-<div class="article-content">
-<div class="article-meta">
-<span class="article-category">AI &amp; ML</span>
-<span class="article-date">Feb 28, 2026</span>
-</div>
-<h3 class="article-title">Enterprise AI: Moving Beyond Hype to Strategic Transformation (Feb 2026)</h3>
-<p class="article-excerpt">The landscape of enterprise AI adoption has matured significantly, shifting from experimental pilots to strategic imperatives. Organizations are now grappling with the profound implications for their digital transformation journeys.</p>
-<p class="article-source">Analysis by Karthikeyan Selvam | karthikeyanselvam.com</p>
-<a class="read-more" onclick="openArticle('8VwQdKKVDOTX7JxJ6qvE')" style="cursor:pointer;">Read Full Analysis →</a>
-</div>
-</article>
-<article class="article-card" data-category="** ai">
-<div class="article-image" style="background: linear-gradient(135deg, #764ba2 0%, #667eea 100%); display: flex; align-items: center; justify-content: center; font-size: 4rem;">
-                    🧠
+                <h3 class="article-title">Microsoft Copilot's Enterprise Leap: Beyond M365 Into Core Business Systems</h3>
+                <p class="article-excerpt">
+                    By early 2026, Copilot has profoundly shifted beyond its M365 origins. Custom extensions and connectors now let it interface directly with line-of-business applications. I've deployed this in three sectors — here's what the slide decks don't tell you about real adoption rates.
+                </p>
+                <div class="article-footer">
+                    <span class="article-source">Analysis by Karthikeyan Selvam</span>
+                    <button class="read-more" onclick="alert('Connect Firestore to load full articles.')">Read Analysis →</button>
                 </div>
-<div class="article-content">
-<div class="article-meta">
-<span class="article-category">** AI &amp; ML</span>
-<span class="article-date">Feb 28, 2026</span>
-</div>
-<h3 class="article-title">** Unlocking Collective Genius: Google Workspace AI's Impact on Modern Collaboration</h3>
-<p class="article-excerpt">** Google Workspace AI is rapidly transforming how teams connect and create, leveraging advanced intelligence across its suite. The coming years will see unprecedented advancements in collaborative intelligence, offering a future where work is more intuitive and productive.</p>
-<p class="article-source">Analysis by Karthikeyan Selvam | karthikeyanselvam.com</p>
-<a class="read-more" onclick="openArticle('NPfp9qonsaEKx5PiwbSW')" style="cursor:pointer;">Read Full Analysis →</a>
-</div>
-</article>
-<article class="article-card" data-category="ai">
-<div class="article-image" style="background: linear-gradient(135deg, #e94560 0%, #764ba2 100%); display: flex; align-items: center; justify-content: center; font-size: 4rem;">
-                    ⚙️
+            </div>
+        </article>
+
+        <!-- Fallback Article 2 -->
+        <article class="article-card" data-category="ai">
+            <div class="article-banner">
+                <svg class="banner-svg" viewBox="0 0 400 200" xmlns="http://www.w3.org/2000/svg">
+                    <rect width="400" height="200" fill="#0D1117"/>
+                    <defs>
+                        <pattern id="g2" width="25" height="25" patternUnits="userSpaceOnUse">
+                            <circle cx="12" cy="12" r="1" fill="#00C9A720"/>
+                        </pattern>
+                    </defs>
+                    <rect width="400" height="200" fill="url(#g2)"/>
+                    <line x1="100" y1="100" x2="200" y2="60" stroke="#00C9A740" stroke-width="1"/>
+                    <line x1="200" y1="60" x2="300" y2="100" stroke="#00C9A740" stroke-width="1"/>
+                    <line x1="300" y1="100" x2="200" y2="140" stroke="#C9A84C40" stroke-width="1"/>
+                    <line x1="200" y1="140" x2="100" y2="100" stroke="#C9A84C40" stroke-width="1"/>
+                    <circle cx="100" cy="100" r="5" fill="#00C9A7"/>
+                    <circle cx="200" cy="60" r="5" fill="#00C9A7"/>
+                    <circle cx="300" cy="100" r="5" fill="#C9A84C"/>
+                    <circle cx="200" cy="140" r="5" fill="#C9A84C"/>
+                    <text x="200" y="108" text-anchor="middle" fill="#8B949E" font-size="10" font-family="monospace">ENTERPRISE AI</text>
+                </svg>
+            </div>
+            <div class="article-content">
+                <div class="article-meta">
+                    <span class="article-cat">AI & ML</span>
+                    <span class="article-date">Feb 15, 2026</span>
                 </div>
-<div class="article-content">
-<div class="article-meta">
-<span class="article-category">AI &amp; ML</span>
-<span class="article-date">Feb 28, 2026</span>
-</div>
-<h3 class="article-title">Trust in the Machine: AI Governance as a Strategic Imperative in 2026</h3>
-<p class="article-excerpt">The rapid proliferation of AI across enterprises demands a sophisticated approach to governance, moving beyond mere compliance to strategic trust-building. Organizations that prioritize ethical frameworks and robust risk management will define the future of sustainable AI adoption.</p>
-<p class="article-source">Analysis by Karthikeyan Selvam | karthikeyanselvam.com</p>
-<a class="read-more" onclick="openArticle('4Pr1Ckcjhb16yPM0DPHl')" style="cursor:pointer;">Read Full Analysis →</a>
-</div>
-</article>
-<article class="article-card" data-category="ai">
-<div class="article-image" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); display: flex; align-items: center; justify-content: center; font-size: 4rem;">
-                    🤖
+                <h3 class="article-title">Enterprise AI in 2026: From Pilots to Pervasive — What's Actually Different</h3>
+                <p class="article-excerpt">The conversation has shifted from "should we?" to "why isn't it working yet?" Here's an honest look at what separates organisations that scaled AI from those still stuck in proof-of-concept purgatory.</p>
+                <div class="article-footer">
+                    <span class="article-source">Analysis by Karthikeyan Selvam</span>
+                    <button class="read-more" onclick="alert('Connect Firestore to load full articles.')">Read Analysis →</button>
                 </div>
-<div class="article-content">
-<div class="article-meta">
-<span class="article-category">AI &amp; ML</span>
-<span class="article-date">Feb 27, 2026</span>
-</div>
-<h3 class="article-title">AI Governance in 2026: Building Trust, Mitigating Risk</h3>
-<p class="article-excerpt">As AI permeates every facet of the enterprise, robust governance and ethical frameworks are no longer optional but foundational. Understanding the intricate balance between innovation, trust, and risk is paramount for sustainable digital transformation.</p>
-<p class="article-source">Analysis by Karthikeyan Selvam | karthikeyanselvam.com</p>
-<a class="read-more" onclick="openArticle('6k6k9oeHhSUSmiUa4KFt')" style="cursor:pointer;">Read Full Analysis →</a>
-</div>
-</article>
-<article class="article-card" data-category="rpa">
-<div class="article-image" style="background: linear-gradient(135deg, #764ba2 0%, #667eea 100%); display: flex; align-items: center; justify-content: center; font-size: 4rem;">
-                    🧠
+            </div>
+        </article>
+
+        <!-- Fallback Article 3 -->
+        <article class="article-card" data-category="rpa">
+            <div class="article-banner">
+                <svg class="banner-svg" viewBox="0 0 400 200" xmlns="http://www.w3.org/2000/svg">
+                    <rect width="400" height="200" fill="#0D1117"/>
+                    <rect x="60" y="60" width="80" height="80" rx="8" fill="none" stroke="#C9A84C" stroke-width="1.5" opacity="0.5"/>
+                    <rect x="260" y="60" width="80" height="80" rx="8" fill="none" stroke="#00C9A7" stroke-width="1.5" opacity="0.5"/>
+                    <line x1="140" y1="100" x2="260" y2="100" stroke="#00C9A7" stroke-width="1.5" stroke-dasharray="8,4" opacity="0.6"/>
+                    <polygon points="255,94 270,100 255,106" fill="#00C9A7" opacity="0.6"/>
+                    <text x="100" y="104" text-anchor="middle" fill="#C9A84C" font-size="10" font-family="monospace">RPA</text>
+                    <text x="300" y="104" text-anchor="middle" fill="#00C9A7" font-size="10" font-family="monospace">AI</text>
+                </svg>
+            </div>
+            <div class="article-content">
+                <div class="article-meta">
+                    <span class="article-cat">RPA & Automation</span>
+                    <span class="article-date">Feb 12, 2026</span>
                 </div>
-<div class="article-content">
-<div class="article-meta">
-<span class="article-category">RPA &amp; Automation</span>
-<span class="article-date">Feb 27, 2026</span>
-</div>
-<h3 class="article-title">Intelligent Automation in 2026: The AI-Powered Digital Workforce Reshapes Business</h3>
-<p class="article-excerpt">Robotic Process Automation has evolved far beyond simple task replication, becoming an indispensable component of intelligent automation strategies. We're now witnessing the emergence of truly smart digital workers, profoundly transforming how organizations operate.</p>
-<p class="article-source">Analysis by Karthikeyan Selvam | karthikeyanselvam.com</p>
-<a class="read-more" onclick="openArticle('orSOpdDnl66iayQJ8wS3')" style="cursor:pointer;">Read Full Analysis →</a>
-</div>
-</article>
-<article class="article-card" data-category="ai">
-<div class="article-image" style="background: linear-gradient(135deg, #e94560 0%, #764ba2 100%); display: flex; align-items: center; justify-content: center; font-size: 4rem;">
-                    ⚙️
+                <h3 class="article-title">RPA Meets AI: Why 60% of Automation Programs Stall at Year Two</h3>
+                <p class="article-excerpt">After 50+ automation implementations, I've seen the pattern clearly. The technology rarely fails. The strategy almost always does. Here's what I'd change if I was starting each one again.</p>
+                <div class="article-footer">
+                    <span class="article-source">Analysis by Karthikeyan Selvam</span>
+                    <button class="read-more" onclick="alert('Connect Firestore to load full articles.')">Read Analysis →</button>
                 </div>
-<div class="article-content">
-<div class="article-meta">
-<span class="article-category">AI &amp; ML</span>
-<span class="article-date">Feb 27, 2026</span>
-</div>
-<h3 class="article-title">Google Workspace AI: Redefining Intelligent Collaboration in 2026</h3>
-<p class="article-excerpt">Google Workspace's pervasive AI capabilities are rapidly reshaping how teams connect, create, and innovate across the digital landscape. This evolution promises to unlock unprecedented levels of productivity and foster seamless collaboration in modern workplaces.</p>
-<p class="article-source">Analysis by Karthikeyan Selvam | karthikeyanselvam.com</p>
-<a class="read-more" onclick="openArticle('DcvAXEQAXc06R6HlyUH4')" style="cursor:pointer;">Read Full Analysis →</a>
-</div>
-</article>
-<article class="article-card" data-category="ai">
-<div class="article-image" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); display: flex; align-items: center; justify-content: center; font-size: 4rem;">
-                    🤖
+            </div>
+        </article>
+
+        <!-- Fallback Article 4 -->
+        <article class="article-card" data-category="enterprise">
+            <div class="article-banner">
+                <svg class="banner-svg" viewBox="0 0 400 200" xmlns="http://www.w3.org/2000/svg">
+                    <rect width="400" height="200" fill="#0D1117"/>
+                    <rect x="50" y="80" width="300" height="90" rx="6" fill="none" stroke="#00C9A720" stroke-width="1"/>
+                    <rect x="160" y="50" width="80" height="40" rx="4" fill="none" stroke="#C9A84C" stroke-width="1.5" opacity="0.6"/>
+                    <line x1="200" y1="90" x2="200" y2="80" stroke="#C9A84C" stroke-width="1.5" opacity="0.6"/>
+                    <rect x="80" y="100" width="50" height="50" rx="4" fill="#00C9A710" stroke="#00C9A7" stroke-width="1" opacity="0.5"/>
+                    <rect x="175" y="100" width="50" height="50" rx="4" fill="#C9A84C10" stroke="#C9A84C" stroke-width="1" opacity="0.5"/>
+                    <rect x="270" y="100" width="50" height="50" rx="4" fill="#00C9A710" stroke="#00C9A7" stroke-width="1" opacity="0.5"/>
+                </svg>
+            </div>
+            <div class="article-content">
+                <div class="article-meta">
+                    <span class="article-cat">Enterprise Tech</span>
+                    <span class="article-date">Feb 10, 2026</span>
                 </div>
-<div class="article-content">
-<div class="article-meta">
-<span class="article-category">AI &amp; ML</span>
-<span class="article-date">Feb 26, 2026</span>
-</div>
-<h3 class="article-title">Navigating the AI Frontier: The Strategic Imperative for Digital Transformation in 2026</h3>
-<p class="article-excerpt">The conversation around enterprise AI has matured beyond mere experimentation; it's now a core pillar of strategic digital transformation. Organizations are realizing that successful adoption hinges on more than just technology—it requires a profound shift in culture and operations.</p>
-<p class="article-source">Analysis by Karthikeyan Selvam | karthikeyanselvam.com</p>
-<a class="read-more" onclick="openArticle('bYWADx2kTCObVM84eePU')" style="cursor:pointer;">Read Full Analysis →</a>
-</div>
-</article>
-<article class="article-card" data-category="rpa">
-<div class="article-image" style="background: linear-gradient(135deg, #764ba2 0%, #667eea 100%); display: flex; align-items: center; justify-content: center; font-size: 4rem;">
-                    🧠
+                <h3 class="article-title">Azure AI at Scale: Lessons From the Deployments Nobody Blogs About</h3>
+                <p class="article-excerpt">The case studies you read were written after the success. I'm writing about the middle part — where things got complicated and what we learned before reaching the finish line.</p>
+                <div class="article-footer">
+                    <span class="article-source">Analysis by Karthikeyan Selvam</span>
+                    <button class="read-more" onclick="alert('Connect Firestore to load full articles.')">Read Analysis →</button>
                 </div>
-<div class="article-content">
-<div class="article-meta">
-<span class="article-category">RPA &amp; Automation</span>
-<span class="article-date">Feb 26, 2026</span>
+            </div>
+        </article>
+
+    </div>
+
+    <div class="load-more-row">
+        <button class="load-more-btn">Load Earlier Articles</button>
+    </div>
 </div>
-<h3 class="article-title">Navigating the Intelligent Automation Frontier: RPA in the GenAI Era</h3>
-<p class="article-excerpt">The landscape of Robotic Process Automation has undergone a profound transformation, moving far beyond mere task replication to intelligent, AI-powered orchestration. This shift presents unprecedented opportunities for organizations to redefine efficiency and employee experience in their digital workplaces.</p>
-<p class="article-source">Analysis by Karthikeyan Selvam | karthikeyanselvam.com</p>
-<a class="read-more" onclick="openArticle('zAFRJCMCZq55e99tgg3a')" style="cursor:pointer;">Read Full Analysis →</a>
-</div>
-</article>
-<article class="article-card" data-category="copilot">
-<div class="article-image" style="background: linear-gradient(135deg, #e94560 0%, #764ba2 100%); display: flex; align-items: center; justify-content: center; font-size: 4rem;">
-                    ⚙️
-                </div>
-<div class="article-content">
-<div class="article-meta">
-<span class="article-category">Microsoft Copilot</span>
-<span class="article-date">Feb 26, 2026</span>
-</div>
-<h3 class="article-title">Navigating the Copilot Continuum: From Hype to Hyper-Productivity</h3>
-<p class="article-excerpt">Microsoft Copilot is no longer a future promise but a present-day reality actively reshaping how we interact with our digital workplaces. It stands as a pivotal tool in driving a new era of enterprise productivity.</p>
-<p class="article-source">Analysis by Karthikeyan Selvam | karthikeyanselvam.com</p>
-<a class="read-more" onclick="openArticle('DVVt2cGO66orDeNLJ0bT')" style="cursor:pointer;">Read Full Analysis →</a>
-</div>
-</article>
-<article class="article-card" data-category="copilot">
-<div class="article-image" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); display: flex; align-items: center; justify-content: center; font-size: 4rem;">
-                    🤖
-                </div>
-<div class="article-content">
-<div class="article-meta">
-<span class="article-category">Microsoft Copilot</span>
-<span class="article-date">Feb 25, 2026</span>
-</div>
-<h3 class="article-title">The AI Co-Pilot: Navigating Productivity's New Frontier in 2026</h3>
-<p class="article-excerpt">Microsoft Copilot has transcended early adoption to become a core component of modern productivity. Organizations now face the critical task of transforming this powerful AI into tangible, sustainable business value.</p>
-<p class="article-source">Analysis by Karthikeyan Selvam | karthikeyanselvam.com</p>
-<a class="read-more" onclick="openArticle('GIPhzIUORGVYtHf0y9X8')" style="cursor:pointer;">Read Full Analysis →</a>
-</div>
-</article>
-<article class="article-card" data-category="rpa">
-<div class="article-image" style="background: linear-gradient(135deg, #764ba2 0%, #667eea 100%); display: flex; align-items: center; justify-content: center; font-size: 4rem;">
-                    🧠
-                </div>
-<div class="article-content">
-<div class="article-meta">
-<span class="article-category">RPA &amp; Automation</span>
-<span class="article-date">Feb 25, 2026</span>
-</div>
-<h3 class="article-title">Hyperautomation in 2026: The Intelligent Nexus of Business Operations</h3>
-<p class="article-excerpt">Robotic Process Automation has profoundly evolved beyond simple task execution, now acting as the intelligent nervous system of the modern enterprise. We are standing at a pivotal point where AI-driven hyperautomation defines operational excellence and competitive advantage.</p>
-<p class="article-source">Analysis by Karthikeyan Selvam | karthikeyanselvam.com</p>
-<a class="read-more" onclick="openArticle('LfPDtCXE0fDKyUB70n03')" style="cursor:pointer;">Read Full Analysis →</a>
-</div>
-</article>
-<article class="article-card" data-category="ai">
-<div class="article-image" style="background: linear-gradient(135deg, #e94560 0%, #764ba2 100%); display: flex; align-items: center; justify-content: center; font-size: 4rem;">
-                    ⚙️
-                </div>
-<div class="article-content">
-<div class="article-meta">
-<span class="article-category">AI &amp; ML</span>
-<span class="article-date">Feb 25, 2026</span>
-</div>
-<h3 class="article-title">Architecting Trust: AI Governance as the Foundation for Enterprise Success</h3>
-<p class="article-excerpt">The integration of AI into our digital workplaces is no longer optional, but its success hinges on robust governance. Navigating the ethical landscape and mitigating enterprise risk are paramount to truly harnessing AI's transformative power.</p>
-<p class="article-source">Analysis by Karthikeyan Selvam | karthikeyanselvam.com</p>
-<a class="read-more" onclick="openArticle('nkL2eHaEo9n9CHdww79f')" style="cursor:pointer;">Read Full Analysis →</a>
-</div>
-</article>
-<article class="article-card" data-category="copilot">
-<div class="article-image" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); display: flex; align-items: center; justify-content: center; font-size: 4rem;">
-                    🤖
-                </div>
-<div class="article-content">
-<div class="article-meta">
-<span class="article-category">Microsoft Copilot</span>
-<span class="article-date">Feb 24, 2026</span>
-</div>
-<h3 class="article-title">Beyond the Hype: Copilot's Mature Impact on Workplace Productivity in 2026</h3>
-<p class="article-excerpt">As we stand in February 2026, Microsoft Copilot has firmly moved beyond its initial buzz to become a tangible force in the digital workplace. Organizations are now charting new territories in productivity and innovation, but not without thoughtful navigation.</p>
-<p class="article-source">Analysis by Karthikeyan Selvam | karthikeyanselvam.com</p>
-<a class="read-more" onclick="openArticle('9HGBGVsHL84oFk6mAQ1D')" style="cursor:pointer;">Read Full Analysis →</a>
-</div>
-</article>
-<article class="article-card" data-category="ai">
-<div class="article-image" style="background: linear-gradient(135deg, #764ba2 0%, #667eea 100%); display: flex; align-items: center; justify-content: center; font-size: 4rem;">
-                    🧠
-                </div>
-<div class="article-content">
-<div class="article-meta">
-<span class="article-category">AI &amp; ML</span>
-<span class="article-date">Feb 24, 2026</span>
-</div>
-<h3 class="article-title">Google Workspace AI: Redefining Collaboration in the Intelligent Enterprise</h3>
-<p class="article-excerpt">Google Workspace, powered by advanced AI, is no longer just a suite of productivity tools; it's an intelligent partner transforming how teams collaborate. We're witnessing a pivotal shift towards AI-augmented workflows that promise unprecedented efficiency and innovation.</p>
-<p class="article-source">Analysis by Karthikeyan Selvam | karthikeyanselvam.com</p>
-<a class="read-more" onclick="openArticle('F2Rj5ovfcIekiWUn4xCW')" style="cursor:pointer;">Read Full Analysis →</a>
-</div>
-</article>
-<article class="article-card" data-category="ai">
-<div class="article-image" style="background: linear-gradient(135deg, #e94560 0%, #764ba2 100%); display: flex; align-items: center; justify-content: center; font-size: 4rem;">
-                    ⚙️
-                </div>
-<div class="article-content">
-<div class="article-meta">
-<span class="article-category">AI &amp; ML</span>
-<span class="article-date">Feb 24, 2026</span>
-</div>
-<h3 class="article-title">AI's Untapped Potential: The Imperative of Ethical Governance and Enterprise Risk</h3>
-<p class="article-excerpt">As AI weaves itself ever deeper into the fabric of enterprise operations, organizations face a critical juncture. The promise of unparalleled efficiency and innovation must be balanced with robust frameworks for governance, ethics, and risk mitigation.</p>
-<p class="article-source">Analysis by Karthikeyan Selvam | karthikeyanselvam.com</p>
-<a class="read-more" onclick="openArticle('7D03eUWLLAg2n3Z93BYe')" style="cursor:pointer;">Read Full Analysis →</a>
-</div>
-</article>
-<article class="article-card" data-category="copilot">
-<div class="article-image" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); display: flex; align-items: center; justify-content: center; font-size: 4rem;">
-                    🤖
-                </div>
-<div class="article-content">
-<div class="article-meta">
-<span class="article-category">Microsoft Copilot</span>
-<span class="article-date">Feb 23, 2026</span>
-</div>
-<h3 class="article-title">The Copilot Horizon: From Hype to Hyper-Efficiency in 2026</h3>
-<p class="article-excerpt">Microsoft Copilot has evolved into a cornerstone of the modern digital workplace, moving past its initial novelty to deliver tangible productivity gains. Organizations are now strategizing its deeper integration and measuring its transformative impact.</p>
-<p class="article-source">Analysis by Karthikeyan Selvam | karthikeyanselvam.com</p>
-<a class="read-more" onclick="openArticle('bar6qPYnIh63tghiRi75')" style="cursor:pointer;">Read Full Analysis →</a>
-</div>
-</article>
-<article class="article-card" data-category="ai">
-<div class="article-image" style="background: linear-gradient(135deg, #764ba2 0%, #667eea 100%); display: flex; align-items: center; justify-content: center; font-size: 4rem;">
-                    🧠
-                </div>
-<div class="article-content">
-<div class="article-meta">
-<span class="article-category">AI &amp; ML</span>
-<span class="article-date">Feb 23, 2026</span>
-</div>
-<h3 class="article-title">The Gemini Effect: Google Workspace AI at the Forefront of Digital Collaboration in 2026</h3>
-<p class="article-excerpt">The evolution of artificial intelligence within Google Workspace has fundamentally reshaped how teams interact and innovate. By 2026, these intelligent tools are no longer a novelty but a critical differentiator for modern digital workplaces.</p>
-<p class="article-source">Analysis by Karthikeyan Selvam | karthikeyanselvam.com</p>
-<a class="read-more" onclick="openArticle('JsQSqzskRy91BHghXPTO')" style="cursor:pointer;">Read Full Analysis →</a>
-</div>
-</article>
-<article class="article-card" data-category="ai">
-<div class="article-image" style="background: linear-gradient(135deg, #e94560 0%, #764ba2 100%); display: flex; align-items: center; justify-content: center; font-size: 4rem;">
-                    ⚙️
-                </div>
-<div class="article-content">
-<div class="article-meta">
-<span class="article-category">AI &amp; ML</span>
-<span class="article-date">Feb 23, 2026</span>
-</div>
-<h3 class="article-title">AI Governance: The Non-Negotiable Foundation for Enterprise Resilience in 2026</h3>
-<p class="article-excerpt">As AI permeates every facet of enterprise operations, robust governance and ethical frameworks are no longer optional but critical for survival. Navigating this complex landscape requires strategic foresight to unlock opportunity while mitigating significant risks.</p>
-<p class="article-source">Analysis by Karthikeyan Selvam | karthikeyanselvam.com</p>
-<a class="read-more" onclick="openArticle('OEM7kbx6xux9PZLItIKp')" style="cursor:pointer;">Read Full Analysis →</a>
-</div>
-</article>
-<article class="article-card" data-category="copilot">
-<div class="article-image" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); display: flex; align-items: center; justify-content: center; font-size: 4rem;">
-                    🤖
-                </div>
-<div class="article-content">
-<div class="article-meta">
-<span class="article-category">Microsoft Copilot</span>
-<span class="article-date">Feb 22, 2026</span>
-</div>
-<h3 class="article-title">Copilot @ Work: Navigating the Next Wave of AI Productivity</h3>
-<p class="article-excerpt">Microsoft Copilot has evolved from a promising tool to an indispensable partner in our digital workplaces. The real question now isn't *if* it changes how we work, but *how effectively* we leverage its transformative power.</p>
-<p class="article-source">Analysis by Karthikeyan Selvam | karthikeyanselvam.com</p>
-<a class="read-more" onclick="openArticle('EQiTk9sWQQz0A9AKjrhI')" style="cursor:pointer;">Read Full Analysis →</a>
-</div>
-</article>
-<article class="article-card" data-category="** ai">
-<div class="article-image" style="background: linear-gradient(135deg, #764ba2 0%, #667eea 100%); display: flex; align-items: center; justify-content: center; font-size: 4rem;">
-                    🧠
-                </div>
-<div class="article-content">
-<div class="article-meta">
-<span class="article-category">** AI &amp; ML</span>
-<span class="article-date">Feb 22, 2026</span>
-</div>
-<h3 class="article-title">** Governing the AI Horizon: Ethics and Enterprise Risk in 2026</h3>
-<p class="article-excerpt">** As AI permeates every corner of the digital workplace, robust governance and ethical frameworks are no longer optional but foundational. Navigating these complexities is key to unlocking AI’s true potential while mitigating significant enterprise risks.</p>
-<p class="article-source">Analysis by Karthikeyan Selvam | karthikeyanselvam.com</p>
-<a class="read-more" onclick="openArticle('zfv7Sqruk6OJFNyw0ciD')" style="cursor:pointer;">Read Full Analysis →</a>
-</div>
-</article>
-<article class="article-card" data-category="rpa">
-<div class="article-image" style="background: linear-gradient(135deg, #e94560 0%, #764ba2 100%); display: flex; align-items: center; justify-content: center; font-size: 4rem;">
-                    ⚙️
-                </div>
-<div class="article-content">
-<div class="article-meta">
-<span class="article-category">RPA &amp; Automation</span>
-<span class="article-date">Feb 22, 2026</span>
-</div>
-<h3 class="article-title">Beyond Bots: Hyperautomation Redefined in the Age of AI</h3>
-<p class="article-excerpt">The landscape of Robotic Process Automation (RPA) has transformed dramatically, moving far beyond mere task replication. We are now witnessing a profound convergence with AI, creating a new era of intelligent automation that redefines digital workplaces.</p>
-<p class="article-source">Analysis by Karthikeyan Selvam | karthikeyanselvam.com</p>
-<a class="read-more" onclick="openArticle('6mELgcFVTGI8KcwfnWds')" style="cursor:pointer;">Read Full Analysis →</a>
-</div>
-</article>
-<article class="article-card" data-category="ai">
-<div class="article-image" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); display: flex; align-items: center; justify-content: center; font-size: 4rem;">
-                    🤖
-                </div>
-<div class="article-content">
-<div class="article-meta">
-<span class="article-category">AI &amp; ML</span>
-<span class="article-date">Feb 21, 2026</span>
-</div>
-<h3 class="article-title">Governing the Intelligent Enterprise: Navigating AI's Ethical Frontier</h3>
-<p class="article-excerpt">As AI weaves deeper into the fabric of our enterprises, the imperative for robust governance and ethical frameworks has never been clearer. Organizations must now proactively address the complexities of AI to unlock its full potential responsibly.</p>
-<p class="article-source">Analysis by Karthikeyan Selvam | karthikeyanselvam.com</p>
-<a class="read-more" onclick="openArticle('SFqreZeKPqj1wYlWFfs4')" style="cursor:pointer;">Read Full Analysis →</a>
-</div>
-</article>
-<article class="article-card" data-category="copilot">
-<div class="article-image" style="background: linear-gradient(135deg, #764ba2 0%, #667eea 100%); display: flex; align-items: center; justify-content: center; font-size: 4rem;">
-                    🧠
-                </div>
-<div class="article-content">
-<div class="article-meta">
-<span class="article-category">Microsoft Copilot</span>
-<span class="article-date">Feb 21, 2026</span>
-</div>
-<h3 class="article-title">The AI Tipping Point: Maximizing Productivity with Microsoft Copilot in 2026</h3>
-<p class="article-excerpt">The initial hype cycle around Microsoft Copilot is behind us, and we are now firmly in an era of tangible application and strategic integration. Digital workplaces are realizing significant gains, but not without overcoming critical governance and adoption hurdles.</p>
-<p class="article-source">Analysis by Karthikeyan Selvam | karthikeyanselvam.com</p>
-<a class="read-more" onclick="openArticle('cp9qtVgyRjdpOkDGuA0z')" style="cursor:pointer;">Read Full Analysis →</a>
-</div>
-</article>
-<article class="article-card" data-category="ai">
-<div class="article-image" style="background: linear-gradient(135deg, #e94560 0%, #764ba2 100%); display: flex; align-items: center; justify-content: center; font-size: 4rem;">
-                    ⚙️
-                </div>
-<div class="article-content">
-<div class="article-meta">
-<span class="article-category">AI &amp; ML</span>
-<span class="article-date">Feb 21, 2026</span>
-</div>
-<h3 class="article-title">Google Workspace AI: Empowering the Future of Collaboration</h3>
-<p class="article-excerpt">Google Workspace's AI integrations are rapidly transforming how teams collaborate and create. Businesses now have an unprecedented opportunity to redefine productivity and innovation.</p>
-<p class="article-source">Analysis by Karthikeyan Selvam | karthikeyanselvam.com</p>
-<a class="read-more" onclick="openArticle('ZCisxzoyGJoirb10WnkH')" style="cursor:pointer;">Read Full Analysis →</a>
-</div>
-</article>
-<article class="article-card" data-category="copilot">
-<div class="article-image" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); display: flex; align-items: center; justify-content: center; font-size: 4rem;">
-                    🤖
-                </div>
-<div class="article-content">
-<div class="article-meta">
-<span class="article-category">Microsoft Copilot</span>
-<span class="article-date">Feb 20, 2026</span>
-</div>
-<h3 class="article-title">Microsoft Copilot: From Novelty to Necessity in the Digital Workplace</h3>
-<p class="article-excerpt">As we stand in early 2026, Microsoft Copilot has transcended initial curiosity to become a foundational element of modern digital workplaces. Organizations are now grappling with both its immense potential for productivity gains and the strategic hurdles to unlock its full value.</p>
-<p class="article-source">Analysis by Karthikeyan Selvam | karthikeyanselvam.com</p>
-<a class="read-more" onclick="openArticle('rHLszX7ry02uDGz0p7sr')" style="cursor:pointer;">Read Full Analysis →</a>
-</div>
-</article>
-<article class="article-card" data-category="ai">
-<div class="article-image" style="background: linear-gradient(135deg, #764ba2 0%, #667eea 100%); display: flex; align-items: center; justify-content: center; font-size: 4rem;">
-                    🧠
-                </div>
-<div class="article-content">
-<div class="article-meta">
-<span class="article-category">AI &amp; ML</span>
-<span class="article-date">Feb 20, 2026</span>
-</div>
-<h3 class="article-title">Google Workspace AI: Unlocking a New Era of Collaborative Intelligence</h3>
-<p class="article-excerpt">Google Workspace AI is rapidly evolving, moving beyond simple automation to deeply integrate generative capabilities across its suite. These intelligent tools are fundamentally reshaping how teams interact, create, and collaborate in the modern digital workplace.</p>
-<p class="article-source">Analysis by Karthikeyan Selvam | karthikeyanselvam.com</p>
-<a class="read-more" onclick="openArticle('YQ7XRaFkihblrfdC4EAV')" style="cursor:pointer;">Read Full Analysis →</a>
-</div>
-</article>
-<article class="article-card" data-category="ai">
-<div class="article-image" style="background: linear-gradient(135deg, #e94560 0%, #764ba2 100%); display: flex; align-items: center; justify-content: center; font-size: 4rem;">
-                    ⚙️
-                </div>
-<div class="article-content">
-<div class="article-meta">
-<span class="article-category">AI &amp; ML</span>
-<span class="article-date">Feb 20, 2026</span>
-</div>
-<h3 class="article-title">AI at Scale: The Next Frontier in Enterprise Digital Transformation</h3>
-<p class="article-excerpt">The initial buzz around AI has matured into a strategic imperative for enterprises worldwide. We're now witnessing a critical pivot from experimentation to integrating AI at scale, fundamentally reshaping digital workplaces.</p>
-<p class="article-source">Analysis by Karthikeyan Selvam | karthikeyanselvam.com</p>
-<a class="read-more" onclick="openArticle('hVwZXbm4CrWEIqSt5luT')" style="cursor:pointer;">Read Full Analysis →</a>
-</div>
-</article>
-<article class="article-card" data-category="copilot">
-<div class="article-image" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); display: flex; align-items: center; justify-content: center; font-size: 4rem;">
-                    🤖
-                </div>
-<div class="article-content">
-<div class="article-meta">
-<span class="article-category">Microsoft Copilot</span>
-<span class="article-date">Feb 20, 2026</span>
-</div>
-<h3 class="article-title">Beyond Hype: Navigating Microsoft Copilot's Strategic Evolution in 2026</h3>
-<p class="article-excerpt">As we step further into 2026, Microsoft Copilot has transcended its initial hype, embedding itself as a pivotal tool transforming workplace productivity. Organizations are now navigating its deeper integration, seeking genuine strategic advantage from AI-driven collaboration.</p>
-<p class="article-source">Analysis by Karthikeyan Selvam | karthikeyanselvam.com</p>
-<a class="read-more" onclick="openArticle('C8BLTc0eq3EUBouIvP7O')" style="cursor:pointer;">Read Full Analysis →</a>
-</div>
-</article>
-<article class="article-card" data-category="ai">
-<div class="article-image" style="background: linear-gradient(135deg, #764ba2 0%, #667eea 100%); display: flex; align-items: center; justify-content: center; font-size: 4rem;">
-                    🧠
-                </div>
-<div class="article-content">
-<div class="article-meta">
-<span class="article-category">AI &amp; ML</span>
-<span class="article-date">Feb 20, 2026</span>
-</div>
-<h3 class="article-title">The Intelligent Evolution: Mastering Google Workspace AI for Collaborative Excellence</h3>
-<p class="article-excerpt">Google Workspace AI is rapidly transforming how teams collaborate, moving beyond simple automation to deeply integrated intelligence. Organizations now stand at a pivotal moment to harness these tools for unprecedented productivity and innovation.</p>
-<p class="article-source">Analysis by Karthikeyan Selvam | karthikeyanselvam.com</p>
-<a class="read-more" onclick="openArticle('gJC0ABzkN3HYHMSdPiY5')" style="cursor:pointer;">Read Full Analysis →</a>
-</div>
-</article>
-<article class="article-card" data-category="rpa">
-<div class="article-image" style="background: linear-gradient(135deg, #e94560 0%, #764ba2 100%); display: flex; align-items: center; justify-content: center; font-size: 4rem;">
-                    ⚙️
-                </div>
-<div class="article-content">
-<div class="article-meta">
-<span class="article-category">RPA &amp; Automation</span>
-<span class="article-date">Feb 20, 2026</span>
-</div>
-<h3 class="article-title">The Intelligent Automation Nexus: Navigating RPA's Evolution in 2026</h3>
-<p class="article-excerpt">Robotic Process Automation has transcended its origins, now deeply entwined with advanced AI to redefine operational efficiency. This convergence offers unprecedented opportunities, but also complex challenges for today’s digital workplaces.</p>
-<p class="article-source">Analysis by Karthikeyan Selvam | karthikeyanselvam.com</p>
-<a class="read-more" onclick="openArticle('aewzNRJFsls1vBUZCnLc')" style="cursor:pointer;">Read Full Analysis →</a>
-</div>
-</article>
-<!-- Fallback articles shown until automation builds up -->
-<article class="article-card" data-category="copilot">
-<div class="article-image" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);">🤖</div>
-<div class="article-content">
-<div class="article-meta">
-<span class="article-category">Microsoft Copilot</span>
-<span class="article-date">Feb 18, 2026</span>
-</div>
-<h3 class="article-title">Microsoft Copilot's New Enterprise Features Transform Workplace Productivity</h3>
-<p class="article-excerpt">Microsoft's Copilot updates are revolutionizing how enterprises handle daily workflows. Here's what this means for your organization...</p>
-<p class="article-source">Analysis by Karthikeyan Selvam | karthikeyanselvam.com</p>
-<span class="read-more" onclick="alert('Full article coming soon!')">Read Full Analysis →</span>
-</div>
-</article>
-<article class="article-card" data-category="ai">
-<div class="article-image" style="background: linear-gradient(135deg, #764ba2 0%, #667eea 100%);">🧠</div>
-<div class="article-content">
-<div class="article-meta">
-<span class="article-category">AI &amp; ML</span>
-<span class="article-date">Feb 15, 2026</span>
-</div>
-<h3 class="article-title">Enterprise AI in 2026: From Pilots to Pervasive Transformation</h3>
-<p class="article-excerpt">The conversation around Enterprise AI has shifted from pilots to strategic, pervasive adoption. Here's what leaders need to know...</p>
-<p class="article-source">Analysis by Karthikeyan Selvam | karthikeyanselvam.com</p>
-<span class="read-more" onclick="alert('Full article coming soon!')">Read Full Analysis →</span>
-</div>
-</article>
-<article class="article-card" data-category="rpa">
-<div class="article-image" style="background: linear-gradient(135deg, #e94560 0%, #764ba2 100%);">⚙️</div>
-<div class="article-content">
-<div class="article-meta">
-<span class="article-category">RPA &amp; Automation</span>
-<span class="article-date">Feb 12, 2026</span>
-</div>
-<h3 class="article-title">RPA Meets AI: The Rise of the Autonomous Enterprise in 2026</h3>
-<p class="article-excerpt">Based on 50+ automation implementations, here's what organizations should focus on as RPA evolves with AI capabilities...</p>
-<p class="article-source">Analysis by Karthikeyan Selvam | karthikeyanselvam.com</p>
-<span class="read-more" onclick="alert('Full article coming soon!')">Read Full Analysis →</span>
-</div>
-</article>
-<article class="article-card" data-category="enterprise">
-<div class="article-image" style="background: linear-gradient(135deg, #667eea 0%, #e94560 100%);">🏢</div>
-<div class="article-content">
-<div class="article-meta">
-<span class="article-category">Enterprise Tech</span>
-<span class="article-date">Feb 10, 2026</span>
-</div>
-<h3 class="article-title">Azure AI Services: Real-World Implementation Lessons</h3>
-<p class="article-excerpt">Practical insights from recent enterprise deployments — common pitfalls, best practices, and what actually works at scale...</p>
-<p class="article-source">Analysis by Karthikeyan Selvam | karthikeyanselvam.com</p>
-<span class="read-more" onclick="alert('Full article coming soon!')">Read Full Analysis →</span>
-</div>
-</article>
-</div>
-<div style="text-align:center; margin:3rem 0;">
-<button onmouseout="this.style.background='transparent'" onmouseover="this.style.background='rgba(102,126,234,0.2)'" style="padding:1rem 3rem; border-radius:25px; border:2px solid #667eea; background:transparent; color:#a8b4ff; font-weight:600; cursor:pointer; transition:all 0.3s;">
-            Load More Articles
-        </button>
-</div>
-</div>
+
 <!-- Full Article Modal -->
 <div class="modal-overlay" id="article-modal">
-<div class="modal-box">
-<button class="modal-close" onclick="closeArticle()">✕</button>
-<div class="modal-loading" id="modal-loading">⏳ Loading article...</div>
-<div id="modal-content" style="display:none;">
-<div class="modal-category" id="modal-category"></div>
-<h2 class="modal-title" id="modal-title"></h2>
-<div class="modal-date" id="modal-date"></div>
-<div class="modal-body" id="modal-body"></div>
-<p class="modal-footer">Analysis by Karthikeyan Selvam | karthikeyanselvam.com</p>
+    <div class="modal-box">
+        <button class="modal-close" onclick="closeArticle()">✕</button>
+        <div class="modal-loading" id="modal-loading">Loading article...</div>
+        <div id="modal-content" style="display:none;">
+            <div class="modal-cat" id="modal-category"></div>
+            <h2 class="modal-title" id="modal-title"></h2>
+            <div class="modal-date" id="modal-date"></div>
+            <div class="modal-body" id="modal-body"></div>
+            <div class="modal-byline">
+                Written by <strong>Karthikeyan Selvam</strong> &mdash; Digital Workplace & AI Consultant &mdash; karthikeyanselvam.com
+            </div>
+        </div>
+    </div>
 </div>
-</div>
-</div>
-<!-- Footer -->
+
 <footer>
-<p>© 2026 Karthikeyan Selvam | AI &amp; Digital Workplace Insights</p>
-<div class="footer-links">
-<a href="/">Home</a>
-<a href="/experience.html">Experience</a>
-<a href="https://www.linkedin.com/in/karthikeyan-selvam-567b52157/" target="_blank">LinkedIn</a>
-<a href="mailto:skarthik1710@gmail.com">Contact</a>
-</div>
+    <p>Karthikeyan Selvam &mdash; AI & Digital Workplace Insights</p>
+    <div class="footer-links">
+        <a href="/">Home</a>
+        <a href="/experience.html">Experience</a>
+        <a href="https://www.linkedin.com/in/karthikeyan-selvam-567b52157/" target="_blank">LinkedIn</a>
+        <a href="mailto:hello@karthikeyanselvam.com">Contact</a>
+    </div>
 </footer>
+
 <script>
-    function handleSubscribe(event) {
-        event.preventDefault();
-        alert('Thank you for subscribing! You will receive updates soon.');
-        event.target.reset();
+    function handleSubscribe(e) {
+        e.preventDefault();
+        alert('Thank you! You will hear from me soon.');
+        e.target.reset();
     }
 
-    function filterArticles(category, event) {
+    function filterArticles(category, e) {
         document.querySelectorAll('.filter-tab').forEach(t => t.classList.remove('active'));
-        event.target.classList.add('active');
-        document.querySelectorAll('.article-card').forEach(article => {
-            article.style.display =
-                (category === 'all' || article.dataset.category === category) ? 'block' : 'none';
+        e.target.classList.add('active');
+        document.querySelectorAll('.article-card').forEach(card => {
+            const show = category === 'all' || card.dataset.category === category;
+            card.style.display = show ? '' : 'none';
         });
-    }
-
-    function closeSignup() {
-        const box = document.querySelector('.newsletter-signup');
-        box.style.transition = 'all 0.3s';
-        box.style.transform = 'scale(0.8)';
-        box.style.opacity = '0';
-        setTimeout(() => box.style.display = 'none', 300);
     }
 
     function closeArticle() {
         document.getElementById('article-modal').classList.remove('active');
     }
-
-    // Close modal on overlay click
     document.getElementById('article-modal').addEventListener('click', function(e) {
         if (e.target === this) closeArticle();
     });
+
+    // Mouse glow on cards
+    document.querySelectorAll('.article-card').forEach(card => {
+        card.addEventListener('mousemove', e => {
+            const r = card.getBoundingClientRect();
+            card.style.setProperty('--mx', `${e.clientX - r.left}px`);
+            card.style.setProperty('--my', `${e.clientY - r.top}px`);
+        });
+    });
+
+    console.log(
+        '%c KS | karthikeyanselvam.com\n%c Built with purpose, not a template.\n%c The thinking? Still mine.',
+        'color:#00C9A7;font-size:18px;font-weight:bold;',
+        'color:#C9A84C;font-size:13px;',
+        'color:#8B949E;font-size:12px;font-style:italic;'
+    );
 </script>
-<!-- Firebase SDK for Firestore (dynamic article loading) -->
+
+<!-- Firebase for dynamic full articles -->
 <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.0/firebase-app.js";
     import { getFirestore, doc, getDoc } from "https://www.gstatic.com/firebasejs/10.7.0/firebase-firestore.js";
 
     const firebaseConfig = {
-        apiKey: "AIzaSyCTmJf_t33Fia2n06xDASC5W4vk7LbvMBc",
+        apiKey: "YOUR_FIREBASE_WEB_API_KEY",
         authDomain: "karthik-website-b5801.firebaseapp.com",
         projectId: "karthik-website-b5801"
     };
@@ -826,11 +549,10 @@
         const modal = document.getElementById('article-modal');
         const loading = document.getElementById('modal-loading');
         const content = document.getElementById('modal-content');
-
         modal.classList.add('active');
         loading.style.display = 'block';
         content.style.display = 'none';
-
+        loading.textContent = 'Loading article...';
         try {
             const snap = await getDoc(doc(db, "newsletter_articles", docId));
             if (snap.exists()) {
@@ -842,13 +564,12 @@
                 loading.style.display = 'none';
                 content.style.display = 'block';
             } else {
-                loading.textContent = '❌ Article not found.';
+                loading.textContent = 'Article not found.';
             }
-        } catch (err) {
-            loading.textContent = '❌ Error loading article. Please try again.';
-            console.error(err);
+        } catch(err) {
+            loading.textContent = 'Error loading article. Please try again.';
         }
-    }
+    };
 </script>
 </body>
 </html>
