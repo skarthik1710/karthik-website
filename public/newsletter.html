@@ -4,290 +4,96 @@
     <meta charset="UTF-8"/>
     <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
     <title>AI Insights Newsletter | Karthikeyan Selvam</title>
-    <meta name="description" content="Weekly AI and Digital Workplace analysis from Karthikeyan Selvam — 18 years of enterprise experience distilled into honest, practical insights."/>
+    <meta name="description" content="Weekly AI and Digital Workplace analysis from Karthikeyan Selvam."/>
     <meta name="keywords" content="AI Newsletter, Digital Workplace, Microsoft Copilot, RPA, Enterprise AI, Karthikeyan Selvam"/>
     <meta property="og:title" content="AI Insights Newsletter | Karthikeyan Selvam"/>
     <meta property="og:description" content="Honest AI and Digital Workplace analysis from 18 years in the field."/>
-    
     <style>
         :root {
-            --teal: #00C9A7;
-            --gold: #C9A84C;
-            --teal-glow: rgba(0, 201, 167, 0.15);
-            --gold-glow: rgba(201, 168, 76, 0.15);
-            --bg: #060810;
-            --bg-card: #0D1117;
-            --bg-elevated: #161B22;
-            --text: #E6EDF3;
-            --text-muted: #8B949E;
-            --border: rgba(0, 201, 167, 0.15);
-            --border-gold: rgba(201, 168, 76, 0.2);
+            --teal: #00C9A7; --gold: #C9A84C;
+            --teal-glow: rgba(0,201,167,0.15); --gold-glow: rgba(201,168,76,0.15);
+            --bg: #060810; --bg-card: #0D1117; --bg-elevated: #161B22;
+            --text: #E6EDF3; --text-muted: #8B949E;
+            --border: rgba(0,201,167,0.15); --border-gold: rgba(201,168,76,0.2);
         }
-        * { margin: 0; padding: 0; box-sizing: border-box; }
-        body { font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif; background: var(--bg); color: var(--text); line-height: 1.7; }
-        .header { background: rgba(6,8,16,0.92); backdrop-filter: blur(12px); position: sticky; top: 0; z-index: 1000; border-bottom: 1px solid var(--border); }
-        .header-content { max-width: 1300px; margin: 0 auto; padding: 1.2rem 2rem; display: flex; justify-content: space-between; align-items: center; }
-        .logo { font-size: 1.3rem; font-weight: 800; color: var(--teal); text-decoration: none; }
-        .logo span { color: var(--gold); }
-        .nav-links { display: flex; gap: 2rem; list-style: none; }
-        .nav-links a { color: var(--text-muted); text-decoration: none; font-size: 0.9rem; font-weight: 500; transition: color 0.2s; }
-        .nav-links a:hover, .nav-links a.active { color: var(--teal); }
-        footer { background: var(--bg-card); border-top: 1px solid var(--border); text-align: center; padding: 3rem 2rem; margin-top: 6rem; }
-        footer p { color: var(--text-muted); font-size: 0.9rem; margin-bottom: 1rem; }
-        .footer-links { display: flex; gap: 2rem; justify-content: center; flex-wrap: wrap; }
-        .footer-links a { color: var(--text-muted); text-decoration: none; font-size: 0.85rem; transition: color 0.2s; }
-        .footer-links a:hover { color: var(--teal); }
-        ::-webkit-scrollbar { width: 6px; }
-        ::-webkit-scrollbar-track { background: var(--bg); }
-        ::-webkit-scrollbar-thumb { background: var(--teal); border-radius: 3px; }
-        @media (max-width: 768px) { .nav-links { gap: 1rem; } }
+        * { margin:0; padding:0; box-sizing:border-box; }
+        body { font-family:'Inter',-apple-system,BlinkMacSystemFont,sans-serif; background:var(--bg); color:var(--text); line-height:1.7; }
+        .header { background:rgba(6,8,16,0.92); backdrop-filter:blur(12px); position:sticky; top:0; z-index:1000; border-bottom:1px solid var(--border); }
+        .header-content { max-width:1300px; margin:0 auto; padding:1.2rem 2rem; display:flex; justify-content:space-between; align-items:center; }
+        .logo { font-size:1.3rem; font-weight:800; color:var(--teal); text-decoration:none; }
+        .logo span { color:var(--gold); }
+        .nav-links { display:flex; gap:2rem; list-style:none; }
+        .nav-links a { color:var(--text-muted); text-decoration:none; font-size:0.9rem; font-weight:500; transition:color 0.2s; }
+        .nav-links a:hover, .nav-links a.active { color:var(--teal); }
+        footer { background:var(--bg-card); border-top:1px solid var(--border); text-align:center; padding:3rem 2rem; margin-top:6rem; }
+        footer p { color:var(--text-muted); font-size:0.9rem; margin-bottom:1rem; }
+        .footer-links { display:flex; gap:2rem; justify-content:center; flex-wrap:wrap; }
+        .footer-links a { color:var(--text-muted); text-decoration:none; font-size:0.85rem; transition:color 0.2s; }
+        .footer-links a:hover { color:var(--teal); }
+        ::-webkit-scrollbar { width:6px; }
+        ::-webkit-scrollbar-track { background:var(--bg); }
+        ::-webkit-scrollbar-thumb { background:var(--teal); border-radius:3px; }
+        @media(max-width:768px){ .nav-links { gap:1rem; } }
     </style>
-
     <style>
-        /* ── HERO ── */
-        .newsletter-hero {
-            background: var(--bg-card);
-            border-bottom: 1px solid var(--border);
-            padding: 5rem 2rem 4rem; text-align: center;
-            position: relative; overflow: hidden;
-        }
-        .newsletter-hero::before {
-            content: '';
-            position: absolute; top: -200px; left: 50%;
-            transform: translateX(-50%);
-            width: 600px; height: 600px;
-            background: radial-gradient(circle, var(--teal-glow), transparent 65%);
-            pointer-events: none;
-        }
-        .newsletter-hero .eyebrow {
-            font-size: 0.78rem; font-weight: 700; color: var(--teal);
-            letter-spacing: 2px; text-transform: uppercase;
-            margin-bottom: 1rem;
-        }
-        .newsletter-hero h1 {
-            font-size: clamp(2rem, 5vw, 3.2rem);
-            font-weight: 800; letter-spacing: -1px;
-            margin-bottom: 1rem; line-height: 1.15;
-        }
-        .newsletter-hero h1 em { font-style: normal; color: var(--teal); }
-        .newsletter-hero p {
-            color: var(--text-muted); max-width: 600px;
-            margin: 0 auto 2rem; font-size: 1.05rem;
-        }
-
-        /* ── SUBSCRIBE FORM ── */
-        .subscribe-form {
-            display: flex; gap: 0.8rem; justify-content: center;
-            flex-wrap: wrap; max-width: 500px; margin: 0 auto;
-        }
-        .subscribe-form input {
-            flex: 1; min-width: 200px;
-            padding: 0.85rem 1.2rem; border-radius: 8px;
-            border: 1px solid var(--border);
-            background: var(--bg-elevated);
-            color: var(--text); font-size: 0.9rem;
-        }
-        .subscribe-form input::placeholder { color: var(--text-muted); }
-        .subscribe-form button {
-            padding: 0.85rem 1.8rem; border-radius: 8px;
-            background: var(--teal); border: none;
-            color: #060810; font-weight: 700;
-            font-size: 0.9rem; cursor: pointer; transition: all 0.2s;
-        }
-        .subscribe-form button:hover { background: #00e8c0; }
-        .subscribe-note {
-            color: var(--text-muted); font-size: 0.78rem;
-            margin-top: 0.8rem; position: relative; z-index: 1;
-        }
-
-        /* ── FILTER TABS ── */
-        .container { max-width: 1300px; margin: 0 auto; padding: 4rem 2rem; }
-        .filter-row {
-            display: flex; gap: 0.8rem; flex-wrap: wrap;
-            margin-bottom: 3rem; align-items: center;
-        }
-        .filter-label {
-            font-size: 0.78rem; color: var(--text-muted);
-            text-transform: uppercase; letter-spacing: 1px;
-            font-weight: 600; margin-right: 0.5rem;
-        }
-        .filter-tab {
-            padding: 0.5rem 1.2rem; border-radius: 20px;
-            background: transparent;
-            border: 1px solid var(--border);
-            color: var(--text-muted); cursor: pointer;
-            font-size: 0.82rem; font-weight: 500;
-            transition: all 0.2s;
-        }
-        .filter-tab:hover, .filter-tab.active {
-            background: var(--teal-glow);
-            border-color: var(--teal); color: var(--teal);
-        }
-
-        /* ── ARTICLES GRID ── */
-        .articles-grid {
-            display: grid;
-            grid-template-columns: repeat(12, 1fr);
-            gap: 1.5rem; margin-bottom: 4rem;
-        }
-
-        /* ── ARTICLE CARD ── */
-        .article-card {
-            grid-column: span 4;
-            background: var(--bg-card);
-            border: 1px solid var(--border);
-            border-radius: 16px; overflow: hidden;
-            transition: all 0.3s; cursor: pointer;
-            display: flex; flex-direction: column;
-            position: relative;
-        }
-        .article-card.featured { grid-column: span 8; flex-direction: row; }
-        .article-card:hover {
-            border-color: var(--teal); transform: translateY(-5px);
-            box-shadow: 0 12px 40px var(--teal-glow);
-        }
-        .article-card::after {
-            content: '';
-            position: absolute; inset: 0;
-            background: radial-gradient(circle at var(--mx, 50%) var(--my, 50%), var(--teal-glow), transparent 60%);
-            opacity: 0; transition: opacity 0.3s; pointer-events: none;
-        }
-        .article-card:hover::after { opacity: 1; }
-
-        /* ── ARTICLE BANNER ── */
-        .article-banner {
-            width: 100%; height: 180px; flex-shrink: 0;
-            display: flex; align-items: center; justify-content: center;
-            position: relative; overflow: hidden;
-        }
-        .article-card.featured .article-banner {
-            width: 280px; height: 100%;
-        }
-        .banner-svg {
-            width: 100%; height: 100%;
-        }
-        .banner-label {
-            position: absolute;
-            font-size: 0.65rem; font-weight: 800;
-            letter-spacing: 3px; text-transform: uppercase;
-            color: rgba(255,255,255,0.5);
-        }
-
-        /* ── ARTICLE CONTENT ── */
-        .article-content { padding: 1.5rem; flex: 1; display: flex; flex-direction: column; }
-        .article-meta {
-            display: flex; gap: 0.8rem; align-items: center;
-            margin-bottom: 0.8rem; flex-wrap: wrap;
-        }
-        .article-cat {
-            padding: 0.25rem 0.7rem; border-radius: 12px;
-            font-size: 0.72rem; font-weight: 700;
-            background: var(--teal-glow); color: var(--teal);
-            border: 1px solid var(--border);
-            text-transform: uppercase; letter-spacing: 0.5px;
-        }
-        .article-date {
-            font-size: 0.78rem; color: var(--text-muted);
-        }
-        .article-title {
-            font-size: 1.15rem; font-weight: 700; line-height: 1.3;
-            margin-bottom: 0.7rem; color: var(--text);
-        }
-        .article-card.featured .article-title { font-size: 1.4rem; }
-        .article-excerpt {
-            color: var(--text-muted); font-size: 0.88rem;
-            line-height: 1.7; margin-bottom: 1.2rem; flex: 1;
-        }
-        .article-footer {
-            display: flex; justify-content: space-between;
-            align-items: center; margin-top: auto;
-            padding-top: 1rem;
-            border-top: 1px solid var(--border);
-        }
-        .article-source { font-size: 0.75rem; color: var(--text-muted); font-style: italic; }
-        .read-more {
-            font-size: 0.82rem; font-weight: 700;
-            color: var(--teal); cursor: pointer;
-            transition: color 0.2s; white-space: nowrap;
-            background: none; border: none;
-        }
-        .read-more:hover { color: #00e8c0; }
-
-        /* ── LOAD MORE ── */
-        .load-more-row { text-align: center; margin: 2rem 0 4rem; }
-        .load-more-btn {
-            padding: 0.85rem 2.5rem; border-radius: 8px;
-            border: 1px solid var(--border-gold);
-            background: transparent; color: var(--gold);
-            font-weight: 600; font-size: 0.9rem;
-            cursor: pointer; transition: all 0.2s;
-        }
-        .load-more-btn:hover { background: var(--gold-glow); }
-
-        /* ── MODAL ── */
-        .modal-overlay {
-            display: none; position: fixed; inset: 0;
-            background: rgba(0,0,0,0.88); z-index: 9999;
-            overflow-y: auto; padding: 2rem 1rem;
-        }
-        .modal-overlay.active { display: block; }
-        .modal-box {
-            max-width: 780px; margin: 2rem auto;
-            background: var(--bg-card);
-            border: 1px solid var(--border);
-            border-radius: 20px; padding: 3rem;
-            position: relative;
-        }
-        .modal-close {
-            position: absolute; top: 1.2rem; right: 1.2rem;
-            background: var(--bg-elevated); border: 1px solid var(--border);
-            color: var(--text-muted); width: 34px; height: 34px;
-            border-radius: 50%; font-size: 1rem;
-            cursor: pointer; transition: all 0.2s;
-            display: flex; align-items: center; justify-content: center;
-        }
-        .modal-close:hover { border-color: var(--teal); color: var(--teal); }
-        .modal-cat {
-            font-size: 0.72rem; font-weight: 700; color: var(--teal);
-            text-transform: uppercase; letter-spacing: 1.5px;
-            margin-bottom: 0.8rem;
-        }
-        .modal-title {
-            font-size: 1.9rem; font-weight: 800;
-            line-height: 1.2; margin-bottom: 0.6rem;
-            letter-spacing: -0.5px;
-        }
-        .modal-date {
-            font-size: 0.82rem; color: var(--text-muted);
-            margin-bottom: 2rem;
-            padding-bottom: 1.5rem;
-            border-bottom: 1px solid var(--border);
-        }
-        .modal-body {
-            line-height: 1.9; color: var(--text-muted);
-            white-space: pre-wrap; font-size: 0.95rem;
-        }
-        .modal-byline {
-            margin-top: 2.5rem; padding-top: 1.5rem;
-            border-top: 1px solid var(--border);
-            font-size: 0.82rem; color: var(--text-muted);
-        }
-        .modal-byline strong { color: var(--teal); }
-        .modal-loading {
-            text-align: center; padding: 4rem;
-            color: var(--text-muted); font-size: 0.95rem;
-        }
-
-        @media (max-width: 900px) {
-            .article-card { grid-column: span 6; }
-            .article-card.featured { grid-column: span 12; flex-direction: column; }
-            .article-card.featured .article-banner { width: 100%; height: 200px; }
-        }
-        @media (max-width: 600px) {
-            .article-card { grid-column: span 12; }
-            .modal-box { padding: 2rem 1.5rem; }
-            .modal-title { font-size: 1.4rem; }
-        }
+        .newsletter-hero { background:var(--bg-card); border-bottom:1px solid var(--border); padding:5rem 2rem 4rem; text-align:center; position:relative; overflow:hidden; }
+        .newsletter-hero::before { content:''; position:absolute; top:-200px; left:50%; transform:translateX(-50%); width:600px; height:600px; background:radial-gradient(circle,var(--teal-glow),transparent 65%); pointer-events:none; }
+        .newsletter-hero .eyebrow { font-size:0.78rem; font-weight:700; color:var(--teal); letter-spacing:2px; text-transform:uppercase; margin-bottom:1rem; }
+        .newsletter-hero h1 { font-size:clamp(2rem,5vw,3.2rem); font-weight:800; letter-spacing:-1px; margin-bottom:1rem; line-height:1.15; }
+        .newsletter-hero h1 em { font-style:normal; color:var(--teal); }
+        .newsletter-hero p { color:var(--text-muted); max-width:600px; margin:0 auto 2rem; font-size:1.05rem; }
+        .subscribe-form { display:flex; gap:0.8rem; justify-content:center; flex-wrap:wrap; max-width:500px; margin:0 auto; }
+        .subscribe-form input { flex:1; min-width:200px; padding:0.85rem 1.2rem; border-radius:8px; border:1px solid var(--border); background:var(--bg-elevated); color:var(--text); font-size:0.9rem; }
+        .subscribe-form input::placeholder { color:var(--text-muted); }
+        .subscribe-form button { padding:0.85rem 1.8rem; border-radius:8px; background:var(--teal); border:none; color:#060810; font-weight:700; font-size:0.9rem; cursor:pointer; transition:all 0.2s; }
+        .subscribe-form button:hover { background:#00e8c0; }
+        .subscribe-note { color:var(--text-muted); font-size:0.78rem; margin-top:0.8rem; position:relative; z-index:1; }
+        .container { max-width:1300px; margin:0 auto; padding:4rem 2rem; }
+        .filter-row { display:flex; gap:0.8rem; flex-wrap:wrap; margin-bottom:3rem; align-items:center; }
+        .filter-label { font-size:0.78rem; color:var(--text-muted); text-transform:uppercase; letter-spacing:1px; font-weight:600; margin-right:0.5rem; }
+        .filter-tab { padding:0.5rem 1.2rem; border-radius:20px; background:transparent; border:1px solid var(--border); color:var(--text-muted); cursor:pointer; font-size:0.82rem; font-weight:500; transition:all 0.2s; }
+        .filter-tab:hover, .filter-tab.active { background:var(--teal-glow); border-color:var(--teal); color:var(--teal); }
+        .articles-grid { display:grid; grid-template-columns:repeat(12,1fr); gap:1.5rem; margin-bottom:4rem; }
+        .articles-loading { grid-column:span 12; text-align:center; padding:4rem; color:var(--text-muted); font-size:0.95rem; }
+        .articles-empty { grid-column:span 12; text-align:center; padding:4rem; color:var(--text-muted); }
+        .articles-empty p { font-size:1rem; margin-bottom:0.5rem; }
+        .articles-empty span { font-size:0.85rem; color:var(--teal); }
+        .article-card { grid-column:span 4; background:var(--bg-card); border:1px solid var(--border); border-radius:16px; overflow:hidden; transition:all 0.3s; cursor:pointer; display:flex; flex-direction:column; position:relative; }
+        .article-card.featured { grid-column:span 8; flex-direction:row; }
+        .article-card:hover { border-color:var(--teal); transform:translateY(-5px); box-shadow:0 12px 40px var(--teal-glow); }
+        .article-card::after { content:''; position:absolute; inset:0; background:radial-gradient(circle at var(--mx,50%) var(--my,50%),var(--teal-glow),transparent 60%); opacity:0; transition:opacity 0.3s; pointer-events:none; }
+        .article-card:hover::after { opacity:1; }
+        .article-banner { width:100%; height:180px; flex-shrink:0; display:flex; align-items:center; justify-content:center; position:relative; overflow:hidden; }
+        .article-card.featured .article-banner { width:280px; height:100%; }
+        .banner-svg { width:100%; height:100%; }
+        .article-content { padding:1.5rem; flex:1; display:flex; flex-direction:column; }
+        .article-meta { display:flex; gap:0.8rem; align-items:center; margin-bottom:0.8rem; flex-wrap:wrap; }
+        .article-cat { padding:0.25rem 0.7rem; border-radius:12px; font-size:0.72rem; font-weight:700; background:var(--teal-glow); color:var(--teal); border:1px solid var(--border); text-transform:uppercase; letter-spacing:0.5px; }
+        .article-date { font-size:0.78rem; color:var(--text-muted); }
+        .article-title { font-size:1.15rem; font-weight:700; line-height:1.3; margin-bottom:0.7rem; color:var(--text); }
+        .article-card.featured .article-title { font-size:1.4rem; }
+        .article-excerpt { color:var(--text-muted); font-size:0.88rem; line-height:1.7; margin-bottom:1.2rem; flex:1; }
+        .article-footer { display:flex; justify-content:space-between; align-items:center; margin-top:auto; padding-top:1rem; border-top:1px solid var(--border); }
+        .article-source { font-size:0.75rem; color:var(--text-muted); font-style:italic; }
+        .read-more { font-size:0.82rem; font-weight:700; color:var(--teal); cursor:pointer; transition:color 0.2s; white-space:nowrap; background:none; border:none; }
+        .read-more:hover { color:#00e8c0; }
+        .load-more-row { text-align:center; margin:2rem 0 4rem; }
+        .load-more-btn { padding:0.85rem 2.5rem; border-radius:8px; border:1px solid var(--border-gold); background:transparent; color:var(--gold); font-weight:600; font-size:0.9rem; cursor:pointer; transition:all 0.2s; }
+        .load-more-btn:hover { background:var(--gold-glow); }
+        .modal-overlay { display:none; position:fixed; inset:0; background:rgba(0,0,0,0.88); z-index:9999; overflow-y:auto; padding:2rem 1rem; }
+        .modal-overlay.active { display:block; }
+        .modal-box { max-width:780px; margin:2rem auto; background:var(--bg-card); border:1px solid var(--border); border-radius:20px; padding:3rem; position:relative; }
+        .modal-close { position:absolute; top:1.2rem; right:1.2rem; background:var(--bg-elevated); border:1px solid var(--border); color:var(--text-muted); width:34px; height:34px; border-radius:50%; font-size:1rem; cursor:pointer; transition:all 0.2s; display:flex; align-items:center; justify-content:center; }
+        .modal-close:hover { border-color:var(--teal); color:var(--teal); }
+        .modal-cat { font-size:0.72rem; font-weight:700; color:var(--teal); text-transform:uppercase; letter-spacing:1.5px; margin-bottom:0.8rem; }
+        .modal-title { font-size:1.9rem; font-weight:800; line-height:1.2; margin-bottom:0.6rem; letter-spacing:-0.5px; }
+        .modal-date { font-size:0.82rem; color:var(--text-muted); margin-bottom:2rem; padding-bottom:1.5rem; border-bottom:1px solid var(--border); }
+        .modal-body { line-height:1.9; color:var(--text-muted); white-space:pre-wrap; font-size:0.95rem; }
+        .modal-byline { margin-top:2.5rem; padding-top:1.5rem; border-top:1px solid var(--border); font-size:0.82rem; color:var(--text-muted); }
+        .modal-byline strong { color:var(--teal); }
+        .modal-loading { text-align:center; padding:4rem; color:var(--text-muted); font-size:0.95rem; }
+        @media(max-width:900px){ .article-card { grid-column:span 6; } .article-card.featured { grid-column:span 12; flex-direction:column; } .article-card.featured .article-banner { width:100%; height:200px; } }
+        @media(max-width:600px){ .article-card { grid-column:span 12; } .modal-box { padding:2rem 1.5rem; } .modal-title { font-size:1.4rem; } }
     </style>
 </head>
 <body>
@@ -305,14 +111,10 @@
     </div>
 </header>
 
-<!-- Hero -->
 <section class="newsletter-hero">
     <div class="eyebrow">Weekly Analysis</div>
-    <h1>AI & Digital Workplace <em>Insights</em></h1>
-    <p>
-        Not hype. Not press releases. Just honest analysis from someone who's
-        been implementing this technology in real enterprises for 18 years.
-    </p>
+    <h1>AI &amp; Digital Workplace <em>Insights</em></h1>
+    <p>Not hype. Not press releases. Just honest analysis from someone who's been implementing this technology in real enterprises for 18 years.</p>
     <form class="subscribe-form" onsubmit="handleSubscribe(event)">
         <input type="email" placeholder="your@email.com" required/>
         <button type="submit">Subscribe</button>
@@ -320,169 +122,41 @@
     <p class="subscribe-note">Join professionals who want substance over spin.</p>
 </section>
 
-<!-- Articles -->
 <div class="container">
     <div class="filter-row">
         <span class="filter-label">Filter:</span>
         <button class="filter-tab active" onclick="filterArticles('all', event)">All</button>
         <button class="filter-tab" onclick="filterArticles('copilot', event)">Copilot</button>
-        <button class="filter-tab" onclick="filterArticles('ai', event)">AI & ML</button>
+        <button class="filter-tab" onclick="filterArticles('ai', event)">AI &amp; ML</button>
         <button class="filter-tab" onclick="filterArticles('rpa', event)">RPA</button>
         <button class="filter-tab" onclick="filterArticles('enterprise', event)">Enterprise</button>
     </div>
 
-    <!-- AUTO-INJECTED ARTICLES GO HERE -->
     <div class="articles-grid" id="newsletter-articles">
-
-        <!-- Fallback Article 1 - Featured -->
-        <article class="article-card featured" data-category="copilot">
-            <div class="article-banner">
-                <svg class="banner-svg" viewBox="0 0 400 300" xmlns="http://www.w3.org/2000/svg">
-                    <rect width="400" height="300" fill="#0D1117"/>
-                    <defs>
-                        <pattern id="g1" width="40" height="40" patternUnits="userSpaceOnUse">
-                            <path d="M 40 0 L 0 0 0 40" fill="none" stroke="#00C9A715" stroke-width="1"/>
-                        </pattern>
-                    </defs>
-                    <rect width="400" height="300" fill="url(#g1)"/>
-                    <circle cx="200" cy="150" r="80" fill="none" stroke="#00C9A7" stroke-width="1" opacity="0.4"/>
-                    <circle cx="200" cy="150" r="50" fill="none" stroke="#C9A84C" stroke-width="1" opacity="0.3"/>
-                    <circle cx="200" cy="150" r="20" fill="#00C9A720"/>
-                    <text x="200" y="155" text-anchor="middle" fill="#00C9A7" font-size="11" font-family="monospace" letter-spacing="2">COPILOT</text>
-                </svg>
-            </div>
-            <div class="article-content">
-                <div class="article-meta">
-                    <span class="article-cat">Microsoft Copilot</span>
-                    <span class="article-date">Feb 18, 2026</span>
-                </div>
-                <h3 class="article-title">Microsoft Copilot's Enterprise Leap: Beyond M365 Into Core Business Systems</h3>
-                <p class="article-excerpt">
-                    By early 2026, Copilot has profoundly shifted beyond its M365 origins. Custom extensions and connectors now let it interface directly with line-of-business applications. I've deployed this in three sectors — here's what the slide decks don't tell you about real adoption rates.
-                </p>
-                <div class="article-footer">
-                    <span class="article-source">Analysis by Karthikeyan Selvam</span>
-                    <button class="read-more" onclick="alert('Connect Firestore to load full articles.')">Read Analysis →</button>
-                </div>
-            </div>
-        </article>
-
-        <!-- Fallback Article 2 -->
-        <article class="article-card" data-category="ai">
-            <div class="article-banner">
-                <svg class="banner-svg" viewBox="0 0 400 200" xmlns="http://www.w3.org/2000/svg">
-                    <rect width="400" height="200" fill="#0D1117"/>
-                    <defs>
-                        <pattern id="g2" width="25" height="25" patternUnits="userSpaceOnUse">
-                            <circle cx="12" cy="12" r="1" fill="#00C9A720"/>
-                        </pattern>
-                    </defs>
-                    <rect width="400" height="200" fill="url(#g2)"/>
-                    <line x1="100" y1="100" x2="200" y2="60" stroke="#00C9A740" stroke-width="1"/>
-                    <line x1="200" y1="60" x2="300" y2="100" stroke="#00C9A740" stroke-width="1"/>
-                    <line x1="300" y1="100" x2="200" y2="140" stroke="#C9A84C40" stroke-width="1"/>
-                    <line x1="200" y1="140" x2="100" y2="100" stroke="#C9A84C40" stroke-width="1"/>
-                    <circle cx="100" cy="100" r="5" fill="#00C9A7"/>
-                    <circle cx="200" cy="60" r="5" fill="#00C9A7"/>
-                    <circle cx="300" cy="100" r="5" fill="#C9A84C"/>
-                    <circle cx="200" cy="140" r="5" fill="#C9A84C"/>
-                    <text x="200" y="108" text-anchor="middle" fill="#8B949E" font-size="10" font-family="monospace">ENTERPRISE AI</text>
-                </svg>
-            </div>
-            <div class="article-content">
-                <div class="article-meta">
-                    <span class="article-cat">AI & ML</span>
-                    <span class="article-date">Feb 15, 2026</span>
-                </div>
-                <h3 class="article-title">Enterprise AI in 2026: From Pilots to Pervasive — What's Actually Different</h3>
-                <p class="article-excerpt">The conversation has shifted from "should we?" to "why isn't it working yet?" Here's an honest look at what separates organisations that scaled AI from those still stuck in proof-of-concept purgatory.</p>
-                <div class="article-footer">
-                    <span class="article-source">Analysis by Karthikeyan Selvam</span>
-                    <button class="read-more" onclick="alert('Connect Firestore to load full articles.')">Read Analysis →</button>
-                </div>
-            </div>
-        </article>
-
-        <!-- Fallback Article 3 -->
-        <article class="article-card" data-category="rpa">
-            <div class="article-banner">
-                <svg class="banner-svg" viewBox="0 0 400 200" xmlns="http://www.w3.org/2000/svg">
-                    <rect width="400" height="200" fill="#0D1117"/>
-                    <rect x="60" y="60" width="80" height="80" rx="8" fill="none" stroke="#C9A84C" stroke-width="1.5" opacity="0.5"/>
-                    <rect x="260" y="60" width="80" height="80" rx="8" fill="none" stroke="#00C9A7" stroke-width="1.5" opacity="0.5"/>
-                    <line x1="140" y1="100" x2="260" y2="100" stroke="#00C9A7" stroke-width="1.5" stroke-dasharray="8,4" opacity="0.6"/>
-                    <polygon points="255,94 270,100 255,106" fill="#00C9A7" opacity="0.6"/>
-                    <text x="100" y="104" text-anchor="middle" fill="#C9A84C" font-size="10" font-family="monospace">RPA</text>
-                    <text x="300" y="104" text-anchor="middle" fill="#00C9A7" font-size="10" font-family="monospace">AI</text>
-                </svg>
-            </div>
-            <div class="article-content">
-                <div class="article-meta">
-                    <span class="article-cat">RPA & Automation</span>
-                    <span class="article-date">Feb 12, 2026</span>
-                </div>
-                <h3 class="article-title">RPA Meets AI: Why 60% of Automation Programs Stall at Year Two</h3>
-                <p class="article-excerpt">After 50+ automation implementations, I've seen the pattern clearly. The technology rarely fails. The strategy almost always does. Here's what I'd change if I was starting each one again.</p>
-                <div class="article-footer">
-                    <span class="article-source">Analysis by Karthikeyan Selvam</span>
-                    <button class="read-more" onclick="alert('Connect Firestore to load full articles.')">Read Analysis →</button>
-                </div>
-            </div>
-        </article>
-
-        <!-- Fallback Article 4 -->
-        <article class="article-card" data-category="enterprise">
-            <div class="article-banner">
-                <svg class="banner-svg" viewBox="0 0 400 200" xmlns="http://www.w3.org/2000/svg">
-                    <rect width="400" height="200" fill="#0D1117"/>
-                    <rect x="50" y="80" width="300" height="90" rx="6" fill="none" stroke="#00C9A720" stroke-width="1"/>
-                    <rect x="160" y="50" width="80" height="40" rx="4" fill="none" stroke="#C9A84C" stroke-width="1.5" opacity="0.6"/>
-                    <line x1="200" y1="90" x2="200" y2="80" stroke="#C9A84C" stroke-width="1.5" opacity="0.6"/>
-                    <rect x="80" y="100" width="50" height="50" rx="4" fill="#00C9A710" stroke="#00C9A7" stroke-width="1" opacity="0.5"/>
-                    <rect x="175" y="100" width="50" height="50" rx="4" fill="#C9A84C10" stroke="#C9A84C" stroke-width="1" opacity="0.5"/>
-                    <rect x="270" y="100" width="50" height="50" rx="4" fill="#00C9A710" stroke="#00C9A7" stroke-width="1" opacity="0.5"/>
-                </svg>
-            </div>
-            <div class="article-content">
-                <div class="article-meta">
-                    <span class="article-cat">Enterprise Tech</span>
-                    <span class="article-date">Feb 10, 2026</span>
-                </div>
-                <h3 class="article-title">Azure AI at Scale: Lessons From the Deployments Nobody Blogs About</h3>
-                <p class="article-excerpt">The case studies you read were written after the success. I'm writing about the middle part — where things got complicated and what we learned before reaching the finish line.</p>
-                <div class="article-footer">
-                    <span class="article-source">Analysis by Karthikeyan Selvam</span>
-                    <button class="read-more" onclick="alert('Connect Firestore to load full articles.')">Read Analysis →</button>
-                </div>
-            </div>
-        </article>
-
+        <div class="articles-loading">&#9679; Loading articles...</div>
     </div>
 
     <div class="load-more-row">
-        <button class="load-more-btn">Load Earlier Articles</button>
+        <button class="load-more-btn" id="load-more-btn" style="display:none;" onclick="loadMoreArticles()">Load Earlier Articles</button>
     </div>
 </div>
 
-<!-- Full Article Modal -->
 <div class="modal-overlay" id="article-modal">
     <div class="modal-box">
-        <button class="modal-close" onclick="closeArticle()">✕</button>
+        <button class="modal-close" onclick="closeArticle()">&#x2715;</button>
         <div class="modal-loading" id="modal-loading">Loading article...</div>
         <div id="modal-content" style="display:none;">
             <div class="modal-cat" id="modal-category"></div>
             <h2 class="modal-title" id="modal-title"></h2>
             <div class="modal-date" id="modal-date"></div>
             <div class="modal-body" id="modal-body"></div>
-            <div class="modal-byline">
-                Written by <strong>Karthikeyan Selvam</strong> &mdash; Digital Workplace & AI Consultant &mdash; karthikeyanselvam.com
-            </div>
+            <div class="modal-byline">Written by <strong>Karthikeyan Selvam</strong> &mdash; Digital Workplace &amp; AI Consultant &mdash; karthikeyanselvam.com</div>
         </div>
     </div>
 </div>
 
 <footer>
-    <p>Karthikeyan Selvam &mdash; AI & Digital Workplace Insights</p>
+    <p>Karthikeyan Selvam &mdash; AI &amp; Digital Workplace Insights</p>
     <div class="footer-links">
         <a href="/">Home</a>
         <a href="/experience.html">Experience</a>
@@ -492,52 +166,38 @@
 </footer>
 
 <script>
-    function handleSubscribe(e) {
-        e.preventDefault();
-        alert('Thank you! You will hear from me soon.');
-        e.target.reset();
-    }
-
     function filterArticles(category, e) {
         document.querySelectorAll('.filter-tab').forEach(t => t.classList.remove('active'));
         e.target.classList.add('active');
         document.querySelectorAll('.article-card').forEach(card => {
-            const show = category === 'all' || card.dataset.category === category;
-            card.style.display = show ? '' : 'none';
+            card.style.display = (category === 'all' || card.dataset.category === category) ? '' : 'none';
         });
     }
-
     function closeArticle() {
         document.getElementById('article-modal').classList.remove('active');
     }
     document.getElementById('article-modal').addEventListener('click', function(e) {
         if (e.target === this) closeArticle();
     });
-
-    // Mouse glow on cards
-    document.querySelectorAll('.article-card').forEach(card => {
-        card.addEventListener('mousemove', e => {
-            const r = card.getBoundingClientRect();
-            card.style.setProperty('--mx', `${e.clientX - r.left}px`);
-            card.style.setProperty('--my', `${e.clientY - r.top}px`);
+    function applyMouseGlow() {
+        document.querySelectorAll('.article-card').forEach(card => {
+            card.addEventListener('mousemove', e => {
+                const r = card.getBoundingClientRect();
+                card.style.setProperty('--mx', (e.clientX - r.left) + 'px');
+                card.style.setProperty('--my', (e.clientY - r.top) + 'px');
+            });
         });
-    });
-
-    console.log(
-        '%c KS | karthikeyanselvam.com\n%c Built with purpose, not a template.\n%c The thinking? Still mine.',
-        'color:#00C9A7;font-size:18px;font-weight:bold;',
-        'color:#C9A84C;font-size:13px;',
-        'color:#8B949E;font-size:12px;font-style:italic;'
-    );
+    }
+    console.log('%c KS | karthikeyanselvam.com', 'color:#00C9A7;font-size:18px;font-weight:bold;');
 </script>
 
-<!-- Firebase for dynamic full articles -->
 <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.0/firebase-app.js";
-    import { getFirestore, doc, getDoc } from "https://www.gstatic.com/firebasejs/10.7.0/firebase-firestore.js";
+    import { getFirestore, doc, getDoc, collection, addDoc, getDocs, query, orderBy, limit, serverTimestamp }
+        from "https://www.gstatic.com/firebasejs/10.7.0/firebase-firestore.js";
 
     const firebaseConfig = {
-        apiKey: "YOUR_FIREBASE_WEB_API_KEY",
+        apiKey: "AIzaSyCTmJf_t33Fia2n06xDASC5W4vk7LbvMBc",
         authDomain: "karthik-website-b5801.firebaseapp.com",
         projectId: "karthik-website-b5801"
     };
@@ -545,6 +205,85 @@
     const app = initializeApp(firebaseConfig);
     const db = getFirestore(app);
 
+    // SUBSCRIBE
+    window.handleSubscribe = async function(e) {
+        e.preventDefault();
+        const form = e.target;
+        const email = form.querySelector('input[type="email"]').value.trim();
+        const btn = form.querySelector('button');
+        btn.textContent = 'Subscribing...';
+        btn.disabled = true;
+        try {
+            await addDoc(collection(db, "customers"), {
+                email: email,
+                subscribedAt: serverTimestamp(),
+                active: true
+            });
+            form.reset();
+            btn.textContent = 'Subscribed!';
+            setTimeout(() => { btn.textContent = 'Subscribe'; btn.disabled = false; }, 3000);
+        } catch(err) {
+            console.error('Subscribe error:', err);
+            btn.textContent = 'Try Again';
+            btn.disabled = false;
+        }
+    };
+
+    // BUILD ARTICLE CARD HTML
+    function buildCard(docSnap, isFirst) {
+        const d = docSnap.data();
+        const excerpt = d.summary || (d.body ? d.body.substring(0, 180) + '...' : '');
+        const color = (d.category === 'rpa') ? '#C9A84C' : '#00C9A7';
+        const cat = (d.category || 'AI').toUpperCase().substring(0, 10);
+        return `
+        <article class="article-card ${isFirst ? 'featured' : ''}" data-category="${d.category || 'ai'}">
+            <div class="article-banner">
+                <svg class="banner-svg" viewBox="0 0 400 200" xmlns="http://www.w3.org/2000/svg">
+                    <rect width="400" height="200" fill="#0D1117"/>
+                    <circle cx="200" cy="100" r="65" fill="none" stroke="${color}" stroke-width="1" opacity="0.4"/>
+                    <circle cx="200" cy="100" r="40" fill="none" stroke="${color}" stroke-width="1" opacity="0.25"/>
+                    <circle cx="200" cy="100" r="18" fill="${color}15"/>
+                    <text x="200" y="104" text-anchor="middle" fill="${color}" font-size="9" font-family="monospace" letter-spacing="2">${cat}</text>
+                </svg>
+            </div>
+            <div class="article-content">
+                <div class="article-meta">
+                    <span class="article-cat">${d.category || 'AI'}</span>
+                    <span class="article-date">${d.date || ''}</span>
+                </div>
+                <h3 class="article-title">${d.title || ''}</h3>
+                <p class="article-excerpt">${excerpt}</p>
+                <div class="article-footer">
+                    <span class="article-source">Analysis by Karthikeyan Selvam</span>
+                    <button class="read-more" onclick="openArticle('${docSnap.id}')">Read Analysis &rarr;</button>
+                </div>
+            </div>
+        </article>`;
+    }
+
+    // LOAD ARTICLES
+    async function loadArticles() {
+        const grid = document.getElementById('newsletter-articles');
+        try {
+            const q = query(collection(db, "newsletter_articles"), orderBy("date", "desc"), limit(9));
+            const snapshot = await getDocs(q);
+            if (snapshot.empty) {
+                grid.innerHTML = '<div class="articles-empty"><p>Fresh articles are on their way!</p><span>New AI insights published every Friday</span></div>';
+                return;
+            }
+            let html = '';
+            let isFirst = true;
+            snapshot.forEach(docSnap => { html += buildCard(docSnap, isFirst); isFirst = false; });
+            grid.innerHTML = html;
+            applyMouseGlow();
+            if (snapshot.size === 9) document.getElementById('load-more-btn').style.display = 'inline-block';
+        } catch(err) {
+            console.error('Load error:', err);
+            grid.innerHTML = '<div class="articles-loading">Error loading articles. Please refresh.</div>';
+        }
+    }
+
+    // OPEN ARTICLE MODAL
     window.openArticle = async function(docId) {
         const modal = document.getElementById('article-modal');
         const loading = document.getElementById('modal-loading');
@@ -557,19 +296,22 @@
             const snap = await getDoc(doc(db, "newsletter_articles", docId));
             if (snap.exists()) {
                 const d = snap.data();
-                document.getElementById('modal-category').textContent = d.category;
-                document.getElementById('modal-title').textContent = d.title;
-                document.getElementById('modal-date').textContent = d.date;
-                document.getElementById('modal-body').textContent = d.body;
+                document.getElementById('modal-category').textContent = d.category || '';
+                document.getElementById('modal-title').textContent = d.title || '';
+                document.getElementById('modal-date').textContent = d.date || '';
+                document.getElementById('modal-body').textContent = d.body || '';
                 loading.style.display = 'none';
                 content.style.display = 'block';
             } else {
                 loading.textContent = 'Article not found.';
             }
         } catch(err) {
+            console.error(err);
             loading.textContent = 'Error loading article. Please try again.';
         }
     };
+
+    loadArticles();
 </script>
 </body>
 </html>

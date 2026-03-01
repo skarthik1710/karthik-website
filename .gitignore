@@ -57,3 +57,7 @@ build/
 # Firebase cache
 .firebase/
 firebase-debug.*.log
+
+#Firebase Functions
+functions/.env
+functions/.env.local
