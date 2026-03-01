@@ -230,7 +230,7 @@
 </script>
 <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.0/firebase-app.js";
-    import { getFirestore, doc, getDoc, collection, addDoc, getDocs, query, orderBy, limit, serverTimestamp }
+    import { getFirestore, doc, getDoc, collection, addDoc, getDocs, query, orderBy, limit, startAfter, serverTimestamp }
         from "https://www.gstatic.com/firebasejs/10.7.0/firebase-firestore.js";
 
     const firebaseConfig = {
@@ -241,6 +241,7 @@
 
     const app = initializeApp(firebaseConfig);
     const db = getFirestore(app);
+    let lastVisible = null;
 
     // SUBSCRIBE
     window.handleSubscribe = async function(e) {
@@ -302,7 +303,7 @@
     async function loadArticles() {
         const grid = document.getElementById('newsletter-articles');
         try {
-            const q = query(collection(db, "newsletter_articles"), orderBy("date", "desc"), limit(9));
+            const q = query(collection(db, "newsletter_articles"), orderBy("timestamp", "desc"), limit(9));
             const snapshot = await getDocs(q);
             if (snapshot.empty) {
                 grid.innerHTML = '<div class="articles-empty"><p>Fresh articles are on their way!</p><span>New AI insights published every Friday</span></div>';
@@ -313,12 +314,39 @@
             snapshot.forEach(docSnap => { html += buildCard(docSnap, isFirst); isFirst = false; });
             grid.innerHTML = html;
             applyMouseGlow();
+            lastVisible = snapshot.docs[snapshot.docs.length - 1];
             if (snapshot.size === 9) document.getElementById('load-more-btn').style.display = 'inline-block';
         } catch(err) {
             console.error('Load error:', err);
             grid.innerHTML = '<div class="articles-loading">Error loading articles. Please refresh.</div>';
         }
     }
+
+    // LOAD MORE ARTICLES
+    window.loadMoreArticles = async function() {
+        if (!lastVisible) return;
+        const grid = document.getElementById('newsletter-articles');
+        const btn = document.getElementById('load-more-btn');
+        btn.textContent = 'Loading...';
+        btn.disabled = true;
+        try {
+            const q = query(collection(db, "newsletter_articles"), orderBy("timestamp", "desc"), startAfter(lastVisible), limit(9));
+            const snapshot = await getDocs(q);
+            if (snapshot.empty) { btn.style.display = 'none'; return; }
+            let html = '';
+            snapshot.forEach(docSnap => { html += buildCard(docSnap, false); });
+            grid.innerHTML += html;
+            applyMouseGlow();
+            lastVisible = snapshot.docs[snapshot.docs.length - 1];
+            btn.textContent = 'Load Earlier Articles';
+            btn.disabled = false;
+            if (snapshot.size < 9) btn.style.display = 'none';
+        } catch(err) {
+            console.error('Load more error:', err);
+            btn.textContent = 'Load Earlier Articles';
+            btn.disabled = false;
+        }
+    };
 
     // OPEN ARTICLE MODAL
     window.openArticle = async function(docId) {
