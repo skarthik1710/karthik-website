@@ -1,14 +1,15 @@
 <!DOCTYPE html>
+
 <html lang="en">
 <head>
-    <meta charset="UTF-8"/>
-    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-    <title>AI Insights Newsletter | Karthikeyan Selvam</title>
-    <meta name="description" content="Weekly AI and Digital Workplace analysis from Karthikeyan Selvam."/>
-    <meta name="keywords" content="AI Newsletter, Digital Workplace, Microsoft Copilot, RPA, Enterprise AI, Karthikeyan Selvam"/>
-    <meta property="og:title" content="AI Insights Newsletter | Karthikeyan Selvam"/>
-    <meta property="og:description" content="Honest AI and Digital Workplace analysis from 18 years in the field."/>
-    <style>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>AI Insights Newsletter | Karthikeyan Selvam</title>
+<meta content="Weekly AI and Digital Workplace analysis from Karthikeyan Selvam." name="description"/>
+<meta content="AI Newsletter, Digital Workplace, Microsoft Copilot, RPA, Enterprise AI, Karthikeyan Selvam" name="keywords"/>
+<meta content="AI Insights Newsletter | Karthikeyan Selvam" property="og:title"/>
+<meta content="Honest AI and Digital Workplace analysis from 18 years in the field." property="og:description"/>
+<style>
         :root {
             --teal: #00C9A7; --gold: #C9A84C;
             --teal-glow: rgba(0,201,167,0.15); --gold-glow: rgba(201,168,76,0.15);
@@ -35,7 +36,7 @@
         ::-webkit-scrollbar-thumb { background:var(--teal); border-radius:3px; }
         @media(max-width:768px){ .nav-links { gap:1rem; } }
     </style>
-    <style>
+<style>
         .newsletter-hero { background:var(--bg-card); border-bottom:1px solid var(--border); padding:5rem 2rem 4rem; text-align:center; position:relative; overflow:hidden; }
         .newsletter-hero::before { content:''; position:absolute; top:-200px; left:50%; transform:translateX(-50%); width:600px; height:600px; background:radial-gradient(circle,var(--teal-glow),transparent 65%); pointer-events:none; }
         .newsletter-hero .eyebrow { font-size:0.78rem; font-weight:700; color:var(--teal); letter-spacing:2px; text-transform:uppercase; margin-bottom:1rem; }
@@ -97,74 +98,111 @@
     </style>
 </head>
 <body>
-
 <header class="header">
-    <div class="header-content">
-        <a class="logo" href="/">KS<span>.</span></a>
-        <nav>
-            <ul class="nav-links">
-                <li><a href="/">Home</a></li>
-                <li><a href="/experience.html">Experience</a></li>
-                <li><a href="/newsletter.html" class="active">Newsletter</a></li>
-            </ul>
-        </nav>
-    </div>
+<div class="header-content">
+<a class="logo" href="/">KS<span>.</span></a>
+<nav>
+<ul class="nav-links">
+<li><a href="/">Home</a></li>
+<li><a href="/experience.html">Experience</a></li>
+<li><a class="active" href="/newsletter.html">Newsletter</a></li>
+</ul>
+</nav>
+</div>
 </header>
-
 <section class="newsletter-hero">
-    <div class="eyebrow">Weekly Analysis</div>
-    <h1>AI &amp; Digital Workplace <em>Insights</em></h1>
-    <p>Not hype. Not press releases. Just honest analysis from someone who's been implementing this technology in real enterprises for 18 years.</p>
-    <form class="subscribe-form" onsubmit="handleSubscribe(event)">
-        <input type="email" placeholder="your@email.com" required/>
-        <button type="submit">Subscribe</button>
-    </form>
-    <p class="subscribe-note">Join professionals who want substance over spin.</p>
+<div class="eyebrow">Weekly Analysis</div>
+<h1>AI &amp; Digital Workplace <em>Insights</em></h1>
+<p>Not hype. Not press releases. Just honest analysis from someone who's been implementing this technology in real enterprises for 18 years.</p>
+<form class="subscribe-form" onsubmit="handleSubscribe(event)">
+<input placeholder="your@email.com" required="" type="email"/>
+<button type="submit">Subscribe</button>
+</form>
+<p class="subscribe-note">Join professionals who want substance over spin.</p>
 </section>
-
 <div class="container">
-    <div class="filter-row">
-        <span class="filter-label">Filter:</span>
-        <button class="filter-tab active" onclick="filterArticles('all', event)">All</button>
-        <button class="filter-tab" onclick="filterArticles('copilot', event)">Copilot</button>
-        <button class="filter-tab" onclick="filterArticles('ai', event)">AI &amp; ML</button>
-        <button class="filter-tab" onclick="filterArticles('rpa', event)">RPA</button>
-        <button class="filter-tab" onclick="filterArticles('enterprise', event)">Enterprise</button>
-    </div>
-
-    <div class="articles-grid" id="newsletter-articles">
-        <div class="articles-loading">&#9679; Loading articles...</div>
-    </div>
-
-    <div class="load-more-row">
-        <button class="load-more-btn" id="load-more-btn" style="display:none;" onclick="loadMoreArticles()">Load Earlier Articles</button>
-    </div>
+<div class="filter-row">
+<span class="filter-label">Filter:</span>
+<button class="filter-tab active" onclick="filterArticles('all', event)">All</button>
+<button class="filter-tab" onclick="filterArticles('copilot', event)">Copilot</button>
+<button class="filter-tab" onclick="filterArticles('ai', event)">AI &amp; ML</button>
+<button class="filter-tab" onclick="filterArticles('rpa', event)">RPA</button>
+<button class="filter-tab" onclick="filterArticles('enterprise', event)">Enterprise</button>
 </div>
-
+<div class="articles-grid" id="newsletter-articles">
+<article class="article-card" data-category="rpa">
+<div class="article-image" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); display: flex; align-items: center; justify-content: center; font-size: 4rem;">
+                    🤖
+                </div>
+<div class="article-content">
+<div class="article-meta">
+<span class="article-category">RPA &amp; Automation</span>
+<span class="article-date">Mar 01, 2026</span>
+</div>
+<h3 class="article-title">The AI-Driven Evolution of RPA: Charting the Course in 2026</h3>
+<p class="article-excerpt">Robotic Process Automation is no longer a standalone technology; it has become deeply interwoven with advanced AI, transforming how businesses operate. This symbiotic relationship is reshaping digital workplaces, promising unprecedented efficiency and innovation.</p>
+<p class="article-source">Analysis by Karthikeyan Selvam | karthikeyanselvam.com</p>
+<a class="read-more" onclick="openArticle('EyPxjG8b9PPatu3iXepB')" style="cursor:pointer;">Read Full Analysis →</a>
+</div>
+</article>
+<article class="article-card" data-category="ai">
+<div class="article-image" style="background: linear-gradient(135deg, #764ba2 0%, #667eea 100%); display: flex; align-items: center; justify-content: center; font-size: 4rem;">
+                    🧠
+                </div>
+<div class="article-content">
+<div class="article-meta">
+<span class="article-category">AI &amp; ML</span>
+<span class="article-date">Mar 01, 2026</span>
+</div>
+<h3 class="article-title">Navigating the AI Frontier: Why Governance is Your Enterprise's Strategic Imperative</h3>
+<p class="article-excerpt">As generative AI matures from novelty to fundamental business driver, the spotlight shifts inevitably to robust governance and ethical frameworks. Proactive strategy in this domain is no longer optional; it's the bedrock of sustainable enterprise innovation and trust.</p>
+<p class="article-source">Analysis by Karthikeyan Selvam | karthikeyanselvam.com</p>
+<a class="read-more" onclick="openArticle('8BDoXxt1JxKHnLnC83w2')" style="cursor:pointer;">Read Full Analysis →</a>
+</div>
+</article>
+<article class="article-card" data-category="copilot">
+<div class="article-image" style="background: linear-gradient(135deg, #e94560 0%, #764ba2 100%); display: flex; align-items: center; justify-content: center; font-size: 4rem;">
+                    ⚙️
+                </div>
+<div class="article-content">
+<div class="article-meta">
+<span class="article-category">Microsoft Copilot</span>
+<span class="article-date">Mar 01, 2026</span>
+</div>
+<h3 class="article-title">Copilot's Maturation: Beyond Novelty to Strategic Imperative in 2026 Workplaces</h3>
+<p class="article-excerpt">The initial fanfare around Microsoft Copilot has evolved into a strategic mandate for digital workplaces globally. Businesses are now grappling with how to effectively integrate this powerful AI into their core operations, transforming productivity.</p>
+<p class="article-source">Analysis by Karthikeyan Selvam | karthikeyanselvam.com</p>
+<a class="read-more" onclick="openArticle('wCk14uqLRgqFgiOoVDRC')" style="cursor:pointer;">Read Full Analysis →</a>
+</div>
+</article>
+<div class="articles-loading">● Loading articles...</div>
+</div>
+<div class="load-more-row">
+<button class="load-more-btn" id="load-more-btn" onclick="loadMoreArticles()" style="display:none;">Load Earlier Articles</button>
+</div>
+</div>
 <div class="modal-overlay" id="article-modal">
-    <div class="modal-box">
-        <button class="modal-close" onclick="closeArticle()">&#x2715;</button>
-        <div class="modal-loading" id="modal-loading">Loading article...</div>
-        <div id="modal-content" style="display:none;">
-            <div class="modal-cat" id="modal-category"></div>
-            <h2 class="modal-title" id="modal-title"></h2>
-            <div class="modal-date" id="modal-date"></div>
-            <div class="modal-body" id="modal-body"></div>
-            <div class="modal-byline">Written by <strong>Karthikeyan Selvam</strong> &mdash; Digital Workplace &amp; AI Consultant &mdash; karthikeyanselvam.com</div>
-        </div>
-    </div>
+<div class="modal-box">
+<button class="modal-close" onclick="closeArticle()">✕</button>
+<div class="modal-loading" id="modal-loading">Loading article...</div>
+<div id="modal-content" style="display:none;">
+<div class="modal-cat" id="modal-category"></div>
+<h2 class="modal-title" id="modal-title"></h2>
+<div class="modal-date" id="modal-date"></div>
+<div class="modal-body" id="modal-body"></div>
+<div class="modal-byline">Written by <strong>Karthikeyan Selvam</strong> — Digital Workplace &amp; AI Consultant — karthikeyanselvam.com</div>
 </div>
-
+</div>
+</div>
 <footer>
-    <p>Karthikeyan Selvam &mdash; AI &amp; Digital Workplace Insights</p>
-    <div class="footer-links">
-        <a href="/">Home</a>
-        <a href="/experience.html">Experience</a>
-        <a href="https://www.linkedin.com/in/karthikeyan-selvam-567b52157/" target="_blank">LinkedIn</a>
-        <a href="mailto:hello@karthikeyanselvam.com">Contact</a>
-    </div>
+<p>Karthikeyan Selvam — AI &amp; Digital Workplace Insights</p>
+<div class="footer-links">
+<a href="/">Home</a>
+<a href="/experience.html">Experience</a>
+<a href="https://www.linkedin.com/in/karthikeyan-selvam-567b52157/" target="_blank">LinkedIn</a>
+<a href="mailto:hello@karthikeyanselvam.com">Contact</a>
+</div>
 </footer>
-
 <script>
     function filterArticles(category, e) {
         document.querySelectorAll('.filter-tab').forEach(t => t.classList.remove('active'));
@@ -190,7 +228,6 @@
     }
     console.log('%c KS | karthikeyanselvam.com', 'color:#00C9A7;font-size:18px;font-weight:bold;');
 </script>
-
 <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.0/firebase-app.js";
     import { getFirestore, doc, getDoc, collection, addDoc, getDocs, query, orderBy, limit, serverTimestamp }
