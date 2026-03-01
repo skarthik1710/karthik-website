@@ -1,12 +1,15 @@
 name: Daily Newsletter Update
 
+
 on:
   schedule:
-    - cron: '0 6 * * *'
+    - cron: '0 6 * * 5'
   workflow_dispatch:
+
 
 permissions:
   contents: write
+
 
 jobs:
   update-newsletter:
@@ -15,19 +18,23 @@ jobs:
       - name: Checkout repo
         uses: actions/checkout@v3
 
+
       - name: Set up Python
         uses: actions/setup-python@v4
         with:
           python-version: '3.11'
 
+
       - name: Install dependencies
         run: pip install google-genai firebase-admin requests beautifulsoup4
+
 
       - name: Generate newsletter articles
         env:
           GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
           FIREBASE_SERVICE_ACCOUNT: ${{ secrets.FIREBASE_SERVICE_ACCOUNT }}
         run: python scripts/generate_newsletter.py
+
 
       - name: Commit updated newsletter.html
         run: |
@@ -37,9 +44,17 @@ jobs:
           git commit -m "🗞️ Auto newsletter update - $(date +'%Y-%m-%d')" || echo "No changes"
           git push https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/skarthik1710/karthik-website.git main
 
+
       - name: Deploy to Firebase Hosting
         uses: w9jds/firebase-action@master
         with:
           args: deploy --only hosting
         env:
           FIREBASE_TOKEN: ${{ secrets.FIREBASE_TOKEN }}
+
+
+      - name: Send Newsletter to Subscribers
+        run: |
+          curl -X POST "https://us-central1-karthik-website-b5801.cloudfunctions.net/sendNewsletter" \
+            -H "Content-Type: application/json" \
+            -d "{\"subject\": \"AI Insights — $(date +'%B %d, %Y')\", \"body\": \"<p>Your weekly AI and Digital Workplace insights are live!</p><p><a href='https://karthikeyanselvam.com/newsletter.html' style='color:#00C9A7;'>Read this week's analysis →</a></p>\"}"
