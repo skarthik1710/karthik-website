@@ -26,7 +26,7 @@ RSS_FEEDS = [
     "https://www.artificialintelligence-news.com/feed/",    # AI News
     "https://techcrunch.com/category/artificial-intelligence/feed/",  # TechCrunch AI
     "https://www.theverge.com/rss/ai-artificial-intelligence/index.xml", # The Verge AI
-    "https://feeds.reuters.com/reuters/technologyNews",     # Reuters Tech
+    
 ]
 
 TOPICS = [
@@ -87,13 +87,14 @@ def fetch_real_news(max_items=15):
 def filter_news_for_topic(news, topic):
     keywords = topic.lower().split()
     scored   = []
-    for a in news:
+    for i, a in enumerate(news):
         text  = (a["title"] + " " + a["summary"]).lower()
         score = sum(1 for k in keywords if k in text)
         if score > 0:
-            scored.append((score, a))
-    scored.sort(reverse=True)
-    return [a for _, a in scored[:5]] or news[:3]   # fallback: top 3 general
+            scored.append((score, i, a))
+    scored.sort(key=lambda x: (x[0], x[1]), reverse=True)
+    results = [a for _, _, a in scored[:5]]
+    return results if results else news[:3]
 
 
 # ── 3. BUILD STRICT GROUNDED PROMPT ──────────────────────────────────────────
