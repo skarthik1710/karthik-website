@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Article Review | KS Admin</title>
+    <style>
+        :root { --teal:#00C9A7; --gold:#C9A84C; --bg:#060810; --bg-card:#0D1117; --bg-elevated:#161B22; --text:#E6EDF3; --text-muted:#8B949E; --border:rgba(0,201,167,0.15); --red:#e94560; }
+        * { margin:0; padding:0; box-sizing:border-box; }
+        body { font-family:'Inter',-apple-system,sans-serif; background:var(--bg); color:var(--text); min-height:100vh; padding:2rem; }
+        .header { max-width:900px; margin:0 auto 2rem; display:flex; justify-content:space-between; align-items:center; }
+        .logo { font-size:1.2rem; font-weight:800; color:var(--teal); }
+        .badge { background:rgba(233,69,96,0.15); border:1px solid var(--red); color:var(--red); padding:0.3rem 0.8rem; border-radius:20px; font-size:0.75rem; font-weight:700; }
+        .container { max-width:900px; margin:0 auto; }
+        h2 { font-size:1.6rem; margin-bottom:0.4rem; }
+        .subtitle { color:var(--text-muted); font-size:0.9rem; margin-bottom:2rem; }
+        .article-review { background:var(--bg-card); border:1px solid var(--border); border-radius:16px; padding:2rem; margin-bottom:2rem; }
+        .article-review.approved { border-color:var(--teal); }
+        .article-review.rejected { border-color:var(--red); opacity:0.5; }
+        .meta { display:flex; gap:1rem; align-items:center; margin-bottom:1rem; flex-wrap:wrap; }
+        .cat { background:rgba(0,201,167,0.1); border:1px solid var(--border); color:var(--teal); padding:0.25rem 0.8rem; border-radius:12px; font-size:0.72rem; font-weight:700; text-transform:uppercase; }
+        .date { font-size:0.78rem; color:var(--text-muted); }
+        .status-badge { padding:0.25rem 0.8rem; border-radius:12px; font-size:0.72rem; font-weight:700; }
+        .status-pending  { background:rgba(201,168,76,0.15); border:1px solid var(--gold); color:var(--gold); }
+        .status-approved { background:rgba(0,201,167,0.15); border:1px solid var(--teal); color:var(--teal); }
+        .status-rejected { background:rgba(233,69,96,0.15); border:1px solid var(--red); color:var(--red); }
+        h3 { font-size:1.3rem; font-weight:700; margin-bottom:0.6rem; line-height:1.3; }
+        .excerpt { color:var(--text-muted); font-size:0.9rem; margin-bottom:1rem; line-height:1.6; }
+        .sources { background:var(--bg-elevated); border-radius:8px; padding:1rem; margin-bottom:1.2rem; }
+        .sources h4 { font-size:0.75rem; color:var(--teal); text-transform:uppercase; letter-spacing:1px; margin-bottom:0.6rem; }
+        .sources a { display:block; color:var(--text-muted); font-size:0.82rem; text-decoration:none; margin-bottom:0.3rem; transition:color 0.2s; }
+        .sources a:hover { color:var(--teal); }
+        .body-preview { color:var(--text-muted); font-size:0.88rem; line-height:1.8; white-space:pre-wrap; max-height:300px; overflow-y:auto; padding:1rem; background:var(--bg-elevated); border-radius:8px; margin-bottom:1.2rem; }
+        .actions { display:flex; gap:1rem; flex-wrap:wrap; }
+        .btn { padding:0.7rem 1.8rem; border-radius:8px; border:none; font-weight:700; font-size:0.88rem; cursor:pointer; transition:all 0.2s; }
+        .btn-approve { background:var(--teal); color:#060810; }
+        .btn-approve:hover { background:#00e8c0; }
+        .btn-reject  { background:transparent; border:1px solid var(--red); color:var(--red); }
+        .btn-reject:hover { background:rgba(233,69,96,0.1); }
+        .empty { text-align:center; padding:4rem; color:var(--text-muted); }
+        .empty span { font-size:3rem; display:block; margin-bottom:1rem; }
+        .toast { position:fixed; bottom:2rem; right:2rem; background:var(--bg-card); border:1px solid var(--teal); color:var(--teal); padding:1rem 1.5rem; border-radius:10px; font-weight:600; display:none; z-index:999; }
+        .loading { text-align:center; padding:4rem; color:var(--text-muted); }
+    </style>
+</head>
+<body>
+<div class="header">
+    <div class="logo">KS<span style="color:#C9A84C">.</span> Admin</div>
+    <div class="badge">🔒 Private</div>
+</div>
+
+<div class="container">
+    <h2>Article Review Queue</h2>
+    <p class="subtitle">Review AI-generated articles before they go live on your website.</p>
+    <div id="articles-container"><div class="loading">⏳ Loading articles...</div></div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.0/firebase-app.js";
+    import { getFirestore, collection, getDocs, doc, updateDoc, query, orderBy, where }
+        from "https://www.gstatic.com/firebasejs/10.7.0/firebase-firestore.js";
+
+    const firebaseConfig = {
+        apiKey: "AIzaSyCTmJf_t33Fia2n06xDASC5W4vk7LbvMBc",
+        authDomain: "karthik-website-b5801.firebaseapp.com",
+        projectId: "karthik-website-b5801"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const db  = getFirestore(app);
+
+    function showToast(msg, color="#00C9A7") {
+        const t = document.getElementById("toast");
+        t.textContent = msg;
+        t.style.borderColor = color;
+        t.style.color = color;
+        t.style.display = "block";
+        setTimeout(() => t.style.display = "none", 3000);
+    }
+
+    window.approveArticle = async function(docId) {
+        try {
+            await updateDoc(doc(db, "newsletter_articles", docId), {
+                status: "approved",
+                approved_at: new Date().toISOString()
+            });
+            document.getElementById("card-" + docId).className = "article-review approved";
+            document.getElementById("status-" + docId).className = "status-badge status-approved";
+            document.getElementById("status-" + docId).textContent = "✅ Approved";
+            document.getElementById("actions-" + docId).innerHTML = "<span style='color:var(--teal);font-size:0.88rem;'>✅ Article is now LIVE on your website!</span>";
+            showToast("✅ Article approved and published!");
+        } catch(e) {
+            console.error(e);
+            showToast("❌ Error: " + e.message, "#e94560");
+        }
+    };
+
+    window.rejectArticle = async function(docId) {
+        if (!confirm("Reject this article? It will be hidden from the website.")) return;
+        try {
+            await updateDoc(doc(db, "newsletter_articles", docId), { status: "rejected" });
+            document.getElementById("card-" + docId).className = "article-review rejected";
+            document.getElementById("status-" + docId).className = "status-badge status-rejected";
+            document.getElementById("status-" + docId).textContent = "❌ Rejected";
+            document.getElementById("actions-" + docId).innerHTML = "<span style='color:#e94560;font-size:0.88rem;'>❌ Article rejected and hidden.</span>";
+            showToast("Article rejected.", "#e94560");
+        } catch(e) {
+            console.error(e);
+            showToast("❌ Error: " + e.message, "#e94560");
+        }
+    };
+
+    async function loadArticles() {
+        const container = document.getElementById("articles-container");
+        try {
+            const q = query(collection(db, "newsletter_articles"), orderBy("created_at", "desc"));
+            const snap = await getDocs(q);
+            if (snap.empty) {
+                container.innerHTML = '<div class="empty"><span>📭</span>No articles yet. Run the generator to create some!</div>';
+                return;
+            }
+            let html = '';
+            snap.forEach(docSnap => {
+                const d = docSnap.data();
+                const id = docSnap.id;
+                const status = d.status || "pending_review";
+                const statusLabel = status === "approved" ? "✅ Approved" : status === "rejected" ? "❌ Rejected" : "⏳ Pending Review";
+                const statusClass = status === "approved" ? "status-approved" : status === "rejected" ? "status-rejected" : "status-pending";
+                const cardClass   = status === "approved" ? "approved" : status === "rejected" ? "rejected" : "";
+                const sources = (d.news_sources || []).map(s =>
+                    `<a href="${s.url}" target="_blank">🔗 ${s.title} — ${s.source}</a>`
+                ).join("") || "<span style='color:#8B949E'>No sources recorded</span>";
+
+                const actions = status === "pending_review"
+                    ? `<button class="btn btn-approve" onclick="approveArticle('${id}')">✅ Approve & Publish</button>
+                       <button class="btn btn-reject"  onclick="rejectArticle('${id}')">❌ Reject</button>`
+                    : status === "approved"
+                    ? `<span style="color:var(--teal);font-size:0.88rem;">✅ Article is LIVE on your website!</span>`
+                    : `<span style="color:#e94560;font-size:0.88rem;">❌ Rejected — not visible on website.</span>`;
+
+                html += `
+                <div class="article-review ${cardClass}" id="card-${id}">
+                    <div class="meta">
+                        <span class="cat">${d.category || "AI"}</span>
+                        <span class="date">${d.date || ""}</span>
+                        <span class="status-badge ${statusClass}" id="status-${id}">${statusLabel}</span>
+                    </div>
+                    <h3>${d.title || "Untitled"}</h3>
+                    <p class="excerpt">${d.excerpt || ""}</p>
+                    <div class="sources">
+                        <h4>📰 News Sources Used</h4>
+                        ${sources}
+                    </div>
+                    <div class="body-preview">${d.body || "No body content."}</div>
+                    <div class="actions" id="actions-${id}">${actions}</div>
+                </div>`;
+            });
+            container.innerHTML = html;
+        } catch(e) {
+            console.error(e);
+            container.innerHTML = `<div class="empty"><span>⚠️</span>Error loading articles: ${e.message}</div>`;
+        }
+    }
+
+    // Check URL params for quick approve/reject from email link
+    const params = new URLSearchParams(window.location.search);
+    if (params.get("id") && params.get("action")) {
+        const id     = params.get("id");
+        const action = params.get("action");
+        if (action === "approve") window.approveArticle(id);
+        if (action === "reject")  window.rejectArticle(id);
+    }
+
+    loadArticles();
+</script>
+</body>
+</html>
