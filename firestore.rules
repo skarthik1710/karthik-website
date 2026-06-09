@@ -1,0 +1,40 @@
+rules_version = '2';
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // The one Google account allowed to review/approve drafts.
+    // Sign-in on /admin/review.html must use this exact email.
+    function isAdmin() {
+      return request.auth != null
+        && request.auth.token.email_verified == true
+        && request.auth.token.email == 'skarthik1710@gmail.com';
+    }
+
+    // Newsletter content (articles + per-issue extras: links, hype_check).
+    // Public can read ONLY approved items (what the live site renders).
+    // The admin can read everything (incl. drafts) and change status.
+    match /newsletter_articles/{docId} {
+      allow read: if resource.data.status == 'approved' || isAdmin();
+      allow update: if isAdmin();
+      allow create, delete: if false;   // writes happen via the Admin SDK in CI
+    }
+
+    // Subscriber list. The public signup form (newsletter.html) creates docs
+    // directly, so allow a tightly-shaped create only. Reading/editing the list
+    // is never allowed from the client (the sender uses the Admin SDK).
+    match /customers/{docId} {
+      allow create: if request.resource.data.keys().hasOnly(['email', 'subscribedAt', 'active'])
+        && request.resource.data.email is string
+        && request.resource.data.email.matches('^[^@\\s]+@[^@\\s]+\\.[^@\\s]+$')
+        && request.resource.data.email.size() < 254
+        && request.resource.data.active == true;
+      allow read, update, delete: if false;
+    }
+
+    // Default deny for anything else.
+    match /{document=**} {
+      allow read, write: if false;
+    }
+  }
+}

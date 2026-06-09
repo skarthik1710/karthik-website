@@ -46,13 +46,31 @@
 <body>
 <div class="header">
     <div class="logo">KS<span style="color:#C9A84C">.</span> Admin</div>
-    <div class="badge">🔒 Private</div>
+    <div style="display:flex;gap:0.8rem;align-items:center;">
+        <span id="who" style="font-size:0.8rem;color:var(--text-muted);"></span>
+        <button id="signout-btn" class="btn btn-reject" style="display:none;padding:0.4rem 1rem;" onclick="signOutAdmin()">Sign out</button>
+        <div class="badge">🔒 Private</div>
+    </div>
 </div>
 
 <div class="container">
     <h2>Article Review Queue</h2>
     <p class="subtitle">Review AI-generated articles before they go live on your website.</p>
-    <div id="articles-container"><div class="loading">⏳ Loading articles...</div></div>
+
+    <div id="auth-gate" class="empty" style="display:none;">
+        <span>🔐</span>
+        <p style="margin-bottom:1.2rem;">Sign in to review and approve drafts.</p>
+        <button class="btn btn-approve" onclick="signInAdmin()">Sign in with Google</button>
+    </div>
+
+    <div id="denied" class="empty" style="display:none;">
+        <span>⛔</span>
+        <p>This account isn't authorised to review drafts.</p>
+        <p id="denied-email" style="font-size:0.8rem;margin-top:0.5rem;"></p>
+        <button class="btn btn-reject" style="margin-top:1.2rem;" onclick="signOutAdmin()">Sign out</button>
+    </div>
+
+    <div id="articles-container"></div>
 </div>
 
 <div class="toast" id="toast"></div>
@@ -61,6 +79,8 @@
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.0/firebase-app.js";
     import { getFirestore, collection, getDocs, doc, updateDoc, query, orderBy, where }
         from "https://www.gstatic.com/firebasejs/10.7.0/firebase-firestore.js";
+    import { getAuth, GoogleAuthProvider, signInWithPopup, signOut, onAuthStateChanged }
+        from "https://www.gstatic.com/firebasejs/10.7.0/firebase-auth.js";
 
     const firebaseConfig = {
         apiKey: "AIzaSyCTmJf_t33Fia2n06xDASC5W4vk7LbvMBc",
@@ -68,8 +88,15 @@
         projectId: "karthik-website-b5801"
     };
 
-    const app = initializeApp(firebaseConfig);
-    const db  = getFirestore(app);
+    const app  = initializeApp(firebaseConfig);
+    const db   = getFirestore(app);
+    const auth = getAuth(app);
+
+    window.signInAdmin = () => signInWithPopup(auth, new GoogleAuthProvider())
+        .catch(e => showToast("❌ Sign-in failed: " + e.message, "#e94560"));
+    window.signOutAdmin = () => signOut(auth);
+
+    const show = (id, on) => document.getElementById(id).style.display = on ? "" : "none";
 
     function showToast(msg, color="#00C9A7") {
         const t = document.getElementById("toast");
@@ -160,20 +187,45 @@
             container.innerHTML = html;
         } catch(e) {
             console.error(e);
+            if (e.code === "permission-denied") {
+                show("articles-container", false);
+                show("denied", true);
+                document.getElementById("denied-email").textContent =
+                    auth.currentUser ? auth.currentUser.email : "";
+                return;
+            }
             container.innerHTML = `<div class="empty"><span>⚠️</span>Error loading articles: ${e.message}</div>`;
         }
     }
 
-    // Check URL params for quick approve/reject from email link
-    const params = new URLSearchParams(window.location.search);
-    if (params.get("id") && params.get("action")) {
-        const id     = params.get("id");
-        const action = params.get("action");
-        if (action === "approve") window.approveArticle(id);
-        if (action === "reject")  window.rejectArticle(id);
+    function runQuickAction() {
+        const params = new URLSearchParams(window.location.search);
+        if (params.get("id") && params.get("action")) {
+            const id     = params.get("id");
+            const action = params.get("action");
+            if (action === "approve") window.approveArticle(id);
+            if (action === "reject")  window.rejectArticle(id);
+        }
     }
 
-    loadArticles();
+    onAuthStateChanged(auth, user => {
+        if (user) {
+            document.getElementById("who").textContent = user.email;
+            show("signout-btn", true);
+            show("auth-gate", false);
+            show("denied", false);
+            show("articles-container", true);
+            document.getElementById("articles-container").innerHTML =
+                '<div class="loading">⏳ Loading articles...</div>';
+            loadArticles().then(runQuickAction);
+        } else {
+            document.getElementById("who").textContent = "";
+            show("signout-btn", false);
+            show("articles-container", false);
+            show("denied", false);
+            show("auth-gate", true);
+        }
+    });
 </script>
 </body>
 </html>
