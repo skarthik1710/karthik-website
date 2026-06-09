@@ -1,0 +1,13 @@
+Anthropic released Claude Fable 5 today — its most capable model yet. The headline writes itself. The part nobody puts in the headline: it lists at twice the price of Opus 4.8, which shipped two weeks ago. $10 / $50 per million tokens vs $5 / $25.
+
+After 18 years of rollouts, here's the pattern I watch for: a team wires the newest, smartest model into everything — the FAQ bot, the classifier, the summarizer — and the invoice shows up a month later looking like a second mortgage.
+
+Most enterprise AI work isn't frontier work. It's retrieval, extraction, routing, drafting. A mid-tier model handles it fine. Fable 5 earns its price on the genuinely hard problems — long-horizon agents, deep work across a large codebase, analysis with a thousand moving parts. Point it there. Don't point it at "what are your hours."
+
+One more thing to test before you commit: reasoning is always on, with no off switch. Great for hard problems — worth benchmarking carefully for anything latency-sensitive and customer-facing.
+
+Fable 5 is a real step up. So is the cost. Treat it like a scalpel, not a default.
+
+(There's also Claude Mythos 5 — invite-only, aimed at defensive security via Anthropic's Project Glasswing. Worth knowing it exists.)
+
+#AI #EnterpriseAI #DigitalWorkplace
