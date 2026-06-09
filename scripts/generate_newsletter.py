@@ -23,6 +23,9 @@ SITE_URL    = os.environ.get("SITE_URL", "https://karthikeyanselvam.com")
 
 # Auto-publish (Option B): generated articles go live immediately. The only
 # safeguards before subscribers see them are the grounded prompt + validate_article().
+# REVIEW_MODE flips a run to save drafts (pending_review) instead — for test runs you
+# eyeball in admin/review.html before anything is public.
+REVIEW_MODE    = os.environ.get("NEWSLETTER_REVIEW_MODE", "").strip().lower() in ("1", "true", "yes")
 RECENCY_DAYS   = 7      # only write about news from the last week
 MIN_BODY_WORDS = 350    # reject anything thinner than this
 
@@ -288,8 +291,9 @@ def validate_article(p):
 
 # ── 8. SAVE TO FIRESTORE AS APPROVED (auto-publish) ───────────────────────────
 def save_to_firestore(parsed, date_str, news_sources):
+    status = "pending_review" if REVIEW_MODE else "approved"   # ← Option B default: auto-publish
     doc_ref = db.collection("newsletter_articles").document()
-    doc_ref.set({
+    record = {
         "title":        parsed["title"],
         "category":     parsed["category"],
         "category_key": parsed["category_key"],
@@ -298,11 +302,13 @@ def save_to_firestore(parsed, date_str, news_sources):
         "sources_used": parsed["sources_used"],
         "news_sources": [{"title": n["title"], "url": n["link"], "source": n["source"]} for n in news_sources],
         "date":         date_str,
-        "status":       "approved",          # ← AUTO-PUBLISH (Option B)
-        "auto_published": True,
+        "status":       status,
+        "auto_published": not REVIEW_MODE,
         "created_at":   firestore.SERVER_TIMESTAMP,
-        "published_at": firestore.SERVER_TIMESTAMP,
-    })
+    }
+    if not REVIEW_MODE:
+        record["published_at"] = firestore.SERVER_TIMESTAMP
+    doc_ref.set(record)
     return doc_ref.id
 
 
@@ -351,9 +357,13 @@ if __name__ == "__main__":
         for n in relevant:
             used_urls.add(n["link"])
         published.append(parsed["title"])
-        print(f"   ✅ PUBLISHED: {parsed['title']}")
+        verb = "SAVED AS DRAFT" if REVIEW_MODE else "PUBLISHED"
+        print(f"   ✅ {verb}: {parsed['title']}")
         print(f"   📌 Sources: {parsed['sources_used']}")
 
-    print(f"\n🎉 Done. {len(published)} article(s) auto-published and live:")
+    if REVIEW_MODE:
+        print(f"\n🧐 Done. {len(published)} draft(s) saved for review at {SITE_URL}/admin/review.html:")
+    else:
+        print(f"\n🎉 Done. {len(published)} article(s) auto-published and live:")
     for t in published:
         print(f"   • {t}")

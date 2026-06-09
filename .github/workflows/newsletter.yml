@@ -5,6 +5,11 @@ on:
   schedule:
     - cron: '0 6 * * 5'
   workflow_dispatch:
+    inputs:
+      review_mode:
+        description: 'Save articles as drafts for review (true) instead of auto-publishing (false)'
+        type: boolean
+        default: true
 
 
 permissions:
@@ -33,6 +38,7 @@ jobs:
         env:
           GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
           FIREBASE_SERVICE_ACCOUNT: ${{ secrets.FIREBASE_SERVICE_ACCOUNT }}
+          NEWSLETTER_REVIEW_MODE: ${{ github.event.inputs.review_mode }}
         run: python scripts/generate_newsletter.py
 
 
