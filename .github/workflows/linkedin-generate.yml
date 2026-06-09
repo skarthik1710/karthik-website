@@ -1,0 +1,64 @@
+name: Generate LinkedIn Draft
+
+# Twice a week (Tue & Thu), generate a grounded LinkedIn post draft, commit it to
+# linkedin_post.txt, and open a review issue. Generate-then-approve: this does NOT
+# post. You review, edit if needed, then run "Post to LinkedIn" to publish.
+on:
+  schedule:
+    - cron: '17 13 * * 2,4'   # Tue & Thu, 13:17 UTC
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  issues: write
+
+jobs:
+  generate:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install dependencies
+        run: pip install google-genai firebase-admin requests
+
+      - name: Generate draft
+        id: gen
+        env:
+          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+          FIREBASE_SERVICE_ACCOUNT: ${{ secrets.FIREBASE_SERVICE_ACCOUNT }}
+        run: python scripts/generate_linkedin_post.py
+
+      - name: Commit draft
+        if: steps.gen.outputs.generated == 'true'
+        run: |
+          git config user.email "newsletter-bot@karthikeyanselvam.com"
+          git config user.name "Newsletter Bot"
+          git add linkedin_post.txt
+          git commit -m "LinkedIn draft - $(date +'%Y-%m-%d')" || echo "No changes to commit"
+          git push
+
+      - name: Open review issue
+        if: steps.gen.outputs.generated == 'true'
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          {
+            echo "A new LinkedIn draft was generated and committed to \`linkedin_post.txt\`."
+            echo ""
+            echo "**To publish:** review the text below, edit \`linkedin_post.txt\` on \`main\` if needed, then run the **Post to LinkedIn** workflow (Actions tab to Run workflow). Close this issue once posted or skipped."
+            echo ""
+            echo "---"
+            echo ""
+            echo '```'
+            cat linkedin_post.txt
+            echo '```'
+          } > issue_body.md
+          gh issue create \
+            --title "LinkedIn draft to review — $(date +'%Y-%m-%d')" \
+            --body-file issue_body.md
