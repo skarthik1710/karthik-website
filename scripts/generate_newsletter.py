@@ -2,8 +2,10 @@ import os
 import re
 import json
 import time
+import random
 import requests
-from datetime import datetime, timezone
+from datetime import datetime, timezone, timedelta
+from email.utils import parsedate_to_datetime
 from xml.etree import ElementTree
 import firebase_admin
 from firebase_admin import credentials, firestore
@@ -16,9 +18,13 @@ cred = credentials.Certificate(firebase_key)
 firebase_admin.initialize_app(cred)
 db = firestore.client()
 
-SENDGRID_API_KEY = os.environ.get("SENDGRID_API_KEY", "")
-ADMIN_EMAIL      = os.environ.get("ADMIN_EMAIL", "skarthik1710@gmail.com")
-SITE_URL         = os.environ.get("SITE_URL", "https://karthikeyanselvam.com")
+ADMIN_EMAIL = os.environ.get("ADMIN_EMAIL", "skarthik1710@gmail.com")
+SITE_URL    = os.environ.get("SITE_URL", "https://karthikeyanselvam.com")
+
+# Auto-publish (Option B): generated articles go live immediately. The only
+# safeguards before subscribers see them are the grounded prompt + validate_article().
+RECENCY_DAYS   = 7      # only write about news from the last week
+MIN_BODY_WORDS = 350    # reject anything thinner than this
 
 # --- Real News Sources (RSS feeds, no API key needed) ---
 RSS_FEEDS = [
@@ -26,7 +32,6 @@ RSS_FEEDS = [
     "https://www.artificialintelligence-news.com/feed/",    # AI News
     "https://techcrunch.com/category/artificial-intelligence/feed/",  # TechCrunch AI
     "https://www.theverge.com/rss/ai-artificial-intelligence/index.xml", # The Verge AI
-    
 ]
 
 TOPICS = [
@@ -37,23 +42,67 @@ TOPICS = [
     "Google Workspace AI and collaboration tools",
 ]
 
-CATEGORY_MAP = {
-    "Microsoft Copilot": ("copilot", "Microsoft Copilot"),
-    "AI & ML":           ("ai",      "AI & ML"),
-    "RPA & Automation":  ("rpa",     "RPA & Automation"),
-    "Enterprise Tech":   ("enterprise", "Enterprise Tech"),
-}
+
+# ── VOICE / STYLE GUIDE — Karthikeyan Selvam ──────────────────────────────────
+# Derived from his site copy (polished register) and how he talks in working
+# sessions (attitude). The goal is that a reader who knows him recognizes the voice.
+STYLE_GUIDE = """
+WRITE AS KARTHIKEYAN SELVAM. His voice is specific — match it, don't write a generic blog post.
+
+VOICE:
+- First-person practitioner with 18 years in the field. You've actually rolled this
+  out across enterprises — you write from the trenches, not from a press release.
+- Short, declarative sentences. Use the em-dash for a punchy aside. Vary length but lean tight.
+- Opinionated and concrete. Say what you actually think. State the uncomfortable part out loud.
+- Skeptical of hype and vanity metrics. Call out vendor spin, inflated numbers, and lazy assumptions.
+- Accuracy is non-negotiable. You'd be embarrassed to put a wrong number in front of experts —
+  so if a fact isn't in the sources, you cut it rather than guess.
+- Plain English. No buzzword salad ("leverage synergies", "in today's fast-paced world"),
+  no corporate filler, no emoji, no bullet lists.
+
+STRUCTURE:
+- Open with a sharp, specific hook tied to the actual news — often a slightly contrarian take.
+  Never open with throat-clearing or "In today's world".
+- Middle: your read on what it really means for enterprises, grounded in the sources.
+- Close with a practitioner's takeaway — what you'd do Monday morning, or what to watch for.
+
+VOICE ANCHORS (the rhythm to echo — do NOT copy verbatim):
+- "Process mining first, automation second — always."
+- "Technology is only 30% of a transformation. The other 70% is people."
+- "...architectures that survive a Monday morning in production."
+- "Because no one cares about backup until they need it."
+"""
 
 
-# ── 1. FETCH REAL NEWS FROM RSS ───────────────────────────────────────────────
-def fetch_real_news(max_items=15):
+# ── DATE HELPERS ──────────────────────────────────────────────────────────────
+def parse_pub_date(s):
+    if not s:
+        return None
+    s = s.strip()
+    try:
+        dt = parsedate_to_datetime(s)
+        if dt.tzinfo is None:
+            dt = dt.replace(tzinfo=timezone.utc)
+        return dt
+    except Exception:
+        pass
+    try:
+        dt = datetime.fromisoformat(s.replace("Z", "+00:00"))
+        if dt.tzinfo is None:
+            dt = dt.replace(tzinfo=timezone.utc)
+        return dt
+    except Exception:
+        return None
+
+
+# ── 1. FETCH REAL NEWS FROM RSS (recent only) ─────────────────────────────────
+def fetch_real_news(max_items=20):
     articles = []
     headers  = {"User-Agent": "Mozilla/5.0 (compatible; KSNewsletter/1.0)"}
     for url in RSS_FEEDS:
         try:
             resp = requests.get(url, timeout=10, headers=headers)
             root = ElementTree.fromstring(resp.content)
-            ns   = ""
             items = root.findall(".//item") or root.findall(".//{http://www.w3.org/2005/Atom}entry")
             for item in items[:5]:
                 def t(tag):
@@ -62,8 +111,7 @@ def fetch_real_news(max_items=15):
                 link    = t("link")
                 summary = t("description") or t("{http://www.w3.org/2005/Atom}summary")
                 pub     = t("pubDate") or t("{http://www.w3.org/2005/Atom}updated")
-                # strip html tags from summary
-                summary = re.sub(r"<[^>]+>", "", summary)[:400]
+                summary = re.sub(r"<[^>]+>", "", summary)[:400]  # strip html
                 if title and link:
                     articles.append({
                         "title":   title,
@@ -71,34 +119,69 @@ def fetch_real_news(max_items=15):
                         "summary": summary,
                         "source":  url.split("/")[2],
                         "pub":     pub,
+                        "pub_dt":  parse_pub_date(pub),
                     })
         except Exception as e:
             print(f"RSS fetch failed for {url}: {e}")
+
     # deduplicate by title
     seen, unique = set(), []
     for a in articles:
         if a["title"] not in seen:
             seen.add(a["title"])
             unique.append(a)
-    return unique[:max_items]
+
+    # recency filter: keep items from the last RECENCY_DAYS; keep undated items too
+    cutoff = datetime.now(timezone.utc) - timedelta(days=RECENCY_DAYS)
+    recent = [a for a in unique if (a["pub_dt"] is None or a["pub_dt"] >= cutoff)]
+
+    # if recency leaves us too thin, fall back to the freshest items we have
+    if len(recent) < 3:
+        dated = sorted([a for a in unique if a["pub_dt"]], key=lambda a: a["pub_dt"], reverse=True)
+        recent = (dated + [a for a in unique if not a["pub_dt"]])[:max_items]
+
+    print(f"   {len(recent)}/{len(unique)} items within last {RECENCY_DAYS} days")
+    return recent[:max_items]
 
 
-# ── 2. FILTER NEWS RELEVANT TO TOPIC ─────────────────────────────────────────
-def filter_news_for_topic(news, topic):
+# ── 2. PULL RECENT ARTICLES (for de-duplication) ──────────────────────────────
+def fetch_recent_history(limit=40):
+    """Past titles + source URLs we've already covered, so we don't repeat ourselves."""
+    titles, used_urls = [], set()
+    try:
+        q = (db.collection("newsletter_articles")
+               .order_by("created_at", direction=firestore.Query.DESCENDING)
+               .limit(limit))
+        for doc in q.stream():
+            d = doc.to_dict() or {}
+            if d.get("title"):
+                titles.append(d["title"])
+            for ns in (d.get("news_sources") or []):
+                if ns.get("url"):
+                    used_urls.add(ns["url"])
+    except Exception as e:
+        print(f"   ⚠️ Could not load history (continuing without de-dup): {e}")
+    return titles, used_urls
+
+
+# ── 3. FILTER NEWS RELEVANT TO TOPIC (skip already-used sources) ──────────────
+def filter_news_for_topic(news, topic, used_urls):
+    fresh = [a for a in news if a["link"] not in used_urls]
+    pool  = fresh if len(fresh) >= 3 else news  # don't starve if everything was used
     keywords = topic.lower().split()
-    scored   = []
-    for i, a in enumerate(news):
+    scored = []
+    for i, a in enumerate(pool):
         text  = (a["title"] + " " + a["summary"]).lower()
         score = sum(1 for k in keywords if k in text)
         if score > 0:
             scored.append((score, i, a))
     scored.sort(key=lambda x: (x[0], x[1]), reverse=True)
     results = [a for _, _, a in scored[:5]]
-    return results if results else news[:3]
+    return results if results else pool[:3]
 
 
-# ── 3. BUILD STRICT GROUNDED PROMPT ──────────────────────────────────────────
-def build_prompt(topic, relevant_news, today):
+# ── 4. BUILD STRICT, VOICE-MATCHED PROMPT ─────────────────────────────────────
+def build_prompt(topic, relevant_news, recent_titles, today):
     news_block = ""
     for i, a in enumerate(relevant_news, 1):
         news_block += f"""
@@ -110,7 +193,9 @@ SOURCE {i}:
   URL      : {a["link"]}
 """
 
-    return f"""You are Karthikeyan Selvam — a Digital Workplace & AI Consultant with 18 years of hands-on enterprise experience in Microsoft Copilot, RPA, AI Ops, and Enterprise IT. You are Azure- and Google Cloud-certified.
+    avoid_block = "\n".join(f"  - {t}" for t in recent_titles[:20]) or "  (none yet)"
+
+    return f"""{STYLE_GUIDE}
 
 Today is {today}.
 
@@ -121,15 +206,21 @@ REAL NEWS SOURCES FOR THIS ARTICLE (use ONLY these):
 ════════════════════════════════════════════════════
 {news_block}
 ════════════════════════════════════════════════════
+ALREADY COVERED IN RECENT ISSUES — do NOT repeat these topics or angles:
+{avoid_block}
+════════════════════════════════════════════════════
 
 STRICT RULES — violating any rule means the article is rejected:
-1. Every factual claim MUST come from the sources above. No invented statistics, no hallucinated product names, no made-up quotes.
-2. If you are unsure of a fact, omit it entirely.
-3. Write in first person as Karthikeyan Selvam — practitioner voice, not a generic blog post.
-4. Be specific and opinionated. Say what you actually think about this news, not generic observations.
+1. AUTHENTIC: every factual claim MUST come from the sources above. No invented
+   statistics, product names, quotes, or URLs. If you are unsure of a fact, omit it.
+2. RECENT: only discuss what's in these sources (all from the last few days). Do not
+   reach for older background facts unless they appear in a source.
+3. UNIQUE: do not rehash the "already covered" list. Find a fresh angle. Synthesize
+   in your own words — never copy phrasing from the source summaries.
+4. VOICE: write as Karthikeyan Selvam per the style guide. Opinionated practitioner,
+   not a neutral reporter.
 5. No bullet points. Flowing paragraphs only.
 6. Length: 450–550 words for BODY.
-7. Do NOT invent URLs or sources not listed above.
 
 OUTPUT FORMAT (exactly):
 TITLE: [A specific, compelling title that references actual news]
@@ -142,14 +233,14 @@ BODY:
 """
 
 
-# ── 4. GENERATE ARTICLE VIA GEMINI ───────────────────────────────────────────
-def generate_article(topic, relevant_news, today):
-    prompt = build_prompt(topic, relevant_news, today)
+# ── 5. GENERATE ARTICLE VIA GEMINI ────────────────────────────────────────────
+def generate_article(topic, relevant_news, recent_titles, today):
+    prompt = build_prompt(topic, relevant_news, recent_titles, today)
     for attempt in range(3):
         try:
             response = client.models.generate_content(
                 model="models/gemini-2.5-flash",
-                contents=prompt
+                contents=prompt,
             )
             return response.text
         except Exception as e:
@@ -162,30 +253,40 @@ def generate_article(topic, relevant_news, today):
     return None
 
 
-# ── 5. PARSE GEMINI RESPONSE ──────────────────────────────────────────────────
+# ── 6. PARSE GEMINI RESPONSE ──────────────────────────────────────────────────
 def parse_article(raw):
     def extract(pattern, text, default=""):
         m = re.search(pattern, text, re.DOTALL)
         return m.group(1).strip() if m else default
 
-    title        = extract(r"TITLE:\s*(.+)", raw)
-    category     = extract(r"CATEGORY:\s*(.+)", raw)
-    category_key = extract(r"CATEGORY_KEY:\s*(.+)", raw).lower()
-    excerpt      = extract(r"EXCERPT:\s*(.+?)(?=SOURCES_USED:|BODY:)", raw)
-    sources_used = extract(r"SOURCES_USED:\s*(.+)", raw)
-    body         = extract(r"BODY:\n(.+)", raw)
-
     return {
-        "title":        title or "AI Insights",
-        "category":     category or "AI & ML",
-        "category_key": category_key or "ai",
-        "excerpt":      excerpt,
-        "sources_used": sources_used,
-        "body":         body,
+        "title":        extract(r"TITLE:\s*(.+)", raw) or "AI Insights",
+        "category":     extract(r"CATEGORY:\s*(.+)", raw) or "AI & ML",
+        "category_key": (extract(r"CATEGORY_KEY:\s*(.+)", raw) or "ai").lower(),
+        "excerpt":      extract(r"EXCERPT:\s*(.+?)(?=SOURCES_USED:|BODY:)", raw),
+        "sources_used": extract(r"SOURCES_USED:\s*(.+)", raw),
+        "body":         extract(r"BODY:\n(.+)", raw),
     }
 
 
-# ── 6. SAVE TO FIRESTORE AS PENDING ──────────────────────────────────────────
+# ── 7. VALIDATE (the only gate before auto-publish) ───────────────────────────
+def validate_article(p):
+    body  = (p.get("body") or "").strip()
+    words = len(body.split())
+    if words < MIN_BODY_WORDS:
+        return False, f"too short ({words} words)"
+    if not p.get("title"):
+        return False, "missing title"
+    if not (p.get("sources_used") or "").strip():
+        return False, "no sources cited"
+    low = body.lower()
+    for bad in ["lorem ipsum", "as an ai", "i cannot", "[insert", "todo:", "xxxx", "as a language model"]:
+        if bad in low:
+            return False, f"contains placeholder/refusal marker: '{bad}'"
+    return True, "ok"
+
+
+# ── 8. SAVE TO FIRESTORE AS APPROVED (auto-publish) ───────────────────────────
 def save_to_firestore(parsed, date_str, news_sources):
     doc_ref = db.collection("newsletter_articles").document()
     doc_ref.set({
@@ -197,59 +298,12 @@ def save_to_firestore(parsed, date_str, news_sources):
         "sources_used": parsed["sources_used"],
         "news_sources": [{"title": n["title"], "url": n["link"], "source": n["source"]} for n in news_sources],
         "date":         date_str,
-        "status":       "pending_review",   # ← APPROVAL GATE
+        "status":       "approved",          # ← AUTO-PUBLISH (Option B)
+        "auto_published": True,
         "created_at":   firestore.SERVER_TIMESTAMP,
+        "published_at": firestore.SERVER_TIMESTAMP,
     })
     return doc_ref.id
-
-
-# ── 7. SEND APPROVAL EMAIL VIA SENDGRID ──────────────────────────────────────
-def send_approval_email(articles_info):
-    if not SENDGRID_API_KEY:
-        print("No SENDGRID_API_KEY set — skipping email.")
-        return
-
-    rows = ""
-    for a in articles_info:
-        approve_url = f"{SITE_URL}/admin/review.html?id={a['doc_id']}&action=approve"
-        reject_url  = f"{SITE_URL}/admin/review.html?id={a['doc_id']}&action=reject"
-        rows += f"""
-        <tr>
-          <td style="padding:12px; border-bottom:1px solid #eee;">
-            <strong>{a["title"]}</strong><br/>
-            <small style="color:#888">{a["category"]} &mdash; {a["excerpt"][:100]}...</small><br/><br/>
-            <a href="{approve_url}" style="background:#00C9A7;color:#fff;padding:8px 18px;border-radius:6px;text-decoration:none;margin-right:8px;">✅ Approve</a>
-            <a href="{reject_url}" style="background:#e94560;color:#fff;padding:8px 18px;border-radius:6px;text-decoration:none;">❌ Reject</a>
-          </td>
-        </tr>"""
-
-    html = f"""
-    <html><body style="font-family:Inter,sans-serif;background:#060810;color:#E6EDF3;padding:2rem;">
-      <h2 style="color:#00C9A7;">📬 New Articles Ready for Review</h2>
-      <p style="color:#8B949E;">{len(articles_info)} article(s) generated and waiting for your approval before going live.</p>
-      <table style="width:100%;border-collapse:collapse;">{rows}</table>
-      <p style="color:#8B949E;margin-top:2rem;font-size:0.85rem;">
-        Or review all drafts at: <a href="{SITE_URL}/admin/review.html" style="color:#00C9A7;">{SITE_URL}/admin/review.html</a>
-      </p>
-    </body></html>"""
-
-    payload = {
-        "personalizations": [{"to": [{"email": ADMIN_EMAIL}]}],
-        "from":    {"email": "newsletter@karthikeyanselvam.com", "name": "KS Newsletter Bot"},
-        "subject": f"✍️ {len(articles_info)} New Article(s) Awaiting Your Approval",
-        "content": [{"type": "text/html", "value": html}],
-    }
-
-    resp = requests.post(
-        "https://api.sendgrid.com/v3/mail/send",
-        headers={"Authorization": f"Bearer {SENDGRID_API_KEY}", "Content-Type": "application/json"},
-        json=payload,
-        timeout=15,
-    )
-    if resp.status_code == 202:
-        print("✅ Approval email sent!")
-    else:
-        print(f"⚠️ Email failed: {resp.status_code} {resp.text}")
 
 
 # ── MAIN ──────────────────────────────────────────────────────────────────────
@@ -259,34 +313,47 @@ if __name__ == "__main__":
 
     print("📰 Fetching real news...")
     all_news = fetch_real_news(max_items=20)
-    print(f"   Found {len(all_news)} articles from RSS feeds")
+    print(f"   Found {len(all_news)} usable articles from RSS feeds")
 
-    import random
+    print("🗂️  Loading recent history for de-duplication...")
+    recent_titles, used_urls = fetch_recent_history(limit=40)
+    print(f"   {len(recent_titles)} past titles, {len(used_urls)} source URLs already used")
+
     selected_topics = random.sample(TOPICS, 3)
-    articles_info   = []
+    published = []
 
     for topic in selected_topics:
         print(f"\n✍️  Writing: {topic}")
-        relevant = filter_news_for_topic(all_news, topic)
-        print(f"   Using {len(relevant)} relevant news sources")
-
-        raw = generate_article(topic, relevant, today)
-        if not raw:
-            print("   ⚠️ Generation failed, skipping.")
+        relevant = filter_news_for_topic(all_news, topic, used_urls)
+        print(f"   Using {len(relevant)} relevant (unused) news sources")
+        if not relevant:
+            print("   ⚠️ No fresh sources for this topic, skipping.")
             continue
 
-        parsed = parse_article(raw)
+        ok = False
+        for attempt in range(2):  # generate, validate, one retry
+            raw = generate_article(topic, relevant, recent_titles, today)
+            if not raw:
+                print("   ⚠️ Generation failed.")
+                continue
+            parsed = parse_article(raw)
+            ok, reason = validate_article(parsed)
+            if ok:
+                break
+            print(f"   ↻ Rejected ({reason}) — retrying...")
+
+        if not ok:
+            print("   ⚠️ Could not produce a valid article, skipping (nothing published).")
+            continue
+
         doc_id = save_to_firestore(parsed, date_str, relevant)
-        print(f"   ✅ Saved as PENDING: {parsed['title']}")
-        print(f"   📌 Sources used: {parsed['sources_used']}")
+        recent_titles.append(parsed["title"])  # avoid repeating within this same run
+        for n in relevant:
+            used_urls.add(n["link"])
+        published.append(parsed["title"])
+        print(f"   ✅ PUBLISHED: {parsed['title']}")
+        print(f"   📌 Sources: {parsed['sources_used']}")
 
-        articles_info.append({
-            "doc_id":   doc_id,
-            "title":    parsed["title"],
-            "category": parsed["category"],
-            "excerpt":  parsed["excerpt"],
-        })
-
-    print(f"\n📧 Sending approval email for {len(articles_info)} article(s)...")
-    send_approval_email(articles_info)
-    print("\n🎉 Done! Articles are PENDING your approval — nothing published yet.")
+    print(f"\n🎉 Done. {len(published)} article(s) auto-published and live:")
+    for t in published:
+        print(f"   • {t}")
