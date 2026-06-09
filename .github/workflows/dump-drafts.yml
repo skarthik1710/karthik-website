@@ -1,0 +1,37 @@
+name: Dump Newsletter Drafts
+
+# Manual, read-only utility: prints newsletter drafts (default: pending_review)
+# to the run log so they can be reviewed when the admin page is unavailable.
+# Makes no writes to Firestore.
+
+on:
+  workflow_dispatch:
+    inputs:
+      status:
+        description: 'Which status to dump (pending_review | approved | rejected)'
+        type: string
+        default: 'pending_review'
+
+permissions:
+  contents: read
+
+jobs:
+  dump-drafts:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install dependencies
+        run: pip install firebase-admin
+
+      - name: Dump drafts
+        env:
+          FIREBASE_SERVICE_ACCOUNT: ${{ secrets.FIREBASE_SERVICE_ACCOUNT }}
+          DUMP_STATUS: ${{ github.event.inputs.status }}
+        run: python scripts/dump_drafts.py
