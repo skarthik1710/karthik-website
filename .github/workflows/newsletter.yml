@@ -62,6 +62,12 @@ jobs:
       - name: Send Newsletter to Subscribers
         if: github.event_name == 'schedule'
         run: |
+          if [ ! -f newsletter_email.html ]; then
+            echo "No email body was generated (no articles?) — skipping send."
+            exit 0
+          fi
+          SUBJECT=$(cat newsletter_subject.txt 2>/dev/null || echo "AI Insights — $(date +'%B %d, %Y')")
+          jq -n --arg s "$SUBJECT" --rawfile b newsletter_email.html '{subject:$s, body:$b}' > payload.json
           curl -X POST "https://us-central1-karthik-website-b5801.cloudfunctions.net/sendNewsletter" \
             -H "Content-Type: application/json" \
-            -d "{\"subject\": \"AI Insights — $(date +'%B %d, %Y')\", \"body\": \"<p>Your weekly AI and Digital Workplace insights are live!</p><p><a href='https://karthikeyanselvam.com/newsletter.html' style='color:#00C9A7;'>Read this week's analysis →</a></p>\"}"
+            --data @payload.json

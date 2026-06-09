@@ -96,6 +96,29 @@
         @media(max-width:900px){ .article-card { grid-column:span 6; } .article-card.featured { grid-column:span 12; flex-direction:column; } .article-card.featured .article-banner { width:100%; height:200px; } }
         @media(max-width:600px){ .article-card { grid-column:span 12; } .modal-box { padding:2rem 1.5rem; } .modal-title { font-size:1.4rem; } }
     </style>
+<style>
+        /* Per-article takeaway + Monday action */
+        .article-takeaway { font-size:0.9rem; font-weight:600; color:var(--text); border-left:3px solid var(--teal); padding-left:0.7rem; margin:0 0 0.9rem; line-height:1.5; }
+        .modal-takeaway { font-size:1.05rem; font-weight:600; color:var(--text); border-left:3px solid var(--teal); padding:0.3rem 0 0.3rem 1rem; margin-bottom:1.8rem; line-height:1.6; }
+        .modal-action { margin-top:2.2rem; padding:1.2rem 1.4rem; background:var(--teal-glow); border:1px solid var(--border); border-radius:12px; }
+        .modal-action .label { font-size:0.72rem; font-weight:700; color:var(--teal); text-transform:uppercase; letter-spacing:1px; display:block; margin-bottom:0.4rem; }
+        .modal-action p { color:var(--text); font-size:0.95rem; line-height:1.6; margin:0; }
+        /* "This week" band: hype check + quick hits */
+        .this-week { display:grid; grid-template-columns:1fr 1fr; gap:1.5rem; margin-bottom:3.5rem; }
+        .tw-panel { background:var(--bg-card); border:1px solid var(--border); border-radius:16px; padding:1.6rem 1.8rem; }
+        .tw-panel.hype { border-color:var(--border-gold); }
+        .tw-label { font-size:0.72rem; font-weight:700; text-transform:uppercase; letter-spacing:1.5px; margin-bottom:1rem; }
+        .tw-panel.hype .tw-label { color:var(--gold); }
+        .tw-panel.links .tw-label { color:var(--teal); }
+        .hype-claim { font-style:italic; color:var(--text-muted); font-size:0.92rem; margin-bottom:0.7rem; line-height:1.6; }
+        .hype-reality { color:var(--text); font-size:0.95rem; line-height:1.65; }
+        .qh-item { margin-bottom:1.1rem; }
+        .qh-item:last-child { margin-bottom:0; }
+        .qh-item a { color:var(--teal); font-weight:600; text-decoration:none; font-size:0.92rem; line-height:1.4; }
+        .qh-item a:hover { color:#00e8c0; }
+        .qh-take { color:var(--text-muted); font-size:0.86rem; line-height:1.5; margin-top:0.2rem; }
+        @media(max-width:768px){ .this-week { grid-template-columns:1fr; } }
+    </style>
 </head>
 <body>
 <header class="header">
@@ -129,6 +152,7 @@
 <button class="filter-tab" onclick="filterArticles('rpa', event)">RPA</button>
 <button class="filter-tab" onclick="filterArticles('enterprise', event)">Enterprise</button>
 </div>
+<div class="this-week" id="this-week" style="display:none;"></div>
 <div class="articles-grid" id="newsletter-articles">
 <article class="article-card" data-category="ai">
 <div class="article-image" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); display: flex; align-items: center; justify-content: center; font-size: 4rem;">
@@ -369,7 +393,9 @@
 <div class="modal-cat" id="modal-category"></div>
 <h2 class="modal-title" id="modal-title"></h2>
 <div class="modal-date" id="modal-date"></div>
+<div class="modal-takeaway" id="modal-takeaway" style="display:none;"></div>
 <div class="modal-body" id="modal-body"></div>
+<div class="modal-action" id="modal-action" style="display:none;"><span class="label">Your move this week</span><p id="modal-action-text"></p></div>
 <div class="modal-byline">Written by <strong>Karthikeyan Selvam</strong> — Digital Workplace &amp; AI Consultant — karthikeyanselvam.com</div>
 </div>
 </div>
@@ -447,30 +473,39 @@
         }
     };
 
+    // Escape text before inserting via innerHTML
+    function esc(s) {
+        return (s == null ? '' : String(s))
+            .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
+            .replace(/"/g, '&quot;').replace(/'/g, '&#39;');
+    }
+
     // BUILD ARTICLE CARD HTML
     function buildCard(docSnap, isFirst) {
         const d = docSnap.data();
-        const excerpt = d.summary || (d.body ? d.body.substring(0, 180) + '...' : '');
-        const color = (d.category === 'rpa') ? '#C9A84C' : '#00C9A7';
+        const excerpt = d.excerpt || d.summary || (d.body ? d.body.substring(0, 180) + '...' : '');
+        const color = (d.category_key === 'rpa' || d.category === 'rpa') ? '#C9A84C' : '#00C9A7';
         const cat = (d.category || 'AI').toUpperCase().substring(0, 10);
+        const takeaway = d.takeaway ? `<p class="article-takeaway">${esc(d.takeaway)}</p>` : '';
         return `
-        <article class="article-card ${isFirst ? 'featured' : ''}" data-category="${d.category || 'ai'}">
+        <article class="article-card ${isFirst ? 'featured' : ''}" data-category="${esc(d.category_key || 'ai')}">
             <div class="article-banner">
                 <svg class="banner-svg" viewBox="0 0 400 200" xmlns="http://www.w3.org/2000/svg">
                     <rect width="400" height="200" fill="#0D1117"/>
                     <circle cx="200" cy="100" r="65" fill="none" stroke="${color}" stroke-width="1" opacity="0.4"/>
                     <circle cx="200" cy="100" r="40" fill="none" stroke="${color}" stroke-width="1" opacity="0.25"/>
                     <circle cx="200" cy="100" r="18" fill="${color}15"/>
-                    <text x="200" y="104" text-anchor="middle" fill="${color}" font-size="9" font-family="monospace" letter-spacing="2">${cat}</text>
+                    <text x="200" y="104" text-anchor="middle" fill="${color}" font-size="9" font-family="monospace" letter-spacing="2">${esc(cat)}</text>
                 </svg>
             </div>
             <div class="article-content">
                 <div class="article-meta">
-                    <span class="article-cat">${d.category || 'AI'}</span>
-                    <span class="article-date">${d.date || ''}</span>
+                    <span class="article-cat">${esc(d.category || 'AI')}</span>
+                    <span class="article-date">${esc(d.date || '')}</span>
                 </div>
-                <h3 class="article-title">${d.title || ''}</h3>
-                <p class="article-excerpt">${excerpt}</p>
+                <h3 class="article-title">${esc(d.title || '')}</h3>
+                ${takeaway}
+                <p class="article-excerpt">${esc(excerpt)}</p>
                 <div class="article-footer">
                     <span class="article-source">Analysis by Karthikeyan Selvam</span>
                     <button class="read-more" onclick="openArticle('${docSnap.id}')">Read Analysis &rarr;</button>
@@ -479,23 +514,58 @@
         </article>`;
     }
 
+    // BUILD "THIS WEEK" BAND (hype check + quick hits) from the latest issue
+    function renderThisWeek(hype, links) {
+        const band = document.getElementById('this-week');
+        let html = '';
+        if (hype) {
+            html += `
+            <div class="tw-panel hype">
+                <div class="tw-label">Hype Check</div>
+                <p class="hype-claim">${esc(hype.claim || '')}</p>
+                <p class="hype-reality">${esc(hype.reality || '')}</p>
+            </div>`;
+        }
+        if (links && Array.isArray(links.items) && links.items.length) {
+            let items = links.items.map(h => `
+                <div class="qh-item">
+                    <a href="${esc(h.url)}" target="_blank" rel="noopener">${esc(h.title)}</a>
+                    ${h.take ? `<div class="qh-take">${esc(h.take)}</div>` : ''}
+                </div>`).join('');
+            html += `
+            <div class="tw-panel links">
+                <div class="tw-label">${esc(links.title || 'Worth your time')}</div>
+                ${items}
+            </div>`;
+        }
+        if (html) { band.innerHTML = html; band.style.display = 'grid'; }
+    }
+
+    const isArticle = d => !d.type || d.type === 'article';
+
     // LOAD ARTICLES
     async function loadArticles() {
         const grid = document.getElementById('newsletter-articles');
         try {
-            const q = query(collection(db, "newsletter_articles"), where("status", "==", "approved"), orderBy("created_at", "desc"), limit(9));
+            const q = query(collection(db, "newsletter_articles"), where("status", "==", "approved"), orderBy("created_at", "desc"), limit(12));
             const snapshot = await getDocs(q);
             if (snapshot.empty) {
                 grid.innerHTML = '<div class="articles-empty"><p>Fresh articles are on their way!</p><span>New AI insights published every Friday</span></div>';
                 return;
             }
-            let html = '';
-            let isFirst = true;
-            snapshot.forEach(docSnap => { html += buildCard(docSnap, isFirst); isFirst = false; });
-            grid.innerHTML = html;
+            // Pull the latest hype check + links for the "This Week" band, then render articles only.
+            let hype = null, links = null, html = '', isFirst = true;
+            snapshot.forEach(docSnap => {
+                const d = docSnap.data();
+                if (d.type === 'hype_check') { if (!hype) hype = d; return; }
+                if (d.type === 'links')      { if (!links) links = d; return; }
+                html += buildCard(docSnap, isFirst); isFirst = false;
+            });
+            renderThisWeek(hype, links);
+            grid.innerHTML = html || '<div class="articles-empty"><p>Fresh articles are on their way!</p><span>New AI insights published every Friday</span></div>';
             applyMouseGlow();
             lastVisible = snapshot.docs[snapshot.docs.length - 1];
-            if (snapshot.size === 9) document.getElementById('load-more-btn').style.display = 'inline-block';
+            if (snapshot.size === 12) document.getElementById('load-more-btn').style.display = 'inline-block';
         } catch(err) {
             console.error('Load error:', err);
             grid.innerHTML = '<div class="articles-loading">Error loading articles. Please refresh.</div>';
@@ -514,8 +584,8 @@
             const snapshot = await getDocs(q);
             if (snapshot.empty) { btn.style.display = 'none'; return; }
             let html = '';
-            snapshot.forEach(docSnap => { html += buildCard(docSnap, false); });
-            grid.innerHTML += html;c
+            snapshot.forEach(docSnap => { if (isArticle(docSnap.data())) html += buildCard(docSnap, false); });
+            grid.innerHTML += html;
             applyMouseGlow();
             lastVisible = snapshot.docs[snapshot.docs.length - 1];
             btn.textContent = 'Load Earlier Articles';
@@ -544,7 +614,13 @@
                 document.getElementById('modal-category').textContent = d.category || '';
                 document.getElementById('modal-title').textContent = d.title || '';
                 document.getElementById('modal-date').textContent = d.date || '';
+                const takeawayEl = document.getElementById('modal-takeaway');
+                if (d.takeaway) { takeawayEl.textContent = d.takeaway; takeawayEl.style.display = 'block'; }
+                else { takeawayEl.style.display = 'none'; }
                 document.getElementById('modal-body').textContent = d.body || '';
+                const actionEl = document.getElementById('modal-action');
+                if (d.action) { document.getElementById('modal-action-text').textContent = d.action; actionEl.style.display = 'block'; }
+                else { actionEl.style.display = 'none'; }
                 loading.style.display = 'none';
                 content.style.display = 'block';
             } else {

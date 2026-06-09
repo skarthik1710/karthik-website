@@ -28,6 +28,13 @@ SITE_URL    = os.environ.get("SITE_URL", "https://karthikeyanselvam.com")
 REVIEW_MODE    = os.environ.get("NEWSLETTER_REVIEW_MODE", "").strip().lower() in ("1", "true", "yes")
 RECENCY_DAYS   = 7      # only write about news from the last week
 MIN_BODY_WORDS = 350    # reject anything thinner than this
+NUM_ARTICLES   = 2      # fewer, deeper pieces per issue
+QUICK_HITS     = 3      # "links worth your time" — headline + one-line take
+
+# Files the GitHub workflow reads to send the email (subject names the lead story,
+# body carries the takeaways/links so the inbox is useful on its own).
+SUBJECT_FILE = "newsletter_subject.txt"
+EMAIL_FILE   = "newsletter_email.html"
 
 # --- Real News Sources (RSS feeds, no API key needed) ---
 RSS_FEEDS = [
@@ -242,7 +249,9 @@ OUTPUT FORMAT (exactly):
 TITLE: [A specific, compelling title that references actual news]
 CATEGORY: [One of: Microsoft Copilot | AI & ML | RPA & Automation | Enterprise Tech]
 CATEGORY_KEY: [One of: copilot | ai | rpa | enterprise]
+TAKEAWAY: [ONE sentence — the single thing the reader should take away. Concrete, not a teaser. Start with who it's for, e.g. "If you run a Copilot rollout, ..."]
 EXCERPT: [2 sentences — hook the reader, reference real news, no fluff]
+ACTION: [ONE specific thing the reader could actually do THIS WEEK because of this news. A real step, not "stay informed". No fluff.]
 SOURCES_USED: [Comma-separated list of source domains you drew facts from]
 BODY:
 [Full article here — 450-550 words, first person, practitioner tone, grounded in the sources above]
@@ -276,11 +285,13 @@ def parse_article(raw):
         return m.group(1).strip() if m else default
 
     return {
-        "title":        extract(r"TITLE:\s*(.+)", raw) or "AI Insights",
-        "category":     extract(r"CATEGORY:\s*(.+)", raw) or "AI & ML",
-        "category_key": (extract(r"CATEGORY_KEY:\s*(.+)", raw) or "ai").lower(),
-        "excerpt":      extract(r"EXCERPT:\s*(.+?)(?=SOURCES_USED:|BODY:)", raw),
-        "sources_used": extract(r"SOURCES_USED:\s*(.+)", raw),
+        "title":        extract(r"TITLE:\s*([^\n]+)", raw) or "AI Insights",
+        "category":     extract(r"CATEGORY:\s*([^\n]+)", raw) or "AI & ML",
+        "category_key": (extract(r"CATEGORY_KEY:\s*([^\n]+)", raw) or "ai").lower(),
+        "takeaway":     extract(r"TAKEAWAY:\s*(.+?)(?=EXCERPT:|ACTION:|SOURCES_USED:|BODY:)", raw),
+        "excerpt":      extract(r"EXCERPT:\s*(.+?)(?=ACTION:|SOURCES_USED:|BODY:)", raw),
+        "action":       extract(r"ACTION:\s*(.+?)(?=SOURCES_USED:|BODY:)", raw),
+        "sources_used": extract(r"SOURCES_USED:\s*([^\n]+)", raw),
         "body":         extract(r"BODY:\n(.+)", raw),
     }
 
@@ -353,10 +364,13 @@ def save_to_firestore(parsed, date_str, news_sources):
     status = "pending_review" if REVIEW_MODE else "approved"   # ← Option B default: auto-publish
     doc_ref = db.collection("newsletter_articles").document()
     record = {
+        "type":         "article",
         "title":        parsed["title"],
         "category":     parsed["category"],
         "category_key": parsed["category_key"],
+        "takeaway":     parsed.get("takeaway", ""),
         "excerpt":      parsed["excerpt"],
+        "action":       parsed.get("action", ""),
         "body":         parsed["body"],
         "sources_used": parsed["sources_used"],
         "news_sources": [{"title": n["title"], "url": n["link"], "source": n["source"]} for n in news_sources],
@@ -371,23 +385,187 @@ def save_to_firestore(parsed, date_str, news_sources):
     return doc_ref.id
 
 
+# ── 9. QUICK HITS — "links worth your time" (headline + one-line take) ─────────
+def generate_quick_hits(news_items, today):
+    """One short, opinionated sentence per link, in Karthik's voice. Grounded:
+    any take that smuggles in a figure/model not in its source is dropped."""
+    if not news_items:
+        return []
+    src_block = ""
+    for i, a in enumerate(news_items, 1):
+        src_block += f'{i}. "{a["title"]}" ({a["source"]}) — {a["summary"]}\n'
+
+    prompt = f"""{STYLE_GUIDE}
+
+Today is {today}. Below are {len(news_items)} recent news items. For EACH, write ONE
+sentence in Karthik's voice — your sharp practitioner take on why it matters (or why it
+doesn't). No invented numbers, names, or figures beyond what's in the item. No hype.
+
+{src_block}
+
+OUTPUT: one line per item, numbered to match, format exactly:
+1. [your one-sentence take]
+2. [your one-sentence take]
+(continue for all items)
+"""
+    try:
+        resp = client.models.generate_content(model="models/gemini-2.5-flash", contents=prompt)
+        text = resp.text or ""
+    except Exception as e:
+        print(f"   ⚠️ Quick-hits generation failed: {e}")
+        return []
+
+    takes = {}
+    for line in text.splitlines():
+        m = re.match(r"\s*(\d+)[.)]\s*(.+)", line)
+        if m:
+            takes[int(m.group(1))] = m.group(2).strip()
+
+    hits = []
+    for i, a in enumerate(news_items, 1):
+        take = takes.get(i, "").strip()
+        if not take:
+            continue
+        ok, _ = check_grounding(take, [a])   # the take must not invent specifics
+        if not ok:
+            take = ""                         # keep the link, drop the ungrounded take
+        hits.append({"title": a["title"], "url": a["link"], "source": a["source"], "take": take})
+    return hits
+
+
+# ── 10. HYPE CHECK — call out one overblown claim of the week ──────────────────
+def generate_hype_check(news_items, today):
+    if not news_items:
+        return None
+    src_block = ""
+    for i, a in enumerate(news_items, 1):
+        src_block += f'{i}. "{a["title"]}" ({a["source"]}) — {a["summary"]}\n'
+
+    prompt = f"""{STYLE_GUIDE}
+
+Today is {today}. From the news items below, pick the ONE claim, headline, or vendor
+promise that is most overhyped or oversold, and cut it down to size in Karthik's voice.
+Quote ONLY what's in the items — invent no numbers or names.
+
+{src_block}
+
+OUTPUT format exactly:
+CLAIM: [the overblown claim, paraphrased from one item]
+REALITY: [your one or two sentence skeptical take — what's actually true / what to watch]
+SOURCE: [the source domain of the item you picked]
+"""
+    try:
+        resp = client.models.generate_content(model="models/gemini-2.5-flash", contents=prompt)
+        raw = resp.text or ""
+    except Exception as e:
+        print(f"   ⚠️ Hype-check generation failed: {e}")
+        return None
+
+    def ex(p):
+        m = re.search(p, raw, re.DOTALL)
+        return m.group(1).strip() if m else ""
+    claim   = ex(r"CLAIM:\s*(.+?)(?=REALITY:|SOURCE:|$)")
+    reality = ex(r"REALITY:\s*(.+?)(?=SOURCE:|$)")
+    source  = ex(r"SOURCE:\s*(.+)")
+    if not (claim and reality):
+        return None
+    ok, reason = check_grounding(claim + " " + reality, news_items)
+    if not ok:
+        print(f"   ⚠️ Hype-check dropped (ungrounded: {reason})")
+        return None
+    return {"claim": claim, "reality": reality, "source": source}
+
+
+# ── 11. SAVE A PER-ISSUE EXTRA (links / hype_check) INTO newsletter_articles ───
+# Stored in the same collection (a `type` field tells them apart) so the existing
+# public read rule and queries cover them — no new collection/rules needed.
+def save_extra_to_firestore(doc_type, payload, date_str):
+    status = "pending_review" if REVIEW_MODE else "approved"
+    doc_ref = db.collection("newsletter_articles").document()
+    record = {
+        "type":          doc_type,
+        "date":          date_str,
+        "status":        status,
+        "auto_published": not REVIEW_MODE,
+        "created_at":    firestore.SERVER_TIMESTAMP,
+        **payload,
+    }
+    if not REVIEW_MODE:
+        record["published_at"] = firestore.SERVER_TIMESTAMP
+    doc_ref.set(record)
+    return doc_ref.id
+
+
+# ── 12. WRITE EMAIL SUBJECT + BODY FILES (consumed by the workflow) ────────────
+def _esc(s):
+    return (s or "").replace("&", "&amp;").replace("<", "&lt;").replace(">", "&gt;")
+
+def write_email_files(articles, quick_hits, hype, date_str):
+    """Subject names the lead story; body carries takeaways, hype check, and links.
+    Writes nothing if there's no content — the workflow then skips the send."""
+    if not (articles or quick_hits or hype):
+        return None
+    lead = articles[0] if articles else None
+    subject = f"{lead['title']}" if lead else f"AI Insights — {date_str}"
+    with open(SUBJECT_FILE, "w", encoding="utf-8") as f:
+        f.write(subject)
+
+    teal = "#00C9A7"
+    parts = [f'<div style="font-family:Inter,Arial,sans-serif;color:#1a1a1a;max-width:640px;margin:0 auto;">']
+    parts.append(f'<p style="color:#666;font-size:13px;letter-spacing:1px;text-transform:uppercase;">AI &amp; Digital Workplace Insights — {_esc(date_str)}</p>')
+
+    for a in articles:
+        url = f"{SITE_URL}/newsletter.html"
+        parts.append(f'<h2 style="font-size:20px;margin:24px 0 6px;">{_esc(a["title"])}</h2>')
+        if a.get("takeaway"):
+            parts.append(f'<p style="font-size:15px;font-weight:600;color:#111;margin:0 0 8px;border-left:3px solid {teal};padding-left:10px;">{_esc(a["takeaway"])}</p>')
+        if a.get("excerpt"):
+            parts.append(f'<p style="font-size:14px;line-height:1.6;color:#444;margin:0 0 8px;">{_esc(a["excerpt"])}</p>')
+        if a.get("action"):
+            parts.append(f'<p style="font-size:14px;color:#111;margin:0 0 6px;"><strong>Your move this week:</strong> {_esc(a["action"])}</p>')
+        parts.append(f'<p style="margin:0 0 4px;"><a href="{url}" style="color:{teal};font-weight:600;text-decoration:none;">Read the full analysis →</a></p>')
+
+    if hype:
+        parts.append(f'<div style="margin:28px 0;padding:16px;background:#faf6e8;border-radius:8px;">')
+        parts.append(f'<p style="font-size:12px;letter-spacing:1px;text-transform:uppercase;color:#9a7d22;margin:0 0 6px;">Hype Check</p>')
+        parts.append(f'<p style="font-size:14px;color:#444;margin:0 0 4px;"><em>{_esc(hype["claim"])}</em></p>')
+        parts.append(f'<p style="font-size:14px;color:#111;margin:0;">{_esc(hype["reality"])}</p>')
+        parts.append('</div>')
+
+    if quick_hits:
+        parts.append(f'<h3 style="font-size:16px;margin:24px 0 8px;">Worth your time</h3>')
+        for h in quick_hits:
+            take = f' — {_esc(h["take"])}' if h.get("take") else ""
+            parts.append(f'<p style="font-size:14px;line-height:1.5;margin:0 0 8px;"><a href="{_esc(h["url"])}" style="color:{teal};text-decoration:none;font-weight:600;">{_esc(h["title"])}</a><span style="color:#444;">{take}</span></p>')
+
+    parts.append(f'<hr style="border:none;border-top:1px solid #eee;margin:28px 0;">')
+    parts.append(f'<p style="font-size:13px;color:#888;">Written by Karthikeyan Selvam — Digital Workplace &amp; AI Consultant — <a href="{SITE_URL}" style="color:{teal};">karthikeyanselvam.com</a></p>')
+    parts.append('</div>')
+
+    with open(EMAIL_FILE, "w", encoding="utf-8") as f:
+        f.write("".join(parts))
+    return subject
+
+
 # ── MAIN ──────────────────────────────────────────────────────────────────────
 if __name__ == "__main__":
     today    = datetime.now(timezone.utc).strftime("%b %d, %Y")
     date_str = today
 
     print("📰 Fetching real news...")
-    all_news = fetch_real_news(max_items=20)
+    all_news = fetch_real_news(max_items=30)
     print(f"   Found {len(all_news)} usable articles from RSS feeds")
 
     print("🗂️  Loading recent history for de-duplication...")
     recent_titles, used_urls = fetch_recent_history(limit=40)
     print(f"   {len(recent_titles)} past titles, {len(used_urls)} source URLs already used")
 
-    selected_topics = random.sample(TOPICS, 3)
-    published = []
+    selected_topics = random.sample(TOPICS, len(TOPICS))   # shuffle; take the first that produce valid articles
+    published_articles = []   # parsed dicts of what actually went out, in order (first = lead)
 
     for topic in selected_topics:
+        if len(published_articles) >= NUM_ARTICLES:
+            break
         print(f"\n✍️  Writing: {topic}")
         relevant = filter_news_for_topic(all_news, topic, used_urls)
         print(f"   Using {len(relevant)} relevant (unused) news sources")
@@ -404,7 +582,8 @@ if __name__ == "__main__":
             parsed = parse_article(raw)
             ok, reason = validate_article(parsed)
             if ok:
-                grounded_text = " ".join([parsed.get("title", ""), parsed.get("excerpt", ""), parsed.get("body", "")])
+                grounded_text = " ".join([parsed.get("title", ""), parsed.get("takeaway", ""),
+                                          parsed.get("excerpt", ""), parsed.get("action", ""), parsed.get("body", "")])
                 ok, reason = check_grounding(grounded_text, relevant)
             if ok:
                 break
@@ -414,18 +593,44 @@ if __name__ == "__main__":
             print("   ⚠️ Could not produce a valid article, skipping (nothing published).")
             continue
 
-        doc_id = save_to_firestore(parsed, date_str, relevant)
+        save_to_firestore(parsed, date_str, relevant)
         recent_titles.append(parsed["title"])  # avoid repeating within this same run
         for n in relevant:
             used_urls.add(n["link"])
-        published.append(parsed["title"])
+        published_articles.append(parsed)
         verb = "SAVED AS DRAFT" if REVIEW_MODE else "PUBLISHED"
         print(f"   ✅ {verb}: {parsed['title']}")
         print(f"   📌 Sources: {parsed['sources_used']}")
 
-    if REVIEW_MODE:
-        print(f"\n🧐 Done. {len(published)} draft(s) saved for review at {SITE_URL}/admin/review.html:")
+    # ── Quick hits ("worth your time") from links we didn't write a full piece on ──
+    leftover = [a for a in all_news if a["link"] not in used_urls][:QUICK_HITS]
+    quick_hits = []
+    if leftover:
+        print(f"\n🔗 Building {len(leftover)} quick hits...")
+        quick_hits = generate_quick_hits(leftover, today)
+        if quick_hits:
+            save_extra_to_firestore("links", {"items": quick_hits, "title": "Worth your time"}, date_str)
+            for h in quick_hits:
+                used_urls.add(h["url"])
+            print(f"   ✅ {len(quick_hits)} quick hits saved")
+
+    # ── Hype check — pick the most oversold claim of the week ──────────────────
+    print("\n🧯 Building hype check...")
+    hype = generate_hype_check(all_news[:12], today)
+    if hype:
+        save_extra_to_firestore("hype_check", hype, date_str)
+        print(f"   ✅ Hype check saved: {hype['claim'][:70]}...")
+
+    # ── Email subject + body (only sent on scheduled runs, by the workflow) ────
+    subject = write_email_files(published_articles, quick_hits, hype, date_str)
+    if subject:
+        print(f"\n✉️  Email subject: {subject}")
     else:
-        print(f"\n🎉 Done. {len(published)} article(s) auto-published and live:")
-    for t in published:
-        print(f"   • {t}")
+        print("\n✉️  No email written (no content) — workflow will skip the send.")
+
+    if REVIEW_MODE:
+        print(f"\n🧐 Done. {len(published_articles)} draft article(s) saved for review at {SITE_URL}/admin/review.html")
+    else:
+        print(f"\n🎉 Done. {len(published_articles)} article(s) auto-published and live:")
+    for a in published_articles:
+        print(f"   • {a['title']}")
