@@ -1,0 +1,36 @@
+name: Send Custom Newsletter
+
+# Manual one-off send. Reads custom_newsletter_subject.txt + custom_newsletter_email.html
+# from the repo and POSTs them to the sendNewsletter Cloud Function, which emails every
+# active subscriber in the `customers` collection. Dispatch-only — never runs on a schedule.
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  send:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
+
+      - name: Send to subscribers
+        run: |
+          set -euo pipefail
+          if [ ! -f custom_newsletter_email.html ] || [ ! -f custom_newsletter_subject.txt ]; then
+            echo "Missing subject or body file — aborting."; exit 1
+          fi
+          SUBJECT=$(cat custom_newsletter_subject.txt)
+          jq -n --arg s "$SUBJECT" --rawfile b custom_newsletter_email.html '{subject:$s, body:$b}' > payload.json
+          RESP=$(curl -sS -w $'\n%{http_code}' -X POST \
+            "https://us-central1-karthik-website-b5801.cloudfunctions.net/sendNewsletter" \
+            -H "Content-Type: application/json" \
+            -H "X-Newsletter-Secret: ${{ secrets.NEWSLETTER_SECRET }}" \
+            --data @payload.json)
+          BODY=$(echo "$RESP" | sed '$d')
+          CODE=$(echo "$RESP" | tail -1)
+          echo "Response: $BODY"
+          echo "HTTP $CODE"
+          [ "$CODE" = "200" ] || { echo "Send failed."; exit 1; }
