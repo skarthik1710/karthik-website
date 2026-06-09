@@ -99,7 +99,7 @@ def parse_pub_date(s):
 
 
 # ── 1. FETCH REAL NEWS FROM RSS (recent only) ─────────────────────────────────
-def fetch_real_news(max_items=20):
+def fetch_real_news(max_items=30):
     articles = []
     headers  = {"User-Agent": "Mozilla/5.0 (compatible; KSNewsletter/1.0)"}
     for url in RSS_FEEDS:
@@ -107,7 +107,7 @@ def fetch_real_news(max_items=20):
             resp = requests.get(url, timeout=10, headers=headers)
             root = ElementTree.fromstring(resp.content)
             items = root.findall(".//item") or root.findall(".//{http://www.w3.org/2005/Atom}entry")
-            for item in items[:5]:
+            for item in items[:8]:
                 def t(tag):
                     return (item.findtext(tag) or "").strip()
                 title   = t("title")
@@ -213,17 +213,30 @@ ALREADY COVERED IN RECENT ISSUES — do NOT repeat these topics or angles:
 {avoid_block}
 ════════════════════════════════════════════════════
 
-STRICT RULES — violating any rule means the article is rejected:
-1. AUTHENTIC: every factual claim MUST come from the sources above. No invented
-   statistics, product names, quotes, or URLs. If you are unsure of a fact, omit it.
-2. RECENT: only discuss what's in these sources (all from the last few days). Do not
+STRICT RULES — violating ANY rule means the article is rejected:
+1. ACCURACY IS ABSOLUTE. Every specific fact — every statistic, percentage, dollar
+   figure, date, company quote, product name, model name, version number, or
+   benchmark result — MUST appear verbatim in the SOURCE text above. If it is not
+   written in a source, you may NOT write it. Do NOT recall numbers or names from
+   memory. Do NOT estimate, round, or invent a plausible-sounding figure. When in
+   doubt, leave it out.
+   ✗ NEVER do this: name a model or benchmark ("GPT-5.4", "scored 94.7% accuracy")
+     or a deal size ("a $250 million settlement") that is not quoted in a source.
+   ✓ Instead, make the point qualitatively: "a major vendor settlement", "a new
+     open-source model", "a notable jump in accuracy" — no invented specifics.
+2. OPINION vs FACT. Your analysis, predictions, and practitioner judgment are yours —
+   state them freely as opinion. But anything phrased as a fact or a number must be
+   traceable to a source above. Keep that line clean.
+3. RECENT: only discuss what's in these sources (all from the last few days). Do not
    reach for older background facts unless they appear in a source.
-3. UNIQUE: do not rehash the "already covered" list. Find a fresh angle. Synthesize
-   in your own words — never copy phrasing from the source summaries.
-4. VOICE: write as Karthikeyan Selvam per the style guide. Opinionated practitioner,
+4. UNIQUE & NO OVERLAP: this issue has multiple articles. Build THIS one on DIFFERENT
+   source headlines and a different angle than the others — do not re-tell the same
+   news. Also do not rehash the "already covered" list. Synthesize in your own words;
+   never copy phrasing from the source summaries.
+5. VOICE: write as Karthikeyan Selvam per the style guide. Opinionated practitioner,
    not a neutral reporter.
-5. No bullet points. Flowing paragraphs only.
-6. Length: 450–550 words for BODY.
+6. No bullet points. Flowing paragraphs only.
+7. Length: 450–550 words for BODY.
 
 OUTPUT FORMAT (exactly):
 TITLE: [A specific, compelling title that references actual news]
@@ -289,6 +302,52 @@ def validate_article(p):
     return True, "ok"
 
 
+# ── 7b. GROUNDING GATE — reject fabricated specifics (accuracy first) ──────────
+# The model is shown ONLY each source's title + summary, so every concrete figure
+# or model/version name it writes must trace back to that text. Anything that
+# doesn't is treated as a hallucination and the article is rejected. We deliberately
+# err toward rejecting borderline cases — a dropped article beats a wrong one.
+ALLOWED_NUMBERS = {"18", "30", "70"}   # his stock voice anchors (e.g. "30% tech / 70% people")
+MODEL_PATTERN   = re.compile(
+    r"\b(gpt|claude|gemini|llama|mistral|grok|harness|phi|qwen|copilot)[-\s]?\d+(?:\.\d+)?\b",
+    re.I,
+)
+
+def _squash(s):
+    return re.sub(r"[\s\-]", "", s).lower()
+
+def check_grounding(text, news_sources):
+    src = " ".join((n.get("title", "") + " " + n.get("summary", "")) for n in news_sources)
+    src_squash = _squash(src)
+    year = str(datetime.now(timezone.utc).year)
+
+    ungrounded = []
+
+    # dollar amounts ($250 million, $13 billion) and percentages (94.7%, 43 percent)
+    money_pct = re.findall(r"\$\s?\d[\d,.]*\s?(?:billion|million|trillion|bn|m|k)?", text, re.I)
+    money_pct += re.findall(r"\d+(?:\.\d+)?\s?(?:%|percent)", text, re.I)
+    for tok in money_pct:
+        digits = re.findall(r"\d[\d,.]*", tok)
+        core = digits[0].replace(",", "") if digits else ""
+        if not core or core in ALLOWED_NUMBERS or core.startswith(year):
+            continue
+        if core not in _squash(src):
+            ungrounded.append(tok.strip())
+
+    # AI model + version names (GPT-5.4, Harness-1, Claude 3.5) not in the sources
+    for m in MODEL_PATTERN.finditer(text):
+        if _squash(m.group(0)) not in src_squash:
+            ungrounded.append(m.group(0).strip())
+
+    if ungrounded:
+        seen, uniq = set(), []
+        for u in ungrounded:
+            if u.lower() not in seen:
+                seen.add(u.lower()); uniq.append(u)
+        return False, "ungrounded specifics not in sources: " + ", ".join(uniq[:6])
+    return True, "ok"
+
+
 # ── 8. SAVE TO FIRESTORE AS APPROVED (auto-publish) ───────────────────────────
 def save_to_firestore(parsed, date_str, news_sources):
     status = "pending_review" if REVIEW_MODE else "approved"   # ← Option B default: auto-publish
@@ -344,6 +403,9 @@ if __name__ == "__main__":
                 continue
             parsed = parse_article(raw)
             ok, reason = validate_article(parsed)
+            if ok:
+                grounded_text = " ".join([parsed.get("title", ""), parsed.get("excerpt", ""), parsed.get("body", "")])
+                ok, reason = check_grounding(grounded_text, relevant)
             if ok:
                 break
             print(f"   ↻ Rejected ({reason}) — retrying...")
