@@ -1,2 +1,9 @@
 node_modules/
 *.local
+
+# Never commit secrets / local env files
+.env
+.env.*
+*.env
+.env.txt
+.env.local.txt
