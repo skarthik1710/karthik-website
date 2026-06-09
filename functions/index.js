@@ -2,17 +2,30 @@ const { onRequest } = require("firebase-functions/v2/https");
 const { defineSecret } = require("firebase-functions/params");
 const admin = require("firebase-admin");
 const nodemailer = require("nodemailer");
+const crypto = require("crypto");
 
 admin.initializeApp();
 
 const GMAIL_USER = defineSecret("GMAIL_USER");
 const GMAIL_PASSWORD = defineSecret("GMAIL_PASSWORD");
+const NEWSLETTER_SECRET = defineSecret("NEWSLETTER_SECRET");
+
+// Constant-time compare so this public endpoint can't be brute-forced/timed.
+function authorized(req) {
+    const expected = NEWSLETTER_SECRET.value();
+    const provided = req.get("X-Newsletter-Secret") || "";
+    if (!expected || !provided) return false;
+    const a = Buffer.from(provided);
+    const b = Buffer.from(expected);
+    return a.length === b.length && crypto.timingSafeEqual(a, b);
+}
 
 exports.sendNewsletter = onRequest(
-    { secrets: ["GMAIL_USER", "GMAIL_PASSWORD"] },
+    { secrets: ["GMAIL_USER", "GMAIL_PASSWORD", "NEWSLETTER_SECRET"] },
     async (req, res) => {
 
         if (req.method !== "POST") return res.status(405).send("Method not allowed");
+        if (!authorized(req)) return res.status(401).json({ error: "Unauthorized" });
 
         const { subject, body } = req.body;
         if (!subject || !body) {

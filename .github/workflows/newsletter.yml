@@ -70,4 +70,5 @@ jobs:
           jq -n --arg s "$SUBJECT" --rawfile b newsletter_email.html '{subject:$s, body:$b}' > payload.json
           curl -X POST "https://us-central1-karthik-website-b5801.cloudfunctions.net/sendNewsletter" \
             -H "Content-Type: application/json" \
+            -H "X-Newsletter-Secret: ${{ secrets.NEWSLETTER_SECRET }}" \
             --data @payload.json
