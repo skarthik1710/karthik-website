@@ -54,6 +54,7 @@ jobs:
 
 
       - name: Send Newsletter to Subscribers
+        if: github.event_name == 'schedule'
         run: |
           curl -X POST "https://us-central1-karthik-website-b5801.cloudfunctions.net/sendNewsletter" \
             -H "Content-Type: application/json" \
