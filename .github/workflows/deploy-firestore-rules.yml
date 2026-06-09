@@ -1,4 +1,4 @@
-name: Deploy Firestore Rules
+name: Deploy Firestore Rules and Indexes
 
 on:
   push:
@@ -6,6 +6,7 @@ on:
       - main
     paths:
       - 'firestore.rules'
+      - 'firestore.indexes.json'
       - 'firebase.json'
   workflow_dispatch:
 
@@ -13,19 +14,19 @@ permissions:
   contents: read
 
 concurrency:
-  group: firebase-firestore-rules
+  group: firebase-firestore-config
   cancel-in-progress: true
 
 jobs:
-  deploy-rules:
+  deploy-firestore:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repo
         uses: actions/checkout@v4
 
-      - name: Deploy Firestore rules
+      - name: Deploy Firestore rules and indexes
         uses: w9jds/firebase-action@master
         with:
-          args: deploy --only firestore:rules
+          args: deploy --only firestore
         env:
           FIREBASE_TOKEN: ${{ secrets.FIREBASE_TOKEN }}
