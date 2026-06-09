@@ -40,7 +40,7 @@ def main():
         if kind == "article" and title in KEEP:
             keep.append((snap.id, kind, title))
         else:
-            delete.append((snap.ref, snap.id, kind, title or f"<{kind}>"))
+            delete.append((snap.reference, snap.id, kind, title or f"<{kind}>"))
 
     print(f"Total pending_review: {len(docs)}  |  keep: {len(keep)}  |  delete: {len(delete)}\n")
     print("KEEP:")
