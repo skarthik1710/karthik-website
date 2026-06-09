@@ -1,0 +1,37 @@
+name: Cleanup Newsletter Drafts
+
+# Manual utility: deletes stale pending_review drafts, keeping the titles in
+# KEEP_TITLES. Defaults to DRY RUN — set dry_run=false to actually delete.
+
+on:
+  workflow_dispatch:
+    inputs:
+      dry_run:
+        description: 'Dry run only (true) — set false to actually delete'
+        type: boolean
+        default: true
+
+permissions:
+  contents: read
+
+jobs:
+  cleanup-drafts:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install dependencies
+        run: pip install firebase-admin
+
+      - name: Cleanup drafts
+        env:
+          FIREBASE_SERVICE_ACCOUNT: ${{ secrets.FIREBASE_SERVICE_ACCOUNT }}
+          DRY_RUN: ${{ github.event.inputs.dry_run }}
+          KEEP_TITLES: "Microsoft's Superintelligence Talk vs. Your Copilot Reality: What Actually Drives Workplace Productivity||AI Governance: The Agentic Reckoning is Here, And Your Control Layers Are Missing"
+        run: python scripts/cleanup_drafts.py
