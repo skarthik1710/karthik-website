@@ -268,6 +268,252 @@
             border-color: var(--gold); transform: translateY(-4px);
             box-shadow: 0 8px 30px var(--gold-glow);
         }
+        /* Scroll-reveal: cards start hidden, slide up + fade in when in view */
+        .project-card.reveal {
+            opacity: 0; transform: translateY(28px);
+            transition: opacity 0.6s ease, transform 0.6s ease;
+        }
+        .project-card.reveal.is-visible { opacity: 1; transform: translateY(0); }
+        .projects-grid .project-card.reveal:nth-child(1) { transition-delay: 0s; }
+        .projects-grid .project-card.reveal:nth-child(2) { transition-delay: 0.15s; }
+        .projects-grid .project-card.reveal:nth-child(3) { transition-delay: 0.3s; }
+        .projects-grid .project-card.reveal:nth-child(4) { transition-delay: 0.45s; }
+        @media (prefers-reduced-motion: reduce) {
+            .project-card.reveal { opacity: 1; transform: none; transition: none; }
+        }
+        /* Clickable cards + "view the story" cue */
+        .project-card[data-story] { cursor: pointer; }
+        .project-card[data-story]:focus-visible {
+            outline: 2px solid var(--gold); outline-offset: 3px;
+        }
+        .story-cue {
+            display: inline-block; margin-top: 1.2rem;
+            font-size: 0.78rem; font-weight: 700; letter-spacing: 0.5px;
+            color: var(--teal); transition: transform 0.2s, color 0.2s;
+        }
+        .project-card[data-story]:hover .story-cue { color: var(--gold); transform: translateX(4px); }
+
+        /* ── STORY OVERLAY ── */
+        #story-overlay {
+            position: fixed; inset: 0; z-index: 2000;
+            display: none; align-items: center; justify-content: center;
+            background: rgba(3, 5, 12, 0.86);
+            backdrop-filter: blur(8px);
+            padding: 2rem;
+        }
+        #story-overlay.open { display: flex; animation: storyFade 0.25s ease; }
+        @keyframes storyFade { from { opacity: 0; } to { opacity: 1; } }
+        .story-modal {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 20px;
+            width: 100%; max-width: 760px;
+            max-height: 90vh;
+            display: flex; flex-direction: column;
+            position: relative; overflow: hidden;
+            box-shadow: 0 30px 80px rgba(0,0,0,0.6);
+        }
+        .story-modal::before {
+            content: ''; position: absolute; top: -40%; right: -30%;
+            width: 80%; height: 80%;
+            background: radial-gradient(circle, var(--teal-glow), transparent 65%);
+            pointer-events: none;
+        }
+        .story-progress {
+            display: flex; gap: 0.5rem; padding: 1.4rem 1.6rem 0.4rem;
+        }
+        .story-progress .dot {
+            height: 4px; flex: 1; border-radius: 2px;
+            background: var(--bg-elevated); cursor: pointer;
+            transition: background 0.3s;
+        }
+        .story-progress .dot.active { background: var(--teal); }
+        .story-progress .dot.done { background: var(--border); }
+        .story-close {
+            position: absolute; top: 1rem; right: 1.1rem; z-index: 3;
+            width: 34px; height: 34px; border-radius: 50%;
+            background: var(--bg-elevated); border: 1px solid var(--border);
+            color: var(--text-muted); font-size: 1.1rem; line-height: 1;
+            cursor: pointer; transition: all 0.2s;
+        }
+        .story-close:hover { color: var(--text); border-color: var(--teal); }
+        .story-stage {
+            flex: 1; overflow-y: auto;
+            padding: 1.6rem 2.4rem 1rem;
+            min-height: 340px;
+            display: flex; flex-direction: column; justify-content: center;
+        }
+        .story-eyebrow {
+            font-size: 0.74rem; font-weight: 700; letter-spacing: 2px;
+            text-transform: uppercase; color: var(--gold);
+            margin-bottom: 0.7rem;
+        }
+        .story-title {
+            font-size: clamp(1.4rem, 3vw, 2rem); font-weight: 800;
+            line-height: 1.2; letter-spacing: -0.5px; margin-bottom: 0.8rem;
+        }
+        .story-body {
+            color: var(--text-muted); font-size: 0.98rem; line-height: 1.7;
+            max-width: 560px; margin-bottom: 2rem;
+        }
+        /* scene enter animation */
+        .story-scene { opacity: 0; }
+        .story-scene.active { opacity: 1; }
+        .story-scene.active .anim {
+            animation: sceneIn 0.5s ease both;
+        }
+        @keyframes sceneIn { from { opacity: 0; transform: translateY(16px); } to { opacity: 1; transform: none; } }
+
+        /* visual: flow pipeline */
+        .viz-flow { display: flex; align-items: center; flex-wrap: wrap; gap: 0.4rem; }
+        .viz-flow .node {
+            padding: 0.6rem 0.9rem; border-radius: 10px;
+            background: var(--bg-elevated); border: 1px solid var(--border);
+            font-size: 0.82rem; font-weight: 600; color: var(--text-muted);
+            opacity: 0.35; transform: scale(0.95);
+            transition: all 0.35s ease;
+        }
+        .story-scene.active .viz-flow .node.lit {
+            opacity: 1; transform: scale(1);
+            color: var(--text); border-color: var(--teal);
+            box-shadow: 0 0 0 1px var(--teal-glow), 0 4px 18px var(--teal-glow);
+        }
+        .viz-flow .arrow {
+            color: var(--gold); font-weight: 700; opacity: 0.3;
+            transition: opacity 0.35s ease;
+        }
+        .story-scene.active .viz-flow .arrow.lit { opacity: 1; }
+
+        /* visual: stat numbers */
+        .viz-stats { display: flex; flex-wrap: wrap; gap: 2.4rem; }
+        .viz-stats .stat .num {
+            font-size: 2.8rem; font-weight: 800; color: var(--teal); line-height: 1;
+        }
+        .viz-stats .stat .num.gold { color: var(--gold); }
+        .viz-stats .stat .lbl {
+            font-size: 0.78rem; color: var(--text-muted);
+            text-transform: uppercase; letter-spacing: 0.5px; margin-top: 0.4rem;
+        }
+
+        /* visual: contrast before -> after */
+        .viz-contrast { display: flex; align-items: center; gap: 1.2rem; flex-wrap: wrap; }
+        .viz-contrast .side {
+            flex: 1; min-width: 130px; padding: 1.2rem 1rem; border-radius: 12px;
+            text-align: center;
+        }
+        .viz-contrast .before {
+            background: var(--bg-elevated); border: 1px solid var(--border);
+            color: var(--text-muted);
+        }
+        .viz-contrast .after {
+            background: var(--teal-glow); border: 1px solid var(--teal);
+            color: var(--text);
+        }
+        .viz-contrast .side .big { font-size: 1.5rem; font-weight: 800; }
+        .viz-contrast .side .small { font-size: 0.78rem; margin-top: 0.3rem; opacity: 0.85; }
+        .viz-contrast .vs { color: var(--gold); font-size: 1.6rem; font-weight: 800; }
+
+        /* visual: stack layers */
+        .viz-stack { display: flex; flex-direction: column; gap: 0.6rem; }
+        .viz-stack .layer {
+            padding: 0.7rem 1rem; border-radius: 10px;
+            background: var(--bg-elevated); border: 1px solid var(--border);
+            font-size: 0.85rem; font-weight: 600;
+            display: flex; justify-content: space-between; gap: 1rem;
+        }
+        .viz-stack .layer .tag { color: var(--gold); font-size: 0.72rem; font-weight: 700; }
+
+        /* visual: phases grid */
+        .viz-phases { display: grid; grid-template-columns: repeat(auto-fill, minmax(80px, 1fr)); gap: 0.5rem; }
+        .viz-phases .cell {
+            aspect-ratio: 1; border-radius: 8px;
+            background: var(--bg-elevated); border: 1px solid var(--border);
+            display: flex; align-items: center; justify-content: center;
+            font-size: 0.72rem; font-weight: 700; color: var(--text-muted);
+            opacity: 0; transform: scale(0.8);
+        }
+        .story-scene.active .viz-phases .cell { animation: cellPop 0.4s ease both; }
+        .viz-phases .cell.phase { background: var(--teal-glow); border-color: var(--teal); color: var(--teal); }
+        @keyframes cellPop { from { opacity: 0; transform: scale(0.8); } to { opacity: 1; transform: scale(1); } }
+
+        /* visual: claim statement */
+        .story-title.story-claim { font-size: clamp(1.7rem, 4vw, 2.7rem); max-width: 620px; }
+        .claim-underline {
+            width: 60px; height: 3px; border-radius: 2px;
+            background: var(--gold); margin: 0 0 1.4rem;
+        }
+
+        /* visual: architecture diagram */
+        .viz-arch { width: 100%; }
+        .viz-arch svg { width: 100%; height: auto; display: block; overflow: visible; }
+        .arch-region {
+            fill: rgba(0, 201, 167, 0.045);
+            stroke: var(--teal); stroke-width: 1.2; stroke-dasharray: 7 5;
+        }
+        .arch-region-label {
+            fill: var(--teal); font-size: 11px; font-weight: 700;
+            letter-spacing: 1px; text-transform: uppercase;
+        }
+        .arch-edge { stroke: var(--border); stroke-width: 1.6; fill: none; opacity: 0; }
+        .arch-edge.dashed { stroke-dasharray: 5 4; }
+        .story-scene.active .arch-edge { animation: archIn 0.5s ease both; }
+        .arch-edge-label { fill: var(--gold); font-size: 9px; font-weight: 600; }
+        .arch-packet { fill: var(--teal); filter: drop-shadow(0 0 4px var(--teal)); }
+        .arch-node { opacity: 0; }
+        .story-scene.active .arch-node { animation: archIn 0.5s ease both; }
+        .arch-node rect {
+            fill: var(--bg-elevated); stroke: var(--border); stroke-width: 1.3;
+        }
+        .arch-node.teal rect { stroke: var(--teal); }
+        .arch-node.gold rect { stroke: var(--border-gold); }
+        .arch-node .nlabel { fill: var(--text); font-size: 12.5px; font-weight: 700; }
+        .arch-node .nsub { fill: var(--text-muted); font-size: 9.5px; }
+        .arch-chip { fill: rgba(0, 201, 167, 0.12); stroke: var(--teal); stroke-width: 1; }
+        .arch-chip-text { fill: var(--teal); font-size: 8.5px; font-weight: 700; }
+        .arch-badge rect { fill: rgba(201, 168, 76, 0.16); stroke: var(--gold); stroke-width: 1; }
+        .arch-badge text { fill: var(--gold); font-size: 9px; font-weight: 700; letter-spacing: 0.5px; }
+        .arch-badge { animation: badgePulse 1.9s ease infinite; }
+        @keyframes archIn { from { opacity: 0; } to { opacity: 1; } }
+        @keyframes badgePulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.45; } }
+
+        /* nav */
+        .story-nav {
+            display: flex; align-items: center; justify-content: space-between;
+            padding: 0.9rem 1.6rem 1.4rem; gap: 1rem;
+            border-top: 1px solid var(--border);
+        }
+        .story-nav button {
+            padding: 0.6rem 1.4rem; border-radius: 8px; cursor: pointer;
+            font-size: 0.85rem; font-weight: 700; transition: all 0.2s;
+        }
+        .story-prev {
+            background: transparent; border: 1px solid var(--border);
+            color: var(--text-muted);
+        }
+        .story-prev:hover:not(:disabled) { color: var(--text); border-color: var(--teal); }
+        .story-next {
+            background: var(--teal); border: none; color: #060810;
+        }
+        .story-next:hover { background: #00e8c0; }
+        .story-nav button:disabled { opacity: 0.3; cursor: default; }
+        .story-counter { font-size: 0.8rem; color: var(--text-muted); }
+
+        @media (prefers-reduced-motion: reduce) {
+            #story-overlay.open, .story-scene.active .anim,
+            .story-scene.active .viz-phases .cell,
+            .story-scene.active .arch-node, .story-scene.active .arch-edge,
+            .arch-badge { animation: none; }
+            .viz-flow .node, .viz-flow .arrow,
+            .arch-node, .arch-edge { opacity: 1 !important; transform: none !important; }
+            .story-scene { opacity: 1; }
+        }
+        @media (max-width: 600px) {
+            #story-overlay { padding: 0; }
+            .story-modal { max-width: 100%; max-height: 100vh; height: 100vh; border-radius: 0; }
+            .story-stage { padding: 1.4rem 1.4rem 1rem; }
+            .viz-stats { gap: 1.4rem; }
+            .viz-stats .stat .num { font-size: 2.2rem; }
+        }
         .project-status {
             display: inline-block; padding: 0.25rem 0.7rem;
             border-radius: 20px; font-size: 0.72rem; font-weight: 700;
@@ -479,29 +725,33 @@
         A multi-agent AI platform I designed and run in production — turning consulting workflows I've done by hand for years into software that ships the work.
     </p>
     <div class="projects-grid">
-        <div class="project-card">
+        <div class="project-card reveal" data-story="platform" role="button" tabindex="0" aria-label="Open the story: Multi-Agent AI Platform">
             <span class="project-status">Production</span>
             <h3>Multi-Agent AI Platform</h3>
             <p>A production platform delivering AI-powered consulting workflows — 5+ specialized agents on a serverless GCP stack I architected end to end, hardened against strict enterprise org policies. Runs the whole thing for ~$5–10/month.</p>
             <p style="font-size: 0.78rem; color: var(--gold); margin-top: 0.9rem; letter-spacing: 0.3px;">FastAPI · Cloud Run · Vertex AI (Gemini) · Firestore · Firebase</p>
+            <span class="story-cue">▶ View the story</span>
         </div>
-        <div class="project-card">
+        <div class="project-card reveal" data-story="ocm" role="button" tabindex="0" aria-label="Open the story: Change Management Agent">
             <span class="project-status">Production</span>
             <h3>Change Management Agent</h3>
             <p>Generates a full organizational-change deliverable set — 4 phases, 18 deliverables — following a formal OCM methodology, with version-tagged, audit-traceable outputs and branded PDF export. Compresses weeks of consulting into on-demand output.</p>
             <p style="font-size: 0.78rem; color: var(--gold); margin-top: 0.9rem; letter-spacing: 0.3px;">Python · Vertex AI · Versioned skill engine · PDF export</p>
+            <span class="story-cue">▶ View the story</span>
         </div>
-        <div class="project-card">
+        <div class="project-card reveal" data-story="gws" role="button" tabindex="0" aria-label="Open the story: Workspace License Right-Sizing">
             <span class="project-status">Production</span>
             <h3>Workspace License Right-Sizing</h3>
             <p>Analyzes real Google Workspace usage across a tenant and flags over-licensing — surfacing wasted seats and quantifiable savings. Built with a verified SKU catalog and a zero-usage guard so quiet-but-active users are never wrongly downgraded.</p>
             <p style="font-size: 0.78rem; color: var(--gold); margin-top: 0.9rem; letter-spacing: 0.3px;">Admin SDK · Reports API · Cloud Run Jobs · Gemini</p>
+            <span class="story-cue">▶ View the story</span>
         </div>
-        <div class="project-card">
+        <div class="project-card reveal" data-story="hci" role="button" tabindex="0" aria-label="Open the story: Infrastructure Health Check Agent">
             <span class="project-status">Production</span>
             <h3>Infrastructure Health Check Agent</h3>
             <p>Automated infrastructure health monitoring that produces shippable PDF reports and emails them out — replacing manual review cycles with a repeatable, multi-stage analysis pipeline.</p>
             <p style="font-size: 0.78rem; color: var(--gold); margin-top: 0.9rem; letter-spacing: 0.3px;">Python · Analysis pipeline · PDF · Email automation</p>
+            <span class="story-cue">▶ View the story</span>
         </div>
     </div>
 </section>
@@ -532,6 +782,20 @@
     </div>
 </section>
 
+<!-- Story Overlay -->
+<div id="story-overlay" role="dialog" aria-modal="true" aria-label="Project story">
+    <div class="story-modal">
+        <button class="story-close" aria-label="Close story">&times;</button>
+        <div class="story-progress" id="story-progress"></div>
+        <div class="story-stage" id="story-stage"></div>
+        <div class="story-nav">
+            <button class="story-prev" id="story-prev">&#8592; Prev</button>
+            <span class="story-counter" id="story-counter"></span>
+            <button class="story-next" id="story-next">Next &#8594;</button>
+        </div>
+    </div>
+</div>
+
 <!-- Footer -->
 <footer>
     <p>Karthikeyan Selvam &mdash; Digital Workplace & AI Consultant</p>
@@ -552,6 +816,308 @@
             card.style.setProperty('--mouse-x', `${e.clientX - rect.left}px`);
             card.style.setProperty('--mouse-y', `${e.clientY - rect.top}px`);
         });
+    });
+
+    // Scroll-reveal for project cards (staggered via CSS transition-delay)
+    const revealCards = document.querySelectorAll('.project-card.reveal');
+    if ('IntersectionObserver' in window && revealCards.length) {
+        const io = new IntersectionObserver((entries, obs) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('is-visible');
+                    obs.unobserve(entry.target);
+                }
+            });
+        }, { threshold: 0.2 });
+        revealCards.forEach(card => io.observe(card));
+    } else {
+        revealCards.forEach(card => card.classList.add('is-visible'));
+    }
+
+    // ── PROJECT STORY PRESENTATIONS ──
+    const STORIES = {
+        platform: [
+            { kind: 'claim', eyebrow: 'The Wedge', title: 'Most advise on enterprise AI. I architect and ship it.',
+              body: 'A Digital Workplace consultant who designed, built, and runs a live multi-agent AI platform — solo, end to end. The rare overlap of domain authority and a system actually in production.' },
+            { kind: 'arch', eyebrow: 'The Architecture', title: 'What I designed and run',
+              body: 'A private FastAPI backend on Cloud Run hosts every agent as its own router; the browser hits it through a Firebase rewrite proxy — no CORS, no exposed URL. Gemini and Firestore sit behind it.',
+              vb: [0, 0, 640, 340],
+              region: { x: 210, y: 18, w: 410, h: 304, label: 'us-central1' },
+              badge: { x: 466, y: 26, w: 138, h: 22, text: 'REGIONAL ONLY' },
+              nodes: [
+                { id: 'browser', x: 22, y: 70, w: 96, h: 46, label: 'Browser', accent: 'muted' },
+                { id: 'fb', x: 22, y: 190, w: 96, h: 50, label: 'Firebase', sub: 'Hosting + CDN', accent: 'teal' },
+                { id: 'cr', x: 250, y: 108, w: 210, h: 96, label: 'Cloud Run · FastAPI', accent: 'teal', chips: ['OCM', 'HCI', 'GWS', '+2'] },
+                { id: 'vx', x: 500, y: 70, w: 110, h: 52, label: 'Vertex AI', sub: 'Gemini', accent: 'gold' },
+                { id: 'fs', x: 500, y: 162, w: 110, h: 52, label: 'Firestore', accent: 'teal' },
+                { id: 'ar', x: 250, y: 244, w: 210, h: 50, label: 'Artifact Registry', sub: 'regional build + deploy', accent: 'muted' }
+              ],
+              edges: [
+                { from: 'browser', to: 'cr', label: '/api' },
+                { from: 'fb', to: 'cr', label: 'proxy' },
+                { from: 'cr', to: 'vx' },
+                { from: 'cr', to: 'fs' },
+                { from: 'ar', to: 'cr', fromSide: 't', toSide: 'b', dashed: true, packet: false }
+              ] },
+            { kind: 'contrast', eyebrow: 'The Hard Part', title: 'Built under a strict org policy',
+              body: 'A multi-region ban broke the default container registry and build staging. I re-architected the pipeline fully regional and codified ~7 distinct failure fixes into a single, idempotent deploy command.',
+              before: { big: '7 failures', small: 'multi-region blocked' }, after: { big: '1 command', small: 'idempotent deploy' } },
+            { kind: 'stat', eyebrow: 'By Design', title: 'Production-grade, hobby-project cost',
+              body: 'Auth-gated, running real consulting deliverables daily — engineered for efficiency, not for a demo.',
+              stats: [ { num: 5, suffix: '+', lbl: 'AI agents' }, { num: 3, lbl: 'continents', gold: true }, { prefix: '$', num: 10, suffix: '/mo', lbl: 'total run cost' } ] }
+        ],
+        ocm: [
+            { kind: 'claim', eyebrow: 'The Wedge', title: 'I turn consulting methodology into auditable software.',
+              body: 'Not a chatbot that "does change management" — a system that encodes a formal OCM methodology and proves which version produced every deliverable.' },
+            { kind: 'arch', eyebrow: 'The Architecture', title: 'A versioned methodology engine',
+              body: 'The methodology lives as a "skill" document loaded by content hash at runtime, so every output is stamped with the exact version it came from — fully audit-traceable.',
+              vb: [0, 0, 640, 280],
+              nodes: [
+                { id: 'brief', x: 20, y: 112, w: 96, h: 54, label: 'Brief', accent: 'muted' },
+                { id: 'skill', x: 156, y: 100, w: 140, h: 78, label: 'Skill Engine', sub: 'content-hash · vN', accent: 'gold' },
+                { id: 'gem', x: 336, y: 112, w: 96, h: 54, label: 'Gemini', accent: 'teal' },
+                { id: 'deliv', x: 470, y: 60, w: 150, h: 56, label: 'Deliverables', sub: 'version-tagged', accent: 'teal' },
+                { id: 'pdf', x: 470, y: 160, w: 150, h: 56, label: 'Branded PDF', accent: 'gold' }
+              ],
+              edges: [
+                { from: 'brief', to: 'skill' },
+                { from: 'skill', to: 'gem' },
+                { from: 'gem', to: 'deliv' },
+                { from: 'deliv', to: 'pdf', fromSide: 'b', toSide: 't', packet: false }
+              ] },
+            { kind: 'phases', eyebrow: 'The Scope', title: '4 phases, 18 deliverables',
+              body: 'A complete, consistent change-management set — the same rigorous playbook every single run.',
+              phases: 4, total: 18 },
+            { kind: 'stat', eyebrow: 'The Result', title: 'Weeks of work, on demand',
+              body: 'A senior consultant’s multi-week deliverable process, compressed into consistent, branded, traceable output.',
+              stats: [ { num: 4, lbl: 'phases' }, { num: 18, lbl: 'deliverables', gold: true }, { num: 100, suffix: '%', lbl: 'version-tagged' } ] }
+        ],
+        gws: [
+            { kind: 'claim', eyebrow: 'The Wedge', title: 'I don’t guess at licensing. I prove it from real usage.',
+              body: 'Most "cost optimization" is a spreadsheet and a hunch. This reads a tenant’s actual usage and produces a recommendation a CFO can sign off on.' },
+            { kind: 'arch', eyebrow: 'The Architecture', title: 'From real usage to a defensible call',
+              body: 'A Domain-Wide-Delegation service account reads true usage via the Reports API, matched against a verified SKU catalog. A zero-usage guard protects active-but-quiet seats; heavy runs scale out on Cloud Run Jobs.',
+              vb: [0, 0, 640, 290],
+              nodes: [
+                { id: 'sa', x: 20, y: 116, w: 104, h: 56, label: 'DWD Service', sub: 'account', accent: 'gold' },
+                { id: 'admin', x: 150, y: 116, w: 110, h: 56, label: 'Admin Console', accent: 'muted' },
+                { id: 'rep', x: 286, y: 116, w: 112, h: 56, label: 'Reports API', sub: 'real usage', accent: 'teal' },
+                { id: 'an', x: 424, y: 100, w: 150, h: 82, label: 'Analyzer', sub: 'SKU catalog + zero-usage guard', accent: 'teal' },
+                { id: 'jobs', x: 424, y: 212, w: 150, h: 48, label: 'Cloud Run Jobs', accent: 'gold' }
+              ],
+              edges: [
+                { from: 'sa', to: 'admin' },
+                { from: 'admin', to: 'rep' },
+                { from: 'rep', to: 'an' },
+                { from: 'an', to: 'jobs', fromSide: 'b', toSide: 't', dashed: true, label: 'scale out', packet: false }
+              ] },
+            { kind: 'contrast', eyebrow: 'The Safeguard', title: 'Quiet ≠ inactive',
+              body: 'The accuracy guard means an active-but-quiet user is never wrongly downgraded — which is exactly what keeps the recommendations trustworthy.',
+              before: { big: 'Naive', small: 'low usage → downgrade' }, after: { big: 'Guarded', small: 'active seats protected' } },
+            { kind: 'stat', eyebrow: 'The Result', title: 'Quantifiable savings',
+              body: 'Over-licensing surfaced across hundreds of seats — direct, defensible cost reduction.',
+              stats: [ { num: 100, suffix: 's', lbl: 'seats analyzed' }, { num: 0, suffix: ' false', lbl: 'downgrades', gold: true } ] }
+        ],
+        hci: [
+            { kind: 'claim', eyebrow: 'The Wedge', title: 'Manual reviews don’t scale. I made them ship themselves.',
+              body: 'A repeatable infrastructure health pipeline that turns raw signals into a report and delivers it — no analyst in the loop.' },
+            { kind: 'arch', eyebrow: 'The Architecture', title: 'A self-shipping report pipeline',
+              body: 'A multi-stage analysis pipeline, wrapped in its own security layer and input-size guards, produces a shippable PDF and emails it out automatically.',
+              vb: [0, 0, 640, 270],
+              nodes: [
+                { id: 'in', x: 20, y: 104, w: 96, h: 56, label: 'Inputs', accent: 'muted' },
+                { id: 'pipe', x: 156, y: 70, w: 206, h: 124, label: 'Analysis Pipeline', sub: 'security layer + guards', accent: 'teal', chips: ['collect', 'analyze', 'score'] },
+                { id: 'pdf', x: 420, y: 70, w: 180, h: 52, label: 'PDF Report', accent: 'teal' },
+                { id: 'mail', x: 420, y: 150, w: 180, h: 52, label: 'Email Delivery', accent: 'gold' }
+              ],
+              edges: [
+                { from: 'in', to: 'pipe' },
+                { from: 'pipe', to: 'pdf' },
+                { from: 'pdf', to: 'mail', fromSide: 'b', toSide: 't', packet: false }
+              ] },
+            { kind: 'stat', eyebrow: 'The Result', title: 'Reports that ship themselves',
+              body: 'Repeatable, shippable health reports generated and delivered automatically — manual review cycles, gone.',
+              stats: [ { num: 1, lbl: 'pipeline' }, { num: 0, lbl: 'manual steps', gold: true }, { num: 100, suffix: '%', lbl: 'auto-emailed' } ] }
+        ]
+    };
+
+    const overlay = document.getElementById('story-overlay');
+    const stageEl = document.getElementById('story-stage');
+    const progressEl = document.getElementById('story-progress');
+    const counterEl = document.getElementById('story-counter');
+    const prevBtn = document.getElementById('story-prev');
+    const nextBtn = document.getElementById('story-next');
+    const closeBtn = document.querySelector('.story-close');
+    const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    let currentStory = [], currentIdx = 0, lastFocused = null;
+
+    function esc(s) { const d = document.createElement('div'); d.textContent = s; return d.innerHTML; }
+
+    function anchor(n, side) {
+        if (side === 'l') return [n.x, n.y + n.h / 2];
+        if (side === 'r') return [n.x + n.w, n.y + n.h / 2];
+        if (side === 't') return [n.x + n.w / 2, n.y];
+        if (side === 'b') return [n.x + n.w / 2, n.y + n.h];
+        return [n.x + n.w / 2, n.y + n.h / 2];
+    }
+
+    function renderArch(scene) {
+        const vb = scene.vb || [0, 0, 640, 340];
+        const byId = {}; scene.nodes.forEach(n => byId[n.id] = n);
+        let s = `<div class="viz-arch anim"><svg viewBox="${vb.join(' ')}" role="img" aria-label="${esc(scene.title)} architecture diagram">`;
+        if (scene.region) {
+            const r = scene.region;
+            s += `<rect class="arch-region" x="${r.x}" y="${r.y}" width="${r.w}" height="${r.h}" rx="14"/>`;
+            s += `<text class="arch-region-label" x="${r.x + 12}" y="${r.y + 18}">${esc(r.label)}</text>`;
+        }
+        const paths = [];
+        scene.edges.forEach((e, i) => {
+            const a = anchor(byId[e.from], e.fromSide || 'r');
+            const b = anchor(byId[e.to], e.toSide || 'l');
+            const d = `M ${a[0]} ${a[1]} L ${b[0]} ${b[1]}`;
+            paths.push({ d: d, packet: e.packet !== false });
+            s += `<path class="arch-edge${e.dashed ? ' dashed' : ''}" d="${d}" style="animation-delay:${i * 0.06}s"/>`;
+            if (e.label) { const mx = (a[0] + b[0]) / 2, my = (a[1] + b[1]) / 2 - 5; s += `<text class="arch-edge-label" x="${mx}" y="${my}" text-anchor="middle">${esc(e.label)}</text>`; }
+        });
+        if (!reduceMotion) {
+            paths.forEach((p, i) => { if (!p.packet) return; s += `<circle class="arch-packet" r="3.5"><animateMotion dur="2.4s" begin="${0.6 + i * 0.5}s" repeatCount="indefinite" path="${p.d}"/></circle>`; });
+        }
+        scene.nodes.forEach((n, i) => {
+            s += `<g class="arch-node ${n.accent || 'muted'}" style="animation-delay:${0.12 + i * 0.08}s">`;
+            s += `<rect x="${n.x}" y="${n.y}" width="${n.w}" height="${n.h}" rx="9"/>`;
+            const cy = n.sub ? n.y + (n.chips ? n.h * 0.30 : n.h * 0.40) : n.y + n.h / 2;
+            s += `<text class="nlabel" x="${n.x + n.w / 2}" y="${cy}" text-anchor="middle" dominant-baseline="middle">${esc(n.label)}</text>`;
+            if (n.sub) s += `<text class="nsub" x="${n.x + n.w / 2}" y="${cy + 15}" text-anchor="middle" dominant-baseline="middle">${esc(n.sub)}</text>`;
+            if (n.chips) {
+                const pad = 8, m = n.chips.length, cw = (n.w - pad * (m + 1)) / m, ch = 18, cyy = n.y + n.h - ch - 8;
+                n.chips.forEach((c, ci) => {
+                    const cx = n.x + pad + ci * (cw + pad);
+                    s += `<rect class="arch-chip" x="${cx}" y="${cyy}" width="${cw}" height="${ch}" rx="5"/>`;
+                    s += `<text class="arch-chip-text" x="${cx + cw / 2}" y="${cyy + ch / 2}" text-anchor="middle" dominant-baseline="middle">${esc(c)}</text>`;
+                });
+            }
+            s += `</g>`;
+        });
+        if (scene.badge) {
+            const b = scene.badge;
+            s += `<g class="arch-badge"><rect x="${b.x}" y="${b.y}" width="${b.w}" height="${b.h}" rx="11"/><text x="${b.x + b.w / 2}" y="${b.y + b.h / 2 + 0.5}" text-anchor="middle" dominant-baseline="middle">${esc(b.text)}</text></g>`;
+        }
+        return s + `</svg></div>`;
+    }
+
+    function sceneHTML(scene) {
+        if (scene.kind === 'claim') {
+            return `<div class="story-scene"><div class="story-eyebrow anim">${esc(scene.eyebrow)}</div>`
+                + `<h2 class="story-title story-claim anim">${esc(scene.title)}</h2>`
+                + `<div class="claim-underline anim"></div>`
+                + `<p class="story-body anim">${esc(scene.body)}</p></div>`;
+        }
+        let viz = '';
+        if (scene.kind === 'arch') {
+            viz = renderArch(scene);
+        } else if (scene.kind === 'flow') {
+            const parts = scene.nodes.map(n => `<span class="node" data-node>${esc(n)}</span>`);
+            viz = '<div class="viz-flow anim">' + parts.join('<span class="arrow" data-arrow>→</span>') + '</div>';
+        } else if (scene.kind === 'stat') {
+            viz = '<div class="viz-stats anim">' + scene.stats.map(s =>
+                `<div class="stat"><div class="num${s.gold ? ' gold' : ''}" data-count="${s.num}" data-prefix="${s.prefix||''}" data-suffix="${s.suffix||''}">${s.prefix||''}0${s.suffix||''}</div><div class="lbl">${esc(s.lbl)}</div></div>`
+            ).join('') + '</div>';
+        } else if (scene.kind === 'contrast') {
+            viz = `<div class="viz-contrast anim"><div class="side before"><div class="big">${esc(scene.before.big)}</div><div class="small">${esc(scene.before.small)}</div></div><div class="vs">→</div><div class="side after"><div class="big">${esc(scene.after.big)}</div><div class="small">${esc(scene.after.small)}</div></div></div>`;
+        } else if (scene.kind === 'stack') {
+            viz = '<div class="viz-stack anim">' + scene.layers.map(l =>
+                `<div class="layer"><span>${esc(l[0])}</span><span class="tag">${esc(l[1])}</span></div>`
+            ).join('') + '</div>';
+        } else if (scene.kind === 'phases') {
+            let cells = '';
+            for (let i = 1; i <= scene.total; i++) {
+                const isPhase = i <= scene.phases;
+                cells += `<div class="cell${isPhase ? ' phase' : ''}" style="animation-delay:${i * 0.05}s">${isPhase ? 'P' + i : ''}</div>`;
+            }
+            viz = '<div class="viz-phases anim">' + cells + '</div>';
+        }
+        return `<div class="story-scene"><div class="story-eyebrow anim">${esc(scene.eyebrow)}</div>`
+            + `<h2 class="story-title anim">${esc(scene.title)}</h2>`
+            + `<p class="story-body anim">${esc(scene.body)}</p>${viz}</div>`;
+    }
+
+    function animateScene() {
+        const scene = currentStory[currentIdx];
+        if (scene.kind === 'flow' && !reduceMotion) {
+            const nodes = stageEl.querySelectorAll('[data-node]');
+            const arrows = stageEl.querySelectorAll('[data-arrow]');
+            nodes.forEach((n, i) => setTimeout(() => n.classList.add('lit'), 350 + i * 320));
+            arrows.forEach((a, i) => setTimeout(() => a.classList.add('lit'), 500 + i * 320));
+        } else if (scene.kind === 'flow') {
+            stageEl.querySelectorAll('[data-node],[data-arrow]').forEach(e => e.classList.add('lit'));
+        }
+        if (scene.kind === 'stat') {
+            stageEl.querySelectorAll('[data-count]').forEach(el => {
+                const target = parseFloat(el.dataset.count), pre = el.dataset.prefix, suf = el.dataset.suffix;
+                if (reduceMotion || target === 0) { el.textContent = pre + target + suf; return; }
+                const dur = 900, t0 = performance.now();
+                (function tick(now) {
+                    const p = Math.min((now - t0) / dur, 1);
+                    el.textContent = pre + Math.round(target * (1 - Math.pow(1 - p, 3))) + suf;
+                    if (p < 1) requestAnimationFrame(tick);
+                })(t0);
+            });
+        }
+    }
+
+    function render() {
+        stageEl.innerHTML = sceneHTML(currentStory[currentIdx]);
+        // reflow so the .active transition fires
+        void stageEl.offsetWidth;
+        stageEl.firstChild.classList.add('active');
+        progressEl.querySelectorAll('.dot').forEach((d, i) => {
+            d.classList.toggle('active', i === currentIdx);
+            d.classList.toggle('done', i < currentIdx);
+        });
+        counterEl.textContent = (currentIdx + 1) + ' / ' + currentStory.length;
+        prevBtn.disabled = currentIdx === 0;
+        nextBtn.textContent = currentIdx === currentStory.length - 1 ? 'Done ✓' : 'Next →';
+        animateScene();
+    }
+
+    function goTo(i) {
+        if (i < 0) return;
+        if (i >= currentStory.length) { closeStory(); return; }
+        currentIdx = i; render();
+    }
+
+    function openStory(key, trigger) {
+        if (!STORIES[key]) return;
+        currentStory = STORIES[key]; currentIdx = 0; lastFocused = trigger || null;
+        progressEl.innerHTML = currentStory.map(() => '<span class="dot"></span>').join('');
+        progressEl.querySelectorAll('.dot').forEach((d, i) => d.addEventListener('click', () => goTo(i)));
+        overlay.classList.add('open');
+        document.body.style.overflow = 'hidden';
+        render();
+        closeBtn.focus();
+    }
+
+    function closeStory() {
+        overlay.classList.remove('open');
+        document.body.style.overflow = '';
+        if (lastFocused) lastFocused.focus();
+    }
+
+    document.querySelectorAll('.project-card[data-story]').forEach(card => {
+        card.addEventListener('click', () => openStory(card.dataset.story, card));
+        card.addEventListener('keydown', e => {
+            if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); openStory(card.dataset.story, card); }
+        });
+    });
+    prevBtn.addEventListener('click', () => goTo(currentIdx - 1));
+    nextBtn.addEventListener('click', () => goTo(currentIdx + 1));
+    closeBtn.addEventListener('click', closeStory);
+    overlay.addEventListener('click', e => { if (e.target === overlay) closeStory(); });
+    document.addEventListener('keydown', e => {
+        if (!overlay.classList.contains('open')) return;
+        if (e.key === 'Escape') closeStory();
+        else if (e.key === 'ArrowRight') goTo(currentIdx + 1);
+        else if (e.key === 'ArrowLeft') goTo(currentIdx - 1);
     });
 
     // Console easter egg
