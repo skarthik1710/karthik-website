@@ -164,6 +164,19 @@
             text-decoration:none; transition:color 0.2s;
         }
         .cert-verify:hover { color:#00e8c0; }
+        .cert-count {
+            font-size:0.72rem; font-weight:700; color:var(--gold);
+            background:var(--gold-glow); border:1px solid var(--border-gold);
+            border-radius:20px; padding:0.1rem 0.6rem; margin-left:0.5rem;
+            vertical-align:middle;
+        }
+        .cert-group-label {
+            font-size:0.68rem; font-weight:700; color:var(--gold);
+            letter-spacing:1.5px; text-transform:uppercase;
+            margin:1.5rem 0 0.8rem; padding-bottom:0.4rem;
+            border-bottom:1px solid var(--border-gold);
+        }
+        .cert-group-label:first-of-type { margin-top:0.3rem; }
 
         /* ── CTA ── */
         .cta-card {
@@ -354,15 +367,23 @@
     <!-- Right: Sidebar -->
     <aside class="sidebar">
         <!-- Certifications -->
-        <div class="sidebar-card">
-            <h3>Certifications</h3>
+        <div class="sidebar-card" id="certifications">
+            <h3>Certifications <span class="cert-count">13</span></h3>
+
+            <div class="cert-group-label">Cloud, AI &amp; Microsoft</div>
             <div class="cert-item">
-                <div class="cert-icon">☁️</div>
+                <div class="cert-icon">✨</div>
                 <div class="cert-info">
-                    <div class="cert-name">Google Cloud Associate</div>
+                    <div class="cert-name">Google Gen AI Leader</div>
                     <div class="cert-issuer">Google Cloud</div>
                 </div>
-                <a href="#" class="cert-verify">Verify →</a>
+            </div>
+            <div class="cert-item">
+                <div class="cert-icon">🧠</div>
+                <div class="cert-info">
+                    <div class="cert-name">AI Transformation Leader</div>
+                    <div class="cert-issuer">Microsoft</div>
+                </div>
             </div>
             <div class="cert-item">
                 <div class="cert-icon">🤖</div>
@@ -370,7 +391,6 @@
                     <div class="cert-name">Azure AI Fundamentals</div>
                     <div class="cert-issuer">Microsoft — AI-900</div>
                 </div>
-                <a href="#" class="cert-verify">Verify →</a>
             </div>
             <div class="cert-item">
                 <div class="cert-icon">☁️</div>
@@ -378,31 +398,73 @@
                     <div class="cert-name">Azure Fundamentals</div>
                     <div class="cert-issuer">Microsoft — AZ-900</div>
                 </div>
-                <a href="#" class="cert-verify">Verify →</a>
             </div>
             <div class="cert-item">
-                <div class="cert-icon">📋</div>
-                <div class="cert-info">
-                    <div class="cert-name">ITIL Foundation</div>
-                    <div class="cert-issuer">AXELOS</div>
-                </div>
-                <span style="font-size:0.72rem;color:var(--teal);font-weight:600;">Certified</span>
-            </div>
-            <div class="cert-item">
-                <div class="cert-icon">⚙️</div>
-                <div class="cert-info">
-                    <div class="cert-name">RPA Developer</div>
-                    <div class="cert-issuer">UiPath</div>
-                </div>
-                <span style="font-size:0.72rem;color:var(--teal);font-weight:600;">Certified</span>
-            </div>
-            <div class="cert-item" style="margin-bottom:0">
                 <div class="cert-icon">🪟</div>
                 <div class="cert-info">
                     <div class="cert-name">Microsoft Copilot</div>
                     <div class="cert-issuer">Microsoft</div>
                 </div>
-                <span style="font-size:0.72rem;color:var(--teal);font-weight:600;">Certified</span>
+            </div>
+            <div class="cert-item">
+                <div class="cert-icon">⚡</div>
+                <div class="cert-info">
+                    <div class="cert-name">Power Platform</div>
+                    <div class="cert-issuer">Microsoft</div>
+                </div>
+            </div>
+
+            <div class="cert-group-label">Automation</div>
+            <div class="cert-item">
+                <div class="cert-icon">⚙️</div>
+                <div class="cert-info">
+                    <div class="cert-name">RPA Developer Foundation</div>
+                    <div class="cert-issuer">UiPath</div>
+                </div>
+            </div>
+            <div class="cert-item">
+                <div class="cert-icon">📊</div>
+                <div class="cert-info">
+                    <div class="cert-name">Business Analyst</div>
+                    <div class="cert-issuer">UiPath</div>
+                </div>
+            </div>
+
+            <div class="cert-group-label">Delivery &amp; Methodology</div>
+            <div class="cert-item">
+                <div class="cert-icon">📋</div>
+                <div class="cert-info">
+                    <div class="cert-name">PRINCE2</div>
+                    <div class="cert-issuer">Project Management</div>
+                </div>
+            </div>
+            <div class="cert-item">
+                <div class="cert-icon">🧭</div>
+                <div class="cert-info">
+                    <div class="cert-name">Change Management</div>
+                    <div class="cert-issuer">Professional Certification</div>
+                </div>
+            </div>
+            <div class="cert-item">
+                <div class="cert-icon">🔁</div>
+                <div class="cert-info">
+                    <div class="cert-name">Agile Methodologies</div>
+                    <div class="cert-issuer">Professional Certification</div>
+                </div>
+            </div>
+            <div class="cert-item">
+                <div class="cert-icon">🧩</div>
+                <div class="cert-info">
+                    <div class="cert-name">Structured Problem Solving</div>
+                    <div class="cert-issuer">Professional Certification</div>
+                </div>
+            </div>
+            <div class="cert-item" style="margin-bottom:0">
+                <div class="cert-icon">📈</div>
+                <div class="cert-info">
+                    <div class="cert-name">Six Sigma</div>
+                    <div class="cert-issuer">Process Excellence</div>
+                </div>
             </div>
         </div>
 
@@ -423,7 +485,7 @@
                     <div style="font-size:0.72rem; color:var(--text-muted); text-transform:uppercase; letter-spacing:0.5px; margin-top:0.3rem;">Continents</div>
                 </div>
                 <div style="text-align:center; padding:1rem; background:var(--bg-elevated); border-radius:10px; border:1px solid var(--border-gold);">
-                    <div style="font-size:2rem; font-weight:800; color:var(--gold); line-height:1;">9</div>
+                    <div style="font-size:2rem; font-weight:800; color:var(--gold); line-height:1;">13</div>
                     <div style="font-size:0.72rem; color:var(--text-muted); text-transform:uppercase; letter-spacing:0.5px; margin-top:0.3rem;">Certifications</div>
                 </div>
             </div>

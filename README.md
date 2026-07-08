@@ -78,11 +78,17 @@ firebase serve
 ## 🎓 Certifications
 
 - Google Gen AI Leader
+- Microsoft AI Transformation Leader
 - Microsoft Azure AI Fundamentals (AI-900)
 - Microsoft Azure Fundamentals (AZ-900)
-- PRINCE2 Project Management
-- UiPath RPA Developer & Business Analyst
-- Microsoft Power Platforms
+- Microsoft Copilot
+- Microsoft Power Platform
+- UiPath RPA Developer Foundation
+- UiPath Business Analyst
+- PRINCE2 – Project Management
+- Change Management
+- Agile Methodologies
+- Structured Problem Solving
 - Six Sigma
 
 ---
