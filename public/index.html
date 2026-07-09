@@ -260,6 +260,88 @@
         }
         .principle p { color: var(--muted); font-size: 0.89rem; line-height: 1.7; }
 
+        /* ─────────────────────────  ASK MY AI  ───────────────────────── */
+        .chat-panel {
+            border: 1px solid var(--line); border-radius: 12px;
+            background: var(--surface); overflow: hidden;
+        }
+        .chat-head {
+            display: flex; align-items: center; gap: 0.7rem;
+            padding: 1rem 1.4rem; border-bottom: 1px solid var(--line);
+        }
+        .chat-head .live-dot { width: 8px; height: 8px; }
+        .chat-head h3 { font-family: var(--font-display); font-size: 0.98rem; font-weight: 600; }
+        .chat-head .chat-stack {
+            margin-left: auto; font-family: var(--font-mono);
+            font-size: 0.68rem; color: var(--dim); letter-spacing: 0.04em;
+        }
+        .chat-log {
+            padding: 1.4rem; min-height: 280px; max-height: 430px;
+            overflow-y: auto; display: flex; flex-direction: column; gap: 0.9rem;
+        }
+        .chat-msg {
+            max-width: 78%; padding: 0.8rem 1.05rem; border-radius: 12px;
+            font-size: 0.9rem; line-height: 1.65; white-space: pre-wrap;
+            overflow-wrap: break-word;
+        }
+        .chat-msg.user {
+            align-self: flex-end;
+            background: var(--accent-faint); border: 1px solid var(--accent-dim);
+            color: var(--text); border-bottom-right-radius: 4px;
+        }
+        .chat-msg.bot {
+            align-self: flex-start;
+            background: var(--surface-2); border: 1px solid var(--line);
+            color: var(--muted); border-bottom-left-radius: 4px;
+        }
+        .chat-msg.bot.error { border-color: var(--accent-dim); color: var(--text); }
+        .chat-typing {
+            align-self: flex-start; display: flex; gap: 5px;
+            padding: 0.95rem 1.05rem; background: var(--surface-2);
+            border: 1px solid var(--line); border-radius: 12px; border-bottom-left-radius: 4px;
+        }
+        .chat-typing span {
+            width: 6px; height: 6px; border-radius: 50%; background: var(--dim);
+            animation: typing 1.2s ease infinite;
+        }
+        .chat-typing span:nth-child(2) { animation-delay: 0.15s; }
+        .chat-typing span:nth-child(3) { animation-delay: 0.3s; }
+        @keyframes typing { 0%, 60%, 100% { opacity: 0.3; transform: translateY(0); } 30% { opacity: 1; transform: translateY(-3px); } }
+        .chat-chips { display: flex; flex-wrap: wrap; gap: 0.55rem; padding: 0 1.4rem 1.1rem; }
+        .chat-chip {
+            font-family: var(--font-mono); font-size: 0.72rem; font-weight: 500;
+            padding: 0.45rem 0.9rem; border-radius: 20px; cursor: pointer;
+            background: transparent; border: 1px solid var(--line-strong); color: var(--muted);
+            transition: all 0.15s;
+        }
+        .chat-chip:hover { border-color: var(--accent); color: var(--accent); background: var(--accent-faint); }
+        .chat-input-row {
+            display: flex; gap: 0.7rem; padding: 1rem 1.4rem;
+            border-top: 1px solid var(--line);
+        }
+        .chat-input-row input {
+            flex: 1; padding: 0.75rem 1.1rem; border-radius: 8px;
+            border: 1px solid var(--line-strong); background: var(--bg);
+            color: var(--text); font-size: 0.9rem; font-family: var(--font-body);
+            transition: border-color 0.15s;
+        }
+        .chat-input-row input:focus { outline: none; border-color: var(--accent); }
+        .chat-input-row input::placeholder { color: var(--dim); }
+        .chat-input-row button {
+            font-family: var(--font-display);
+            padding: 0.75rem 1.5rem; border-radius: 8px; border: none;
+            background: var(--accent); color: #210D02;
+            font-weight: 600; font-size: 0.88rem; cursor: pointer; transition: all 0.15s;
+        }
+        .chat-input-row button:hover:not(:disabled) { background: #FF8557; }
+        .chat-input-row button:disabled { opacity: 0.55; cursor: default; }
+        .chat-note {
+            font-family: var(--font-mono); font-size: 0.68rem; color: var(--dim);
+            padding: 0 1.4rem 1rem; letter-spacing: 0.02em;
+        }
+        @media (prefers-reduced-motion: reduce) { .chat-typing span { animation: none; opacity: 0.6; } }
+        @media (max-width: 600px) { .chat-msg { max-width: 92%; } }
+
         /* ─────────────────────────  WRITING  ───────────────────────── */
         .writing-list { border-top: 1px solid var(--line); }
         .writing-item {
@@ -665,10 +747,42 @@
     </div>
 </section>
 
-<!-- ── 05 WRITING ── -->
+<!-- ── 05 ASK MY AI ── -->
+<section id="ask">
+    <div class="wrap">
+        <div class="sec-head"><span class="sec-idx">05</span><h2 class="sec-title">Ask my AI</h2></div>
+        <p class="sec-desc">
+            Don't take the site's word for it — interrogate it. This assistant runs on my own
+            Firebase + Gemini stack, grounded in the career you just read. The site is the demo.
+        </p>
+        <div class="chat-panel">
+            <div class="chat-head">
+                <span class="live-dot"></span>
+                <h3>KS Assist</h3>
+                <span class="chat-stack">gemini-2.5-flash · firebase functions</span>
+            </div>
+            <div class="chat-log" id="chat-log">
+                <div class="chat-msg bot">Hi — I'm KS Assist, grounded in Karthikeyan's 18-year career. Ask me anything a hiring conversation would cover: the AI platform he runs, his governance approach, the Microsoft Copilot work, or why he fits an AI leadership role.</div>
+            </div>
+            <div class="chat-chips" id="chat-chips">
+                <button class="chat-chip" type="button">Why hire him as an AI leader?</button>
+                <button class="chat-chip" type="button">Tell me about his AI platform</button>
+                <button class="chat-chip" type="button">How does he approach AI governance?</button>
+                <button class="chat-chip" type="button">What did he do at Microsoft?</button>
+            </div>
+            <form class="chat-input-row" id="chat-form">
+                <input id="chat-input" type="text" maxlength="500" placeholder="Ask about Karthikeyan's experience…" autocomplete="off"/>
+                <button type="submit" id="chat-send">Send</button>
+            </form>
+            <div class="chat-note">answers come from his documented career only · conversations may be reviewed to improve the assistant</div>
+        </div>
+    </div>
+</section>
+
+<!-- ── 06 WRITING ── -->
 <section id="writing">
     <div class="wrap">
-        <div class="sec-head"><span class="sec-idx">05</span><h2 class="sec-title">Writing</h2></div>
+        <div class="sec-head"><span class="sec-idx">06</span><h2 class="sec-title">Writing</h2></div>
         <p class="sec-desc">
             Ongoing analysis on enterprise AI, governance, and automation —
             <a href="/newsletter.html">read or subscribe here</a>.
@@ -1026,6 +1140,72 @@
         else if (e.key === 'ArrowRight') goTo(currentIdx + 1);
         else if (e.key === 'ArrowLeft') goTo(currentIdx - 1);
     });
+
+    // ── ASK MY AI (KS Assist) ──
+    const CHAT_ENDPOINT = 'https://us-central1-karthik-website-b5801.cloudfunctions.net/askKarthik';
+    const chatLog = document.getElementById('chat-log');
+    const chatForm = document.getElementById('chat-form');
+    const chatInput = document.getElementById('chat-input');
+    const chatSend = document.getElementById('chat-send');
+    const chatChips = document.getElementById('chat-chips');
+    let chatHistory = [], chatBusy = false;
+
+    function addChatMsg(role, text, isError) {
+        const div = document.createElement('div');
+        div.className = 'chat-msg ' + (role === 'user' ? 'user' : 'bot') + (isError ? ' error' : '');
+        div.textContent = text;
+        chatLog.appendChild(div);
+        chatLog.scrollTop = chatLog.scrollHeight;
+        return div;
+    }
+
+    async function sendChat(text) {
+        text = (text || '').trim();
+        if (!text || chatBusy) return;
+        chatBusy = true;
+        chatSend.disabled = true;
+        chatInput.value = '';
+        if (chatChips) chatChips.style.display = 'none';
+        addChatMsg('user', text);
+        chatHistory.push({ role: 'user', content: text });
+
+        const typing = document.createElement('div');
+        typing.className = 'chat-typing';
+        typing.innerHTML = '<span></span><span></span><span></span>';
+        chatLog.appendChild(typing);
+        chatLog.scrollTop = chatLog.scrollHeight;
+
+        try {
+            const r = await fetch(CHAT_ENDPOINT, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ messages: chatHistory.slice(-12) })
+            });
+            const data = await r.json().catch(() => ({}));
+            typing.remove();
+            if (r.ok && data.reply) {
+                addChatMsg('bot', data.reply);
+                chatHistory.push({ role: 'assistant', content: data.reply });
+            } else {
+                addChatMsg('bot', data.error || 'Something went wrong — please try again, or email hello@karthikeyanselvam.com.', true);
+                chatHistory.pop(); // let the user retry the same question
+            }
+        } catch (err) {
+            typing.remove();
+            addChatMsg('bot', 'Connection problem — please try again, or email hello@karthikeyanselvam.com.', true);
+            chatHistory.pop();
+        }
+        chatBusy = false;
+        chatSend.disabled = false;
+        chatInput.focus();
+    }
+
+    if (chatForm) {
+        chatForm.addEventListener('submit', e => { e.preventDefault(); sendChat(chatInput.value); });
+        document.querySelectorAll('.chat-chip').forEach(chip => {
+            chip.addEventListener('click', () => sendChat(chip.textContent));
+        });
+    }
 
     // Console note
     console.log(

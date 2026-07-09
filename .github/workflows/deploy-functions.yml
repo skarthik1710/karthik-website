@@ -22,6 +22,16 @@ jobs:
       - name: Checkout repo
         uses: actions/checkout@v4
 
+      # askKarthik needs GEMINI_API_KEY in Firebase Secret Manager.
+      # Value comes from the same GH secret the newsletter pipeline uses;
+      # sets a fresh secret version on each functions deploy (rare).
+      - name: Ensure GEMINI_API_KEY secret
+        run: |
+          printf '%s' "${{ secrets.GEMINI_API_KEY }}" | npx -y firebase-tools@13 functions:secrets:set GEMINI_API_KEY \
+            --project karthik-website-b5801 --data-file=-
+        env:
+          FIREBASE_TOKEN: ${{ secrets.FIREBASE_TOKEN }}
+
       - name: Deploy functions
         uses: w9jds/firebase-action@master
         with:
