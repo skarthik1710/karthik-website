@@ -22,6 +22,11 @@ jobs:
       - name: Checkout repo
         uses: actions/checkout@v4
 
+      # firebase deploy loads the functions source to analyze it — deps must exist.
+      # (package-lock.json is gitignored, so npm install rather than npm ci.)
+      - name: Install function dependencies
+        run: npm install --prefix functions --no-audit --no-fund
+
       # askKarthik needs GEMINI_API_KEY in Firebase Secret Manager.
       # Value comes from the same GH secret the newsletter pipeline uses;
       # sets a fresh secret version on each functions deploy (rare).
