@@ -6,6 +6,7 @@ on:
       - main
     paths:
       - 'functions/**'
+      - 'functions-chat/**'
   workflow_dispatch:
 
 permissions:
@@ -25,7 +26,7 @@ jobs:
       # firebase deploy loads the functions source to analyze it — deps must exist.
       # (package-lock.json is gitignored, so npm install rather than npm ci.)
       - name: Install function dependencies
-        run: npm install --prefix functions --no-audit --no-fund
+        run: npm install --prefix functions-chat --no-audit --no-fund
 
       # askKarthik needs GEMINI_API_KEY in Firebase Secret Manager.
       # Value comes from the same GH secret the newsletter pipeline uses;
@@ -37,14 +38,14 @@ jobs:
         env:
           FIREBASE_TOKEN: ${{ secrets.FIREBASE_TOKEN }}
 
-      # NOTE: scoped to askKarthik because sendNewsletter's secrets
-      # (GMAIL_USER, GMAIL_PASSWORD, NEWSLETTER_SECRET) are absent from
-      # Secret Manager — a full "--only functions" deploy fails on them.
-      # Owner must run `firebase functions:secrets:set` for those three
-      # before sendNewsletter can be redeployed.
-      - name: Deploy functions
+      # NOTE: scoped to the "chat" codebase (functions-chat/). The default
+      # codebase (sendNewsletter) cannot deploy non-interactively because its
+      # secrets (GMAIL_USER, GMAIL_PASSWORD, NEWSLETTER_SECRET) are absent
+      # from Secret Manager — owner must `firebase functions:secrets:set`
+      # those three before the default codebase can be redeployed.
+      - name: Deploy chat functions
         uses: w9jds/firebase-action@master
         with:
-          args: deploy --only functions:askKarthik
+          args: deploy --only functions:chat
         env:
           FIREBASE_TOKEN: ${{ secrets.FIREBASE_TOKEN }}

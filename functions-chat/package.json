@@ -1,0 +1,13 @@
+{
+  "name": "chat-functions",
+  "description": "askKarthik chat assistant (isolated codebase)",
+  "engines": {
+    "node": "24"
+  },
+  "main": "index.js",
+  "dependencies": {
+    "firebase-admin": "^13.6.0",
+    "firebase-functions": "^7.0.0"
+  },
+  "private": true
+}
