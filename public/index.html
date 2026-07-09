@@ -3,788 +3,716 @@
 <head>
     <meta charset="UTF-8"/>
     <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-    <title>Karthikeyan Selvam | Digital Workplace & AI Consultant</title>
-    <meta name="description" content="Karthikeyan Selvam — 18 years turning enterprise chaos into intelligent, automated workplaces. Microsoft Copilot, RPA, AIOps, Azure & Google Cloud."/>
-    <meta name="keywords" content="Digital Workplace Consultant, Microsoft Copilot, RPA, AIOps, Enterprise AI, Karthikeyan Selvam"/>
-    <meta property="og:title" content="Karthikeyan Selvam | Digital Workplace & AI Consultant"/>
-    <meta property="og:description" content="18 years turning enterprise chaos into intelligent workplaces."/>
-    
+    <title>Karthikeyan Selvam — AI Product & Enablement Leader</title>
+    <meta name="description" content="Karthikeyan Selvam — AI Product & Enablement Leader. 18+ years in enterprise IT; founder of a production multi-agent AI platform. Microsoft Copilot evaluation, RPA at scale, AIOps, and AI governance."/>
+    <meta name="keywords" content="AI Leader, AI Product Manager, AI Enablement, AI Deployment, Microsoft Copilot, RPA, AIOps, Karthikeyan Selvam"/>
+    <meta property="og:title" content="Karthikeyan Selvam — AI Product & Enablement Leader"/>
+    <meta property="og:description" content="18+ years in enterprise IT. Founder of a production multi-agent AI platform. AI from slideware to shipped."/>
+    <meta property="og:image" content="https://karthikeyanselvam.com/og-image.png"/>
+    <meta property="og:url" content="https://karthikeyanselvam.com/"/>
+    <meta property="og:type" content="website"/>
+    <meta name="twitter:card" content="summary_large_image"/>
+    <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%23141110'/%3E%3Ctext x='32' y='42' font-family='Arial,sans-serif' font-size='30' font-weight='700' fill='%23FF6B35' text-anchor='middle'%3EK%3C/text%3E%3Ccircle cx='47' cy='40' r='3.4' fill='%23F3EDE7'/%3E%3C/svg%3E"/>
+    <link rel="preconnect" href="https://fonts.googleapis.com"/>
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet"/>
+
     <style>
+        /* ─────────────────────────  DESIGN TOKENS  ───────────────────────── */
         :root {
-            --teal: #00C9A7;
-            --gold: #C9A84C;
-            --teal-glow: rgba(0, 201, 167, 0.15);
-            --gold-glow: rgba(201, 168, 76, 0.15);
-            --bg: #060810;
-            --bg-card: #0D1117;
-            --bg-elevated: #161B22;
-            --text: #E6EDF3;
-            --text-muted: #8B949E;
-            --border: rgba(0, 201, 167, 0.15);
-            --border-gold: rgba(201, 168, 76, 0.2);
+            --bg: #141110;
+            --surface: #1A1614;
+            --surface-2: #201B18;
+            --line: #292320;
+            --line-strong: #37302B;
+            --text: #F3EDE7;
+            --muted: #A69C92;
+            --dim: #75695E;
+            --accent: #FF6B35;
+            --accent-dim: rgba(255, 107, 53, 0.4);
+            --accent-faint: rgba(255, 107, 53, 0.09);
+            --font-display: 'Space Grotesk', 'Inter', sans-serif;
+            --font-body: 'Inter', -apple-system, sans-serif;
+            --font-mono: 'JetBrains Mono', 'SFMono-Regular', monospace;
+            --w: 1120px;
         }
         * { margin: 0; padding: 0; box-sizing: border-box; }
+        html { scroll-behavior: smooth; }
         body {
-            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            font-family: var(--font-body);
             background: var(--bg);
             color: var(--text);
-            line-height: 1.7;
+            line-height: 1.65;
+            font-size: 16px;
+            -webkit-font-smoothing: antialiased;
         }
-        /* ── NAV ── */
-        .header {
-            background: rgba(6, 8, 16, 0.92);
-            backdrop-filter: blur(12px);
-            position: sticky; top: 0; z-index: 1000;
-            border-bottom: 1px solid var(--border);
-        }
-        .header-content {
-            max-width: 1300px; margin: 0 auto;
-            padding: 1.2rem 2rem;
-            display: flex; justify-content: space-between; align-items: center;
-        }
-        .logo {
-            font-size: 1.3rem; font-weight: 800; letter-spacing: -0.5px;
-            color: var(--teal);
-            text-decoration: none;
-        }
-        .logo span { color: var(--gold); }
-        .nav-links { display: flex; gap: 2rem; list-style: none; }
-        .nav-links a {
-            color: var(--text-muted); text-decoration: none;
-            font-size: 0.9rem; font-weight: 500;
-            transition: color 0.2s; letter-spacing: 0.3px;
-        }
-        .nav-links a:hover, .nav-links a.active { color: var(--teal); }
-        /* ── FOOTER ── */
-        footer {
-            background: var(--bg-card);
-            border-top: 1px solid var(--border);
-            text-align: center; padding: 3rem 2rem; margin-top: 6rem;
-        }
-        footer p { color: var(--text-muted); font-size: 0.9rem; margin-bottom: 1rem; }
-        .footer-links { display: flex; gap: 2rem; justify-content: center; flex-wrap: wrap; }
-        .footer-links a {
-            color: var(--text-muted); text-decoration: none;
-            font-size: 0.85rem; transition: color 0.2s;
-        }
-        .footer-links a:hover { color: var(--teal); }
-        /* ── SCROLLBAR ── */
-        ::-webkit-scrollbar { width: 6px; }
+        ::selection { background: var(--accent); color: #210D02; }
+        ::-webkit-scrollbar { width: 8px; }
         ::-webkit-scrollbar-track { background: var(--bg); }
-        ::-webkit-scrollbar-thumb { background: var(--teal); border-radius: 3px; }
-        /* ── RESPONSIVE ── */
-        @media (max-width: 768px) {
-            .nav-links { gap: 1rem; }
-            .header-content { padding: 1rem; }
-        }
-    </style>
+        ::-webkit-scrollbar-thumb { background: var(--line-strong); border-radius: 4px; }
+        ::-webkit-scrollbar-thumb:hover { background: var(--dim); }
 
-    <style>
-        /* ── THINKING TICKER ── */
-        .thinking-bar {
-            background: var(--bg-card);
-            border-bottom: 1px solid var(--border);
-            padding: 0.6rem 2rem;
-            display: flex; align-items: center; gap: 1.5rem;
+        .wrap { max-width: var(--w); margin: 0 auto; padding: 0 2rem; }
+        a { color: inherit; }
+
+        /* ─────────────────────────  NAV  ───────────────────────── */
+        .nav {
+            position: sticky; top: 0; z-index: 100;
+            background: rgba(20, 17, 16, 0.88);
+            backdrop-filter: blur(14px);
+            border-bottom: 1px solid var(--line);
+        }
+        .nav-inner {
+            max-width: var(--w); margin: 0 auto; padding: 0 2rem;
+            height: 64px; display: flex; align-items: center; justify-content: space-between;
+        }
+        .brand {
+            font-family: var(--font-display); font-weight: 700;
+            font-size: 1.15rem; letter-spacing: -0.02em;
+            text-decoration: none; color: var(--text);
+        }
+        .brand b { color: var(--accent); font-weight: 700; }
+        .nav-links { display: flex; align-items: center; gap: 1.8rem; list-style: none; }
+        .nav-links a {
+            text-decoration: none; color: var(--muted);
+            font-size: 0.88rem; font-weight: 500;
+            transition: color 0.15s;
+        }
+        .nav-links a:hover { color: var(--text); }
+        .nav-cta {
+            font-family: var(--font-display);
+            padding: 0.5rem 1.05rem; border: 1px solid var(--line-strong); border-radius: 6px;
+            color: var(--text) !important; font-weight: 600; font-size: 0.84rem !important;
+            transition: border-color 0.15s, background 0.15s;
+        }
+        .nav-cta:hover { border-color: var(--accent); background: var(--accent-faint); }
+
+        /* ─────────────────────────  HERO  ───────────────────────── */
+        .hero { padding: 6.5rem 0 4.5rem; border-bottom: 1px solid var(--line); }
+        .hero-grid {
+            display: grid; grid-template-columns: minmax(0, 1.55fr) minmax(0, 1fr);
+            gap: 4.5rem; align-items: center;
+        }
+        .kicker {
+            font-family: var(--font-mono); font-size: 0.76rem; font-weight: 500;
+            letter-spacing: 0.14em; text-transform: uppercase; color: var(--accent);
+            display: flex; align-items: center; gap: 0.7rem; margin-bottom: 1.6rem;
+        }
+        .kicker::before { content: ''; width: 22px; height: 1px; background: var(--accent); }
+        .hero h1 {
+            font-family: var(--font-display);
+            font-size: clamp(2.5rem, 5.2vw, 4.1rem);
+            font-weight: 700; line-height: 1.06; letter-spacing: -0.03em;
+            margin-bottom: 1.6rem;
+        }
+        .hero h1 .accent { color: var(--accent); }
+        .hero-sub {
+            color: var(--muted); font-size: 1.06rem; line-height: 1.75;
+            max-width: 34em; margin-bottom: 2.4rem;
+        }
+        .hero-sub strong { color: var(--text); font-weight: 600; }
+        .hero-actions { display: flex; gap: 0.9rem; flex-wrap: wrap; }
+        .btn {
+            font-family: var(--font-display); font-weight: 600; font-size: 0.92rem;
+            padding: 0.8rem 1.6rem; border-radius: 7px; text-decoration: none;
+            transition: all 0.15s; display: inline-flex; align-items: center; gap: 0.5rem;
+        }
+        .btn-solid { background: var(--accent); color: #210D02; }
+        .btn-solid:hover { background: #FF8557; transform: translateY(-1px); }
+        .btn-ghost { border: 1px solid var(--line-strong); color: var(--text); }
+        .btn-ghost:hover { border-color: var(--accent); background: var(--accent-faint); }
+
+        /* hero portrait + fact stack */
+        .hero-side { display: flex; flex-direction: column; gap: 0; border-left: 1px solid var(--line); padding-left: 2.6rem; }
+        .portrait {
+            width: 128px; height: 128px; border-radius: 12px;
+            object-fit: cover; display: block;
+            filter: grayscale(28%);
+            border: 1px solid var(--line-strong);
+            margin-bottom: 1.8rem;
+            transition: filter 0.3s;
+        }
+        .portrait:hover { filter: grayscale(0%); }
+        .fact { padding: 0.95rem 0; border-bottom: 1px solid var(--line); }
+        .fact:last-child { border-bottom: none; }
+        .fact-num {
+            font-family: var(--font-display); font-size: 1.5rem; font-weight: 700;
+            letter-spacing: -0.02em; line-height: 1.1;
+        }
+        .fact-num em { font-style: normal; color: var(--accent); }
+        .fact-lbl { font-size: 0.8rem; color: var(--dim); margin-top: 0.1rem; }
+
+        /* ─────────────────────────  SECTIONS  ───────────────────────── */
+        section { padding: 5.5rem 0; border-bottom: 1px solid var(--line); }
+        .sec-head { display: flex; align-items: baseline; gap: 1.4rem; margin-bottom: 0.9rem; }
+        .sec-idx {
+            font-family: var(--font-mono); font-size: 0.8rem; color: var(--accent);
+        }
+        .sec-title {
+            font-family: var(--font-display);
+            font-size: clamp(1.6rem, 3vw, 2.2rem); font-weight: 700;
+            letter-spacing: -0.02em;
+        }
+        .sec-desc { color: var(--muted); max-width: 40em; margin-bottom: 2.8rem; }
+        .sec-desc a { color: var(--accent); text-decoration: none; }
+        .sec-desc a:hover { text-decoration: underline; }
+
+        /* ─────────────────────────  METRICS (live from production)  ───────────────────────── */
+        .metrics {
+            border: 1px solid var(--line); border-radius: 12px;
+            display: grid; grid-template-columns: repeat(4, 1fr);
+            background: var(--surface);
             overflow: hidden;
         }
-        .thinking-label {
-            color: var(--teal); font-weight: 700;
-            font-size: 0.78rem; white-space: nowrap;
-            letter-spacing: 0.5px; text-transform: uppercase;
+        .metric {
+            padding: 1.9rem 1.7rem;
+            border-right: 1px solid var(--line);
+            position: relative;
         }
-        .ticker-wrap { overflow: hidden; flex: 1; }
-        .ticker {
-            display: flex; width: max-content;
-            animation: ticker 28s linear infinite;
+        .metric:last-child { border-right: none; }
+        .metric-num {
+            font-family: var(--font-display); font-size: 2.1rem; font-weight: 700;
+            letter-spacing: -0.03em; line-height: 1;
+            margin-bottom: 0.45rem;
         }
-        .ticker span {
-            padding: 0 3rem; color: var(--text-muted);
-            font-size: 0.82rem; white-space: nowrap;
+        .metric-num small { font-size: 1.1rem; color: var(--muted); font-weight: 500; }
+        .metric-lbl { font-size: 0.82rem; color: var(--muted); line-height: 1.45; }
+        .live-tag {
+            display: inline-flex; align-items: center; gap: 0.45rem;
+            font-family: var(--font-mono); font-size: 0.72rem; letter-spacing: 0.1em;
+            text-transform: uppercase; color: var(--accent);
+            margin-bottom: 1.2rem;
         }
-        .ticker span::before { content: '◆ '; color: var(--gold); }
-        @keyframes ticker { 0% { transform: translateX(0); } 100% { transform: translateX(-50%); } }
+        .live-dot {
+            width: 7px; height: 7px; border-radius: 50%; background: var(--accent);
+            animation: pulse 2s ease infinite;
+        }
+        @keyframes pulse { 0%,100% { opacity: 1; } 50% { opacity: 0.35; } }
+        .metrics-note { font-size: 0.82rem; color: var(--dim); margin-top: 1rem; }
 
-        /* ── HERO ── */
-        .hero {
-            max-width: 1300px; margin: 0 auto;
-            padding: 7rem 2rem 5rem;
-            display: grid; grid-template-columns: 1fr 1fr;
-            gap: 4rem; align-items: center;
+        /* ─────────────────────────  PILLARS  ───────────────────────── */
+        .pillars { display: grid; grid-template-columns: repeat(3, 1fr); gap: 0; border: 1px solid var(--line); border-radius: 12px; overflow: hidden; }
+        .pillar { padding: 2.2rem 2rem 2.4rem; border-right: 1px solid var(--line); background: var(--surface); transition: background 0.2s; }
+        .pillar:last-child { border-right: none; }
+        .pillar:hover { background: var(--surface-2); }
+        .pillar-icon { width: 26px; height: 26px; stroke: var(--accent); fill: none; stroke-width: 1.6; margin-bottom: 1.3rem; }
+        .pillar h3 {
+            font-family: var(--font-display); font-size: 1.08rem; font-weight: 600;
+            margin-bottom: 0.7rem; letter-spacing: -0.01em;
         }
-        .hero-eyebrow {
-            font-size: 0.78rem; font-weight: 700;
-            color: var(--teal); letter-spacing: 2px;
-            text-transform: uppercase; margin-bottom: 1.2rem;
-            display: flex; align-items: center; gap: 0.5rem;
+        .pillar p { color: var(--muted); font-size: 0.9rem; line-height: 1.7; margin-bottom: 1.1rem; }
+        .pillar-where {
+            font-family: var(--font-mono); font-size: 0.72rem; color: var(--dim);
+            letter-spacing: 0.02em;
         }
-        .hero-eyebrow::before {
-            content: ''; display: block;
-            width: 30px; height: 2px; background: var(--teal);
-        }
-        .hero h1 {
-            font-size: clamp(2.2rem, 4vw, 3.4rem);
-            font-weight: 800; line-height: 1.15;
-            letter-spacing: -1px; margin-bottom: 1.5rem;
-        }
-        .hero h1 em {
-            font-style: normal; color: var(--teal);
-        }
-        .hero h1 strong {
-            font-style: normal; color: var(--gold);
-        }
-        .hero-desc {
-            color: var(--text-muted); font-size: 1.05rem;
-            max-width: 500px; margin-bottom: 2.5rem;
-            line-height: 1.8;
-        }
-        .hero-ctas { display: flex; gap: 1rem; flex-wrap: wrap; }
-        .btn-primary {
-            padding: 0.85rem 2rem; border-radius: 8px;
-            background: var(--teal); color: #060810;
-            font-weight: 700; text-decoration: none;
-            font-size: 0.9rem; transition: all 0.2s;
-            letter-spacing: 0.3px;
-        }
-        .btn-primary:hover { background: #00e8c0; transform: translateY(-2px); }
-        .btn-outline {
-            padding: 0.85rem 2rem; border-radius: 8px;
-            border: 1px solid var(--border-gold);
-            color: var(--gold); font-weight: 600;
-            text-decoration: none; font-size: 0.9rem;
-            transition: all 0.2s;
-        }
-        .btn-outline:hover { background: var(--gold-glow); transform: translateY(-2px); }
+        .pillar-where b { color: var(--muted); font-weight: 500; }
 
-        /* ── HERO VISUAL ── */
-        .hero-visual {
-            display: flex; justify-content: center; align-items: center;
+        /* ─────────────────────────  WORK / PROJECTS  ───────────────────────── */
+        .work-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1.2rem; }
+        .work-card {
+            border: 1px solid var(--line); border-radius: 12px;
+            padding: 2rem 2rem 1.7rem; background: var(--surface);
+            cursor: pointer; transition: border-color 0.2s, background 0.2s;
+            position: relative;
         }
-        .hero-card {
-            background: var(--bg-card);
-            border: 1px solid var(--border);
-            border-radius: 20px; padding: 2.5rem;
-            width: 100%; max-width: 420px;
-            position: relative; overflow: hidden;
+        .work-card:hover { border-color: var(--accent-dim); background: var(--surface-2); }
+        .work-card:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; }
+        .work-top { display: flex; align-items: center; justify-content: space-between; margin-bottom: 1.1rem; }
+        .status {
+            font-family: var(--font-mono); font-size: 0.68rem; letter-spacing: 0.12em;
+            text-transform: uppercase; color: var(--accent);
+            border: 1px solid var(--accent-dim); border-radius: 4px;
+            padding: 0.22rem 0.55rem;
         }
-        .hero-card::before {
-            content: '';
-            position: absolute; top: -50%; left: -50%;
-            width: 200%; height: 200%;
-            background: radial-gradient(circle at 60% 40%, var(--teal-glow) 0%, transparent 60%);
-            pointer-events: none;
+        .work-card h3 {
+            font-family: var(--font-display); font-size: 1.22rem; font-weight: 600;
+            letter-spacing: -0.01em; margin-bottom: 0.65rem;
         }
-        .stat-grid {
-            display: grid; grid-template-columns: 1fr 1fr;
-            gap: 1.5rem; margin-bottom: 2rem;
-        }
-        .stat-item { text-align: center; }
-        .stat-number {
-            font-size: 2.2rem; font-weight: 800;
-            color: var(--teal); line-height: 1;
-            margin-bottom: 0.3rem;
-        }
-        .stat-number.gold { color: var(--gold); }
-        .stat-label {
-            font-size: 0.78rem; color: var(--text-muted);
-            text-transform: uppercase; letter-spacing: 0.5px;
-        }
-        .cert-row {
-            display: flex; flex-wrap: wrap; gap: 0.5rem;
-            border-top: 1px solid var(--border);
-            padding-top: 1.5rem;
-        }
-        .cert-badge {
-            padding: 0.3rem 0.7rem; border-radius: 20px;
-            background: var(--teal-glow);
-            border: 1px solid var(--border);
-            font-size: 0.75rem; color: var(--teal);
-            font-weight: 600;
-        }
-
-        /* ── ABOUT ── */
-        .section { max-width: 1300px; margin: 0 auto; padding: 5rem 2rem; }
-        .section-label {
-            font-size: 0.78rem; font-weight: 700;
-            color: var(--gold); letter-spacing: 2px;
-            text-transform: uppercase; margin-bottom: 0.8rem;
-            display: flex; align-items: center; gap: 0.5rem;
-        }
-        .section-label::before {
-            content: ''; display: block;
-            width: 20px; height: 2px; background: var(--gold);
-        }
-        .section-title {
-            font-size: clamp(1.8rem, 3vw, 2.5rem);
-            font-weight: 800; margin-bottom: 1.5rem;
-            letter-spacing: -0.5px; line-height: 1.2;
-        }
-
-        /* ── EXPERTISE CARDS ── */
-        .expertise-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-            gap: 1.5rem; margin-top: 3rem;
-        }
-        .expertise-card {
-            background: var(--bg-card);
-            border: 1px solid var(--border);
-            border-radius: 16px; padding: 2rem;
-            transition: all 0.3s; position: relative; overflow: hidden;
-            cursor: default;
-        }
-        .expertise-card::after {
-            content: '';
-            position: absolute; inset: 0;
-            background: radial-gradient(circle at var(--mouse-x, 50%) var(--mouse-y, 50%), var(--teal-glow), transparent 60%);
-            opacity: 0; transition: opacity 0.3s;
-        }
-        .expertise-card:hover { border-color: var(--teal); transform: translateY(-4px); }
-        .expertise-card:hover::after { opacity: 1; }
-        .expertise-icon {
-            font-size: 1.8rem; margin-bottom: 1rem;
-            display: block;
-        }
-        .expertise-card h3 {
-            font-size: 1.1rem; font-weight: 700;
-            margin-bottom: 0.7rem; color: var(--text);
-        }
-        .expertise-card p {
-            color: var(--text-muted); font-size: 0.9rem; line-height: 1.7;
-        }
-
-        /* ── PROJECTS ── */
-        .projects-grid {
-            display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
-            gap: 1.5rem; margin-top: 3rem;
-        }
-        .project-card {
-            background: var(--bg-card);
-            border: 1px solid var(--border-gold);
-            border-radius: 16px; padding: 2rem;
-            transition: all 0.3s;
-        }
-        .project-card:hover {
-            border-color: var(--gold); transform: translateY(-4px);
-            box-shadow: 0 8px 30px var(--gold-glow);
-        }
-        /* Scroll-reveal: cards start hidden, slide up + fade in when in view */
-        .project-card.reveal {
-            opacity: 0; transform: translateY(28px);
-            transition: opacity 0.6s ease, transform 0.6s ease;
-        }
-        .project-card.reveal.is-visible { opacity: 1; transform: translateY(0); }
-        .projects-grid .project-card.reveal:nth-child(1) { transition-delay: 0s; }
-        .projects-grid .project-card.reveal:nth-child(2) { transition-delay: 0.15s; }
-        .projects-grid .project-card.reveal:nth-child(3) { transition-delay: 0.3s; }
-        .projects-grid .project-card.reveal:nth-child(4) { transition-delay: 0.45s; }
-        @media (prefers-reduced-motion: reduce) {
-            .project-card.reveal { opacity: 1; transform: none; transition: none; }
-        }
-        /* Clickable cards + "view the story" cue */
-        .project-card[data-story] { cursor: pointer; }
-        .project-card[data-story]:focus-visible {
-            outline: 2px solid var(--gold); outline-offset: 3px;
+        .work-card > p { color: var(--muted); font-size: 0.9rem; line-height: 1.7; margin-bottom: 1.2rem; }
+        .stack {
+            font-family: var(--font-mono); font-size: 0.72rem; color: var(--dim);
+            padding-top: 1rem; border-top: 1px solid var(--line);
+            display: flex; justify-content: space-between; align-items: center; gap: 1rem;
         }
         .story-cue {
-            display: inline-block; margin-top: 1.2rem;
-            font-size: 0.78rem; font-weight: 700; letter-spacing: 0.5px;
-            color: var(--teal); transition: transform 0.2s, color 0.2s;
+            color: var(--accent); font-weight: 500; white-space: nowrap;
+            transition: transform 0.15s; display: inline-block;
         }
-        .project-card[data-story]:hover .story-cue { color: var(--gold); transform: translateX(4px); }
+        .work-card:hover .story-cue { transform: translateX(3px); }
+        /* scroll reveal */
+        .reveal { opacity: 0; transform: translateY(22px); transition: opacity 0.55s ease, transform 0.55s ease; }
+        .reveal.in { opacity: 1; transform: none; }
+        @media (prefers-reduced-motion: reduce) { .reveal { opacity: 1; transform: none; transition: none; } }
 
-        /* ── STORY OVERLAY ── */
+        /* ─────────────────────────  PRINCIPLES  ───────────────────────── */
+        .principles { display: grid; grid-template-columns: 1fr 1fr; gap: 0; border-top: 1px solid var(--line); }
+        .principle {
+            padding: 2.1rem 2.2rem 2.1rem 0;
+            border-bottom: 1px solid var(--line);
+            display: grid; grid-template-columns: 52px 1fr; gap: 1.2rem;
+        }
+        .principle:nth-child(odd) { border-right: 1px solid var(--line); padding-right: 2.6rem; }
+        .principle:nth-child(even) { padding-left: 2.6rem; }
+        .p-idx { font-family: var(--font-mono); font-size: 0.85rem; color: var(--accent); padding-top: 0.28rem; }
+        .principle h3 {
+            font-family: var(--font-display); font-size: 1.05rem; font-weight: 600;
+            margin-bottom: 0.5rem; letter-spacing: -0.01em;
+        }
+        .principle p { color: var(--muted); font-size: 0.89rem; line-height: 1.7; }
+
+        /* ─────────────────────────  WRITING  ───────────────────────── */
+        .writing-list { border-top: 1px solid var(--line); }
+        .writing-item {
+            display: flex; align-items: center; justify-content: space-between; gap: 2rem;
+            padding: 1.5rem 0.4rem; border-bottom: 1px solid var(--line);
+            text-decoration: none; transition: background 0.15s, padding 0.15s;
+        }
+        .writing-item:hover { background: var(--surface); padding-left: 1rem; }
+        .writing-item h3 { font-family: var(--font-display); font-size: 1.02rem; font-weight: 600; letter-spacing: -0.01em; }
+        .writing-item .arrow { color: var(--accent); font-family: var(--font-mono); flex-shrink: 0; }
+        .pipeline-note {
+            margin-top: 2rem; padding: 1.3rem 1.6rem;
+            border: 1px dashed var(--line-strong); border-radius: 10px;
+            font-size: 0.86rem; color: var(--muted); line-height: 1.7;
+        }
+        .pipeline-note b { color: var(--text); font-weight: 600; }
+        .pipeline-note .flow { font-family: var(--font-mono); font-size: 0.76rem; color: var(--accent); }
+
+        /* ─────────────────────────  CONTACT  ───────────────────────── */
+        .contact { text-align: left; border-bottom: none; padding-bottom: 6rem; }
+        .contact h2 {
+            font-family: var(--font-display);
+            font-size: clamp(2rem, 4.5vw, 3.2rem); font-weight: 700;
+            letter-spacing: -0.03em; line-height: 1.1; margin-bottom: 1.3rem;
+            max-width: 15em;
+        }
+        .contact h2 .accent { color: var(--accent); }
+        .contact-sub { color: var(--muted); max-width: 36em; margin-bottom: 1rem; }
+        .roles-line {
+            font-family: var(--font-mono); font-size: 0.78rem; color: var(--dim);
+            letter-spacing: 0.03em; margin-bottom: 2.4rem;
+        }
+        .roles-line b { color: var(--accent); font-weight: 500; }
+
+        /* ─────────────────────────  FOOTER  ───────────────────────── */
+        footer { border-top: 1px solid var(--line); padding: 2.2rem 0; }
+        .foot-inner {
+            max-width: var(--w); margin: 0 auto; padding: 0 2rem;
+            display: flex; align-items: center; justify-content: space-between; gap: 1.5rem; flex-wrap: wrap;
+        }
+        .foot-inner p { color: var(--dim); font-size: 0.82rem; }
+        .foot-links { display: flex; gap: 1.6rem; }
+        .foot-links a { color: var(--dim); text-decoration: none; font-size: 0.82rem; transition: color 0.15s; }
+        .foot-links a:hover { color: var(--text); }
+
+        /* ─────────────────────────  STORY OVERLAY (restyled)  ───────────────────────── */
         #story-overlay {
             position: fixed; inset: 0; z-index: 2000;
             display: none; align-items: center; justify-content: center;
-            background: rgba(3, 5, 12, 0.86);
+            background: rgba(12, 9, 7, 0.88);
             backdrop-filter: blur(8px);
             padding: 2rem;
         }
-        #story-overlay.open { display: flex; animation: storyFade 0.25s ease; }
+        #story-overlay.open { display: flex; animation: storyFade 0.22s ease; }
         @keyframes storyFade { from { opacity: 0; } to { opacity: 1; } }
         .story-modal {
-            background: var(--bg-card);
-            border: 1px solid var(--border);
-            border-radius: 20px;
-            width: 100%; max-width: 760px;
-            max-height: 90vh;
+            background: var(--surface);
+            border: 1px solid var(--line-strong);
+            border-radius: 14px;
+            width: 100%; max-width: 780px; max-height: 90vh;
             display: flex; flex-direction: column;
             position: relative; overflow: hidden;
-            box-shadow: 0 30px 80px rgba(0,0,0,0.6);
+            box-shadow: 0 30px 80px rgba(0,0,0,0.55);
         }
-        .story-modal::before {
-            content: ''; position: absolute; top: -40%; right: -30%;
-            width: 80%; height: 80%;
-            background: radial-gradient(circle, var(--teal-glow), transparent 65%);
-            pointer-events: none;
-        }
-        .story-progress {
-            display: flex; gap: 0.5rem; padding: 1.4rem 1.6rem 0.4rem;
-        }
+        .story-progress { display: flex; gap: 0.5rem; padding: 1.4rem 1.6rem 0.4rem; }
         .story-progress .dot {
-            height: 4px; flex: 1; border-radius: 2px;
-            background: var(--bg-elevated); cursor: pointer;
-            transition: background 0.3s;
+            height: 3px; flex: 1; border-radius: 2px;
+            background: var(--line); cursor: pointer; transition: background 0.3s;
         }
-        .story-progress .dot.active { background: var(--teal); }
-        .story-progress .dot.done { background: var(--border); }
+        .story-progress .dot.active { background: var(--accent); }
+        .story-progress .dot.done { background: var(--line-strong); }
         .story-close {
             position: absolute; top: 1rem; right: 1.1rem; z-index: 3;
-            width: 34px; height: 34px; border-radius: 50%;
-            background: var(--bg-elevated); border: 1px solid var(--border);
-            color: var(--text-muted); font-size: 1.1rem; line-height: 1;
-            cursor: pointer; transition: all 0.2s;
+            width: 34px; height: 34px; border-radius: 8px;
+            background: var(--surface-2); border: 1px solid var(--line-strong);
+            color: var(--muted); font-size: 1.1rem; line-height: 1;
+            cursor: pointer; transition: all 0.15s;
         }
-        .story-close:hover { color: var(--text); border-color: var(--teal); }
+        .story-close:hover { color: var(--text); border-color: var(--accent); }
         .story-stage {
             flex: 1; overflow-y: auto;
-            padding: 1.6rem 2.4rem 1rem;
+            padding: 1.7rem 2.4rem 1rem;
             min-height: 340px;
             display: flex; flex-direction: column; justify-content: center;
         }
         .story-eyebrow {
-            font-size: 0.74rem; font-weight: 700; letter-spacing: 2px;
-            text-transform: uppercase; color: var(--gold);
-            margin-bottom: 0.7rem;
+            font-family: var(--font-mono); font-size: 0.72rem; font-weight: 500; letter-spacing: 0.14em;
+            text-transform: uppercase; color: var(--accent); margin-bottom: 0.8rem;
         }
         .story-title {
-            font-size: clamp(1.4rem, 3vw, 2rem); font-weight: 800;
-            line-height: 1.2; letter-spacing: -0.5px; margin-bottom: 0.8rem;
+            font-family: var(--font-display);
+            font-size: clamp(1.4rem, 3vw, 1.95rem); font-weight: 700;
+            line-height: 1.15; letter-spacing: -0.02em; margin-bottom: 0.8rem;
         }
-        .story-body {
-            color: var(--text-muted); font-size: 0.98rem; line-height: 1.7;
-            max-width: 560px; margin-bottom: 2rem;
-        }
-        /* scene enter animation */
+        .story-body { color: var(--muted); font-size: 0.95rem; line-height: 1.7; max-width: 570px; margin-bottom: 2rem; }
         .story-scene { opacity: 0; }
         .story-scene.active { opacity: 1; }
-        .story-scene.active .anim {
-            animation: sceneIn 0.5s ease both;
-        }
+        .story-scene.active .anim { animation: sceneIn 0.5s ease both; }
         @keyframes sceneIn { from { opacity: 0; transform: translateY(16px); } to { opacity: 1; transform: none; } }
 
-        /* visual: flow pipeline */
-        .viz-flow { display: flex; align-items: center; flex-wrap: wrap; gap: 0.4rem; }
-        .viz-flow .node {
-            padding: 0.6rem 0.9rem; border-radius: 10px;
-            background: var(--bg-elevated); border: 1px solid var(--border);
-            font-size: 0.82rem; font-weight: 600; color: var(--text-muted);
-            opacity: 0.35; transform: scale(0.95);
-            transition: all 0.35s ease;
-        }
-        .story-scene.active .viz-flow .node.lit {
-            opacity: 1; transform: scale(1);
-            color: var(--text); border-color: var(--teal);
-            box-shadow: 0 0 0 1px var(--teal-glow), 0 4px 18px var(--teal-glow);
-        }
-        .viz-flow .arrow {
-            color: var(--gold); font-weight: 700; opacity: 0.3;
-            transition: opacity 0.35s ease;
-        }
-        .story-scene.active .viz-flow .arrow.lit { opacity: 1; }
-
-        /* visual: stat numbers */
-        .viz-stats { display: flex; flex-wrap: wrap; gap: 2.4rem; }
+        .viz-stats { display: flex; flex-wrap: wrap; gap: 2.6rem; }
         .viz-stats .stat .num {
-            font-size: 2.8rem; font-weight: 800; color: var(--teal); line-height: 1;
+            font-family: var(--font-display); font-size: 2.6rem; font-weight: 700;
+            color: var(--accent); line-height: 1; letter-spacing: -0.02em;
         }
-        .viz-stats .stat .num.gold { color: var(--gold); }
+        .viz-stats .stat .num.gold { color: var(--text); }
         .viz-stats .stat .lbl {
-            font-size: 0.78rem; color: var(--text-muted);
-            text-transform: uppercase; letter-spacing: 0.5px; margin-top: 0.4rem;
+            font-size: 0.76rem; color: var(--dim);
+            text-transform: uppercase; letter-spacing: 0.06em; margin-top: 0.45rem;
         }
-
-        /* visual: contrast before -> after */
         .viz-contrast { display: flex; align-items: center; gap: 1.2rem; flex-wrap: wrap; }
-        .viz-contrast .side {
-            flex: 1; min-width: 130px; padding: 1.2rem 1rem; border-radius: 12px;
-            text-align: center;
-        }
-        .viz-contrast .before {
-            background: var(--bg-elevated); border: 1px solid var(--border);
-            color: var(--text-muted);
-        }
-        .viz-contrast .after {
-            background: var(--teal-glow); border: 1px solid var(--teal);
-            color: var(--text);
-        }
-        .viz-contrast .side .big { font-size: 1.5rem; font-weight: 800; }
+        .viz-contrast .side { flex: 1; min-width: 130px; padding: 1.2rem 1rem; border-radius: 10px; text-align: center; }
+        .viz-contrast .before { background: var(--surface-2); border: 1px solid var(--line-strong); color: var(--muted); }
+        .viz-contrast .after { background: var(--accent-faint); border: 1px solid var(--accent-dim); color: var(--text); }
+        .viz-contrast .side .big { font-family: var(--font-display); font-size: 1.4rem; font-weight: 700; }
         .viz-contrast .side .small { font-size: 0.78rem; margin-top: 0.3rem; opacity: 0.85; }
-        .viz-contrast .vs { color: var(--gold); font-size: 1.6rem; font-weight: 800; }
-
-        /* visual: stack layers */
-        .viz-stack { display: flex; flex-direction: column; gap: 0.6rem; }
-        .viz-stack .layer {
-            padding: 0.7rem 1rem; border-radius: 10px;
-            background: var(--bg-elevated); border: 1px solid var(--border);
-            font-size: 0.85rem; font-weight: 600;
-            display: flex; justify-content: space-between; gap: 1rem;
-        }
-        .viz-stack .layer .tag { color: var(--gold); font-size: 0.72rem; font-weight: 700; }
-
-        /* visual: phases grid */
-        .viz-phases { display: grid; grid-template-columns: repeat(auto-fill, minmax(80px, 1fr)); gap: 0.5rem; }
+        .viz-contrast .vs { color: var(--accent); font-size: 1.5rem; font-weight: 700; }
+        .viz-phases { display: grid; grid-template-columns: repeat(auto-fill, minmax(76px, 1fr)); gap: 0.5rem; }
         .viz-phases .cell {
             aspect-ratio: 1; border-radius: 8px;
-            background: var(--bg-elevated); border: 1px solid var(--border);
+            background: var(--surface-2); border: 1px solid var(--line-strong);
             display: flex; align-items: center; justify-content: center;
-            font-size: 0.72rem; font-weight: 700; color: var(--text-muted);
-            opacity: 0; transform: scale(0.8);
+            font-family: var(--font-mono); font-size: 0.7rem; font-weight: 500; color: var(--dim);
+            opacity: 0; transform: scale(0.85);
         }
         .story-scene.active .viz-phases .cell { animation: cellPop 0.4s ease both; }
-        .viz-phases .cell.phase { background: var(--teal-glow); border-color: var(--teal); color: var(--teal); }
-        @keyframes cellPop { from { opacity: 0; transform: scale(0.8); } to { opacity: 1; transform: scale(1); } }
+        .viz-phases .cell.phase { background: var(--accent-faint); border-color: var(--accent-dim); color: var(--accent); }
+        @keyframes cellPop { from { opacity: 0; transform: scale(0.85); } to { opacity: 1; transform: scale(1); } }
+        .story-title.story-claim { font-size: clamp(1.6rem, 4vw, 2.5rem); max-width: 620px; }
+        .claim-underline { width: 54px; height: 3px; border-radius: 2px; background: var(--accent); margin: 0 0 1.4rem; }
 
-        /* visual: claim statement */
-        .story-title.story-claim { font-size: clamp(1.7rem, 4vw, 2.7rem); max-width: 620px; }
-        .claim-underline {
-            width: 60px; height: 3px; border-radius: 2px;
-            background: var(--gold); margin: 0 0 1.4rem;
-        }
-
-        /* visual: architecture diagram */
         .viz-arch { width: 100%; }
         .viz-arch svg { width: 100%; height: auto; display: block; overflow: visible; }
-        .arch-region {
-            fill: rgba(0, 201, 167, 0.045);
-            stroke: var(--teal); stroke-width: 1.2; stroke-dasharray: 7 5;
-        }
-        .arch-region-label {
-            fill: var(--teal); font-size: 11px; font-weight: 700;
-            letter-spacing: 1px; text-transform: uppercase;
-        }
-        .arch-edge { stroke: var(--border); stroke-width: 1.6; fill: none; opacity: 0; }
+        .arch-region { fill: rgba(255, 107, 53, 0.04); stroke: var(--accent); stroke-width: 1.1; stroke-dasharray: 7 5; }
+        .arch-region-label { fill: var(--accent); font-size: 10.5px; font-weight: 600; letter-spacing: 1px; text-transform: uppercase; font-family: var(--font-mono); }
+        .arch-edge { stroke: var(--line-strong); stroke-width: 1.5; fill: none; opacity: 0; }
         .arch-edge.dashed { stroke-dasharray: 5 4; }
         .story-scene.active .arch-edge { animation: archIn 0.5s ease both; }
-        .arch-edge-label { fill: var(--gold); font-size: 9px; font-weight: 600; }
-        .arch-packet { fill: var(--teal); filter: drop-shadow(0 0 4px var(--teal)); }
+        .arch-edge-label { fill: var(--muted); font-size: 9px; font-weight: 500; font-family: var(--font-mono); }
+        .arch-packet { fill: var(--accent); filter: drop-shadow(0 0 4px var(--accent)); }
         .arch-node { opacity: 0; }
         .story-scene.active .arch-node { animation: archIn 0.5s ease both; }
-        .arch-node rect {
-            fill: var(--bg-elevated); stroke: var(--border); stroke-width: 1.3;
-        }
-        .arch-node.teal rect { stroke: var(--teal); }
-        .arch-node.gold rect { stroke: var(--border-gold); }
-        .arch-node .nlabel { fill: var(--text); font-size: 12.5px; font-weight: 700; }
-        .arch-node .nsub { fill: var(--text-muted); font-size: 9.5px; }
-        .arch-chip { fill: rgba(0, 201, 167, 0.12); stroke: var(--teal); stroke-width: 1; }
-        .arch-chip-text { fill: var(--teal); font-size: 8.5px; font-weight: 700; }
-        .arch-badge rect { fill: rgba(201, 168, 76, 0.16); stroke: var(--gold); stroke-width: 1; }
-        .arch-badge text { fill: var(--gold); font-size: 9px; font-weight: 700; letter-spacing: 0.5px; }
+        .arch-node rect { fill: var(--surface-2); stroke: var(--line-strong); stroke-width: 1.2; }
+        .arch-node.teal rect { stroke: var(--accent-dim); }
+        .arch-node.gold rect { stroke: var(--line-strong); }
+        .arch-node .nlabel { fill: var(--text); font-size: 12.5px; font-weight: 600; }
+        .arch-node .nsub { fill: var(--muted); font-size: 9.5px; }
+        .arch-chip { fill: rgba(255, 107, 53, 0.1); stroke: var(--accent-dim); stroke-width: 1; }
+        .arch-chip-text { fill: var(--accent); font-size: 8.5px; font-weight: 600; font-family: var(--font-mono); }
+        .arch-badge rect { fill: rgba(255, 107, 53, 0.1); stroke: var(--accent-dim); stroke-width: 1; }
+        .arch-badge text { fill: var(--accent); font-size: 9px; font-weight: 600; letter-spacing: 0.5px; font-family: var(--font-mono); }
         .arch-badge { animation: badgePulse 1.9s ease infinite; }
         @keyframes archIn { from { opacity: 0; } to { opacity: 1; } }
         @keyframes badgePulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.45; } }
 
-        /* nav */
         .story-nav {
             display: flex; align-items: center; justify-content: space-between;
             padding: 0.9rem 1.6rem 1.4rem; gap: 1rem;
-            border-top: 1px solid var(--border);
+            border-top: 1px solid var(--line);
         }
         .story-nav button {
-            padding: 0.6rem 1.4rem; border-radius: 8px; cursor: pointer;
-            font-size: 0.85rem; font-weight: 700; transition: all 0.2s;
+            font-family: var(--font-display);
+            padding: 0.6rem 1.4rem; border-radius: 7px; cursor: pointer;
+            font-size: 0.85rem; font-weight: 600; transition: all 0.15s;
         }
-        .story-prev {
-            background: transparent; border: 1px solid var(--border);
-            color: var(--text-muted);
-        }
-        .story-prev:hover:not(:disabled) { color: var(--text); border-color: var(--teal); }
-        .story-next {
-            background: var(--teal); border: none; color: #060810;
-        }
-        .story-next:hover { background: #00e8c0; }
+        .story-prev { background: transparent; border: 1px solid var(--line-strong); color: var(--muted); }
+        .story-prev:hover:not(:disabled) { color: var(--text); border-color: var(--accent); }
+        .story-next { background: var(--accent); border: none; color: #210D02; }
+        .story-next:hover { background: #FF8557; }
         .story-nav button:disabled { opacity: 0.3; cursor: default; }
-        .story-counter { font-size: 0.8rem; color: var(--text-muted); }
+        .story-counter { font-family: var(--font-mono); font-size: 0.76rem; color: var(--dim); }
 
         @media (prefers-reduced-motion: reduce) {
             #story-overlay.open, .story-scene.active .anim,
             .story-scene.active .viz-phases .cell,
             .story-scene.active .arch-node, .story-scene.active .arch-edge,
-            .arch-badge { animation: none; }
-            .viz-flow .node, .viz-flow .arrow,
+            .arch-badge, .live-dot { animation: none; }
             .arch-node, .arch-edge { opacity: 1 !important; transform: none !important; }
             .story-scene { opacity: 1; }
         }
+
+        /* ─────────────────────────  RESPONSIVE  ───────────────────────── */
+        @media (max-width: 900px) {
+            .hero-grid { grid-template-columns: 1fr; gap: 3rem; }
+            .hero-side { border-left: none; padding-left: 0; border-top: 1px solid var(--line); padding-top: 2rem; flex-direction: row; flex-wrap: wrap; gap: 0 2.5rem; align-items: center; }
+            .portrait { margin-bottom: 0; }
+            .fact { border-bottom: none; padding: 0.4rem 0; }
+            .metrics { grid-template-columns: 1fr 1fr; }
+            .metric:nth-child(2) { border-right: none; }
+            .metric:nth-child(1), .metric:nth-child(2) { border-bottom: 1px solid var(--line); }
+            .pillars { grid-template-columns: 1fr; }
+            .pillar { border-right: none; border-bottom: 1px solid var(--line); }
+            .pillar:last-child { border-bottom: none; }
+            .work-grid { grid-template-columns: 1fr; }
+            .principles { grid-template-columns: 1fr; }
+            .principle:nth-child(odd) { border-right: none; padding-right: 0; }
+            .principle:nth-child(even) { padding-left: 0; }
+        }
         @media (max-width: 600px) {
+            .nav-links { gap: 1.1rem; }
+            .nav-links a:not(.nav-cta) { display: none; }
+            .hero { padding: 4rem 0 3rem; }
+            section { padding: 3.8rem 0; }
             #story-overlay { padding: 0; }
             .story-modal { max-width: 100%; max-height: 100vh; height: 100vh; border-radius: 0; }
             .story-stage { padding: 1.4rem 1.4rem 1rem; }
             .viz-stats { gap: 1.4rem; }
-            .viz-stats .stat .num { font-size: 2.2rem; }
-        }
-        .project-status {
-            display: inline-block; padding: 0.25rem 0.7rem;
-            border-radius: 20px; font-size: 0.72rem; font-weight: 700;
-            background: var(--gold-glow); color: var(--gold);
-            border: 1px solid var(--border-gold);
-            text-transform: uppercase; letter-spacing: 0.5px;
-            margin-bottom: 1rem;
-        }
-        .project-card h3 { font-size: 1.1rem; font-weight: 700; margin-bottom: 0.7rem; }
-        .project-card p { color: var(--text-muted); font-size: 0.9rem; line-height: 1.7; }
-
-        /* ── CONNECT ── */
-        .connect-box {
-            background: var(--bg-card);
-            border: 1px solid var(--border);
-            border-radius: 20px; padding: 4rem;
-            text-align: center; position: relative; overflow: hidden;
-        }
-        .connect-box::before {
-            content: '';
-            position: absolute; top: -100px; left: 50%;
-            transform: translateX(-50%);
-            width: 400px; height: 400px;
-            background: radial-gradient(circle, var(--teal-glow), transparent 70%);
-            pointer-events: none;
-        }
-        .connect-box h2 { font-size: 2rem; font-weight: 800; margin-bottom: 1rem; }
-        .connect-box p { color: var(--text-muted); max-width: 500px; margin: 0 auto 2.5rem; }
-        .connect-links { display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap; }
-
-        /* ── CHATBOT ── */
-        .chatbot-section {
-            background: var(--bg-elevated);
-            border: 1px solid var(--border);
-            border-radius: 16px; padding: 2.5rem;
-            margin-top: 3rem;
-        }
-        .chatbot-header { display: flex; align-items: center; gap: 1rem; margin-bottom: 1.5rem; }
-        .chatbot-dot {
-            width: 10px; height: 10px; border-radius: 50%;
-            background: var(--teal); animation: blink 1.5s ease infinite;
-        }
-        @keyframes blink { 0%,100% { opacity: 1; } 50% { opacity: 0.3; } }
-        .chatbot-header h3 { font-size: 1rem; font-weight: 700; }
-        .chatbot-coming { color: var(--text-muted); font-size: 0.9rem; font-style: italic; }
-
-        @media (max-width: 768px) {
-            .hero { grid-template-columns: 1fr; padding: 4rem 1rem 3rem; gap: 2rem; }
-            .hero-visual { order: -1; }
-            .connect-box { padding: 2.5rem 1.5rem; }
+            .viz-stats .stat .num { font-size: 2rem; }
         }
     </style>
 </head>
 <body>
 
-<!-- Header -->
-<header class="header">
-    <div class="header-content">
-        <a class="logo" href="/">KS<span>.</span></a>
-        <nav>
-            <ul class="nav-links">
-                <li><a href="/" class="active">Home</a></li>
-                <li><a href="/experience.html">Experience</a></li>
-                <li><a href="/newsletter.html">Newsletter</a></li>
-            </ul>
-        </nav>
+<!-- ── NAV ── -->
+<nav class="nav">
+    <div class="nav-inner">
+        <a class="brand" href="/">Karthikeyan Selvam<b>.</b></a>
+        <ul class="nav-links">
+            <li><a href="#work">Work</a></li>
+            <li><a href="/experience.html">Experience</a></li>
+            <li><a href="#writing">Writing</a></li>
+            <li><a href="/newsletter.html">Newsletter</a></li>
+            <li><a class="nav-cta" href="#contact">Get in touch</a></li>
+        </ul>
+    </div>
+</nav>
+
+<!-- ── HERO ── -->
+<header class="hero">
+    <div class="wrap hero-grid">
+        <div>
+            <div class="kicker">AI Product &amp; Enablement Leader · Middletown, DE</div>
+            <h1>I take enterprise AI from slideware to <span class="accent">shipped</span>.</h1>
+            <p class="hero-sub">
+                18+ years in enterprise IT across global technology and energy — most recently
+                <strong>founding and running a multi-agent AI platform in production</strong>.
+                Microsoft Copilot evaluation, RPA at scale, AIOps, and the governance
+                that keeps all of it defensible.
+            </p>
+            <div class="hero-actions">
+                <a href="#work" class="btn btn-solid">See the platform</a>
+                <a href="#playbook" class="btn btn-ghost">How I operate</a>
+            </div>
+        </div>
+        <div class="hero-side">
+            <img class="portrait" src="Profile.jpg" alt="Karthikeyan Selvam"/>
+            <div class="fact">
+                <div class="fact-num">18<em>+</em></div>
+                <div class="fact-lbl">years in enterprise IT</div>
+            </div>
+            <div class="fact">
+                <div class="fact-num">8<em>+</em></div>
+                <div class="fact-lbl">AI agents in production</div>
+            </div>
+            <div class="fact">
+                <div class="fact-num">50<em>+</em></div>
+                <div class="fact-lbl">RPA automations delivered</div>
+            </div>
+            <div class="fact">
+                <div class="fact-num">15</div>
+                <div class="fact-lbl">certifications</div>
+            </div>
+        </div>
     </div>
 </header>
 
-<!-- Thinking Ticker -->
-<div class="thinking-bar">
-    <span class="thinking-label">⚡ On my mind</span>
-    <div class="ticker-wrap">
-        <div class="ticker">
-            <span>Why most Copilot rollouts fail in month 3 — and how to prevent it</span>
-            <span>The real ROI of enterprise AI isn't efficiency, it's decision quality</span>
-            <span>RPA without a process mining strategy is just expensive scripting</span>
-            <span>AIOps is only as smart as the telemetry feeding it</span>
-            <span>18 years in — the problems haven't changed, only the tools have</span>
-            <span>Why most Copilot rollouts fail in month 3 — and how to prevent it</span>
-            <span>The real ROI of enterprise AI isn't efficiency, it's decision quality</span>
-            <span>RPA without a process mining strategy is just expensive scripting</span>
-            <span>AIOps is only as smart as the telemetry feeding it</span>
-            <span>18 years in — the problems haven't changed, only the tools have</span>
-        </div>
-    </div>
-</div>
-
-<!-- Hero -->
-<section>
-    <div class="hero">
-        <div class="hero-text">
-            <div class="hero-eyebrow">Digital Workplace & AI Consultant</div>
-            <h1>I help enterprises <em>stop buying</em> AI and <strong>start using</strong> it.</h1>
-            <p class="hero-desc">
-                18 years across healthcare, energy, and technology sectors. 
-                I've seen what works at scale — and what looks great in a slide deck but breaks in production.
-                Microsoft Copilot, RPA, AIOps, Azure & Google Cloud.
-            </p>
-            <div class="hero-ctas">
-                <a href="/experience.html" class="btn-primary">View My Work</a>
-                <a href="/newsletter.html" class="btn-outline">Read My Insights</a>
-            </div>
-        </div>
-        <div class="hero-visual" style="flex-direction: column; gap: 1.5rem;">
-
-    <!-- Profile Photo -->
-    <div style="position: relative; display: inline-block;">
-        <img 
-            src="Profile.jpg" 
-            alt="Karthikeyan Selvam"
-            style="
-                width: 160px; height: 160px;
-                border-radius: 50%;
-                object-fit: cover;
-                border: 3px solid var(--teal);
-                box-shadow: 0 0 0 6px var(--teal-glow), 0 8px 32px rgba(0,201,167,0.2);
-                display: block;
-                margin: 0 auto;
-            "
-        />
-        <div style="
-            position: absolute; bottom: 8px; right: 8px;
-            width: 18px; height: 18px; border-radius: 50%;
-            background: var(--teal);
-            border: 3px solid var(--bg);
-            box-shadow: 0 0 8px var(--teal);
-        "></div>
-    </div>
-            <div class="hero-card">
-                <div class="stat-grid">
-                    <div class="stat-item">
-                        <div class="stat-number">18+</div>
-                        <div class="stat-label">Years in Enterprise IT</div>
-                    </div>
-                    <div class="stat-item">
-                        <div class="stat-number gold">50+</div>
-                        <div class="stat-label">Automation Deployments</div>
-                    </div>
-                    <div class="stat-item">
-                        <div class="stat-number">3</div>
-                        <div class="stat-label">Continents Deployed</div>
-                    </div>
-                    <div class="stat-item">
-                        <div class="stat-number gold">15</div>
-                        <div class="stat-label">Certifications</div>
-                    </div>
-                </div>
-                <div class="cert-row">
-                    <span class="cert-badge">Google Gen AI Leader</span>
-                    <span class="cert-badge">Azure AI-900</span>
-                    <span class="cert-badge">AZ-900</span>
-                    <span class="cert-badge">MS PowerUp</span>
-                    <span class="cert-badge">Power Platform</span>
-                    <span class="cert-badge">UiPath RPA</span>
-                    <span class="cert-badge">Six Sigma</span>
-                    <a href="/experience.html#certifications" class="cert-badge" style="color:var(--gold); border-color:var(--border-gold); background:var(--gold-glow); text-decoration:none;">+8 more &rarr;</a>
-                </div>
-            </div>
-        </div>
-    </div>
-</section>
-
-<!-- Expertise -->
-<section class="section">
-    <div class="section-label">What I Do</div>
-    <h2 class="section-title">Where I add real value</h2>
-    <p style="color: var(--text-muted); max-width: 600px; font-size: 1rem;">
-        Not buzzwords. Actual disciplines I've practiced across dozens of enterprise environments — 
-        from 500-person teams to global organisations.
-    </p>
-    <div class="expertise-grid">
-        <div class="expertise-card">
-            <span class="expertise-icon">🪟</span>
-            <h3>Microsoft Copilot</h3>
-            <p>Product management and adoption strategy for Copilot across M365. I've seen the adoption curve — and how to flatten it.</p>
-        </div>
-        <div class="expertise-card">
-            <span class="expertise-icon">⚙️</span>
-            <h3>RPA & Intelligent Automation</h3>
-            <p>50+ automation implementations using UiPath and Power Automate. Process mining first, automation second — always.</p>
-        </div>
-        <div class="expertise-card">
-            <span class="expertise-icon">🔭</span>
-            <h3>AIOps</h3>
-            <p>IT Operations intelligence — turning alert noise into actionable signal. Deployed across healthcare and energy sectors.</p>
-        </div>
-        <div class="expertise-card">
-            <span class="expertise-icon">☁️</span>
-            <h3>Cloud Architecture</h3>
-            <p>Azure and Google Cloud certified. Designed resilient enterprise architectures that survive a Monday morning in production.</p>
-        </div>
-        <div class="expertise-card">
-            <span class="expertise-icon">🛡️</span>
-            <h3>Enterprise Backup & Recovery</h3>
-            <p>Because no one cares about backup until they need it. I've built recovery strategies that actually work under pressure.</p>
-        </div>
-        <div class="expertise-card">
-            <span class="expertise-icon">🧭</span>
-            <h3>Change Management</h3>
-            <p>Technology is only 30% of a transformation. The other 70% is people. I've led adoption programs across 3 continents.</p>
-        </div>
-    </div>
-</section>
-
-<!-- Projects -->
-<section class="section" style="padding-top: 0;">
-    <div class="section-label">Building</div>
-    <h2 class="section-title">Things I've shipped</h2>
-    <p style="color: var(--text-muted); max-width: 600px; font-size: 1rem;">
-        A multi-agent AI platform I designed and run in production — turning consulting workflows I've done by hand for years into software that ships the work.
-    </p>
-    <div class="projects-grid">
-        <div class="project-card reveal" data-story="platform" role="button" tabindex="0" aria-label="Open the story: Multi-Agent AI Platform">
-            <span class="project-status">Production</span>
-            <h3>Multi-Agent AI Platform</h3>
-            <p>A production platform delivering AI-powered consulting workflows — 5+ specialized agents on a serverless GCP stack I architected end to end, hardened against strict enterprise org policies. Runs the whole thing for ~$5–10/month.</p>
-            <p style="font-size: 0.78rem; color: var(--gold); margin-top: 0.9rem; letter-spacing: 0.3px;">FastAPI · Cloud Run · Vertex AI (Gemini) · Firestore · Firebase</p>
-            <span class="story-cue">▶ View the story</span>
-        </div>
-        <div class="project-card reveal" data-story="ocm" role="button" tabindex="0" aria-label="Open the story: Change Management Agent">
-            <span class="project-status">Production</span>
-            <h3>Change Management Agent</h3>
-            <p>Generates a full organizational-change deliverable set — 4 phases, 18 deliverables — following a formal OCM methodology, with version-tagged, audit-traceable outputs and branded PDF export. Compresses weeks of consulting into on-demand output.</p>
-            <p style="font-size: 0.78rem; color: var(--gold); margin-top: 0.9rem; letter-spacing: 0.3px;">Python · Vertex AI · Versioned skill engine · PDF export</p>
-            <span class="story-cue">▶ View the story</span>
-        </div>
-        <div class="project-card reveal" data-story="gws" role="button" tabindex="0" aria-label="Open the story: Workspace License Right-Sizing">
-            <span class="project-status">Production</span>
-            <h3>Workspace License Right-Sizing</h3>
-            <p>Analyzes real Google Workspace usage across a tenant and flags over-licensing — surfacing wasted seats and quantifiable savings. Built with a verified SKU catalog and a zero-usage guard so quiet-but-active users are never wrongly downgraded.</p>
-            <p style="font-size: 0.78rem; color: var(--gold); margin-top: 0.9rem; letter-spacing: 0.3px;">Admin SDK · Reports API · Cloud Run Jobs · Gemini</p>
-            <span class="story-cue">▶ View the story</span>
-        </div>
-        <div class="project-card reveal" data-story="hci" role="button" tabindex="0" aria-label="Open the story: Infrastructure Health Check Agent">
-            <span class="project-status">Production</span>
-            <h3>Infrastructure Health Check Agent</h3>
-            <p>Automated infrastructure health monitoring that produces shippable PDF reports and emails them out — replacing manual review cycles with a repeatable, multi-stage analysis pipeline.</p>
-            <p style="font-size: 0.78rem; color: var(--gold); margin-top: 0.9rem; letter-spacing: 0.3px;">Python · Analysis pipeline · PDF · Email automation</p>
-            <span class="story-cue">▶ View the story</span>
-        </div>
-    </div>
-</section>
-
-<!-- Chatbot Placeholder -->
-<section class="section" style="padding-top: 0;">
-    <div class="chatbot-section">
-        <div class="chatbot-header">
-            <div class="chatbot-dot"></div>
-            <h3>Ask me anything</h3>
-        </div>
-        <p class="chatbot-coming">
-            An AI assistant trained on 18 years of Digital Workplace consulting experience is coming soon. 
-            Ask it about RPA strategy, Copilot adoption, or what I'd do differently if I started over.
+<!-- ── 01 LIVE FROM PRODUCTION ── -->
+<section id="platform">
+    <div class="wrap">
+        <div class="sec-head"><span class="sec-idx">01</span><h2 class="sec-title">Live from production</h2></div>
+        <p class="sec-desc">
+            Not a case study — a system I designed, govern, and run today.
+            An enterprise multi-agent AI platform on Google Cloud, powered by Vertex AI / Gemini.
         </p>
+        <div class="live-tag"><span class="live-dot"></span>Running now</div>
+        <div class="metrics">
+            <div class="metric">
+                <div class="metric-num">8<small>+</small></div>
+                <div class="metric-lbl">specialized AI agents, concept to production</div>
+            </div>
+            <div class="metric">
+                <div class="metric-num">+20<small>%</small></div>
+                <div class="metric-lbl">RSAT lift on Microsoft Copilot (Entra) evaluation</div>
+            </div>
+            <div class="metric">
+                <div class="metric-num">10<small>+ FTE</small></div>
+                <div class="metric-lbl">effort saved via 50+ RPA automations</div>
+            </div>
+            <div class="metric">
+                <div class="metric-num">~$10<small>/mo</small></div>
+                <div class="metric-lbl">total platform run cost — cost is architecture</div>
+            </div>
+        </div>
+        <p class="metrics-note">Numbers from real systems and engagements — details in the project stories below.</p>
     </div>
 </section>
 
-<!-- Connect -->
-<section class="section" style="padding-top: 0;">
-    <div class="connect-box">
-        <h2>Let's build something that actually works.</h2>
-        <p>Consulting engagement, speaking, or just a conversation about where enterprise AI is really headed — I'm open to all three.</p>
-        <div class="connect-links">
-            <a href="https://www.linkedin.com/in/karthikeyan-selvam-567b52157/" target="_blank" class="btn-primary">Connect on LinkedIn</a>
-            <a href="/newsletter.html" class="btn-outline">Read My Newsletter</a>
+<!-- ── 02 WHAT I LEAD ── -->
+<section id="lead">
+    <div class="wrap">
+        <div class="sec-head"><span class="sec-idx">02</span><h2 class="sec-title">What I lead</h2></div>
+        <p class="sec-desc">
+            Three disciplines, one throughline: getting AI and automation adopted,
+            governed, and paying for itself.
+        </p>
+        <div class="pillars">
+            <div class="pillar">
+                <svg class="pillar-icon" viewBox="0 0 24 24"><path d="M12 2l3 5.5 6 .9-4.4 4.3 1 6.1L12 16l-5.6 2.8 1-6.1L3 8.4l6-.9L12 2z" stroke-linejoin="round"/></svg>
+                <h3>AI Product &amp; Platforms</h3>
+                <p>Founding, building, and running AI products — roadmap to release. Multi-agent platforms, LLM evaluation programs, and the deploy pipelines behind them.</p>
+                <div class="pillar-where"><b>Where:</b> Atos AI platform · Microsoft Copilot for Security</div>
+            </div>
+            <div class="pillar">
+                <svg class="pillar-icon" viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2M9 11a4 4 0 1 0 0-8 4 4 0 0 0 0 8zM23 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                <h3>AI Enablement &amp; Adoption</h3>
+                <p>Change management that outlasts the rollout — readiness assessment, adoption metrics, executive alignment, and enterprise migrations done with minimal disruption.</p>
+                <div class="pillar-where"><b>Where:</b> Windows 11 program · enterprise change programs</div>
+            </div>
+            <div class="pillar">
+                <svg class="pillar-icon" viewBox="0 0 24 24"><path d="M12 20V10M18 20V4M6 20v-4" stroke-linecap="round"/></svg>
+                <h3>Automation &amp; Operations</h3>
+                <p>RPA at scale, AIOps with Nexthink, and enterprise backup &amp; recovery — the operational backbone that turns AI ambition into reliable, measured delivery.</p>
+                <div class="pillar-where"><b>Where:</b> National Grid · Atos HR / Finance / Procurement</div>
+            </div>
         </div>
     </div>
 </section>
 
-<!-- Story Overlay -->
+<!-- ── 03 PROOF OF WORK ── -->
+<section id="work">
+    <div class="wrap">
+        <div class="sec-head"><span class="sec-idx">03</span><h2 class="sec-title">Proof of work</h2></div>
+        <p class="sec-desc">
+            The multi-agent AI platform I founded and run in production — each card opens
+            an interactive story with the architecture and the decisions behind it.
+        </p>
+        <div class="work-grid">
+            <div class="work-card reveal" data-story="platform" role="button" tabindex="0" aria-label="Open the story: Multi-Agent AI Platform">
+                <div class="work-top"><span class="status">Production</span></div>
+                <h3>Multi-Agent AI Platform</h3>
+                <p>An enterprise AI platform delivering consulting workflows — specialized agents on a serverless GCP stack, hardened against strict org policies, with governance and cost engineering built in.</p>
+                <div class="stack"><span>FastAPI · Cloud Run · Vertex AI · Firestore</span><span class="story-cue">View story →</span></div>
+            </div>
+            <div class="work-card reveal" data-story="ocm" role="button" tabindex="0" aria-label="Open the story: Change Management Agent">
+                <div class="work-top"><span class="status">Production</span></div>
+                <h3>Change Management Agent</h3>
+                <p>Generates a complete OCM deliverable set — 4 phases, 18 deliverables — from a formal methodology, with version-tagged, audit-traceable outputs and branded PDF export.</p>
+                <div class="stack"><span>Python · Vertex AI · Versioned skill engine</span><span class="story-cue">View story →</span></div>
+            </div>
+            <div class="work-card reveal" data-story="gws" role="button" tabindex="0" aria-label="Open the story: Workspace License Right-Sizing">
+                <div class="work-top"><span class="status">Production</span></div>
+                <h3>License Right-Sizing Agent</h3>
+                <p>Reads real Google Workspace usage across a tenant and surfaces defensible savings — with a zero-usage guard so quiet-but-active users are never wrongly downgraded.</p>
+                <div class="stack"><span>Admin SDK · Reports API · Cloud Run Jobs</span><span class="story-cue">View story →</span></div>
+            </div>
+            <div class="work-card reveal" data-story="hci" role="button" tabindex="0" aria-label="Open the story: Infrastructure Health Check Agent">
+                <div class="work-top"><span class="status">Production</span></div>
+                <h3>Infra Health Check Agent</h3>
+                <p>Automated infrastructure health monitoring that produces shippable PDF reports and emails them out — replacing manual review cycles with a repeatable pipeline.</p>
+                <div class="stack"><span>Python · Analysis pipeline · Email automation</span><span class="story-cue">View story →</span></div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- ── 04 OPERATING PRINCIPLES ── -->
+<section id="playbook">
+    <div class="wrap">
+        <div class="sec-head"><span class="sec-idx">04</span><h2 class="sec-title">How I operate</h2></div>
+        <p class="sec-desc">
+            The operating system behind every engagement — pilot to production without the stall.
+        </p>
+        <div class="principles">
+            <div class="principle">
+                <span class="p-idx">/01</span>
+                <div>
+                    <h3>Evaluate before you ship</h3>
+                    <p>Rubric-driven LLM evaluation — accuracy, technical correctness, user satisfaction — before anything reaches users. It's how a Microsoft product metric moved 20%.</p>
+                </div>
+            </div>
+            <div class="principle">
+                <span class="p-idx">/02</span>
+                <div>
+                    <h3>Governance is a feature</h3>
+                    <p>Role-based access, audit-traceable outputs, and an automated model-lifecycle steward that migrates agents off retired LLMs — compliance without manual toil.</p>
+                </div>
+            </div>
+            <div class="principle">
+                <span class="p-idx">/03</span>
+                <div>
+                    <h3>Adoption is the product</h3>
+                    <p>Technology is 30% of a transformation. Readiness measurement, communications, and executive alignment are what make the other 70% land.</p>
+                </div>
+            </div>
+            <div class="principle">
+                <span class="p-idx">/04</span>
+                <div>
+                    <h3>Cost is architecture</h3>
+                    <p>Scale-to-zero services, token budgeting per output, regional-only infrastructure. An AI platform that runs on pocket change is a design decision, not luck.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- ── 05 WRITING ── -->
+<section id="writing">
+    <div class="wrap">
+        <div class="sec-head"><span class="sec-idx">05</span><h2 class="sec-title">Writing</h2></div>
+        <p class="sec-desc">
+            Ongoing analysis on enterprise AI, governance, and automation —
+            <a href="/newsletter.html">read or subscribe here</a>.
+        </p>
+        <div class="writing-list">
+            <a class="writing-item" href="/newsletter.html">
+                <h3>AI's Next Chapter: Governance as the Cornerstone of Enterprise Trust</h3>
+                <span class="arrow">→</span>
+            </a>
+            <a class="writing-item" href="/newsletter.html">
+                <h3>Beyond Bots: The Hyper-Intelligent Evolution of Automation</h3>
+                <span class="arrow">→</span>
+            </a>
+            <a class="writing-item" href="/newsletter.html">
+                <h3>Copilot's Maturation: Beyond Novelty to Strategic Imperative</h3>
+                <span class="arrow">→</span>
+            </a>
+        </div>
+        <div class="pipeline-note">
+            <b>Full disclosure — this newsletter runs on my own AI pipeline.</b><br/>
+            <span class="flow">research → draft → my review queue → approve → publish → LinkedIn</span><br/>
+            Every issue is machine-drafted and human-approved. Building editorially-governed AI content
+            systems is part of the job — so I run one.
+        </div>
+    </div>
+</section>
+
+<!-- ── CONTACT ── -->
+<section id="contact" class="contact">
+    <div class="wrap">
+        <h2>Let's build something that actually <span class="accent">works</span>.</h2>
+        <p class="contact-sub">
+            Consulting engagement, a leadership conversation, or a hard question about
+            where enterprise AI is really headed — I'm open to all three.
+        </p>
+        <p class="roles-line">Open to: <b>AI Manager · AI Deployment · AI Enablement · AI Product Leadership</b></p>
+        <div class="hero-actions">
+            <a href="https://www.linkedin.com/in/karthikeyan-selvam-567b52157/" target="_blank" rel="noopener" class="btn btn-solid">Connect on LinkedIn</a>
+            <a href="mailto:hello@karthikeyanselvam.com" class="btn btn-ghost">hello@karthikeyanselvam.com</a>
+        </div>
+    </div>
+</section>
+
+<!-- ── STORY OVERLAY ── -->
 <div id="story-overlay" role="dialog" aria-modal="true" aria-label="Project story">
     <div class="story-modal">
         <button class="story-close" aria-label="Close story">&times;</button>
@@ -798,49 +726,42 @@
     </div>
 </div>
 
-<!-- Footer -->
+<!-- ── FOOTER ── -->
 <footer>
-    <p>Karthikeyan Selvam &mdash; Digital Workplace & AI Consultant</p>
-    <div class="footer-links">
-        <a href="/">Home</a>
-        <a href="/experience.html">Experience</a>
-        <a href="/newsletter.html">Newsletter</a>
-        <a href="https://www.linkedin.com/in/karthikeyan-selvam-567b52157/" target="_blank">LinkedIn</a>
-        <a href="mailto:hello@karthikeyanselvam.com">Contact</a>
+    <div class="foot-inner">
+        <p>© 2026 Karthikeyan Selvam — AI Product &amp; Enablement Leader</p>
+        <div class="foot-links">
+            <a href="/experience.html">Experience</a>
+            <a href="/newsletter.html">Newsletter</a>
+            <a href="https://www.linkedin.com/in/karthikeyan-selvam-567b52157/" target="_blank" rel="noopener">LinkedIn</a>
+            <a href="mailto:hello@karthikeyanselvam.com">Contact</a>
+        </div>
     </div>
 </footer>
 
 <script>
-    // Mouse glow effect on expertise cards
-    document.querySelectorAll('.expertise-card').forEach(card => {
-        card.addEventListener('mousemove', (e) => {
-            const rect = card.getBoundingClientRect();
-            card.style.setProperty('--mouse-x', `${e.clientX - rect.left}px`);
-            card.style.setProperty('--mouse-y', `${e.clientY - rect.top}px`);
-        });
-    });
-
-    // Scroll-reveal for project cards (staggered via CSS transition-delay)
-    const revealCards = document.querySelectorAll('.project-card.reveal');
-    if ('IntersectionObserver' in window && revealCards.length) {
+    // Scroll reveal
+    const revealEls = document.querySelectorAll('.reveal');
+    if ('IntersectionObserver' in window && revealEls.length) {
         const io = new IntersectionObserver((entries, obs) => {
-            entries.forEach(entry => {
+            entries.forEach((entry, i) => {
                 if (entry.isIntersecting) {
-                    entry.target.classList.add('is-visible');
+                    entry.target.style.transitionDelay = (entry.target.dataset.d || 0) + 's';
+                    entry.target.classList.add('in');
                     obs.unobserve(entry.target);
                 }
             });
-        }, { threshold: 0.2 });
-        revealCards.forEach(card => io.observe(card));
+        }, { threshold: 0.15 });
+        revealEls.forEach((el, i) => { el.dataset.d = (i % 2) * 0.12; io.observe(el); });
     } else {
-        revealCards.forEach(card => card.classList.add('is-visible'));
+        revealEls.forEach(el => el.classList.add('in'));
     }
 
     // ── PROJECT STORY PRESENTATIONS ──
     const STORIES = {
         platform: [
             { kind: 'claim', eyebrow: 'The Wedge', title: 'Most advise on enterprise AI. I architect and ship it.',
-              body: 'A Digital Workplace consultant who designed, built, and runs a live multi-agent AI platform — solo, end to end. The rare overlap of domain authority and a system actually in production.' },
+              body: 'An AI leader who designed, built, and runs a live multi-agent AI platform — end to end. The rare overlap of domain authority and a system actually in production.' },
             { kind: 'arch', eyebrow: 'The Architecture', title: 'What I designed and run',
               body: 'A private FastAPI backend on Cloud Run hosts every agent as its own router; the browser hits it through a Firebase rewrite proxy — no CORS, no exposed URL. Gemini and Firestore sit behind it.',
               vb: [0, 0, 640, 340],
@@ -866,7 +787,7 @@
               before: { big: '7 failures', small: 'multi-region blocked' }, after: { big: '1 command', small: 'idempotent deploy' } },
             { kind: 'stat', eyebrow: 'By Design', title: 'Production-grade, hobby-project cost',
               body: 'Auth-gated, running real consulting deliverables daily — engineered for efficiency, not for a demo.',
-              stats: [ { num: 5, suffix: '+', lbl: 'AI agents' }, { num: 3, lbl: 'continents', gold: true }, { prefix: '$', num: 10, suffix: '/mo', lbl: 'total run cost' } ] }
+              stats: [ { num: 8, suffix: '+', lbl: 'AI agents' }, { num: 100, suffix: '%', lbl: 'audit-traceable', gold: true }, { prefix: '$', num: 10, suffix: '/mo', lbl: 'total run cost' } ] }
         ],
         ocm: [
             { kind: 'claim', eyebrow: 'The Wedge', title: 'I turn consulting methodology into auditable software.',
@@ -1017,19 +938,12 @@
         let viz = '';
         if (scene.kind === 'arch') {
             viz = renderArch(scene);
-        } else if (scene.kind === 'flow') {
-            const parts = scene.nodes.map(n => `<span class="node" data-node>${esc(n)}</span>`);
-            viz = '<div class="viz-flow anim">' + parts.join('<span class="arrow" data-arrow>→</span>') + '</div>';
         } else if (scene.kind === 'stat') {
             viz = '<div class="viz-stats anim">' + scene.stats.map(s =>
                 `<div class="stat"><div class="num${s.gold ? ' gold' : ''}" data-count="${s.num}" data-prefix="${s.prefix||''}" data-suffix="${s.suffix||''}">${s.prefix||''}0${s.suffix||''}</div><div class="lbl">${esc(s.lbl)}</div></div>`
             ).join('') + '</div>';
         } else if (scene.kind === 'contrast') {
             viz = `<div class="viz-contrast anim"><div class="side before"><div class="big">${esc(scene.before.big)}</div><div class="small">${esc(scene.before.small)}</div></div><div class="vs">→</div><div class="side after"><div class="big">${esc(scene.after.big)}</div><div class="small">${esc(scene.after.small)}</div></div></div>`;
-        } else if (scene.kind === 'stack') {
-            viz = '<div class="viz-stack anim">' + scene.layers.map(l =>
-                `<div class="layer"><span>${esc(l[0])}</span><span class="tag">${esc(l[1])}</span></div>`
-            ).join('') + '</div>';
         } else if (scene.kind === 'phases') {
             let cells = '';
             for (let i = 1; i <= scene.total; i++) {
@@ -1045,14 +959,6 @@
 
     function animateScene() {
         const scene = currentStory[currentIdx];
-        if (scene.kind === 'flow' && !reduceMotion) {
-            const nodes = stageEl.querySelectorAll('[data-node]');
-            const arrows = stageEl.querySelectorAll('[data-arrow]');
-            nodes.forEach((n, i) => setTimeout(() => n.classList.add('lit'), 350 + i * 320));
-            arrows.forEach((a, i) => setTimeout(() => a.classList.add('lit'), 500 + i * 320));
-        } else if (scene.kind === 'flow') {
-            stageEl.querySelectorAll('[data-node],[data-arrow]').forEach(e => e.classList.add('lit'));
-        }
         if (scene.kind === 'stat') {
             stageEl.querySelectorAll('[data-count]').forEach(el => {
                 const target = parseFloat(el.dataset.count), pre = el.dataset.prefix, suf = el.dataset.suffix;
@@ -1069,7 +975,6 @@
 
     function render() {
         stageEl.innerHTML = sceneHTML(currentStory[currentIdx]);
-        // reflow so the .active transition fires
         void stageEl.offsetWidth;
         stageEl.firstChild.classList.add('active');
         progressEl.querySelectorAll('.dot').forEach((d, i) => {
@@ -1105,7 +1010,7 @@
         if (lastFocused) lastFocused.focus();
     }
 
-    document.querySelectorAll('.project-card[data-story]').forEach(card => {
+    document.querySelectorAll('.work-card[data-story]').forEach(card => {
         card.addEventListener('click', () => openStory(card.dataset.story, card));
         card.addEventListener('keydown', e => {
             if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); openStory(card.dataset.story, card); }
@@ -1122,18 +1027,14 @@
         else if (e.key === 'ArrowLeft') goTo(currentIdx - 1);
     });
 
-    // Console easter egg
+    // Console note
     console.log(
-        '%c KS | karthikeyanselvam.com \n' +
-        '%c Built with purpose, not a template. \n' +
-        '%c 18 years of enterprise consulting → distilled into pixels. \n' +
-        '%c Yes, I used AI as a tool. Just like I use Excel. \n' +
-        '%c The thinking? Still mine.',
-        'color: #00C9A7; font-size: 18px; font-weight: bold;',
-        'color: #C9A84C; font-size: 13px;',
-        'color: #8B949E; font-size: 12px;',
-        'color: #8B949E; font-size: 12px;',
-        'color: #00C9A7; font-size: 12px; font-style: italic;'
+        '%cKarthikeyan Selvam — karthikeyanselvam.com\n' +
+        '%cAI from slideware to shipped. Yes, this site runs on my own AI pipeline.\n' +
+        '%cThe thinking? Still mine.',
+        'color: #FF6B35; font-size: 16px; font-weight: bold;',
+        'color: #A69C92; font-size: 12px;',
+        'color: #F3EDE7; font-size: 12px; font-style: italic;'
     );
 </script>
 </body>
