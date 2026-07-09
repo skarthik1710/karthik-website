@@ -3,254 +3,315 @@
 <head>
     <meta charset="UTF-8"/>
     <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-    <title>Experience | Karthikeyan Selvam</title>
-    <meta name="description" content="18+ years of Digital Workplace, AI, RPA, and Enterprise IT consulting experience across healthcare, energy, and technology sectors."/>
-    
-    <style>
-        :root {
-            --teal: #00C9A7; --gold: #C9A84C;
-            --teal-glow: rgba(0,201,167,0.15); --gold-glow: rgba(201,168,76,0.15);
-            --bg: #060810; --bg-card: #0D1117; --bg-elevated: #161B22;
-            --text: #E6EDF3; --text-muted: #8B949E;
-            --border: rgba(0,201,167,0.15); --border-gold: rgba(201,168,76,0.2);
-        }
-        * { margin:0; padding:0; box-sizing:border-box; }
-        body { font-family:'Inter',-apple-system,BlinkMacSystemFont,sans-serif; background:var(--bg); color:var(--text); line-height:1.7; }
-        .header { background:rgba(6,8,16,0.92); backdrop-filter:blur(12px); position:sticky; top:0; z-index:1000; border-bottom:1px solid var(--border); }
-        .header-content { max-width:1300px; margin:0 auto; padding:1.2rem 2rem; display:flex; justify-content:space-between; align-items:center; }
-        .logo { font-size:1.3rem; font-weight:800; color:var(--teal); text-decoration:none; }
-        .logo span { color:var(--gold); }
-        .nav-links { display:flex; gap:2rem; list-style:none; }
-        .nav-links a { color:var(--text-muted); text-decoration:none; font-size:0.9rem; font-weight:500; transition:color 0.2s; }
-        .nav-links a:hover,.nav-links a.active { color:var(--teal); }
-        footer { background:var(--bg-card); border-top:1px solid var(--border); text-align:center; padding:3rem 2rem; margin-top:6rem; }
-        footer p { color:var(--text-muted); font-size:0.9rem; margin-bottom:1rem; }
-        .footer-links { display:flex; gap:2rem; justify-content:center; flex-wrap:wrap; }
-        .footer-links a { color:var(--text-muted); text-decoration:none; font-size:0.85rem; transition:color 0.2s; }
-        .footer-links a:hover { color:var(--teal); }
-        ::-webkit-scrollbar { width:6px; }
-        ::-webkit-scrollbar-track { background:var(--bg); }
-        ::-webkit-scrollbar-thumb { background:var(--teal); border-radius:3px; }
-        @media(max-width:768px) { .nav-links { gap:1rem; } }
-    </style>
+    <title>Experience — Karthikeyan Selvam</title>
+    <meta name="description" content="18+ years in enterprise IT — AI product leadership, Microsoft Copilot evaluation, RPA at scale, AIOps, and enterprise change programs. The full career of Karthikeyan Selvam."/>
+    <meta property="og:title" content="Experience — Karthikeyan Selvam"/>
+    <meta property="og:description" content="18+ years in enterprise IT — AI product leadership, RPA at scale, AIOps, and enterprise change programs."/>
+    <meta property="og:image" content="https://karthikeyanselvam.com/og-image.png"/>
+    <meta property="og:url" content="https://karthikeyanselvam.com/experience.html"/>
+    <meta property="og:type" content="website"/>
+    <meta name="twitter:card" content="summary_large_image"/>
+    <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%23141110'/%3E%3Ctext x='32' y='42' font-family='Arial,sans-serif' font-size='30' font-weight='700' fill='%23FF6B35' text-anchor='middle'%3EK%3C/text%3E%3Ccircle cx='47' cy='40' r='3.4' fill='%23F3EDE7'/%3E%3C/svg%3E"/>
+    <link rel="preconnect" href="https://fonts.googleapis.com"/>
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet"/>
 
     <style>
+        /* ── DESIGN TOKENS (Ember) ── */
+        :root {
+            --bg: #141110;
+            --surface: #1A1614;
+            --surface-2: #201B18;
+            --line: #292320;
+            --line-strong: #37302B;
+            --text: #F3EDE7;
+            --muted: #A69C92;
+            --dim: #75695E;
+            --accent: #FF6B35;
+            --accent-dim: rgba(255, 107, 53, 0.4);
+            --accent-faint: rgba(255, 107, 53, 0.09);
+            --font-display: 'Space Grotesk', 'Inter', sans-serif;
+            --font-body: 'Inter', -apple-system, sans-serif;
+            --font-mono: 'JetBrains Mono', 'SFMono-Regular', monospace;
+            --w: 1120px;
+        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        html { scroll-behavior: smooth; }
+        body {
+            font-family: var(--font-body);
+            background: var(--bg);
+            color: var(--text);
+            line-height: 1.65;
+            font-size: 16px;
+            -webkit-font-smoothing: antialiased;
+        }
+        ::selection { background: var(--accent); color: #210D02; }
+        ::-webkit-scrollbar { width: 8px; }
+        ::-webkit-scrollbar-track { background: var(--bg); }
+        ::-webkit-scrollbar-thumb { background: var(--line-strong); border-radius: 4px; }
+        ::-webkit-scrollbar-thumb:hover { background: var(--dim); }
+        .wrap { max-width: var(--w); margin: 0 auto; padding: 0 2rem; }
+        a { color: inherit; }
+
+        /* ── NAV ── */
+        .nav {
+            position: sticky; top: 0; z-index: 100;
+            background: rgba(20, 17, 16, 0.88);
+            backdrop-filter: blur(14px);
+            border-bottom: 1px solid var(--line);
+        }
+        .nav-inner {
+            max-width: var(--w); margin: 0 auto; padding: 0 2rem;
+            height: 64px; display: flex; align-items: center; justify-content: space-between;
+        }
+        .brand {
+            font-family: var(--font-display); font-weight: 700;
+            font-size: 1.15rem; letter-spacing: -0.02em;
+            text-decoration: none; color: var(--text);
+        }
+        .brand b { color: var(--accent); font-weight: 700; }
+        .nav-links { display: flex; align-items: center; gap: 1.8rem; list-style: none; }
+        .nav-links a {
+            text-decoration: none; color: var(--muted);
+            font-size: 0.88rem; font-weight: 500;
+            transition: color 0.15s;
+        }
+        .nav-links a:hover, .nav-links a.active { color: var(--text); }
+        .nav-cta {
+            font-family: var(--font-display);
+            padding: 0.5rem 1.05rem; border: 1px solid var(--line-strong); border-radius: 6px;
+            color: var(--text) !important; font-weight: 600; font-size: 0.84rem !important;
+            transition: border-color 0.15s, background 0.15s;
+        }
+        .nav-cta:hover { border-color: var(--accent); background: var(--accent-faint); }
+
         /* ── PAGE HERO ── */
-        .page-hero {
-            max-width:1300px; margin:0 auto;
-            padding:5rem 2rem 4rem;
-            border-bottom:1px solid var(--border);
+        .page-hero { padding: 5.5rem 0 3.8rem; border-bottom: 1px solid var(--line); }
+        .kicker {
+            font-family: var(--font-mono); font-size: 0.76rem; font-weight: 500;
+            letter-spacing: 0.14em; text-transform: uppercase; color: var(--accent);
+            display: flex; align-items: center; gap: 0.7rem; margin-bottom: 1.4rem;
         }
-        .page-eyebrow {
-            font-size:0.78rem; font-weight:700; color:var(--teal);
-            letter-spacing:2px; text-transform:uppercase;
-            margin-bottom:1rem; display:flex; align-items:center; gap:0.5rem;
-        }
-        .page-eyebrow::before { content:''; display:block; width:20px; height:2px; background:var(--teal); }
+        .kicker::before { content: ''; width: 22px; height: 1px; background: var(--accent); }
         .page-hero h1 {
-            font-size:clamp(2.2rem,4vw,3.2rem); font-weight:800;
-            letter-spacing:-1px; line-height:1.15; margin-bottom:1rem;
+            font-family: var(--font-display);
+            font-size: clamp(2.2rem, 4.5vw, 3.4rem);
+            font-weight: 700; line-height: 1.1; letter-spacing: -0.03em;
+            margin-bottom: 1.2rem; max-width: 18em;
         }
-        .page-hero h1 em { font-style:normal; color:var(--teal); }
-        .page-hero p { color:var(--text-muted); max-width:650px; font-size:1.05rem; }
+        .page-hero h1 .accent { color: var(--accent); }
+        .page-hero p { color: var(--muted); max-width: 40em; font-size: 1.02rem; line-height: 1.75; }
 
         /* ── LAYOUT ── */
         .content-grid {
-            max-width:1300px; margin:0 auto; padding:4rem 2rem;
-            display:grid; grid-template-columns:1fr 340px; gap:4rem;
+            max-width: var(--w); margin: 0 auto; padding: 4rem 2rem 5rem;
+            display: grid; grid-template-columns: minmax(0, 1fr) 340px; gap: 4rem;
         }
 
-        /* ── SECTION HEADERS ── */
-        .section-header { margin-bottom:2.5rem; }
-        .section-eyebrow {
-            font-size:0.72rem; font-weight:700; color:var(--gold);
-            letter-spacing:2px; text-transform:uppercase;
-            margin-bottom:0.5rem; display:flex; align-items:center; gap:0.5rem;
+        .sec-head { display: flex; align-items: baseline; gap: 1.4rem; margin-bottom: 0.9rem; }
+        .sec-idx { font-family: var(--font-mono); font-size: 0.8rem; color: var(--accent); }
+        .sec-title {
+            font-family: var(--font-display);
+            font-size: clamp(1.4rem, 2.6vw, 1.9rem); font-weight: 700;
+            letter-spacing: -0.02em;
         }
-        .section-eyebrow::before { content:''; display:block; width:15px; height:2px; background:var(--gold); }
-        .section-title { font-size:1.6rem; font-weight:800; letter-spacing:-0.5px; }
-
-        /* ── SUMMARY ── */
         .summary-text {
-            color:var(--text-muted); line-height:1.9;
-            font-size:0.95rem; margin-bottom:3rem;
-            padding:1.5rem; background:var(--bg-card);
-            border-radius:12px; border-left:3px solid var(--teal);
+            color: var(--muted); line-height: 1.8; font-size: 0.95rem;
+            margin: 1.4rem 0 3rem;
+            padding: 1.5rem 1.7rem; background: var(--surface);
+            border-radius: 12px; border: 1px solid var(--line);
+            border-left: 3px solid var(--accent);
         }
+        .summary-text strong { color: var(--text); font-weight: 600; }
 
         /* ── TIMELINE ── */
-        .timeline { position:relative; margin-bottom:4rem; }
+        .timeline { position: relative; margin-bottom: 4.5rem; }
         .timeline::before {
-            content:''; position:absolute;
-            left:16px; top:8px; bottom:8px; width:1px;
-            background:linear-gradient(to bottom, var(--teal), var(--gold), transparent);
+            content: ''; position: absolute;
+            left: 7px; top: 10px; bottom: 10px; width: 1px;
+            background: var(--line-strong);
         }
-        .timeline-item {
-            padding-left:50px; margin-bottom:2.5rem; position:relative;
-        }
+        .timeline-item { padding-left: 42px; margin-bottom: 1.4rem; position: relative; }
         .timeline-dot {
-            position:absolute; left:10px; top:6px;
-            width:14px; height:14px; border-radius:50%;
-            background:var(--teal); border:2px solid var(--bg);
-            box-shadow:0 0 0 3px var(--teal-glow);
+            position: absolute; left: 0; top: 26px;
+            width: 15px; height: 15px; border-radius: 50%;
+            background: var(--bg); border: 2px solid var(--accent);
         }
-        .timeline-item:nth-child(even) .timeline-dot { background:var(--gold); box-shadow:0 0 0 3px var(--gold-glow); }
         .timeline-card {
-            background:var(--bg-card); border:1px solid var(--border);
-            border-radius:12px; padding:1.5rem;
-            transition:all 0.3s;
+            background: var(--surface); border: 1px solid var(--line);
+            border-radius: 12px; padding: 1.7rem 1.9rem;
+            transition: border-color 0.2s, background 0.2s;
         }
-        .timeline-card:hover { border-color:var(--teal); transform:translateX(4px); }
+        .timeline-card:hover { border-color: var(--accent-dim); background: var(--surface-2); }
         .timeline-period {
-            font-size:0.75rem; color:var(--teal); font-weight:700;
-            letter-spacing:0.5px; text-transform:uppercase; margin-bottom:0.4rem;
+            font-family: var(--font-mono); font-size: 0.72rem; color: var(--accent);
+            font-weight: 500; letter-spacing: 0.08em; text-transform: uppercase; margin-bottom: 0.5rem;
         }
-        .timeline-item:nth-child(even) .timeline-period { color:var(--gold); }
-        .timeline-role { font-size:1.1rem; font-weight:700; margin-bottom:0.3rem; }
-        .timeline-org { font-size:0.88rem; color:var(--text-muted); margin-bottom:0.8rem; }
-        .timeline-desc { font-size:0.88rem; color:var(--text-muted); line-height:1.7; }
-        .timeline-tags { display:flex; flex-wrap:wrap; gap:0.4rem; margin-top:1rem; }
+        .timeline-role {
+            font-family: var(--font-display); font-size: 1.14rem; font-weight: 600;
+            letter-spacing: -0.01em; margin-bottom: 0.25rem;
+        }
+        .timeline-org { font-size: 0.86rem; color: var(--dim); margin-bottom: 0.9rem; }
+        .timeline-desc { font-size: 0.9rem; color: var(--muted); line-height: 1.72; }
+        .timeline-tags { display: flex; flex-wrap: wrap; gap: 0.45rem; margin-top: 1.1rem; }
         .timeline-tag {
-            padding:0.2rem 0.6rem; border-radius:10px;
-            background:var(--teal-glow); border:1px solid var(--border);
-            font-size:0.72rem; color:var(--teal); font-weight:600;
+            font-family: var(--font-mono);
+            padding: 0.22rem 0.6rem; border-radius: 5px;
+            background: var(--accent-faint); border: 1px solid var(--line-strong);
+            font-size: 0.68rem; color: var(--muted); font-weight: 500;
         }
+
+        /* ── SCOPE OF LEADERSHIP ── */
+        .scope { border: 1px solid var(--line); border-radius: 12px; overflow: hidden; margin-top: 1.6rem; }
+        .scope-row {
+            display: grid; grid-template-columns: 190px 1fr;
+            border-bottom: 1px solid var(--line); background: var(--surface);
+        }
+        .scope-row:last-child { border-bottom: none; }
+        .scope-key {
+            font-family: var(--font-mono); font-size: 0.74rem; letter-spacing: 0.06em;
+            text-transform: uppercase; color: var(--accent);
+            padding: 1.15rem 1.4rem; border-right: 1px solid var(--line);
+            display: flex; align-items: center;
+        }
+        .scope-val { padding: 1.05rem 1.4rem; font-size: 0.9rem; color: var(--muted); line-height: 1.65; }
+        .scope-val b { color: var(--text); font-weight: 600; }
 
         /* ── SIDEBAR ── */
-        .sidebar { display:flex; flex-direction:column; gap:2rem; }
+        .sidebar { display: flex; flex-direction: column; gap: 1.6rem; }
         .sidebar-card {
-            background:var(--bg-card); border:1px solid var(--border);
-            border-radius:16px; padding:1.8rem;
+            background: var(--surface); border: 1px solid var(--line);
+            border-radius: 12px; padding: 1.7rem;
         }
         .sidebar-card h3 {
-            font-size:0.95rem; font-weight:700; margin-bottom:1.2rem;
-            color:var(--teal);
+            font-family: var(--font-display); font-size: 1rem; font-weight: 600;
+            margin-bottom: 1.1rem; display: flex; align-items: center;
         }
-
-        /* ── SKILLS ── */
-        .skill-item { margin-bottom:1.2rem; }
-        .skill-header { display:flex; justify-content:space-between; margin-bottom:0.4rem; }
-        .skill-name { font-size:0.85rem; font-weight:600; }
-        .skill-pct { font-size:0.78rem; color:var(--text-muted); }
-        .skill-bar {
-            height:4px; background:var(--bg-elevated);
-            border-radius:2px; overflow:hidden;
-        }
-        .skill-fill {
-            height:100%; border-radius:2px;
-            background:linear-gradient(90deg, var(--teal), var(--gold));
-            transition:width 1s ease;
-        }
-
-        /* ── CERTIFICATIONS ── */
-        .cert-item {
-            display:flex; align-items:center; gap:1rem;
-            padding:0.9rem; border-radius:10px;
-            background:var(--bg-elevated); margin-bottom:0.7rem;
-            border:1px solid var(--border); transition:all 0.2s;
-        }
-        .cert-item:hover { border-color:var(--gold); }
-        .cert-icon {
-            width:36px; height:36px; border-radius:8px;
-            background:var(--gold-glow); border:1px solid var(--border-gold);
-            display:flex; align-items:center; justify-content:center;
-            font-size:1rem; flex-shrink:0;
-        }
-        .cert-info { flex:1; }
-        .cert-name { font-size:0.82rem; font-weight:700; margin-bottom:0.15rem; }
-        .cert-issuer { font-size:0.72rem; color:var(--text-muted); }
-        .cert-verify {
-            font-size:0.72rem; color:var(--teal); font-weight:600;
-            text-decoration:none; transition:color 0.2s;
-        }
-        .cert-verify:hover { color:#00e8c0; }
         .cert-count {
-            font-size:0.72rem; font-weight:700; color:var(--gold);
-            background:var(--gold-glow); border:1px solid var(--border-gold);
-            border-radius:20px; padding:0.1rem 0.6rem; margin-left:0.5rem;
-            vertical-align:middle;
+            font-family: var(--font-mono); font-size: 0.7rem; font-weight: 500; color: var(--accent);
+            background: var(--accent-faint); border: 1px solid var(--line-strong);
+            border-radius: 20px; padding: 0.12rem 0.6rem; margin-left: 0.6rem;
         }
         .cert-group-label {
-            font-size:0.68rem; font-weight:700; color:var(--gold);
-            letter-spacing:1.5px; text-transform:uppercase;
-            margin:1.5rem 0 0.8rem; padding-bottom:0.4rem;
-            border-bottom:1px solid var(--border-gold);
+            font-family: var(--font-mono); font-size: 0.66rem; font-weight: 500; color: var(--accent);
+            letter-spacing: 0.12em; text-transform: uppercase;
+            margin: 1.4rem 0 0.7rem; padding-bottom: 0.4rem;
+            border-bottom: 1px solid var(--line);
         }
-        .cert-group-label:first-of-type { margin-top:0.3rem; }
+        .cert-group-label:first-of-type { margin-top: 0.2rem; }
+        .cert-item {
+            display: flex; align-items: center; gap: 0.85rem;
+            padding: 0.7rem 0.75rem; border-radius: 8px;
+            background: var(--surface-2); margin-bottom: 0.55rem;
+            border: 1px solid var(--line); transition: border-color 0.15s;
+        }
+        .cert-item:hover { border-color: var(--accent-dim); }
+        .cert-mark {
+            width: 7px; height: 7px; border-radius: 2px; background: var(--accent);
+            flex-shrink: 0; opacity: 0.85;
+        }
+        .cert-info { flex: 1; min-width: 0; }
+        .cert-name { font-size: 0.8rem; font-weight: 600; margin-bottom: 0.05rem; }
+        .cert-issuer { font-size: 0.7rem; color: var(--dim); }
+        .cert-verify {
+            font-family: var(--font-mono); font-size: 0.68rem; color: var(--accent); font-weight: 500;
+            text-decoration: none; transition: opacity 0.15s; white-space: nowrap;
+        }
+        .cert-verify:hover { opacity: 0.75; text-decoration: underline; }
 
-        /* ── CTA ── */
+        /* numbers */
+        .num-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 0.7rem; }
+        .num-cell {
+            text-align: left; padding: 1rem 1.1rem;
+            background: var(--surface-2); border-radius: 9px; border: 1px solid var(--line);
+        }
+        .num-cell .n {
+            font-family: var(--font-display); font-size: 1.7rem; font-weight: 700;
+            color: var(--accent); line-height: 1; letter-spacing: -0.02em;
+        }
+        .num-cell .l {
+            font-size: 0.7rem; color: var(--dim);
+            text-transform: uppercase; letter-spacing: 0.05em; margin-top: 0.35rem;
+        }
+
+        /* CTA */
         .cta-card {
-            background:var(--bg-card);
-            border:1px solid var(--border-gold);
-            border-radius:16px; padding:2rem;
-            text-align:center; position:relative; overflow:hidden;
+            background: var(--surface); border: 1px solid var(--line-strong);
+            border-radius: 12px; padding: 1.8rem; text-align: left;
         }
-        .cta-card::before {
-            content:''; position:absolute; top:-60px; left:50%;
-            transform:translateX(-50%);
-            width:200px; height:200px;
-            background:radial-gradient(circle, var(--gold-glow), transparent 70%);
+        .cta-card h3 { font-family: var(--font-display); font-size: 1.05rem; font-weight: 600; margin-bottom: 0.6rem; }
+        .cta-card p { color: var(--muted); font-size: 0.86rem; margin-bottom: 1.4rem; line-height: 1.65; }
+        .btn {
+            font-family: var(--font-display); font-weight: 600; font-size: 0.88rem;
+            padding: 0.72rem 1.4rem; border-radius: 7px; text-decoration: none;
+            transition: all 0.15s; display: inline-block;
         }
-        .cta-card h3 { font-size:1.1rem; font-weight:700; margin-bottom:0.7rem; position:relative; }
-        .cta-card p { color:var(--text-muted); font-size:0.85rem; margin-bottom:1.5rem; position:relative; }
-        .btn-gold {
-            display:inline-block; padding:0.75rem 1.8rem; border-radius:8px;
-            background:var(--gold); color:#060810;
-            font-weight:700; text-decoration:none; font-size:0.88rem;
-            transition:all 0.2s; position:relative;
-        }
-        .btn-gold:hover { background:#e0b854; transform:translateY(-2px); }
+        .btn-solid { background: var(--accent); color: #210D02; }
+        .btn-solid:hover { background: #FF8557; transform: translateY(-1px); }
 
-        @media(max-width:1000px) {
-            .content-grid { grid-template-columns:1fr; }
-            .sidebar { order:-1; display:grid; grid-template-columns:1fr 1fr; }
+        /* ── FOOTER ── */
+        footer { border-top: 1px solid var(--line); padding: 2.2rem 0; }
+        .foot-inner {
+            max-width: var(--w); margin: 0 auto; padding: 0 2rem;
+            display: flex; align-items: center; justify-content: space-between; gap: 1.5rem; flex-wrap: wrap;
         }
-        @media(max-width:600px) {
-            .sidebar { grid-template-columns:1fr; }
-            .page-hero { padding:3rem 1rem 2rem; }
+        .foot-inner p { color: var(--dim); font-size: 0.82rem; }
+        .foot-links { display: flex; gap: 1.6rem; }
+        .foot-links a { color: var(--dim); text-decoration: none; font-size: 0.82rem; transition: color 0.15s; }
+        .foot-links a:hover { color: var(--text); }
+
+        /* ── RESPONSIVE ── */
+        @media (max-width: 1000px) {
+            .content-grid { grid-template-columns: 1fr; gap: 3rem; }
+        }
+        @media (max-width: 600px) {
+            .nav-links a:not(.nav-cta) { display: none; }
+            .page-hero { padding: 3.5rem 0 2.5rem; }
+            .content-grid { padding: 2.8rem 1.2rem 3.5rem; }
+            .scope-row { grid-template-columns: 1fr; }
+            .scope-key { border-right: none; border-bottom: 1px solid var(--line); padding-bottom: 0.6rem; }
         }
     </style>
 </head>
 <body>
 
-<header class="header">
-    <div class="header-content">
-        <a class="logo" href="/">KS<span>.</span></a>
-        <nav>
-            <ul class="nav-links">
-                <li><a href="/">Home</a></li>
-                <li><a href="/experience.html" class="active">Experience</a></li>
-                <li><a href="/newsletter.html">Newsletter</a></li>
-            </ul>
-        </nav>
+<!-- ── NAV ── -->
+<nav class="nav">
+    <div class="nav-inner">
+        <a class="brand" href="/">Karthikeyan Selvam<b>.</b></a>
+        <ul class="nav-links">
+            <li><a href="/#work">Work</a></li>
+            <li><a href="/experience.html" class="active">Experience</a></li>
+            <li><a href="/#writing">Writing</a></li>
+            <li><a href="/newsletter.html">Newsletter</a></li>
+            <li><a class="nav-cta" href="/#contact">Get in touch</a></li>
+        </ul>
+    </div>
+</nav>
+
+<!-- ── PAGE HERO ── -->
+<header class="page-hero">
+    <div class="wrap">
+        <div class="kicker">Career &amp; Expertise</div>
+        <h1>18 years of making enterprise technology <span class="accent">actually work</span></h1>
+        <p>
+            Across global technology, energy utilities, and enterprise IT — nearly two decades
+            at the intersection of people, process, and platform, from RPA and ITSM to production AI.
+            Here's the unvarnished version.
+        </p>
     </div>
 </header>
 
-<!-- Page Hero -->
-<div class="page-hero">
-    <div class="page-eyebrow">Career & Expertise</div>
-    <h1>18 years of making <em>enterprise technology</em> actually work</h1>
-    <p>
-        Across global technology, energy utilities, and enterprise IT — nearly two decades
-        at the intersection of people, process, and platform, from RPA and ITSM to production AI.
-        Here's the unvarnished version.
-    </p>
-</div>
-
-<!-- Main Content -->
+<!-- ── MAIN ── -->
 <div class="content-grid">
-    <!-- Left: Timeline -->
     <main>
-        <div class="section-header">
-            <div class="section-eyebrow">The Journey</div>
-            <h2 class="section-title">Career Timeline</h2>
-        </div>
+        <div class="sec-head"><span class="sec-idx">01</span><h2 class="sec-title">Career timeline</h2></div>
 
         <div class="summary-text">
             Digital Workplace &amp; AI consultant with 18+ years in enterprise IT — spanning RPA and ITSM
             automation, AIOps, enterprise backup &amp; recovery, and, most recently, AI product management.
             I've led cross-functional teams, run enterprise-scale change and adoption programs, and taken
-            products from concept to production — including a multi-agent AI platform I founded and run today.
+            products from concept to production — including <strong>a multi-agent AI platform I founded and run today</strong>.
         </div>
 
         <div class="timeline">
@@ -363,40 +424,36 @@
             </div>
         </div>
 
-        <!-- Skills -->
-        <div class="section-header">
-            <div class="section-eyebrow">Core Disciplines</div>
-            <h2 class="section-title">What I'm good at</h2>
-        </div>
-        <div style="background:var(--bg-card); border:1px solid var(--border); border-radius:16px; padding:2rem;">
-            <div class="skill-item">
-                <div class="skill-header"><span class="skill-name">Microsoft Copilot & Product Mgmt</span><span class="skill-pct">95%</span></div>
-                <div class="skill-bar"><div class="skill-fill" style="width:95%"></div></div>
+        <!-- Scope of leadership -->
+        <div class="sec-head"><span class="sec-idx">02</span><h2 class="sec-title">Scope of leadership</h2></div>
+        <p style="color:var(--muted); font-size:0.92rem; max-width:38em;">
+            No self-scored percentages — just what I've actually owned.
+        </p>
+        <div class="scope">
+            <div class="scope-row">
+                <div class="scope-key">Platform</div>
+                <div class="scope-val"><b>Founded and run</b> an enterprise multi-agent AI platform — 8+ agents, concept to production, governance and cost engineering included.</div>
             </div>
-            <div class="skill-item">
-                <div class="skill-header"><span class="skill-name">RPA & Intelligent Automation</span><span class="skill-pct">92%</span></div>
-                <div class="skill-bar"><div class="skill-fill" style="width:92%"></div></div>
+            <div class="scope-row">
+                <div class="scope-key">Clients</div>
+                <div class="scope-val"><b>Microsoft</b> (Copilot for Security / Entra evaluation) · <b>National Grid</b> (AIOps, enterprise backup) · <b>Atos</b> internal functions (HR, Finance, Procurement).</div>
             </div>
-            <div class="skill-item">
-                <div class="skill-header"><span class="skill-name">AIOps · Nexthink / ITOM</span><span class="skill-pct">88%</span></div>
-                <div class="skill-bar"><div class="skill-fill" style="width:88%"></div></div>
+            <div class="scope-row">
+                <div class="scope-key">Teams</div>
+                <div class="scope-val">Led cross-functional teams of <b>automation consultants, business analysts, and developers</b>; Agile delivery across product and operations.</div>
             </div>
-            <div class="skill-item">
-                <div class="skill-header"><span class="skill-name">Enterprise Backup & Recovery</span><span class="skill-pct">85%</span></div>
-                <div class="skill-bar"><div class="skill-fill" style="width:85%"></div></div>
+            <div class="scope-row">
+                <div class="scope-key">Programs</div>
+                <div class="scope-val">Copilot evaluation program (+20% RSAT) · Windows 11 enterprise migration · AIOps rollout · Quest backup &amp; recovery · 50+ RPA automations (10+ FTE saved).</div>
             </div>
-            <div class="skill-item">
-                <div class="skill-header"><span class="skill-name">Change Management & Adoption</span><span class="skill-pct">90%</span></div>
-                <div class="skill-bar"><div class="skill-fill" style="width:90%"></div></div>
-            </div>
-            <div class="skill-item" style="margin-bottom:0">
-                <div class="skill-header"><span class="skill-name">Cloud & AI · GCP / Vertex AI</span><span class="skill-pct">82%</span></div>
-                <div class="skill-bar"><div class="skill-fill" style="width:82%"></div></div>
+            <div class="scope-row">
+                <div class="scope-key">Disciplines</div>
+                <div class="scope-val">AI product management · LLM evaluation · AI governance · change management &amp; adoption · intelligent automation · IT operations.</div>
             </div>
         </div>
     </main>
 
-    <!-- Right: Sidebar -->
+    <!-- ── SIDEBAR ── -->
     <aside class="sidebar">
         <!-- Certifications -->
         <div class="sidebar-card" id="certifications">
@@ -404,7 +461,7 @@
 
             <div class="cert-group-label">Cloud, AI &amp; Microsoft</div>
             <div class="cert-item">
-                <div class="cert-icon">✨</div>
+                <span class="cert-mark"></span>
                 <div class="cert-info">
                     <div class="cert-name">Google Gen AI Leader</div>
                     <div class="cert-issuer">Google Cloud</div>
@@ -412,7 +469,7 @@
                 <a href="https://www.credly.com/badges/f3a5804e-f533-4481-b8fa-097ef03bd9ef/public_url" target="_blank" rel="noopener" class="cert-verify">Verify &rarr;</a>
             </div>
             <div class="cert-item">
-                <div class="cert-icon">🧠</div>
+                <span class="cert-mark"></span>
                 <div class="cert-info">
                     <div class="cert-name">AI Transformation Leader</div>
                     <div class="cert-issuer">Microsoft</div>
@@ -420,7 +477,7 @@
                 <a href="https://learn.microsoft.com/en-us/users/karthikeyanselvam-7865/credentials/8fffa7fb3cbda725" target="_blank" rel="noopener" class="cert-verify">Verify &rarr;</a>
             </div>
             <div class="cert-item">
-                <div class="cert-icon">🤖</div>
+                <span class="cert-mark"></span>
                 <div class="cert-info">
                     <div class="cert-name">Azure AI Fundamentals</div>
                     <div class="cert-issuer">Microsoft — AI-900</div>
@@ -428,7 +485,7 @@
                 <a href="https://learn.microsoft.com/api/credentials/share/en-us/KarthikeyanSelvam-7865/837726215F2543DC?sharingId=8397069763C1D18C" target="_blank" rel="noopener" class="cert-verify">Verify &rarr;</a>
             </div>
             <div class="cert-item">
-                <div class="cert-icon">☁️</div>
+                <span class="cert-mark"></span>
                 <div class="cert-info">
                     <div class="cert-name">Azure Fundamentals</div>
                     <div class="cert-issuer">Microsoft — AZ-900</div>
@@ -436,14 +493,14 @@
                 <a href="https://learn.microsoft.com/api/credentials/share/en-us/KarthikeyanSelvam-7865/86B6B6FDBFEA89A5?sharingId=8397069763C1D18C" target="_blank" rel="noopener" class="cert-verify">Verify &rarr;</a>
             </div>
             <div class="cert-item">
-                <div class="cert-icon">🚀</div>
+                <span class="cert-mark"></span>
                 <div class="cert-info">
                     <div class="cert-name">Microsoft PowerUp Program</div>
                     <div class="cert-issuer">Microsoft</div>
                 </div>
             </div>
             <div class="cert-item">
-                <div class="cert-icon">⚡</div>
+                <span class="cert-mark"></span>
                 <div class="cert-info">
                     <div class="cert-name">Power Platform</div>
                     <div class="cert-issuer">Microsoft</div>
@@ -452,7 +509,7 @@
 
             <div class="cert-group-label">Automation</div>
             <div class="cert-item">
-                <div class="cert-icon">⚙️</div>
+                <span class="cert-mark"></span>
                 <div class="cert-info">
                     <div class="cert-name">RPA Developer Foundation</div>
                     <div class="cert-issuer">UiPath</div>
@@ -460,7 +517,7 @@
                 <a href="/certs/uipath-rpa-developer-foundation.pdf" target="_blank" rel="noopener" class="cert-verify">Verify &rarr;</a>
             </div>
             <div class="cert-item">
-                <div class="cert-icon">🔗</div>
+                <span class="cert-mark"></span>
                 <div class="cert-info">
                     <div class="cert-name">RPA Developer — SAP Automation</div>
                     <div class="cert-issuer">UiPath</div>
@@ -468,7 +525,7 @@
                 <a href="/certs/uipath-rpa-sap-automation.pdf" target="_blank" rel="noopener" class="cert-verify">Verify &rarr;</a>
             </div>
             <div class="cert-item">
-                <div class="cert-icon">📊</div>
+                <span class="cert-mark"></span>
                 <div class="cert-info">
                     <div class="cert-name">Business Analyst</div>
                     <div class="cert-issuer">UiPath</div>
@@ -478,42 +535,42 @@
 
             <div class="cert-group-label">Delivery &amp; Methodology</div>
             <div class="cert-item">
-                <div class="cert-icon">📋</div>
+                <span class="cert-mark"></span>
                 <div class="cert-info">
                     <div class="cert-name">PRINCE2</div>
                     <div class="cert-issuer">Project Management</div>
                 </div>
             </div>
             <div class="cert-item">
-                <div class="cert-icon">🧭</div>
+                <span class="cert-mark"></span>
                 <div class="cert-info">
                     <div class="cert-name">Change Management</div>
                     <div class="cert-issuer">Professional Certification</div>
                 </div>
             </div>
             <div class="cert-item">
-                <div class="cert-icon">🔁</div>
+                <span class="cert-mark"></span>
                 <div class="cert-info">
                     <div class="cert-name">Agile Methodologies</div>
                     <div class="cert-issuer">Professional Certification</div>
                 </div>
             </div>
             <div class="cert-item">
-                <div class="cert-icon">🧩</div>
+                <span class="cert-mark"></span>
                 <div class="cert-info">
                     <div class="cert-name">Structured Problem Solving</div>
                     <div class="cert-issuer">Professional Certification</div>
                 </div>
             </div>
             <div class="cert-item">
-                <div class="cert-icon">📈</div>
+                <span class="cert-mark"></span>
                 <div class="cert-info">
                     <div class="cert-name">Six Sigma</div>
                     <div class="cert-issuer">Process Excellence</div>
                 </div>
             </div>
             <div class="cert-item" style="margin-bottom:0">
-                <div class="cert-icon">♻️</div>
+                <span class="cert-mark"></span>
                 <div class="cert-info">
                     <div class="cert-name">Introduction to Atos Lean</div>
                     <div class="cert-issuer">Atos</div>
@@ -522,55 +579,44 @@
             </div>
         </div>
 
-        <!-- By the Numbers -->
+        <!-- By the numbers -->
         <div class="sidebar-card">
             <h3>By the numbers</h3>
-            <div style="display:grid; grid-template-columns:1fr 1fr; gap:1.2rem;">
-                <div style="text-align:center; padding:1rem; background:var(--bg-elevated); border-radius:10px; border:1px solid var(--border);">
-                    <div style="font-size:2rem; font-weight:800; color:var(--teal); line-height:1;">18+</div>
-                    <div style="font-size:0.72rem; color:var(--text-muted); text-transform:uppercase; letter-spacing:0.5px; margin-top:0.3rem;">Years</div>
-                </div>
-                <div style="text-align:center; padding:1rem; background:var(--bg-elevated); border-radius:10px; border:1px solid var(--border-gold);">
-                    <div style="font-size:2rem; font-weight:800; color:var(--gold); line-height:1;">50+</div>
-                    <div style="font-size:0.72rem; color:var(--text-muted); text-transform:uppercase; letter-spacing:0.5px; margin-top:0.3rem;">Automations</div>
-                </div>
-                <div style="text-align:center; padding:1rem; background:var(--bg-elevated); border-radius:10px; border:1px solid var(--border);">
-                    <div style="font-size:2rem; font-weight:800; color:var(--teal); line-height:1;">10+</div>
-                    <div style="font-size:0.72rem; color:var(--text-muted); text-transform:uppercase; letter-spacing:0.5px; margin-top:0.3rem;">FTE Saved</div>
-                </div>
-                <div style="text-align:center; padding:1rem; background:var(--bg-elevated); border-radius:10px; border:1px solid var(--border-gold);">
-                    <div style="font-size:2rem; font-weight:800; color:var(--gold); line-height:1;">15</div>
-                    <div style="font-size:0.72rem; color:var(--text-muted); text-transform:uppercase; letter-spacing:0.5px; margin-top:0.3rem;">Certifications</div>
-                </div>
+            <div class="num-grid">
+                <div class="num-cell"><div class="n">18+</div><div class="l">Years</div></div>
+                <div class="num-cell"><div class="n">50+</div><div class="l">Automations</div></div>
+                <div class="num-cell"><div class="n">10+</div><div class="l">FTE Saved</div></div>
+                <div class="num-cell"><div class="n">15</div><div class="l">Certifications</div></div>
             </div>
         </div>
 
         <!-- CTA -->
         <div class="cta-card">
             <h3>Ready to work together?</h3>
-            <p>Whether it's a consulting engagement, a speaking slot, or just a conversation — I'm open to it.</p>
-            <a href="https://www.linkedin.com/in/karthikeyan-selvam-567b52157/" target="_blank" class="btn-gold">Connect on LinkedIn</a>
+            <p>Open to AI Manager, AI Deployment, AI Enablement, and AI product leadership roles — or just a good conversation.</p>
+            <a href="https://www.linkedin.com/in/karthikeyan-selvam-567b52157/" target="_blank" rel="noopener" class="btn btn-solid">Connect on LinkedIn</a>
         </div>
     </aside>
 </div>
 
+<!-- ── FOOTER ── -->
 <footer>
-    <p>Karthikeyan Selvam &mdash; Digital Workplace & AI Consultant</p>
-    <div class="footer-links">
-        <a href="/">Home</a>
-        <a href="/experience.html">Experience</a>
-        <a href="/newsletter.html">Newsletter</a>
-        <a href="https://www.linkedin.com/in/karthikeyan-selvam-567b52157/" target="_blank">LinkedIn</a>
-        <a href="mailto:hello@karthikeyanselvam.com">Contact</a>
+    <div class="foot-inner">
+        <p>© 2026 Karthikeyan Selvam — AI Product &amp; Enablement Leader</p>
+        <div class="foot-links">
+            <a href="/">Home</a>
+            <a href="/newsletter.html">Newsletter</a>
+            <a href="https://www.linkedin.com/in/karthikeyan-selvam-567b52157/" target="_blank" rel="noopener">LinkedIn</a>
+            <a href="mailto:hello@karthikeyanselvam.com">Contact</a>
+        </div>
     </div>
 </footer>
 
 <script>
     console.log(
-        '%c KS | karthikeyanselvam.com\n%c Built with purpose, not a template.\n%c The thinking? Still mine.',
-        'color:#00C9A7;font-size:18px;font-weight:bold;',
-        'color:#C9A84C;font-size:13px;',
-        'color:#8B949E;font-size:12px;font-style:italic;'
+        '%cKarthikeyan Selvam — karthikeyanselvam.com/experience\n%c18 years, no self-scored percentages.',
+        'color: #FF6B35; font-size: 14px; font-weight: bold;',
+        'color: #A69C92; font-size: 12px;'
     );
 </script>
 </body>
