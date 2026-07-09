@@ -37,9 +37,14 @@ jobs:
         env:
           FIREBASE_TOKEN: ${{ secrets.FIREBASE_TOKEN }}
 
+      # NOTE: scoped to askKarthik because sendNewsletter's secrets
+      # (GMAIL_USER, GMAIL_PASSWORD, NEWSLETTER_SECRET) are absent from
+      # Secret Manager — a full "--only functions" deploy fails on them.
+      # Owner must run `firebase functions:secrets:set` for those three
+      # before sendNewsletter can be redeployed.
       - name: Deploy functions
         uses: w9jds/firebase-action@master
         with:
-          args: deploy --only functions
+          args: deploy --only functions:askKarthik
         env:
           FIREBASE_TOKEN: ${{ secrets.FIREBASE_TOKEN }}
