@@ -27,7 +27,7 @@ exports.sendNewsletter = onRequest(
         if (req.method !== "POST") return res.status(405).send("Method not allowed");
         if (!authorized(req)) return res.status(401).json({ error: "Unauthorized" });
 
-        const { subject, body } = req.body;
+        const { subject, body, testTo } = req.body;
         if (!subject || !body) {
             return res.status(400).json({ error: "subject and body are required" });
         }
@@ -41,6 +41,27 @@ exports.sendNewsletter = onRequest(
         });
 
         try {
+            // Test mode: deliver to ONE address only — never touches subscribers.
+            if (testTo) {
+                await transporter.sendMail({
+                    from: `"Karthikeyan Selvam" <${GMAIL_USER.value()}>`,
+                    to: testTo,
+                    subject: `[TEST] ${subject}`,
+                    html: `
+                        <div style="max-width:600px; margin:0 auto; font-family:Inter,sans-serif;
+                                    background:#060810; color:#E6EDF3; padding:2rem; border-radius:12px;">
+                            <h2 style="color:#00C9A7; margin-bottom:1rem;">KS | AI Insights</h2>
+                            <div style="line-height:1.8; color:#c9d1d9;">${body}</div>
+                            <hr style="border-color:rgba(0,201,167,0.2); margin:2rem 0;"/>
+                            <p style="font-size:0.8rem; color:#8B949E;">
+                                TEST SEND — real subscribers were not emailed.
+                            </p>
+                        </div>
+                    `
+                });
+                return res.json({ success: true, sent: 1, test: true, to: testTo });
+            }
+
             const db = admin.firestore();
             const snapshot = await db.collection("customers")
                 .where("active", "==", true)

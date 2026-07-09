@@ -5,6 +5,11 @@ name: Send Custom Newsletter
 # active subscriber in the `customers` collection. Dispatch-only — never runs on a schedule.
 on:
   workflow_dispatch:
+    inputs:
+      test_to:
+        description: 'Test mode: send ONLY to this email address (leave empty for a real send to all subscribers)'
+        required: false
+        default: ''
 
 permissions:
   contents: read
@@ -23,7 +28,10 @@ jobs:
             echo "Missing subject or body file — aborting."; exit 1
           fi
           SUBJECT=$(cat custom_newsletter_subject.txt)
-          jq -n --arg s "$SUBJECT" --rawfile b custom_newsletter_email.html '{subject:$s, body:$b}' > payload.json
+          TEST_TO="${{ github.event.inputs.test_to }}"
+          jq -n --arg s "$SUBJECT" --arg t "$TEST_TO" --rawfile b custom_newsletter_email.html \
+            '{subject:$s, body:$b} + (if $t != "" then {testTo:$t} else {} end)' > payload.json
+          if [ -n "$TEST_TO" ]; then echo "TEST MODE — sending only to $TEST_TO"; fi
           RESP=$(curl -sS -w $'\n%{http_code}' -X POST \
             "https://us-central1-karthik-website-b5801.cloudfunctions.net/sendNewsletter" \
             -H "Content-Type: application/json" \
