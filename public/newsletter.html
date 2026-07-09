@@ -1,414 +1,424 @@
 <!DOCTYPE html>
-
 <html lang="en">
 <head>
-<meta charset="utf-8"/>
-<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
-<title>AI Insights Newsletter | Karthikeyan Selvam</title>
-<meta content="Weekly AI and Digital Workplace analysis from Karthikeyan Selvam." name="description"/>
-<meta content="AI Newsletter, Digital Workplace, Microsoft Copilot, RPA, Enterprise AI, Karthikeyan Selvam" name="keywords"/>
-<meta content="AI Insights Newsletter | Karthikeyan Selvam" property="og:title"/>
-<meta content="Honest AI and Digital Workplace analysis from 18 years in the field." property="og:description"/>
-<style>
+    <meta charset="UTF-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Newsletter — Karthikeyan Selvam</title>
+    <meta name="description" content="Substance over spin — enterprise AI, Copilot, RPA, and automation analysis from Karthikeyan Selvam. Machine-drafted by his own AI pipeline, human-approved."/>
+    <meta name="keywords" content="AI Newsletter, Enterprise AI, Microsoft Copilot, RPA, AI Governance, Karthikeyan Selvam"/>
+    <meta property="og:title" content="Newsletter — Karthikeyan Selvam"/>
+    <meta property="og:description" content="Substance over spin — enterprise AI analysis, published by an AI pipeline I built, approved by me."/>
+    <meta property="og:image" content="https://karthikeyanselvam.com/og-image.png"/>
+    <meta property="og:url" content="https://karthikeyanselvam.com/newsletter.html"/>
+    <meta property="og:type" content="website"/>
+    <meta name="twitter:card" content="summary_large_image"/>
+    <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%23141110'/%3E%3Ctext x='32' y='42' font-family='Arial,sans-serif' font-size='30' font-weight='700' fill='%23FF6B35' text-anchor='middle'%3EK%3C/text%3E%3Ccircle cx='47' cy='40' r='3.4' fill='%23F3EDE7'/%3E%3C/svg%3E"/>
+    <link rel="preconnect" href="https://fonts.googleapis.com"/>
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet"/>
+
+    <style>
+        /* ── DESIGN TOKENS (Ember) ── */
         :root {
-            --teal: #00C9A7; --gold: #C9A84C;
-            --teal-glow: rgba(0,201,167,0.15); --gold-glow: rgba(201,168,76,0.15);
-            --bg: #060810; --bg-card: #0D1117; --bg-elevated: #161B22;
-            --text: #E6EDF3; --text-muted: #8B949E;
-            --border: rgba(0,201,167,0.15); --border-gold: rgba(201,168,76,0.2);
+            --bg: #141110;
+            --surface: #1A1614;
+            --surface-2: #201B18;
+            --line: #292320;
+            --line-strong: #37302B;
+            --text: #F3EDE7;
+            --muted: #A69C92;
+            --dim: #75695E;
+            --accent: #FF6B35;
+            --accent-dim: rgba(255, 107, 53, 0.4);
+            --accent-faint: rgba(255, 107, 53, 0.09);
+            --amber: #D9A441;
+            --font-display: 'Space Grotesk', 'Inter', sans-serif;
+            --font-body: 'Inter', -apple-system, sans-serif;
+            --font-mono: 'JetBrains Mono', 'SFMono-Regular', monospace;
+            --w: 1120px;
         }
-        * { margin:0; padding:0; box-sizing:border-box; }
-        body { font-family:'Inter',-apple-system,BlinkMacSystemFont,sans-serif; background:var(--bg); color:var(--text); line-height:1.7; }
-        .header { background:rgba(6,8,16,0.92); backdrop-filter:blur(12px); position:sticky; top:0; z-index:1000; border-bottom:1px solid var(--border); }
-        .header-content { max-width:1300px; margin:0 auto; padding:1.2rem 2rem; display:flex; justify-content:space-between; align-items:center; }
-        .logo { font-size:1.3rem; font-weight:800; color:var(--teal); text-decoration:none; }
-        .logo span { color:var(--gold); }
-        .nav-links { display:flex; gap:2rem; list-style:none; }
-        .nav-links a { color:var(--text-muted); text-decoration:none; font-size:0.9rem; font-weight:500; transition:color 0.2s; }
-        .nav-links a:hover, .nav-links a.active { color:var(--teal); }
-        footer { background:var(--bg-card); border-top:1px solid var(--border); text-align:center; padding:3rem 2rem; margin-top:6rem; }
-        footer p { color:var(--text-muted); font-size:0.9rem; margin-bottom:1rem; }
-        .footer-links { display:flex; gap:2rem; justify-content:center; flex-wrap:wrap; }
-        .footer-links a { color:var(--text-muted); text-decoration:none; font-size:0.85rem; transition:color 0.2s; }
-        .footer-links a:hover { color:var(--teal); }
-        ::-webkit-scrollbar { width:6px; }
-        ::-webkit-scrollbar-track { background:var(--bg); }
-        ::-webkit-scrollbar-thumb { background:var(--teal); border-radius:3px; }
-        @media(max-width:768px){ .nav-links { gap:1rem; } }
-    </style>
-<style>
-        .newsletter-hero { background:var(--bg-card); border-bottom:1px solid var(--border); padding:5rem 2rem 4rem; text-align:center; position:relative; overflow:hidden; }
-        .newsletter-hero::before { content:''; position:absolute; top:-200px; left:50%; transform:translateX(-50%); width:600px; height:600px; background:radial-gradient(circle,var(--teal-glow),transparent 65%); pointer-events:none; }
-        .newsletter-hero .eyebrow { font-size:0.78rem; font-weight:700; color:var(--teal); letter-spacing:2px; text-transform:uppercase; margin-bottom:1rem; }
-        .newsletter-hero h1 { font-size:clamp(2rem,5vw,3.2rem); font-weight:800; letter-spacing:-1px; margin-bottom:1rem; line-height:1.15; }
-        .newsletter-hero h1 em { font-style:normal; color:var(--teal); }
-        .newsletter-hero p { color:var(--text-muted); max-width:600px; margin:0 auto 2rem; font-size:1.05rem; }
-        .subscribe-form { display:flex; gap:0.8rem; justify-content:center; flex-wrap:wrap; max-width:500px; margin:0 auto; }
-        .subscribe-form input { flex:1; min-width:200px; padding:0.85rem 1.2rem; border-radius:8px; border:1px solid var(--border); background:var(--bg-elevated); color:var(--text); font-size:0.9rem; }
-        .subscribe-form input::placeholder { color:var(--text-muted); }
-        .subscribe-form button { padding:0.85rem 1.8rem; border-radius:8px; background:var(--teal); border:none; color:#060810; font-weight:700; font-size:0.9rem; cursor:pointer; transition:all 0.2s; }
-        .subscribe-form button:hover { background:#00e8c0; }
-        .subscribe-note { color:var(--text-muted); font-size:0.78rem; margin-top:0.8rem; position:relative; z-index:1; }
-        .container { max-width:1300px; margin:0 auto; padding:4rem 2rem; }
-        .filter-row { display:flex; gap:0.8rem; flex-wrap:wrap; margin-bottom:3rem; align-items:center; }
-        .filter-label { font-size:0.78rem; color:var(--text-muted); text-transform:uppercase; letter-spacing:1px; font-weight:600; margin-right:0.5rem; }
-        .filter-tab { padding:0.5rem 1.2rem; border-radius:20px; background:transparent; border:1px solid var(--border); color:var(--text-muted); cursor:pointer; font-size:0.82rem; font-weight:500; transition:all 0.2s; }
-        .filter-tab:hover, .filter-tab.active { background:var(--teal-glow); border-color:var(--teal); color:var(--teal); }
-        .articles-grid { display:grid; grid-template-columns:repeat(12,1fr); gap:1.5rem; margin-bottom:4rem; }
-        .articles-loading { grid-column:span 12; text-align:center; padding:4rem; color:var(--text-muted); font-size:0.95rem; }
-        .articles-empty { grid-column:span 12; text-align:center; padding:4rem; color:var(--text-muted); }
-        .articles-empty p { font-size:1rem; margin-bottom:0.5rem; }
-        .articles-empty span { font-size:0.85rem; color:var(--teal); }
-        .article-card { grid-column:span 4; background:var(--bg-card); border:1px solid var(--border); border-radius:16px; overflow:hidden; transition:all 0.3s; cursor:pointer; display:flex; flex-direction:column; position:relative; }
-        .article-card.featured { grid-column:span 8; flex-direction:row; }
-        .article-card:hover { border-color:var(--teal); transform:translateY(-5px); box-shadow:0 12px 40px var(--teal-glow); }
-        .article-card::after { content:''; position:absolute; inset:0; background:radial-gradient(circle at var(--mx,50%) var(--my,50%),var(--teal-glow),transparent 60%); opacity:0; transition:opacity 0.3s; pointer-events:none; }
-        .article-card:hover::after { opacity:1; }
-        .article-banner { width:100%; height:180px; flex-shrink:0; display:flex; align-items:center; justify-content:center; position:relative; overflow:hidden; }
-        .article-card.featured .article-banner { width:280px; height:100%; }
-        .banner-svg { width:100%; height:100%; }
-        .article-content { padding:1.5rem; flex:1; display:flex; flex-direction:column; }
-        .article-meta { display:flex; gap:0.8rem; align-items:center; margin-bottom:0.8rem; flex-wrap:wrap; }
-        .article-cat { padding:0.25rem 0.7rem; border-radius:12px; font-size:0.72rem; font-weight:700; background:var(--teal-glow); color:var(--teal); border:1px solid var(--border); text-transform:uppercase; letter-spacing:0.5px; }
-        .article-date { font-size:0.78rem; color:var(--text-muted); }
-        .article-title { font-size:1.15rem; font-weight:700; line-height:1.3; margin-bottom:0.7rem; color:var(--text); }
-        .article-card.featured .article-title { font-size:1.4rem; }
-        .article-excerpt { color:var(--text-muted); font-size:0.88rem; line-height:1.7; margin-bottom:1.2rem; flex:1; }
-        .article-footer { display:flex; justify-content:space-between; align-items:center; margin-top:auto; padding-top:1rem; border-top:1px solid var(--border); }
-        .article-source { font-size:0.75rem; color:var(--text-muted); font-style:italic; }
-        .read-more { font-size:0.82rem; font-weight:700; color:var(--teal); cursor:pointer; transition:color 0.2s; white-space:nowrap; background:none; border:none; }
-        .read-more:hover { color:#00e8c0; }
-        .load-more-row { text-align:center; margin:2rem 0 4rem; }
-        .load-more-btn { padding:0.85rem 2.5rem; border-radius:8px; border:1px solid var(--border-gold); background:transparent; color:var(--gold); font-weight:600; font-size:0.9rem; cursor:pointer; transition:all 0.2s; }
-        .load-more-btn:hover { background:var(--gold-glow); }
-        .modal-overlay { display:none; position:fixed; inset:0; background:rgba(0,0,0,0.88); z-index:9999; overflow-y:auto; padding:2rem 1rem; }
-        .modal-overlay.active { display:block; }
-        .modal-box { max-width:780px; margin:2rem auto; background:var(--bg-card); border:1px solid var(--border); border-radius:20px; padding:3rem; position:relative; }
-        .modal-close { position:absolute; top:1.2rem; right:1.2rem; background:var(--bg-elevated); border:1px solid var(--border); color:var(--text-muted); width:34px; height:34px; border-radius:50%; font-size:1rem; cursor:pointer; transition:all 0.2s; display:flex; align-items:center; justify-content:center; }
-        .modal-close:hover { border-color:var(--teal); color:var(--teal); }
-        .modal-cat { font-size:0.72rem; font-weight:700; color:var(--teal); text-transform:uppercase; letter-spacing:1.5px; margin-bottom:0.8rem; }
-        .modal-title { font-size:1.9rem; font-weight:800; line-height:1.2; margin-bottom:0.6rem; letter-spacing:-0.5px; }
-        .modal-date { font-size:0.82rem; color:var(--text-muted); margin-bottom:2rem; padding-bottom:1.5rem; border-bottom:1px solid var(--border); }
-        .modal-body { line-height:1.9; color:var(--text-muted); white-space:pre-wrap; font-size:0.95rem; }
-        .modal-byline { margin-top:2.5rem; padding-top:1.5rem; border-top:1px solid var(--border); font-size:0.82rem; color:var(--text-muted); }
-        .modal-byline strong { color:var(--teal); }
-        .modal-loading { text-align:center; padding:4rem; color:var(--text-muted); font-size:0.95rem; }
-        @media(max-width:900px){ .article-card { grid-column:span 6; } .article-card.featured { grid-column:span 12; flex-direction:column; } .article-card.featured .article-banner { width:100%; height:200px; } }
-        @media(max-width:600px){ .article-card { grid-column:span 12; } .modal-box { padding:2rem 1.5rem; } .modal-title { font-size:1.4rem; } }
-    </style>
-<style>
-        /* Per-article takeaway + Monday action */
-        .article-takeaway { font-size:0.9rem; font-weight:600; color:var(--text); border-left:3px solid var(--teal); padding-left:0.7rem; margin:0 0 0.9rem; line-height:1.5; }
-        .modal-takeaway { font-size:1.05rem; font-weight:600; color:var(--text); border-left:3px solid var(--teal); padding:0.3rem 0 0.3rem 1rem; margin-bottom:1.8rem; line-height:1.6; }
-        .modal-action { margin-top:2.2rem; padding:1.2rem 1.4rem; background:var(--teal-glow); border:1px solid var(--border); border-radius:12px; }
-        .modal-action .label { font-size:0.72rem; font-weight:700; color:var(--teal); text-transform:uppercase; letter-spacing:1px; display:block; margin-bottom:0.4rem; }
-        .modal-action p { color:var(--text); font-size:0.95rem; line-height:1.6; margin:0; }
-        /* "This week" band: hype check + quick hits */
-        .this-week { display:grid; grid-template-columns:1fr 1fr; gap:1.5rem; margin-bottom:3.5rem; }
-        .tw-panel { background:var(--bg-card); border:1px solid var(--border); border-radius:16px; padding:1.6rem 1.8rem; }
-        .tw-panel.hype { border-color:var(--border-gold); }
-        .tw-label { font-size:0.72rem; font-weight:700; text-transform:uppercase; letter-spacing:1.5px; margin-bottom:1rem; }
-        .tw-panel.hype .tw-label { color:var(--gold); }
-        .tw-panel.links .tw-label { color:var(--teal); }
-        .hype-claim { font-style:italic; color:var(--text-muted); font-size:0.92rem; margin-bottom:0.7rem; line-height:1.6; }
-        .hype-reality { color:var(--text); font-size:0.95rem; line-height:1.65; }
-        .qh-item { margin-bottom:1.1rem; }
-        .qh-item:last-child { margin-bottom:0; }
-        .qh-item a { color:var(--teal); font-weight:600; text-decoration:none; font-size:0.92rem; line-height:1.4; }
-        .qh-item a:hover { color:#00e8c0; }
-        .qh-take { color:var(--text-muted); font-size:0.86rem; line-height:1.5; margin-top:0.2rem; }
-        @media(max-width:768px){ .this-week { grid-template-columns:1fr; } }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        html { scroll-behavior: smooth; }
+        body {
+            font-family: var(--font-body);
+            background: var(--bg);
+            color: var(--text);
+            line-height: 1.65;
+            font-size: 16px;
+            -webkit-font-smoothing: antialiased;
+        }
+        ::selection { background: var(--accent); color: #210D02; }
+        ::-webkit-scrollbar { width: 8px; }
+        ::-webkit-scrollbar-track { background: var(--bg); }
+        ::-webkit-scrollbar-thumb { background: var(--line-strong); border-radius: 4px; }
+        ::-webkit-scrollbar-thumb:hover { background: var(--dim); }
+        .wrap { max-width: var(--w); margin: 0 auto; padding: 0 2rem; }
+        a { color: inherit; }
+
+        /* ── NAV ── */
+        .nav {
+            position: sticky; top: 0; z-index: 100;
+            background: rgba(20, 17, 16, 0.88);
+            backdrop-filter: blur(14px);
+            border-bottom: 1px solid var(--line);
+        }
+        .nav-inner {
+            max-width: var(--w); margin: 0 auto; padding: 0 2rem;
+            height: 64px; display: flex; align-items: center; justify-content: space-between;
+        }
+        .brand {
+            font-family: var(--font-display); font-weight: 700;
+            font-size: 1.15rem; letter-spacing: -0.02em;
+            text-decoration: none; color: var(--text);
+        }
+        .brand b { color: var(--accent); font-weight: 700; }
+        .nav-links { display: flex; align-items: center; gap: 1.8rem; list-style: none; }
+        .nav-links a {
+            text-decoration: none; color: var(--muted);
+            font-size: 0.88rem; font-weight: 500;
+            transition: color 0.15s;
+        }
+        .nav-links a:hover, .nav-links a.active { color: var(--text); }
+        .nav-cta {
+            font-family: var(--font-display);
+            padding: 0.5rem 1.05rem; border: 1px solid var(--line-strong); border-radius: 6px;
+            color: var(--text) !important; font-weight: 600; font-size: 0.84rem !important;
+            transition: border-color 0.15s, background 0.15s;
+        }
+        .nav-cta:hover { border-color: var(--accent); background: var(--accent-faint); }
+
+        /* ── PAGE HERO ── */
+        .page-hero { padding: 5.5rem 0 3.8rem; border-bottom: 1px solid var(--line); }
+        .kicker {
+            font-family: var(--font-mono); font-size: 0.76rem; font-weight: 500;
+            letter-spacing: 0.14em; text-transform: uppercase; color: var(--accent);
+            display: flex; align-items: center; gap: 0.7rem; margin-bottom: 1.4rem;
+        }
+        .kicker::before { content: ''; width: 22px; height: 1px; background: var(--accent); }
+        .page-hero h1 {
+            font-family: var(--font-display);
+            font-size: clamp(2.2rem, 4.5vw, 3.4rem);
+            font-weight: 700; line-height: 1.1; letter-spacing: -0.03em;
+            margin-bottom: 1.2rem;
+        }
+        .page-hero h1 .accent { color: var(--accent); }
+        .page-hero > .wrap > p { color: var(--muted); max-width: 40em; font-size: 1.02rem; line-height: 1.75; margin-bottom: 2.2rem; }
+
+        .subscribe-form { display: flex; gap: 0.8rem; flex-wrap: wrap; max-width: 520px; }
+        .subscribe-form input {
+            flex: 1; min-width: 220px; padding: 0.82rem 1.2rem;
+            border-radius: 8px; border: 1px solid var(--line-strong);
+            background: var(--surface); color: var(--text); font-size: 0.92rem;
+            font-family: var(--font-body); transition: border-color 0.15s;
+        }
+        .subscribe-form input:focus { outline: none; border-color: var(--accent); }
+        .subscribe-form input::placeholder { color: var(--dim); }
+        .subscribe-form button {
+            font-family: var(--font-display);
+            padding: 0.82rem 1.8rem; border-radius: 8px;
+            background: var(--accent); border: none; color: #210D02;
+            font-weight: 600; font-size: 0.92rem; cursor: pointer; transition: all 0.15s;
+        }
+        .subscribe-form button:hover { background: #FF8557; transform: translateY(-1px); }
+        .subscribe-form button:disabled { opacity: 0.7; cursor: default; transform: none; }
+        .pipeline-chip {
+            display: inline-flex; align-items: center; gap: 0.6rem;
+            margin-top: 1.3rem; padding: 0.55rem 0.95rem;
+            border: 1px dashed var(--line-strong); border-radius: 8px;
+            font-family: var(--font-mono); font-size: 0.72rem; color: var(--dim);
+        }
+        .pipeline-chip b { color: var(--accent); font-weight: 500; }
+
+        /* ── CONTAINER ── */
+        .container { max-width: var(--w); margin: 0 auto; padding: 3.5rem 2rem 5rem; }
+
+        /* ── FILTERS ── */
+        .filter-row { display: flex; gap: 0.7rem; flex-wrap: wrap; margin-bottom: 2.8rem; align-items: center; }
+        .filter-label {
+            font-family: var(--font-mono); font-size: 0.72rem; color: var(--dim);
+            text-transform: uppercase; letter-spacing: 0.12em; margin-right: 0.5rem;
+        }
+        .filter-tab {
+            font-family: var(--font-mono);
+            padding: 0.45rem 1.1rem; border-radius: 6px;
+            background: transparent; border: 1px solid var(--line-strong);
+            color: var(--muted); cursor: pointer; font-size: 0.76rem; font-weight: 500;
+            transition: all 0.15s;
+        }
+        .filter-tab:hover, .filter-tab.active {
+            background: var(--accent-faint); border-color: var(--accent); color: var(--accent);
+        }
+
+        /* ── THIS WEEK BAND ── */
+        .this-week { display: grid; grid-template-columns: 1fr 1fr; gap: 1.2rem; margin-bottom: 3rem; }
+        .tw-panel {
+            background: var(--surface); border: 1px solid var(--line);
+            border-radius: 12px; padding: 1.6rem 1.8rem;
+        }
+        .tw-panel.hype { border-left: 3px solid var(--amber); }
+        .tw-panel.links { border-left: 3px solid var(--accent); }
+        .tw-label {
+            font-family: var(--font-mono); font-size: 0.7rem; font-weight: 500;
+            text-transform: uppercase; letter-spacing: 0.14em; margin-bottom: 1rem;
+        }
+        .tw-panel.hype .tw-label { color: var(--amber); }
+        .tw-panel.links .tw-label { color: var(--accent); }
+        .hype-claim { font-style: italic; color: var(--dim); font-size: 0.92rem; margin-bottom: 0.7rem; line-height: 1.6; }
+        .hype-reality { color: var(--text); font-size: 0.94rem; line-height: 1.65; }
+        .qh-item { margin-bottom: 1.1rem; }
+        .qh-item:last-child { margin-bottom: 0; }
+        .qh-item a {
+            color: var(--text); font-weight: 600; text-decoration: none; font-size: 0.92rem; line-height: 1.4;
+            border-bottom: 1px solid var(--accent-dim); transition: border-color 0.15s, color 0.15s;
+        }
+        .qh-item a:hover { color: var(--accent); border-color: var(--accent); }
+        .qh-take { color: var(--muted); font-size: 0.85rem; line-height: 1.55; margin-top: 0.25rem; }
+
+        /* ── ARTICLES GRID ── */
+        .articles-grid { display: grid; grid-template-columns: repeat(12, 1fr); gap: 1.2rem; margin-bottom: 3rem; }
+        .articles-loading {
+            grid-column: span 12; text-align: center; padding: 4rem;
+            color: var(--dim); font-family: var(--font-mono); font-size: 0.85rem;
+        }
+        .articles-empty { grid-column: span 12; text-align: center; padding: 4rem; color: var(--muted); }
+        .articles-empty p { font-size: 1rem; margin-bottom: 0.5rem; }
+        .articles-empty span { font-family: var(--font-mono); font-size: 0.78rem; color: var(--accent); }
+
+        .article-card {
+            grid-column: span 4;
+            background: var(--surface); border: 1px solid var(--line);
+            border-radius: 12px; overflow: hidden;
+            transition: border-color 0.2s, background 0.2s;
+            display: flex; flex-direction: column;
+        }
+        .article-card.featured { grid-column: span 8; flex-direction: row; }
+        .article-card:hover { border-color: var(--accent-dim); background: var(--surface-2); }
+        .article-banner {
+            width: 100%; height: 150px; flex-shrink: 0;
+            display: flex; align-items: center; justify-content: center;
+            position: relative; overflow: hidden;
+            border-bottom: 1px solid var(--line);
+        }
+        .article-card.featured .article-banner { width: 260px; height: auto; border-bottom: none; border-right: 1px solid var(--line); }
+        .banner-svg { width: 100%; height: 100%; }
+        .article-content { padding: 1.4rem 1.5rem; flex: 1; display: flex; flex-direction: column; }
+        .article-meta { display: flex; gap: 0.8rem; align-items: center; margin-bottom: 0.8rem; flex-wrap: wrap; }
+        .article-cat {
+            font-family: var(--font-mono);
+            padding: 0.2rem 0.6rem; border-radius: 5px; font-size: 0.66rem; font-weight: 500;
+            background: var(--accent-faint); color: var(--accent); border: 1px solid var(--line-strong);
+            text-transform: uppercase; letter-spacing: 0.08em;
+        }
+        .article-date { font-family: var(--font-mono); font-size: 0.72rem; color: var(--dim); }
+        .article-title {
+            font-family: var(--font-display);
+            font-size: 1.08rem; font-weight: 600; line-height: 1.32;
+            letter-spacing: -0.01em; margin-bottom: 0.7rem; color: var(--text);
+        }
+        .article-card.featured .article-title { font-size: 1.3rem; }
+        .article-takeaway {
+            font-size: 0.88rem; font-weight: 600; color: var(--text);
+            border-left: 3px solid var(--accent); padding-left: 0.7rem;
+            margin: 0 0 0.9rem; line-height: 1.5;
+        }
+        .article-excerpt { color: var(--muted); font-size: 0.87rem; line-height: 1.68; margin-bottom: 1.1rem; flex: 1; }
+        .article-footer {
+            display: flex; justify-content: space-between; align-items: center;
+            margin-top: auto; padding-top: 1rem; border-top: 1px solid var(--line); gap: 1rem;
+        }
+        .article-source { font-size: 0.72rem; color: var(--dim); }
+        .read-more {
+            font-family: var(--font-mono); font-size: 0.76rem; font-weight: 500;
+            color: var(--accent); cursor: pointer; transition: opacity 0.15s;
+            white-space: nowrap; background: none; border: none;
+        }
+        .read-more:hover { opacity: 0.75; text-decoration: underline; }
+
+        .load-more-row { text-align: center; margin: 1rem 0 2rem; }
+        .load-more-btn {
+            font-family: var(--font-display);
+            padding: 0.8rem 2.4rem; border-radius: 8px;
+            border: 1px solid var(--line-strong); background: transparent;
+            color: var(--text); font-weight: 600; font-size: 0.9rem;
+            cursor: pointer; transition: all 0.15s;
+        }
+        .load-more-btn:hover { border-color: var(--accent); background: var(--accent-faint); }
+
+        /* ── MODAL ── */
+        .modal-overlay {
+            display: none; position: fixed; inset: 0;
+            background: rgba(12, 9, 7, 0.88); backdrop-filter: blur(8px);
+            z-index: 9999; overflow-y: auto; padding: 2rem 1rem;
+        }
+        .modal-overlay.active { display: block; }
+        .modal-box {
+            max-width: 780px; margin: 2rem auto;
+            background: var(--surface); border: 1px solid var(--line-strong);
+            border-radius: 14px; padding: 3rem; position: relative;
+            box-shadow: 0 30px 80px rgba(0,0,0,0.55);
+        }
+        .modal-close {
+            position: absolute; top: 1.1rem; right: 1.1rem;
+            background: var(--surface-2); border: 1px solid var(--line-strong);
+            color: var(--muted); width: 34px; height: 34px; border-radius: 8px;
+            font-size: 1rem; cursor: pointer; transition: all 0.15s;
+            display: flex; align-items: center; justify-content: center;
+        }
+        .modal-close:hover { border-color: var(--accent); color: var(--text); }
+        .modal-cat {
+            font-family: var(--font-mono); font-size: 0.7rem; font-weight: 500;
+            color: var(--accent); text-transform: uppercase; letter-spacing: 0.14em; margin-bottom: 0.8rem;
+        }
+        .modal-title {
+            font-family: var(--font-display);
+            font-size: 1.75rem; font-weight: 700; line-height: 1.2;
+            margin-bottom: 0.6rem; letter-spacing: -0.02em;
+        }
+        .modal-date {
+            font-family: var(--font-mono); font-size: 0.76rem; color: var(--dim);
+            margin-bottom: 2rem; padding-bottom: 1.5rem; border-bottom: 1px solid var(--line);
+        }
+        .modal-takeaway {
+            font-size: 1.02rem; font-weight: 600; color: var(--text);
+            border-left: 3px solid var(--accent); padding: 0.3rem 0 0.3rem 1rem;
+            margin-bottom: 1.8rem; line-height: 1.6;
+        }
+        .modal-body { line-height: 1.85; color: var(--muted); white-space: pre-wrap; font-size: 0.95rem; }
+        .modal-action {
+            margin-top: 2.2rem; padding: 1.2rem 1.4rem;
+            background: var(--accent-faint); border: 1px solid var(--line-strong);
+            border-left: 3px solid var(--accent); border-radius: 10px;
+        }
+        .modal-action .label {
+            font-family: var(--font-mono); font-size: 0.7rem; font-weight: 500;
+            color: var(--accent); text-transform: uppercase; letter-spacing: 0.12em;
+            display: block; margin-bottom: 0.4rem;
+        }
+        .modal-action p { color: var(--text); font-size: 0.94rem; line-height: 1.6; margin: 0; }
+        .modal-byline {
+            margin-top: 2.5rem; padding-top: 1.5rem; border-top: 1px solid var(--line);
+            font-size: 0.82rem; color: var(--dim);
+        }
+        .modal-byline strong { color: var(--accent); }
+        .modal-loading {
+            text-align: center; padding: 4rem;
+            color: var(--dim); font-family: var(--font-mono); font-size: 0.85rem;
+        }
+
+        /* ── FOOTER ── */
+        footer { border-top: 1px solid var(--line); padding: 2.2rem 0; }
+        .foot-inner {
+            max-width: var(--w); margin: 0 auto; padding: 0 2rem;
+            display: flex; align-items: center; justify-content: space-between; gap: 1.5rem; flex-wrap: wrap;
+        }
+        .foot-inner p { color: var(--dim); font-size: 0.82rem; }
+        .foot-links { display: flex; gap: 1.6rem; }
+        .foot-links a { color: var(--dim); text-decoration: none; font-size: 0.82rem; transition: color 0.15s; }
+        .foot-links a:hover { color: var(--text); }
+
+        /* ── RESPONSIVE ── */
+        @media (max-width: 900px) {
+            .article-card { grid-column: span 6; }
+            .article-card.featured { grid-column: span 12; flex-direction: column; }
+            .article-card.featured .article-banner { width: 100%; height: 180px; border-right: none; border-bottom: 1px solid var(--line); }
+            .this-week { grid-template-columns: 1fr; }
+        }
+        @media (max-width: 600px) {
+            .nav-links a:not(.nav-cta) { display: none; }
+            .page-hero { padding: 3.5rem 0 2.5rem; }
+            .container { padding: 2.5rem 1.2rem 3.5rem; }
+            .article-card { grid-column: span 12; }
+            .modal-box { padding: 2rem 1.5rem; }
+            .modal-title { font-size: 1.35rem; }
+        }
     </style>
 </head>
 <body>
-<header class="header">
-<div class="header-content">
-<a class="logo" href="/">KS<span>.</span></a>
-<nav>
-<ul class="nav-links">
-<li><a href="/">Home</a></li>
-<li><a href="/experience.html">Experience</a></li>
-<li><a class="active" href="/newsletter.html">Newsletter</a></li>
-</ul>
+
+<!-- ── NAV ── -->
+<nav class="nav">
+    <div class="nav-inner">
+        <a class="brand" href="/">Karthikeyan Selvam<b>.</b></a>
+        <ul class="nav-links">
+            <li><a href="/#work">Work</a></li>
+            <li><a href="/experience.html">Experience</a></li>
+            <li><a href="/#writing">Writing</a></li>
+            <li><a href="/newsletter.html" class="active">Newsletter</a></li>
+            <li><a class="nav-cta" href="/#contact">Get in touch</a></li>
+        </ul>
+    </div>
 </nav>
-</div>
+
+<!-- ── PAGE HERO ── -->
+<header class="page-hero">
+    <div class="wrap">
+        <div class="kicker">The Newsletter</div>
+        <h1>Substance over <span class="accent">spin</span>.</h1>
+        <p>
+            Enterprise AI, Copilot, RPA, and governance — analyzed by someone who's been
+            implementing this technology in real enterprises for 18 years. Not hype. Not press releases.
+        </p>
+        <form class="subscribe-form" onsubmit="handleSubscribe(event)">
+            <input placeholder="your@email.com" required type="email"/>
+            <button type="submit">Subscribe</button>
+        </form>
+        <div class="pipeline-chip">
+            <b>run by my own AI pipeline</b> · research → draft → my review → publish · human-approved, every issue
+        </div>
+    </div>
 </header>
-<section class="newsletter-hero">
-<div class="eyebrow">Weekly Analysis</div>
-<h1>AI &amp; Digital Workplace <em>Insights</em></h1>
-<p>Not hype. Not press releases. Just honest analysis from someone who's been implementing this technology in real enterprises for 18 years.</p>
-<form class="subscribe-form" onsubmit="handleSubscribe(event)">
-<input placeholder="your@email.com" required="" type="email"/>
-<button type="submit">Subscribe</button>
-</form>
-<p class="subscribe-note">Join professionals who want substance over spin.</p>
-</section>
+
 <div class="container">
-<div class="filter-row">
-<span class="filter-label">Filter:</span>
-<button class="filter-tab active" onclick="filterArticles('all', event)">All</button>
-<button class="filter-tab" onclick="filterArticles('copilot', event)">Copilot</button>
-<button class="filter-tab" onclick="filterArticles('ai', event)">AI &amp; ML</button>
-<button class="filter-tab" onclick="filterArticles('rpa', event)">RPA</button>
-<button class="filter-tab" onclick="filterArticles('enterprise', event)">Enterprise</button>
+    <div class="filter-row">
+        <span class="filter-label">Filter</span>
+        <button class="filter-tab active" onclick="filterArticles('all', event)">All</button>
+        <button class="filter-tab" onclick="filterArticles('copilot', event)">Copilot</button>
+        <button class="filter-tab" onclick="filterArticles('ai', event)">AI &amp; ML</button>
+        <button class="filter-tab" onclick="filterArticles('rpa', event)">RPA</button>
+        <button class="filter-tab" onclick="filterArticles('enterprise', event)">Enterprise</button>
+    </div>
+
+    <div class="this-week" id="this-week" style="display:none;"></div>
+
+    <div class="articles-grid" id="newsletter-articles">
+        <div class="articles-loading">● loading articles…</div>
+    </div>
+
+    <div class="load-more-row">
+        <button class="load-more-btn" id="load-more-btn" onclick="loadMoreArticles()" style="display:none;">Load earlier articles</button>
+    </div>
 </div>
-<div class="this-week" id="this-week" style="display:none;"></div>
-<div class="articles-grid" id="newsletter-articles">
-<article class="article-card" data-category="ai">
-<div class="article-image" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); display: flex; align-items: center; justify-content: center; font-size: 4rem;">
-                    🤖
-                </div>
-<div class="article-content">
-<div class="article-meta">
-<span class="article-category">AI &amp; ML</span>
-<span class="article-date">Mar 06, 2026</span>
-</div>
-<h3 class="article-title">AI's Next Chapter: Governance as the Cornerstone of Enterprise Trust</h3>
-<p class="article-excerpt">As AI permeates every facet of the enterprise, the conversation is rapidly shifting from capability to accountability. Proactive AI governance isn't just a compliance chore; it's the bedrock of sustainable innovation and crucial for navigating escalating enterprise risks.</p>
-<p class="article-source">Analysis by Karthikeyan Selvam | karthikeyanselvam.com</p>
-<a class="read-more" onclick="openArticle('WUwFa3puPhPOMj3NAjFl')" style="cursor:pointer;">Read Full Analysis →</a>
-</div>
-</article>
-<article class="article-card" data-category="rpa">
-<div class="article-image" style="background: linear-gradient(135deg, #764ba2 0%, #667eea 100%); display: flex; align-items: center; justify-content: center; font-size: 4rem;">
-                    🧠
-                </div>
-<div class="article-content">
-<div class="article-meta">
-<span class="article-category">RPA &amp; Automation</span>
-<span class="article-date">Mar 06, 2026</span>
-</div>
-<h3 class="article-title">Beyond Bots: The Hyper-Intelligent Evolution of Automation</h3>
-<p class="article-excerpt">Intelligent automation is rapidly transcending traditional RPA, reshaping how enterprises operate and empowering digital workplaces. This evolution presents both unprecedented opportunities and critical challenges for organizations worldwide.</p>
-<p class="article-source">Analysis by Karthikeyan Selvam | karthikeyanselvam.com</p>
-<a class="read-more" onclick="openArticle('1slgBjsA4yI70uWxc80E')" style="cursor:pointer;">Read Full Analysis →</a>
-</div>
-</article>
-<article class="article-card" data-category="ai">
-<div class="article-image" style="background: linear-gradient(135deg, #e94560 0%, #764ba2 100%); display: flex; align-items: center; justify-content: center; font-size: 4rem;">
-                    ⚙️
-                </div>
-<div class="article-content">
-<div class="article-meta">
-<span class="article-category">AI &amp; ML</span>
-<span class="article-date">Mar 06, 2026</span>
-</div>
-<h3 class="article-title">Accelerating Transformation: Enterprise AI's Evolution in the Digital Workplace</h3>
-<p class="article-excerpt">As we step deeper into 2026, enterprise AI adoption is no longer an aspiration but a core strategic imperative driving unprecedented digital transformation. This piece dives into how organizations are leveraging AI, the opportunities it unlocks for digital workplaces, and the critical challenges that must be navigated for sustainable success.</p>
-<p class="article-source">Analysis by Karthikeyan Selvam | karthikeyanselvam.com</p>
-<a class="read-more" onclick="openArticle('ljFpv2ncsEAZjKadLnQh')" style="cursor:pointer;">Read Full Analysis →</a>
-</div>
-</article>
-<article class="article-card" data-category="rpa">
-<div class="article-image" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); display: flex; align-items: center; justify-content: center; font-size: 4rem;">
-                    🤖
-                </div>
-<div class="article-content">
-<div class="article-meta">
-<span class="article-category">RPA &amp; Automation</span>
-<span class="article-date">Mar 01, 2026</span>
-</div>
-<h3 class="article-title">Intelligent Automation: Beyond Bots to Transformative Workflows in 2026</h3>
-<p class="article-excerpt">RPA is no longer just about automating repetitive tasks; it has firmly evolved into intelligent automation, deeply integrated with AI. This fusion is fundamentally reshaping how organizations approach efficiency and innovation across their digital workplaces.</p>
-<p class="article-source">Analysis by Karthikeyan Selvam | karthikeyanselvam.com</p>
-<a class="read-more" onclick="openArticle('E8F8lYmeldVikHtwf0R6')" style="cursor:pointer;">Read Full Analysis →</a>
-</div>
-</article>
-<article class="article-card" data-category="ai">
-<div class="article-image" style="background: linear-gradient(135deg, #764ba2 0%, #667eea 100%); display: flex; align-items: center; justify-content: center; font-size: 4rem;">
-                    🧠
-                </div>
-<div class="article-content">
-<div class="article-meta">
-<span class="article-category">AI &amp; ML</span>
-<span class="article-date">Mar 01, 2026</span>
-</div>
-<h3 class="article-title">Beyond the Hype: Orchestrating Enterprise AI for True Digital Transformation</h3>
-<p class="article-excerpt">The enterprise landscape in 2026 is defined by the strategic imperative of AI adoption, moving beyond initial curiosity to tangible impact. This journey isn't merely about technology; it's a profound reshaping of operations, culture, and competitive advantage.</p>
-<p class="article-source">Analysis by Karthikeyan Selvam | karthikeyanselvam.com</p>
-<a class="read-more" onclick="openArticle('fO8lM0R9cdiIhyfESSTg')" style="cursor:pointer;">Read Full Analysis →</a>
-</div>
-</article>
-<article class="article-card" data-category="ai">
-<div class="article-image" style="background: linear-gradient(135deg, #e94560 0%, #764ba2 100%); display: flex; align-items: center; justify-content: center; font-size: 4rem;">
-                    ⚙️
-                </div>
-<div class="article-content">
-<div class="article-meta">
-<span class="article-category">AI &amp; ML</span>
-<span class="article-date">Mar 01, 2026</span>
-</div>
-<h3 class="article-title">Navigating the AI Frontier: Governance, Ethics, and Enterprise Resilience in 2026</h3>
-<p class="article-excerpt">The rapid integration of AI across enterprise operations demands a proactive approach to governance and ethics. Organizations must cultivate trust and mitigate risk to fully unlock AI's transformative potential.</p>
-<p class="article-source">Analysis by Karthikeyan Selvam | karthikeyanselvam.com</p>
-<a class="read-more" onclick="openArticle('dX0SzRWyKMP3We5YhQmL')" style="cursor:pointer;">Read Full Analysis →</a>
-</div>
-</article>
-<article class="article-card" data-category="rpa">
-<div class="article-image" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); display: flex; align-items: center; justify-content: center; font-size: 4rem;">
-                    🤖
-                </div>
-<div class="article-content">
-<div class="article-meta">
-<span class="article-category">RPA &amp; Automation</span>
-<span class="article-date">Mar 01, 2026</span>
-</div>
-<h3 class="article-title">The Intelligent Automation Evolution: Beyond Bots to AI-Powered Workflows</h3>
-<p class="article-excerpt">Robotic Process Automation has transcended its origins, now deeply entwined with advanced artificial intelligence to redefine how work gets done. Organizations are witnessing a paradigm shift from task-specific bots to adaptive, intelligent agents driving true hyperautomation.</p>
-<p class="article-source">Analysis by Karthikeyan Selvam | karthikeyanselvam.com</p>
-<a class="read-more" onclick="openArticle('LsLQvOl0F6QlOxlKZJOP')" style="cursor:pointer;">Read Full Analysis →</a>
-</div>
-</article>
-<article class="article-card" data-category="ai">
-<div class="article-image" style="background: linear-gradient(135deg, #764ba2 0%, #667eea 100%); display: flex; align-items: center; justify-content: center; font-size: 4rem;">
-                    🧠
-                </div>
-<div class="article-content">
-<div class="article-meta">
-<span class="article-category">AI &amp; ML</span>
-<span class="article-date">Mar 01, 2026</span>
-</div>
-<h3 class="article-title">Navigating the AI Crossroads: Governance, Ethics, and Enterprise Resilience</h3>
-<p class="article-excerpt">As AI weaves deeper into the fabric of our digital workplaces, robust governance and ethical frameworks are no longer optional but critical for enterprise resilience. Proactive strategies are essential to transform potential risks into sustainable opportunities.</p>
-<p class="article-source">Analysis by Karthikeyan Selvam | karthikeyanselvam.com</p>
-<a class="read-more" onclick="openArticle('o37hAOrxdo8TWMT8VRNs')" style="cursor:pointer;">Read Full Analysis →</a>
-</div>
-</article>
-<article class="article-card" data-category="ai">
-<div class="article-image" style="background: linear-gradient(135deg, #e94560 0%, #764ba2 100%); display: flex; align-items: center; justify-content: center; font-size: 4rem;">
-                    ⚙️
-                </div>
-<div class="article-content">
-<div class="article-meta">
-<span class="article-category">AI &amp; ML</span>
-<span class="article-date">Mar 01, 2026</span>
-</div>
-<h3 class="article-title">Beyond Hype: Realizing Enterprise AI's Transformative Power in 2026</h3>
-<p class="article-excerpt">In 2026, enterprise AI adoption is no longer a concept but a strategic imperative shaping digital transformation. This shift brings immense opportunities for productivity and innovation, alongside critical challenges in governance and integration.</p>
-<p class="article-source">Analysis by Karthikeyan Selvam | karthikeyanselvam.com</p>
-<a class="read-more" onclick="openArticle('dXSGh670lIa2SyRXCIOU')" style="cursor:pointer;">Read Full Analysis →</a>
-</div>
-</article>
-<article class="article-card" data-category="ai">
-<div class="article-image" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); display: flex; align-items: center; justify-content: center; font-size: 4rem;">
-                    🤖
-                </div>
-<div class="article-content">
-<div class="article-meta">
-<span class="article-category">AI &amp; ML</span>
-<span class="article-date">Mar 01, 2026</span>
-</div>
-<h3 class="article-title">Google Workspace AI: The Intelligent Collaboration Evolution</h3>
-<p class="article-excerpt">Google Workspace's AI integrations are rapidly transforming how teams collaborate, pushing the boundaries of digital productivity. This evolution demands strategic navigation for organizations to truly unlock its full potential.</p>
-<p class="article-source">Analysis by Karthikeyan Selvam | karthikeyanselvam.com</p>
-<a class="read-more" onclick="openArticle('KiXv6q6U0bIRbhszKknD')" style="cursor:pointer;">Read Full Analysis →</a>
-</div>
-</article>
-<article class="article-card" data-category="ai">
-<div class="article-image" style="background: linear-gradient(135deg, #764ba2 0%, #667eea 100%); display: flex; align-items: center; justify-content: center; font-size: 4rem;">
-                    🧠
-                </div>
-<div class="article-content">
-<div class="article-meta">
-<span class="article-category">AI &amp; ML</span>
-<span class="article-date">Mar 01, 2026</span>
-</div>
-<h3 class="article-title">Beyond the Hype: Strategic AI for Transformative Digital Workplaces</h3>
-<p class="article-excerpt">As we stand in March 2026, Enterprise AI has firmly transitioned from a futuristic concept to a foundational pillar of digital transformation. Organizations are now grappling with the strategic imperative of not just adopting, but truly integrating AI to redefine their operational paradigms and employee experiences.</p>
-<p class="article-source">Analysis by Karthikeyan Selvam | karthikeyanselvam.com</p>
-<a class="read-more" onclick="openArticle('MJQa6Uit8LUF0knzFVXb')" style="cursor:pointer;">Read Full Analysis →</a>
-</div>
-</article>
-<article class="article-card" data-category="copilot">
-<div class="article-image" style="background: linear-gradient(135deg, #e94560 0%, #764ba2 100%); display: flex; align-items: center; justify-content: center; font-size: 4rem;">
-                    ⚙️
-                </div>
-<div class="article-content">
-<div class="article-meta">
-<span class="article-category">Microsoft Copilot</span>
-<span class="article-date">Mar 01, 2026</span>
-</div>
-<h3 class="article-title">Driving Peak Performance: Copilot's Evolution in the AI Workplace</h3>
-<p class="article-excerpt">The promise of AI enhancing productivity is no longer a distant vision but a tangible reality for digital workplaces. Microsoft Copilot is rapidly becoming the intelligent backbone, redefining how we work and interact with information.</p>
-<p class="article-source">Analysis by Karthikeyan Selvam | karthikeyanselvam.com</p>
-<a class="read-more" onclick="openArticle('0hUflunK6gsK0ZgDCBCf')" style="cursor:pointer;">Read Full Analysis →</a>
-</div>
-</article>
-<article class="article-card" data-category="rpa">
-<div class="article-image" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); display: flex; align-items: center; justify-content: center; font-size: 4rem;">
-                    🤖
-                </div>
-<div class="article-content">
-<div class="article-meta">
-<span class="article-category">RPA &amp; Automation</span>
-<span class="article-date">Mar 01, 2026</span>
-</div>
-<h3 class="article-title">The AI-Driven Evolution of RPA: Charting the Course in 2026</h3>
-<p class="article-excerpt">Robotic Process Automation is no longer a standalone technology; it has become deeply interwoven with advanced AI, transforming how businesses operate. This symbiotic relationship is reshaping digital workplaces, promising unprecedented efficiency and innovation.</p>
-<p class="article-source">Analysis by Karthikeyan Selvam | karthikeyanselvam.com</p>
-<a class="read-more" onclick="openArticle('EyPxjG8b9PPatu3iXepB')" style="cursor:pointer;">Read Full Analysis →</a>
-</div>
-</article>
-<article class="article-card" data-category="ai">
-<div class="article-image" style="background: linear-gradient(135deg, #764ba2 0%, #667eea 100%); display: flex; align-items: center; justify-content: center; font-size: 4rem;">
-                    🧠
-                </div>
-<div class="article-content">
-<div class="article-meta">
-<span class="article-category">AI &amp; ML</span>
-<span class="article-date">Mar 01, 2026</span>
-</div>
-<h3 class="article-title">Navigating the AI Frontier: Why Governance is Your Enterprise's Strategic Imperative</h3>
-<p class="article-excerpt">As generative AI matures from novelty to fundamental business driver, the spotlight shifts inevitably to robust governance and ethical frameworks. Proactive strategy in this domain is no longer optional; it's the bedrock of sustainable enterprise innovation and trust.</p>
-<p class="article-source">Analysis by Karthikeyan Selvam | karthikeyanselvam.com</p>
-<a class="read-more" onclick="openArticle('8BDoXxt1JxKHnLnC83w2')" style="cursor:pointer;">Read Full Analysis →</a>
-</div>
-</article>
-<article class="article-card" data-category="copilot">
-<div class="article-image" style="background: linear-gradient(135deg, #e94560 0%, #764ba2 100%); display: flex; align-items: center; justify-content: center; font-size: 4rem;">
-                    ⚙️
-                </div>
-<div class="article-content">
-<div class="article-meta">
-<span class="article-category">Microsoft Copilot</span>
-<span class="article-date">Mar 01, 2026</span>
-</div>
-<h3 class="article-title">Copilot's Maturation: Beyond Novelty to Strategic Imperative in 2026 Workplaces</h3>
-<p class="article-excerpt">The initial fanfare around Microsoft Copilot has evolved into a strategic mandate for digital workplaces globally. Businesses are now grappling with how to effectively integrate this powerful AI into their core operations, transforming productivity.</p>
-<p class="article-source">Analysis by Karthikeyan Selvam | karthikeyanselvam.com</p>
-<a class="read-more" onclick="openArticle('wCk14uqLRgqFgiOoVDRC')" style="cursor:pointer;">Read Full Analysis →</a>
-</div>
-</article>
-<div class="articles-loading">● Loading articles...</div>
-</div>
-<div class="load-more-row">
-<button class="load-more-btn" id="load-more-btn" onclick="loadMoreArticles()" style="display:none;">Load Earlier Articles</button>
-</div>
-</div>
+
+<!-- ── ARTICLE MODAL ── -->
 <div class="modal-overlay" id="article-modal">
-<div class="modal-box">
-<button class="modal-close" onclick="closeArticle()">✕</button>
-<div class="modal-loading" id="modal-loading">Loading article...</div>
-<div id="modal-content" style="display:none;">
-<div class="modal-cat" id="modal-category"></div>
-<h2 class="modal-title" id="modal-title"></h2>
-<div class="modal-date" id="modal-date"></div>
-<div class="modal-takeaway" id="modal-takeaway" style="display:none;"></div>
-<div class="modal-body" id="modal-body"></div>
-<div class="modal-action" id="modal-action" style="display:none;"><span class="label">Your move this week</span><p id="modal-action-text"></p></div>
-<div class="modal-byline">Written by <strong>Karthikeyan Selvam</strong> — Digital Workplace &amp; AI Consultant — karthikeyanselvam.com</div>
+    <div class="modal-box">
+        <button class="modal-close" onclick="closeArticle()">✕</button>
+        <div class="modal-loading" id="modal-loading">Loading article…</div>
+        <div id="modal-content" style="display:none;">
+            <div class="modal-cat" id="modal-category"></div>
+            <h2 class="modal-title" id="modal-title"></h2>
+            <div class="modal-date" id="modal-date"></div>
+            <div class="modal-takeaway" id="modal-takeaway" style="display:none;"></div>
+            <div class="modal-body" id="modal-body"></div>
+            <div class="modal-action" id="modal-action" style="display:none;"><span class="label">Your move this week</span><p id="modal-action-text"></p></div>
+            <div class="modal-byline">Written by <strong>Karthikeyan Selvam</strong> — AI Product &amp; Enablement Leader — karthikeyanselvam.com</div>
+        </div>
+    </div>
 </div>
-</div>
-</div>
+
+<!-- ── FOOTER ── -->
 <footer>
-<p>Karthikeyan Selvam — AI &amp; Digital Workplace Insights</p>
-<div class="footer-links">
-<a href="/">Home</a>
-<a href="/experience.html">Experience</a>
-<a href="https://www.linkedin.com/in/karthikeyan-selvam-567b52157/" target="_blank">LinkedIn</a>
-<a href="mailto:hello@karthikeyanselvam.com">Contact</a>
-</div>
+    <div class="foot-inner">
+        <p>© 2026 Karthikeyan Selvam — AI Product &amp; Enablement Leader</p>
+        <div class="foot-links">
+            <a href="/">Home</a>
+            <a href="/experience.html">Experience</a>
+            <a href="https://www.linkedin.com/in/karthikeyan-selvam-567b52157/" target="_blank" rel="noopener">LinkedIn</a>
+            <a href="mailto:hello@karthikeyanselvam.com">Contact</a>
+        </div>
+    </div>
 </footer>
+
 <script>
     function filterArticles(category, e) {
         document.querySelectorAll('.filter-tab').forEach(t => t.classList.remove('active'));
@@ -423,16 +433,7 @@
     document.getElementById('article-modal').addEventListener('click', function(e) {
         if (e.target === this) closeArticle();
     });
-    function applyMouseGlow() {
-        document.querySelectorAll('.article-card').forEach(card => {
-            card.addEventListener('mousemove', e => {
-                const r = card.getBoundingClientRect();
-                card.style.setProperty('--mx', (e.clientX - r.left) + 'px');
-                card.style.setProperty('--my', (e.clientY - r.top) + 'px');
-            });
-        });
-    }
-    console.log('%c KS | karthikeyanselvam.com', 'color:#00C9A7;font-size:18px;font-weight:bold;');
+    console.log('%cKarthikeyan Selvam — karthikeyanselvam.com/newsletter', 'color:#FF6B35;font-size:14px;font-weight:bold;');
 </script>
 <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.0/firebase-app.js";
@@ -484,14 +485,14 @@
     function buildCard(docSnap, isFirst) {
         const d = docSnap.data();
         const excerpt = d.excerpt || d.summary || (d.body ? d.body.substring(0, 180) + '...' : '');
-        const color = (d.category_key === 'rpa' || d.category === 'rpa') ? '#C9A84C' : '#00C9A7';
+        const color = (d.category_key === 'rpa' || d.category === 'rpa') ? '#D9A441' : '#FF6B35';
         const cat = (d.category || 'AI').toUpperCase().substring(0, 10);
         const takeaway = d.takeaway ? `<p class="article-takeaway">${esc(d.takeaway)}</p>` : '';
         return `
         <article class="article-card ${isFirst ? 'featured' : ''}" data-category="${esc(d.category_key || 'ai')}">
             <div class="article-banner">
                 <svg class="banner-svg" viewBox="0 0 400 200" xmlns="http://www.w3.org/2000/svg">
-                    <rect width="400" height="200" fill="#0D1117"/>
+                    <rect width="400" height="200" fill="#201B18"/>
                     <circle cx="200" cy="100" r="65" fill="none" stroke="${color}" stroke-width="1" opacity="0.4"/>
                     <circle cx="200" cy="100" r="40" fill="none" stroke="${color}" stroke-width="1" opacity="0.25"/>
                     <circle cx="200" cy="100" r="18" fill="${color}15"/>
@@ -508,7 +509,7 @@
                 <p class="article-excerpt">${esc(excerpt)}</p>
                 <div class="article-footer">
                     <span class="article-source">Analysis by Karthikeyan Selvam</span>
-                    <button class="read-more" onclick="openArticle('${docSnap.id}')">Read Analysis &rarr;</button>
+                    <button class="read-more" onclick="openArticle('${docSnap.id}')">Read analysis &rarr;</button>
                 </div>
             </div>
         </article>`;
@@ -563,7 +564,6 @@
             });
             renderThisWeek(hype, links);
             grid.innerHTML = html || '<div class="articles-empty"><p>Fresh articles are on their way!</p><span>New AI insights published every Friday</span></div>';
-            applyMouseGlow();
             lastVisible = snapshot.docs[snapshot.docs.length - 1];
             if (snapshot.size === 12) document.getElementById('load-more-btn').style.display = 'inline-block';
         } catch(err) {
@@ -586,14 +586,13 @@
             let html = '';
             snapshot.forEach(docSnap => { if (isArticle(docSnap.data())) html += buildCard(docSnap, false); });
             grid.innerHTML += html;
-            applyMouseGlow();
             lastVisible = snapshot.docs[snapshot.docs.length - 1];
-            btn.textContent = 'Load Earlier Articles';
+            btn.textContent = 'Load earlier articles';
             btn.disabled = false;
             if (snapshot.size < 9) btn.style.display = 'none';
         } catch(err) {
             console.error('Load more error:', err);
-            btn.textContent = 'Load Earlier Articles';
+            btn.textContent = 'Load earlier articles';
             btn.disabled = false;
         }
     };
@@ -606,7 +605,7 @@
         modal.classList.add('active');
         loading.style.display = 'block';
         content.style.display = 'none';
-        loading.textContent = 'Loading article...';
+        loading.textContent = 'Loading article…';
         try {
             const snap = await getDoc(doc(db, "newsletter_articles", docId));
             if (snap.exists()) {
