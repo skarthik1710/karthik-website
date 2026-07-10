@@ -316,29 +316,27 @@
         .chat-note { font-family: var(--font-mono); font-size: 0.68rem; color: var(--dim); padding: 0 1.4rem 1rem; letter-spacing: 0.02em; }
         #chat-fab {
             position: fixed; right: 22px; bottom: 22px; z-index: 1400;
-            height: 58px; max-width: 230px; padding: 0 22px 0 6px;
-            border-radius: 999px;
+            width: 58px; height: 58px; border-radius: 50%;
             background: var(--accent); border: none; cursor: pointer;
-            display: flex; align-items: center; gap: 0.6rem;
-            overflow: hidden; white-space: nowrap;
+            display: flex; align-items: center; justify-content: center;
             box-shadow: 0 6px 24px rgba(0,0,0,0.45), 0 0 20px rgba(255,107,53,0.4);
-            transition: max-width 0.45s cubic-bezier(0.22,1,0.36,1), padding 0.45s cubic-bezier(0.22,1,0.36,1), transform 0.15s, background 0.15s;
+            transition: transform 0.15s, background 0.15s;
         }
         #chat-fab:hover { transform: translateY(-2px); background: #FF8557; }
-        #chat-fab.collapsed { max-width: 58px; padding: 0; justify-content: center; }
-        #chat-fab.collapsed:hover { max-width: 230px; padding: 0 22px 0 6px; justify-content: flex-start; }
-        #chat-fab.open, #chat-fab.open:hover, #chat-fab.open.collapsed, #chat-fab.open.collapsed:hover {
-            max-width: 58px; padding: 0; justify-content: center;
-        }
-        #chat-fab .pg { width: 46px; height: 46px; flex-shrink: 0; animation: pgBob 3.4s ease-in-out infinite; }
-        #chat-fab .fab-label {
-            font-family: var(--font-display); font-weight: 600; font-size: 0.84rem;
-            color: #210D02; flex-shrink: 0; opacity: 1; transition: opacity 0.2s ease;
-        }
-        #chat-fab.collapsed .fab-label, #chat-fab.open .fab-label { opacity: 0; }
-        #chat-fab .ic-close { display: none; width: 26px; height: 26px; stroke: #210D02; fill: none; stroke-width: 2; stroke-linecap: round; flex-shrink: 0; }
+        #chat-fab .pg { width: 46px; height: 46px; animation: pgBob 3.4s ease-in-out infinite; }
+        #chat-fab .ic-close { display: none; width: 26px; height: 26px; stroke: #210D02; fill: none; stroke-width: 2; stroke-linecap: round; }
         #chat-fab.open .ic-chat { display: none; }
         #chat-fab.open .ic-close { display: block; }
+        #fab-caption {
+            position: fixed; right: 22px; bottom: 86px; z-index: 1400;
+            font-family: var(--font-display); font-weight: 700; font-size: 0.82rem;
+            letter-spacing: -0.01em; color: var(--accent);
+            background: var(--surface-2); border: 1px solid var(--line-strong);
+            border-radius: 999px; padding: 0.4rem 0.95rem;
+            box-shadow: 0 8px 24px rgba(0,0,0,0.4);
+            pointer-events: none; white-space: nowrap;
+        }
+        #fab-caption.hide { display: none; }
         /* Skipper — original penguin mascot */
         .pg-avatar { width: 27px; height: 27px; flex-shrink: 0; display: inline-flex; }
         .pg-avatar .pg { width: 100%; height: 100%; }
@@ -349,8 +347,8 @@
         @keyframes pgWave { 0%, 76%, 100% { transform: rotate(0deg); } 82%, 90% { transform: rotate(-18deg); } 86% { transform: rotate(-26deg); } }
         @keyframes pgBob { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-2.5px); } }
         @media (prefers-reduced-motion: reduce) { .pg-eyes, .pg-wing-l, .pg-ember, #chat-fab .pg { animation: none; } }
-        #chat-fab::after { content: ''; position: absolute; inset: -4px; border-radius: 999px; border: 2px solid var(--accent-dim); animation: fabPulse 2.6s ease infinite; pointer-events: none; }
-        #chat-fab:not(.collapsed)::after, #chat-fab.open::after { display: none; }
+        #chat-fab::after { content: ''; position: absolute; inset: -4px; border-radius: 50%; border: 2px solid var(--accent-dim); animation: fabPulse 2.6s ease infinite; pointer-events: none; }
+        #chat-fab.open::after { display: none; }
         @keyframes fabPulse { 0% { transform: scale(0.9); opacity: 0.9; } 70% { transform: scale(1.35); opacity: 0; } 100% { transform: scale(1.35); opacity: 0; } }
         #chat-pop { position: fixed; right: 22px; bottom: 94px; z-index: 1400; width: min(400px, calc(100vw - 32px)); display: none; }
         #chat-pop.open { display: block; animation: popIn 0.22s ease; }
@@ -368,9 +366,6 @@
         @media (prefers-reduced-motion: reduce) {
             #chat-fab::after { animation: none; display: none; }
             #chat-pop.open { animation: none; }
-            #chat-fab { transition: none; }
-            #chat-fab.collapsed:not(.open) { max-width: 230px; padding: 0 22px 0 6px; justify-content: flex-start; }
-            #chat-fab.collapsed:not(.open) .fab-label { opacity: 1; }
             .chat-typing span { animation: none; opacity: 0.6; }
         }
 
@@ -760,9 +755,9 @@
 </div>
 <button id="chat-fab" aria-label="Chat with Skipper — Karthikeyan's AI" title="Chat with Skipper">
     <svg class="ic-chat pg" viewBox="0 0 64 64" aria-hidden="true"><path class="pg-wing pg-wing-l" d="M16 32 Q8 39 11 50 Q18 47 21 39 Z" fill="#120F0C"/><path class="pg-wing" d="M48 32 Q56 39 53 50 Q46 47 43 39 Z" fill="#120F0C"/><ellipse cx="25.5" cy="56.5" rx="5" ry="2.6" fill="#210D02"/><ellipse cx="38.5" cy="56.5" rx="5" ry="2.6" fill="#210D02"/><path d="M32 7 C21 7 15.5 18 15.5 31.5 C15.5 46.5 22.5 55.5 32 55.5 C41.5 55.5 48.5 46.5 48.5 31.5 C48.5 18 43 7 32 7 Z" fill="#17130F"/><path d="M32 19.5 C25.2 19.5 21 27.5 21 36.5 C21 46.5 26 52.5 32 52.5 C38 52.5 43 46.5 43 36.5 C43 27.5 38.8 19.5 32 19.5 Z" fill="#F3EDE7"/><circle class="pg-ember" cx="32" cy="40" r="3.4" fill="#FF6B35"/><circle cx="26" cy="17.5" r="4.1" fill="#F3EDE7"/><circle cx="38" cy="17.5" r="4.1" fill="#F3EDE7"/><g class="pg-eyes"><circle cx="26.9" cy="18.2" r="1.9" fill="#0F0C0A"/><circle cx="37.1" cy="18.2" r="1.9" fill="#0F0C0A"/></g><rect x="21.4" y="12.2" width="9.4" height="3.4" rx="1.6" transform="rotate(9 26 14)" fill="#17130F"/><rect x="33.2" y="12.2" width="9.4" height="3.4" rx="1.6" transform="rotate(-9 38 14)" fill="#17130F"/><path d="M27.6 21.6 L36.4 21.6 L32 27.2 Z" fill="#FF6B35"/></svg>
-    <span class="fab-label">Ask Skipper anything</span>
     <svg class="ic-close" viewBox="0 0 24 24"><path d="M18 6L6 18M6 6l12 12"/></svg>
 </button>
+<div id="fab-caption" aria-hidden="true">Ask Skipper</div>
 
 <!-- ── FOOTER ── -->
 <footer>
@@ -897,19 +892,21 @@
     const chatChips = document.getElementById('chat-chips');
     const chatPop = document.getElementById('chat-pop');
     const chatFab = document.getElementById('chat-fab');
+    const fabCaption = document.getElementById('fab-caption');
     let chatHistory = [], chatBusy = false;
 
     function openPop() {
-        chatPop.classList.add('open'); chatFab.classList.add('open', 'collapsed');
+        chatPop.classList.add('open'); chatFab.classList.add('open');
+        if (fabCaption) fabCaption.classList.add('hide');
         if (window.innerWidth > 600) chatInput.focus();
     }
-    function closePop() { chatPop.classList.remove('open'); chatFab.classList.remove('open'); }
+    function closePop() {
+        chatPop.classList.remove('open'); chatFab.classList.remove('open');
+        if (fabCaption) fabCaption.classList.remove('hide');
+    }
     chatFab.addEventListener('click', () => chatPop.classList.contains('open') ? closePop() : openPop());
     document.querySelector('.chat-pop-close').addEventListener('click', closePop);
     document.addEventListener('keydown', e => { if (e.key === 'Escape' && chatPop.classList.contains('open')) closePop(); });
-    if (!reduceMotion) {
-        setTimeout(() => { if (!chatFab.classList.contains('open')) chatFab.classList.add('collapsed'); }, 5000);
-    }
 
     function addChatMsg(role, text, isError) {
         const div = document.createElement('div');
