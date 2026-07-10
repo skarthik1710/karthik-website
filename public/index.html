@@ -181,19 +181,6 @@
         }
         .fact-num em { font-style: normal; color: var(--accent); }
         .fact-lbl { font-size: 0.8rem; color: var(--dim); margin-top: 0.1rem; }
-        .scroll-cue {
-            position: absolute; bottom: 2.2rem; left: 50%; transform: translateX(-50%);
-            font-family: var(--font-mono); font-size: 0.78rem; letter-spacing: 0.12em;
-            text-transform: uppercase; color: var(--text); text-decoration: none;
-            display: inline-flex; align-items: center; gap: 0.8rem; white-space: nowrap;
-            padding: 0.8rem 1.5rem; border: 1px solid var(--accent-dim); border-radius: 999px;
-            background: var(--accent-faint);
-            box-shadow: 0 0 24px rgba(255, 107, 53, 0.16);
-            transition: border-color 0.2s, box-shadow 0.2s;
-        }
-        .scroll-cue:hover { border-color: var(--accent); box-shadow: 0 0 34px rgba(255, 107, 53, 0.32); }
-        .scroll-cue .arr { animation: cueBob 1.8s ease infinite; color: var(--accent); font-size: 1rem; }
-        @keyframes cueBob { 0%,100% { transform: translateY(0); } 50% { transform: translateY(5px); } }
 
         /* ─────────────────────────  ACT I · ORIGIN (terminal)  ───────────────────────── */
         #origin .origin-stage {
@@ -766,7 +753,7 @@
             #story-overlay.open, .story-scene.active .anim,
             .story-scene.active .viz-phases .cell,
             .story-scene.active .arch-node, .story-scene.active .arch-edge,
-            .arch-badge, .live-dot, .scroll-cue .arr, .drag-cue .sweep,
+            .arch-badge, .live-dot, .drag-cue .sweep,
             .t-line.lesson::after { animation: none; }
             .arch-node, .arch-edge { opacity: 1 !important; transform: none !important; }
             .story-scene { opacity: 1; }
@@ -778,7 +765,6 @@
             .hero { min-height: 0; }
             .hero-grid { grid-template-columns: 1fr; gap: 2.4rem; }
             .hero-side { border-left: none; padding-left: 0; border-top: 1px solid var(--line); padding-top: 2rem; flex-direction: row; flex-wrap: wrap; align-items: flex-start; gap: 1.4rem 2.5rem; }
-            .scroll-cue { display: none; }
             #origin .origin-stage { grid-template-columns: 1fr; gap: 2.4rem; }
             .climb-line, .climb-line-fill { left: 8px; }
             .milestone, .milestone:nth-child(even) { width: auto; margin-left: 0; padding: 0 0 3.2rem 2.4rem; }
@@ -897,7 +883,6 @@
             </div>
         </div>
     </div>
-    <a class="scroll-cue" href="#origin">every good system has an origin story<span class="arr">↓</span></a>
 </header>
 
 <!-- ── ACT I · ORIGIN ── -->
