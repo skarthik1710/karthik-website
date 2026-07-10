@@ -53,6 +53,30 @@
         .wrap { max-width: var(--w); margin: 0 auto; padding: 0 2rem; }
         a { color: inherit; }
 
+        /* ── EMBER SPARK (guide) ── */
+        #spark {
+            position: fixed; top: 0; left: 0; z-index: 90;
+            width: 10px; height: 10px; border-radius: 50%;
+            background: var(--accent);
+            box-shadow: 0 0 6px 2px rgba(255,107,53,0.8), 0 0 22px 8px rgba(255,107,53,0.35), 0 0 48px 18px rgba(255,107,53,0.12);
+            pointer-events: none; opacity: 0;
+            transition: opacity 0.6s ease;
+            will-change: transform;
+        }
+        #spark.on { opacity: 1; }
+        #spark.docked { box-shadow: 0 0 5px 2px rgba(255,107,53,0.9), 0 0 14px 5px rgba(255,107,53,0.4); }
+
+        /* ── SCROLL REVEAL ── */
+        .reveal { opacity: 0; transform: translateY(22px); transition: opacity 0.55s ease, transform 0.55s ease; }
+        .reveal.in { opacity: 1; transform: none; }
+        .live-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--accent); display: inline-block; margin-right: 0.55rem; animation: pulse 2s ease infinite; }
+        @keyframes pulse { 0%,100% { opacity: 1; } 50% { opacity: 0.35; } }
+        @media (prefers-reduced-motion: reduce) {
+            .reveal { opacity: 1; transform: none; transition: none; }
+            .live-dot { animation: none; }
+            #spark { display: none; }
+        }
+
         /* ── NAV ── */
         .nav {
             position: sticky; top: 0; z-index: 100;
@@ -124,18 +148,32 @@
         }
         .summary-text strong { color: var(--text); font-weight: 600; }
 
-        /* ── TIMELINE ── */
+        /* ── TIMELINE (story rail) ── */
         .timeline { position: relative; margin-bottom: 4.5rem; }
         .timeline::before {
             content: ''; position: absolute;
             left: 7px; top: 10px; bottom: 10px; width: 1px;
             background: var(--line-strong);
         }
+        .timeline-fill {
+            position: absolute; left: 6.5px; top: 10px; bottom: 10px; width: 2px;
+            background: linear-gradient(var(--accent), #FF8557);
+            box-shadow: 0 0 10px rgba(255,107,53,0.5);
+            transform-origin: top center;
+            opacity: 0;
+        }
+        .timeline.rail-armed .timeline-fill { opacity: 1; }
         .timeline-item { padding-left: 42px; margin-bottom: 1.4rem; position: relative; }
         .timeline-dot {
             position: absolute; left: 0; top: 26px;
             width: 15px; height: 15px; border-radius: 50%;
             background: var(--bg); border: 2px solid var(--accent);
+            transition: border-color 0.4s, box-shadow 0.4s;
+        }
+        .timeline.rail-armed .timeline-item:not(.lit) .timeline-dot { border-color: var(--line-strong); }
+        .timeline.rail-armed .timeline-item.lit .timeline-dot {
+            border-color: var(--accent);
+            box-shadow: 0 0 10px rgba(255,107,53,0.6), inset 0 0 4px rgba(255,107,53,0.8);
         }
         .timeline-card {
             background: var(--surface); border: 1px solid var(--line);
@@ -264,6 +302,7 @@
         @media (max-width: 1000px) {
             .content-grid { grid-template-columns: 1fr; gap: 3rem; }
         }
+        @media (max-width: 900px) { #spark { display: none; } }
         @media (max-width: 600px) {
             .nav-links a:not(.nav-cta) { display: none; }
             .page-hero { padding: 3.5rem 0 2.5rem; }
@@ -274,6 +313,9 @@
     </style>
 </head>
 <body>
+
+<!-- ── EMBER GUIDE ── -->
+<div id="spark" aria-hidden="true"></div>
 
 <!-- ── NAV ── -->
 <nav class="nav">
@@ -291,12 +333,12 @@
 <!-- ── PAGE HERO ── -->
 <header class="page-hero">
     <div class="wrap">
-        <div class="kicker">Career &amp; Expertise</div>
+        <div class="kicker" data-spark>The full record — every act, sourced</div>
         <h1>18 years of making enterprise technology <span class="accent">actually work</span></h1>
         <p>
-            Across global technology, energy utilities, and enterprise IT — nearly two decades
-            at the intersection of people, process, and platform, from RPA and ITSM to production AI.
-            Here's the unvarnished version.
+            The home page tells the story; this page shows the receipts. Across global technology,
+            energy utilities, and enterprise IT — from an AS/400 sales audit to a production
+            multi-agent AI platform. Here's the unvarnished version.
         </p>
     </div>
 </header>
@@ -304,9 +346,9 @@
 <!-- ── MAIN ── -->
 <div class="content-grid">
     <main>
-        <div class="sec-head"><span class="sec-idx">01</span><h2 class="sec-title">Career timeline</h2></div>
+        <div class="sec-head" data-spark><span class="sec-idx">01</span><h2 class="sec-title">Career timeline</h2></div>
 
-        <div class="summary-text">
+        <div class="summary-text reveal">
             Digital Workplace &amp; AI consultant with 18+ years in enterprise IT — spanning RPA and ITSM
             automation, AIOps, enterprise backup &amp; recovery, and, most recently, AI product management.
             I've led cross-functional teams, run enterprise-scale change and adoption programs, and taken
@@ -314,8 +356,9 @@
         </div>
 
         <div class="timeline">
-            <div class="timeline-item">
-                <div class="timeline-dot"></div>
+            <div class="timeline-fill"></div>
+            <div class="timeline-item reveal">
+                <div class="timeline-dot" data-spark></div>
                 <div class="timeline-card">
                     <div class="timeline-period">2015 – Present · Atos</div>
                     <div class="timeline-role">Business Manager — AI (Cloud &amp; Modern Infrastructure)</div>
@@ -330,8 +373,8 @@
                 </div>
             </div>
 
-            <div class="timeline-item">
-                <div class="timeline-dot"></div>
+            <div class="timeline-item reveal">
+                <div class="timeline-dot" data-spark></div>
                 <div class="timeline-card">
                     <div class="timeline-period">Atos · Microsoft engagement</div>
                     <div class="timeline-role">Technical Product Manager — Copilot for Security (Entra)</div>
@@ -346,8 +389,8 @@
                 </div>
             </div>
 
-            <div class="timeline-item">
-                <div class="timeline-dot"></div>
+            <div class="timeline-item reveal">
+                <div class="timeline-dot" data-spark></div>
                 <div class="timeline-card">
                     <div class="timeline-period">Atos · National Grid engagement</div>
                     <div class="timeline-role">Product Manager — AIOps &amp; Enterprise Backup</div>
@@ -361,8 +404,8 @@
                 </div>
             </div>
 
-            <div class="timeline-item">
-                <div class="timeline-dot"></div>
+            <div class="timeline-item reveal">
+                <div class="timeline-dot" data-spark></div>
                 <div class="timeline-card">
                     <div class="timeline-period">Atos · Digital Workplace</div>
                     <div class="timeline-role">Project Manager — Windows 11 Migration</div>
@@ -377,8 +420,8 @@
                 </div>
             </div>
 
-            <div class="timeline-item">
-                <div class="timeline-dot"></div>
+            <div class="timeline-item reveal">
+                <div class="timeline-dot" data-spark></div>
                 <div class="timeline-card">
                     <div class="timeline-period">Atos · Internal Automation</div>
                     <div class="timeline-role">Automation Consultant — RPA Lead</div>
@@ -392,8 +435,8 @@
                 </div>
             </div>
 
-            <div class="timeline-item">
-                <div class="timeline-dot"></div>
+            <div class="timeline-item reveal">
+                <div class="timeline-dot" data-spark></div>
                 <div class="timeline-card">
                     <div class="timeline-period">2011 – 2015</div>
                     <div class="timeline-role">Assistant Manager</div>
@@ -407,8 +450,8 @@
                 </div>
             </div>
 
-            <div class="timeline-item">
-                <div class="timeline-dot"></div>
+            <div class="timeline-item reveal">
+                <div class="timeline-dot" data-spark></div>
                 <div class="timeline-card">
                     <div class="timeline-period">2007 – 2011</div>
                     <div class="timeline-role">Senior Process Associate</div>
@@ -424,11 +467,11 @@
         </div>
 
         <!-- Scope of leadership -->
-        <div class="sec-head"><span class="sec-idx">02</span><h2 class="sec-title">Scope of leadership</h2></div>
+        <div class="sec-head" data-spark><span class="sec-idx">02</span><h2 class="sec-title">Scope of leadership</h2></div>
         <p style="color:var(--muted); font-size:0.92rem; max-width:38em;">
             No self-scored percentages — just what I've actually owned.
         </p>
-        <div class="scope">
+        <div class="scope reveal">
             <div class="scope-row">
                 <div class="scope-key">Platform</div>
                 <div class="scope-val"><b>Founded and run</b> an enterprise multi-agent AI platform — concept to production, governance and cost engineering included.</div>
@@ -459,8 +502,8 @@
     <!-- ── SIDEBAR ── -->
     <aside class="sidebar">
         <!-- Recognition -->
-        <div class="sidebar-card" id="recognition">
-            <h3>Recognition 🏆</h3>
+        <div class="sidebar-card reveal" id="recognition">
+            <h3 data-spark>Recognition 🏆</h3>
             <div class="cert-item">
                 <span class="cert-mark"></span>
                 <div class="cert-info">
@@ -478,8 +521,8 @@
         </div>
 
         <!-- Certifications -->
-        <div class="sidebar-card" id="certifications">
-            <h3>Certifications <span class="cert-count">12</span></h3>
+        <div class="sidebar-card reveal" id="certifications">
+            <h3 data-spark>Certifications <span class="cert-count">12</span></h3>
 
             <div class="cert-group-label">Cloud, AI &amp; Microsoft</div>
             <div class="cert-item">
@@ -584,19 +627,19 @@
         </div>
 
         <!-- By the numbers -->
-        <div class="sidebar-card">
+        <div class="sidebar-card reveal">
             <h3>By the numbers</h3>
             <div class="num-grid">
-                <div class="num-cell"><div class="n">18+</div><div class="l">Years</div></div>
-                <div class="num-cell"><div class="n">$20M</div><div class="l">Largest Program</div></div>
-                <div class="num-cell"><div class="n">20</div><div class="l">Team Size</div></div>
-                <div class="num-cell"><div class="n">12</div><div class="l">Certifications</div></div>
+                <div class="num-cell"><div class="n"><span data-countup="18">18</span>+</div><div class="l">Years</div></div>
+                <div class="num-cell"><div class="n">$<span data-countup="20">20</span>M</div><div class="l">Largest Program</div></div>
+                <div class="num-cell"><div class="n"><span data-countup="20">20</span></div><div class="l">Team Size</div></div>
+                <div class="num-cell"><div class="n"><span data-countup="12">12</span></div><div class="l">Certifications</div></div>
             </div>
         </div>
 
         <!-- CTA -->
-        <div class="cta-card">
-            <h3>Ready to work together?</h3>
+        <div class="cta-card reveal">
+            <h3><span class="live-dot" id="spark-dock" data-spark></span>Ready to work together?</h3>
             <p>Open to AI Manager, AI Deployment, AI Enablement, and AI product leadership roles — or just a good conversation.</p>
             <a href="https://www.linkedin.com/in/karthikeyan-selvam-567b52157/" target="_blank" rel="noopener" class="btn btn-solid">Connect on LinkedIn</a>
         </div>
@@ -616,7 +659,110 @@
     </div>
 </footer>
 
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
 <script>
+    const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    const gsapOK = typeof gsap !== 'undefined' && typeof ScrollTrigger !== 'undefined' && !reduceMotion;
+
+    // ── Scroll reveal (IO) ──
+    const revealEls = document.querySelectorAll('.reveal');
+    if ('IntersectionObserver' in window && revealEls.length && !reduceMotion) {
+        const io = new IntersectionObserver((entries, obs) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.style.transitionDelay = (entry.target.dataset.d || 0) + 's';
+                    entry.target.classList.add('in');
+                    obs.unobserve(entry.target);
+                }
+            });
+        }, { threshold: 0.12 });
+        revealEls.forEach((el, i) => { el.dataset.d = (i % 2) * 0.1; io.observe(el); });
+    } else {
+        revealEls.forEach(el => el.classList.add('in'));
+    }
+
+    // ── Count-up numbers (IO) ──
+    const countEls = document.querySelectorAll('[data-countup]');
+    if ('IntersectionObserver' in window && countEls.length && !reduceMotion) {
+        const cio = new IntersectionObserver((entries, obs) => {
+            entries.forEach(entry => {
+                if (!entry.isIntersecting) return;
+                obs.unobserve(entry.target);
+                const el = entry.target, target = parseFloat(el.dataset.countup);
+                const dur = 1100, t0 = performance.now();
+                (function tick(now) {
+                    const p = Math.min((now - t0) / dur, 1);
+                    el.textContent = Math.round(target * (1 - Math.pow(1 - p, 3)));
+                    if (p < 1) requestAnimationFrame(tick);
+                })(t0);
+            });
+        }, { threshold: 0.5 });
+        countEls.forEach(el => cio.observe(el));
+    }
+
+    // ── Timeline story rail (GSAP) ──
+    if (gsapOK) {
+        gsap.registerPlugin(ScrollTrigger);
+        const rail = document.querySelector('.timeline');
+        rail.classList.add('rail-armed');
+        gsap.from('.timeline-fill', {
+            scaleY: 0,
+            ease: 'none',
+            scrollTrigger: { trigger: rail, start: 'top 72%', end: 'bottom 60%', scrub: 0.5 }
+        });
+        gsap.utils.toArray('.timeline-item').forEach(m => {
+            ScrollTrigger.create({
+                trigger: m, start: 'top 64%',
+                onEnter: () => m.classList.add('lit'),
+                onLeaveBack: () => m.classList.remove('lit')
+            });
+        });
+        window.addEventListener('load', () => ScrollTrigger.refresh());
+    }
+
+    // ── Ember spark guide (desktop, fine pointer, motion OK) ──
+    (function initSpark() {
+        const spark = document.getElementById('spark');
+        if (!spark || reduceMotion || window.innerWidth < 900 || !window.matchMedia('(pointer: fine)').matches) return;
+        const anchors = Array.from(document.querySelectorAll('[data-spark]'));
+        if (!anchors.length) return;
+        let sx = window.innerWidth / 2, sy = -30, tx = sx, ty = sy, t = 0, shown = false;
+
+        function pickTarget() {
+            const vc = window.innerHeight / 2;
+            let best = null, bestDist = Infinity;
+            anchors.forEach(a => {
+                const r = a.getBoundingClientRect();
+                if (r.width === 0 && r.height === 0) return;
+                const cy = r.top + r.height / 2;
+                const d = Math.abs(cy - vc);
+                if (d < bestDist) { bestDist = d; best = a; }
+            });
+            if (!best) return;
+            const r = best.getBoundingClientRect();
+            const isDock = best.id === 'spark-dock';
+            spark.classList.toggle('docked', isDock);
+            if (isDock) { tx = r.left + r.width / 2; ty = r.top + r.height / 2; }
+            else {
+                tx = Math.max(18, r.left - 26);
+                ty = Math.min(Math.max(r.top + r.height / 2, 70), window.innerHeight - 40);
+            }
+            if (!shown) { spark.classList.add('on'); shown = true; sx = tx; sy = ty - 40; }
+        }
+
+        function frame() {
+            t += 0.03;
+            pickTarget();
+            sx += (tx - sx) * 0.075;
+            sy += (ty - sy) * 0.075;
+            const bob = spark.classList.contains('docked') ? 0 : Math.sin(t * 2.1) * 4;
+            spark.style.transform = 'translate(' + (sx - 5) + 'px,' + (sy - 5 + bob) + 'px)';
+            requestAnimationFrame(frame);
+        }
+        requestAnimationFrame(frame);
+    })();
+
     console.log(
         '%cKarthikeyan Selvam — karthikeyanselvam.com/experience\n%c18 years, no self-scored percentages.',
         'color: #FF6B35; font-size: 14px; font-weight: bold;',
