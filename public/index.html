@@ -135,6 +135,32 @@
         .portrait:hover { filter: grayscale(0%); }
         .fact { padding: 0.95rem 0; border-bottom: 1px solid var(--line); }
         .fact:last-child { border-bottom: none; }
+        .side-label {
+            font-family: var(--font-mono); font-size: 0.68rem; font-weight: 500;
+            letter-spacing: 0.14em; text-transform: uppercase; color: var(--accent);
+            margin: 1.5rem 0 0.75rem;
+        }
+        .skill-tags { display: flex; flex-wrap: wrap; gap: 0.45rem; }
+        .skill-tag {
+            font-family: var(--font-mono); font-size: 0.68rem; font-weight: 500;
+            padding: 0.3rem 0.62rem; border-radius: 5px;
+            border: 1px solid var(--line-strong); color: var(--muted);
+        }
+        .brand-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 0.7rem 1rem; }
+        .brand { display: flex; align-items: center; gap: 0.55rem; font-size: 0.8rem; color: var(--muted); }
+        .brand svg { flex-shrink: 0; display: block; }
+        .brand b { font-family: var(--font-mono); font-size: 0.66rem; font-weight: 500; color: var(--dim); margin-left: 0.3rem; }
+        .mono-mark {
+            width: 18px; height: 18px; border-radius: 4px; flex-shrink: 0;
+            display: flex; align-items: center; justify-content: center;
+            font-family: var(--font-mono); font-size: 0.52rem; font-weight: 700;
+        }
+        .all-certs {
+            display: inline-block; margin-top: 0.9rem;
+            font-family: var(--font-mono); font-size: 0.72rem; font-weight: 500;
+            color: var(--accent); text-decoration: none;
+        }
+        .all-certs:hover { text-decoration: underline; }
         .fact-num {
             font-family: var(--font-display); font-size: 1.5rem; font-weight: 700;
             letter-spacing: -0.02em; line-height: 1.1;
@@ -588,21 +614,51 @@
         </div>
         <div class="hero-side">
             <img class="portrait" src="Profile.jpg" alt="Karthikeyan Selvam"/>
-            <div class="fact">
+            <div class="fact" style="border-bottom:none;">
                 <div class="fact-num">18<em>+</em></div>
                 <div class="fact-lbl">years in enterprise IT</div>
             </div>
-            <div class="fact">
-                <div class="fact-num"><em>$</em>20M</div>
-                <div class="fact-lbl">largest program delivered</div>
+            <div>
+                <div class="side-label">Core skills</div>
+                <div class="skill-tags">
+                    <span class="skill-tag">AI Program Mgmt</span>
+                    <span class="skill-tag">Copilot Enablement</span>
+                    <span class="skill-tag">Multi-agent Systems</span>
+                    <span class="skill-tag">AI Governance</span>
+                    <span class="skill-tag">RPA · Automation</span>
+                    <span class="skill-tag">AIOps</span>
+                    <span class="skill-tag">Change Mgmt</span>
+                </div>
             </div>
-            <div class="fact">
-                <div class="fact-num">20</div>
-                <div class="fact-lbl">person teams led</div>
-            </div>
-            <div class="fact">
-                <div class="fact-num">52K</div>
-                <div class="fact-lbl">devices across programs</div>
+            <div>
+                <div class="side-label">Certified across</div>
+                <div class="brand-grid">
+                    <div class="brand" title="Microsoft: AI Transformation Leader, AI-900, AZ-900, PowerUp, Power Platform">
+                        <svg viewBox="0 0 21 21" width="17" height="17" role="img" aria-label="Microsoft"><rect x="0" y="0" width="10" height="10" fill="#F25022"/><rect x="11" y="0" width="10" height="10" fill="#7FBA00"/><rect x="0" y="11" width="10" height="10" fill="#00A4EF"/><rect x="11" y="11" width="10" height="10" fill="#FFB900"/></svg>
+                        <span>Microsoft<b>×5</b></span>
+                    </div>
+                    <div class="brand" title="Google Cloud: Gen AI Leader">
+                        <svg viewBox="0 0 48 48" width="17" height="17" role="img" aria-label="Google"><path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z"/><path fill="#4285F4" d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z"/><path fill="#FBBC05" d="M10.53 28.59c-.48-1.45-.76-2.99-.76-4.59s.27-3.14.76-4.59l-7.98-6.19C.92 16.46 0 20.12 0 24c0 3.88.92 7.54 2.56 10.78l7.97-6.19z"/><path fill="#34A853" d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.15 1.45-4.92 2.3-8.16 2.3-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z"/></svg>
+                        <span>Google Cloud</span>
+                    </div>
+                    <div class="brand" title="UiPath: RPA Developer Foundation, SAP Automation, Business Analyst">
+                        <span class="mono-mark" style="background:#FA4616; color:#fff;">Ui</span>
+                        <span>UiPath<b>×3</b></span>
+                    </div>
+                    <div class="brand" title="PRINCE2 Project Management">
+                        <span class="mono-mark" style="background:#82154D; color:#fff;">P2</span>
+                        <span>PRINCE2</span>
+                    </div>
+                    <div class="brand" title="Six Sigma — Process Excellence">
+                        <span class="mono-mark" style="background:#1F6F43; color:#fff;">6σ</span>
+                        <span>Six Sigma</span>
+                    </div>
+                    <div class="brand" title="Atos Lean">
+                        <span class="mono-mark" style="background:#0073C6; color:#fff;">At</span>
+                        <span>Atos Lean</span>
+                    </div>
+                </div>
+                <a class="all-certs" href="/experience.html#certifications">All 15 certifications →</a>
             </div>
         </div>
     </div>
