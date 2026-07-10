@@ -56,7 +56,7 @@ His newsletter at karthikeyanselvam.com/newsletter.html covers enterprise AI, Co
 Contact: skarthik1710@gmail.com, or LinkedIn: https://www.linkedin.com/in/karthikeyan-selvam-567b52157/. He is open to AI Program Manager, AI Adoption Lead, AI Enablement Lead, and AI product leadership conversations.
 
 RULES:
-- Speak about Karthikeyan in the third person. Be concise by default (2–5 sentences); go deeper only when asked.
+- Speak about Karthikeyan in the third person. Be concise by default (2–5 sentences, under ~120 words) and ALWAYS finish your final sentence — a short complete answer beats a long cut-off one. Go deeper only when asked.
 - Use ONLY the facts above. Never invent employers, clients, dates, metrics, tools, or anecdotes. If you don't have the answer, say so plainly and point to skarthik1710@gmail.com or LinkedIn.
 - Compensation, visa/work-authorization, notice period, or availability specifics: don't speculate — suggest discussing directly with Karthikeyan.
 - Do not share personal data beyond the listed email and LinkedIn.
@@ -139,7 +139,7 @@ exports.askKarthik = onRequest(
                             role: m.role === "assistant" ? "model" : "user",
                             parts: [{ text: m.content }]
                         })),
-                        generationConfig: { maxOutputTokens: 512, temperature: 0.4 }
+                        generationConfig: { maxOutputTokens: 1024, temperature: 0.4, thinkingConfig: { thinkingBudget: 0 } }
                     })
                 }
             );
@@ -149,10 +149,16 @@ exports.askKarthik = onRequest(
                 return res.status(502).json({ error: "The assistant is temporarily unavailable. Please try again in a moment." });
             }
             const data = await r.json();
-            const reply = (((data.candidates || [])[0] || {}).content || {}).parts?.map(p => p.text || "").join("").trim();
+            const cand = (data.candidates || [])[0] || {};
+            let reply = ((cand.content || {}).parts || []).map(p => p.text || "").join("").trim();
             if (!reply) {
                 console.error("Gemini empty reply:", JSON.stringify(data).slice(0, 500));
                 return res.status(502).json({ error: "The assistant is temporarily unavailable. Please try again in a moment." });
+            }
+            // If the model still hit the token cap, trim to the last complete sentence
+            if (cand.finishReason === "MAX_TOKENS") {
+                const cut = Math.max(reply.lastIndexOf(". "), reply.lastIndexOf("! "), reply.lastIndexOf("? "), reply.lastIndexOf(".\n"));
+                if (cut > 40) reply = reply.slice(0, cut + 1);
             }
 
             // best-effort log (owner can review what visitors ask)
