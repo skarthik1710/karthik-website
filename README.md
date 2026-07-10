@@ -81,15 +81,14 @@ firebase serve
 - Microsoft AI Transformation Leader
 - Microsoft Azure AI Fundamentals (AI-900)
 - Microsoft Azure Fundamentals (AZ-900)
-- Microsoft Copilot
-- Microsoft Power Platform
+- Microsoft PowerUp Program – Pathfinder (Copilot Studio)
+- Microsoft Power Platform – Pathfinder
 - UiPath RPA Developer Foundation
+- UiPath RPA Developer – SAP Automation
 - UiPath Business Analyst
 - PRINCE2 – Project Management
-- Change Management
-- Agile Methodologies
-- Structured Problem Solving
-- Six Sigma
+- Professional Scrum Master (Scrum.org)
+- Introduction to Atos Lean
 
 ---
 
