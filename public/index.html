@@ -526,15 +526,27 @@
         /* ── CHAT LAUNCHER (ember FAB) + POPOVER ── */
         #chat-fab {
             position: fixed; right: 22px; bottom: 22px; z-index: 1400;
-            width: 58px; height: 58px; border-radius: 50%;
+            height: 58px; max-width: 230px; padding: 0 22px 0 6px;
+            border-radius: 999px;
             background: var(--accent); border: none; cursor: pointer;
-            display: flex; align-items: center; justify-content: center;
+            display: flex; align-items: center; gap: 0.6rem;
+            overflow: hidden; white-space: nowrap;
             box-shadow: 0 6px 24px rgba(0,0,0,0.45), 0 0 20px rgba(255,107,53,0.4);
-            transition: transform 0.15s, background 0.15s;
+            transition: max-width 0.45s cubic-bezier(0.22,1,0.36,1), padding 0.45s cubic-bezier(0.22,1,0.36,1), transform 0.15s, background 0.15s;
         }
         #chat-fab:hover { transform: translateY(-2px); background: #FF8557; }
-        #chat-fab .pg { width: 46px; height: 46px; animation: pgBob 3.4s ease-in-out infinite; }
-        #chat-fab .ic-close { display: none; width: 26px; height: 26px; stroke: #210D02; fill: none; stroke-width: 2; stroke-linecap: round; }
+        #chat-fab.collapsed { max-width: 58px; padding: 0; justify-content: center; }
+        #chat-fab.collapsed:hover { max-width: 230px; padding: 0 22px 0 6px; justify-content: flex-start; }
+        #chat-fab.open, #chat-fab.open:hover, #chat-fab.open.collapsed, #chat-fab.open.collapsed:hover {
+            max-width: 58px; padding: 0; justify-content: center;
+        }
+        #chat-fab .pg { width: 46px; height: 46px; flex-shrink: 0; animation: pgBob 3.4s ease-in-out infinite; }
+        #chat-fab .fab-label {
+            font-family: var(--font-display); font-weight: 600; font-size: 0.84rem;
+            color: #210D02; flex-shrink: 0; opacity: 1; transition: opacity 0.2s ease;
+        }
+        #chat-fab.collapsed .fab-label, #chat-fab.open .fab-label { opacity: 0; }
+        #chat-fab .ic-close { display: none; width: 26px; height: 26px; stroke: #210D02; fill: none; stroke-width: 2; stroke-linecap: round; flex-shrink: 0; }
         #chat-fab.open .ic-chat { display: none; }
         #chat-fab.open .ic-close { display: block; }
         /* Skipper — original penguin mascot */
@@ -548,11 +560,11 @@
         @keyframes pgBob { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-2.5px); } }
         @media (prefers-reduced-motion: reduce) { .pg-eyes, .pg-wing-l, .pg-ember, #chat-fab .pg { animation: none; } }
         #chat-fab::after {
-            content: ''; position: absolute; inset: -4px; border-radius: 50%;
+            content: ''; position: absolute; inset: -4px; border-radius: 999px;
             border: 2px solid var(--accent-dim);
             animation: fabPulse 2.6s ease infinite; pointer-events: none;
         }
-        #chat-fab.open::after { display: none; }
+        #chat-fab:not(.collapsed)::after, #chat-fab.open::after { display: none; }
         @keyframes fabPulse { 0% { transform: scale(0.9); opacity: 0.9; } 70% { transform: scale(1.35); opacity: 0; } 100% { transform: scale(1.35); opacity: 0; } }
         #chat-pop {
             position: fixed; right: 22px; bottom: 94px; z-index: 1400;
@@ -588,6 +600,9 @@
         @media (prefers-reduced-motion: reduce) {
             #chat-fab::after { animation: none; display: none; }
             #chat-pop.open, #fab-nudge { animation: none; }
+            #chat-fab { transition: none; }
+            #chat-fab.collapsed:not(.open) { max-width: 230px; padding: 0 22px 0 6px; justify-content: flex-start; }
+            #chat-fab.collapsed:not(.open) .fab-label { opacity: 1; }
         }
 
         /* ─────────────────────────  EPILOGUE / CONTACT  ───────────────────────── */
@@ -1303,6 +1318,7 @@
         <rect x="33.2" y="12.2" width="9.4" height="3.4" rx="1.6" transform="rotate(-9 38 14)" fill="#17130F"/>
         <path d="M27.6 21.6 L36.4 21.6 L32 27.2 Z" fill="#FF6B35"/>
     </svg>
+    <span class="fab-label">Ask Skipper anything</span>
     <svg class="ic-close" viewBox="0 0 24 24"><path d="M18 6L6 18M6 6l12 12"/></svg>
 </button>
 <div id="fab-nudge" role="button" tabindex="0">You've read the story — now <b>interrogate it</b>. Skipper has the full briefing.</div>
@@ -1785,17 +1801,19 @@
     const fabNudge = document.getElementById('fab-nudge');
     function hideNudge() { if (fabNudge) { fabNudge.style.display = 'none'; try { sessionStorage.setItem('ksNudge', '1'); } catch (e) {} } }
     function openPop() {
-        chatPop.classList.add('open'); chatFab.classList.add('open'); hideNudge();
+        chatPop.classList.add('open'); chatFab.classList.add('open', 'collapsed'); hideNudge();
         if (window.innerWidth > 600) chatInput.focus();
     }
     function closePop() { chatPop.classList.remove('open'); chatFab.classList.remove('open'); }
     chatFab.addEventListener('click', () => chatPop.classList.contains('open') ? closePop() : openPop());
     document.querySelector('.chat-pop-close').addEventListener('click', closePop);
-    const openChatBtn = document.getElementById('open-chat-btn');
-    if (openChatBtn) openChatBtn.addEventListener('click', openPop);
     document.addEventListener('keydown', e => {
         if (e.key === 'Escape' && chatPop.classList.contains('open') && !overlay.classList.contains('open')) closePop();
     });
+    // FAB shows "Ask Skipper anything" on arrival, then settles to icon-only (re-expands on hover)
+    if (!reduceMotion) {
+        setTimeout(() => { if (!chatFab.classList.contains('open')) chatFab.classList.add('collapsed'); }, 5000);
+    }
     // proactive nudge — once per session, after dwell or 45% scroll
     let nudgeArmed = true;
     try { nudgeArmed = !sessionStorage.getItem('ksNudge'); } catch (e) {}
