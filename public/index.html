@@ -182,15 +182,18 @@
         .fact-num em { font-style: normal; color: var(--accent); }
         .fact-lbl { font-size: 0.8rem; color: var(--dim); margin-top: 0.1rem; }
         .scroll-cue {
-            position: absolute; bottom: 2rem; left: 50%; transform: translateX(-50%);
-            font-family: var(--font-mono); font-size: 0.7rem; letter-spacing: 0.14em;
-            text-transform: uppercase; color: var(--dim); text-decoration: none;
-            display: flex; flex-direction: column; align-items: center; gap: 0.55rem;
-            transition: color 0.2s;
+            position: absolute; bottom: 2.2rem; left: 50%; transform: translateX(-50%);
+            font-family: var(--font-mono); font-size: 0.78rem; letter-spacing: 0.12em;
+            text-transform: uppercase; color: var(--text); text-decoration: none;
+            display: inline-flex; align-items: center; gap: 0.8rem; white-space: nowrap;
+            padding: 0.8rem 1.5rem; border: 1px solid var(--accent-dim); border-radius: 999px;
+            background: var(--accent-faint);
+            box-shadow: 0 0 24px rgba(255, 107, 53, 0.16);
+            transition: border-color 0.2s, box-shadow 0.2s;
         }
-        .scroll-cue:hover { color: var(--accent); }
-        .scroll-cue .arr { animation: cueBob 1.8s ease infinite; color: var(--accent); font-size: 0.9rem; }
-        @keyframes cueBob { 0%,100% { transform: translateY(0); } 50% { transform: translateY(6px); } }
+        .scroll-cue:hover { border-color: var(--accent); box-shadow: 0 0 34px rgba(255, 107, 53, 0.32); }
+        .scroll-cue .arr { animation: cueBob 1.8s ease infinite; color: var(--accent); font-size: 1rem; }
+        @keyframes cueBob { 0%,100% { transform: translateY(0); } 50% { transform: translateY(5px); } }
 
         /* ─────────────────────────  ACT I · ORIGIN (terminal)  ───────────────────────── */
         #origin .origin-stage {
@@ -302,11 +305,41 @@
         }
         .live-dot { width: 7px; height: 7px; border-radius: 50%; background: var(--accent); animation: pulse 2s ease infinite; }
         @keyframes pulse { 0%,100% { opacity: 1; } 50% { opacity: 0.35; } }
-        .award-line {
-            margin-top: 1.4rem; font-family: var(--font-mono); font-size: 0.78rem;
-            color: var(--muted); letter-spacing: 0.02em;
+        /* live architecture panel */
+        .arch-live { border: 1px solid var(--line); border-radius: 12px; background: var(--surface); overflow: hidden; }
+        .arch-live-head {
+            display: flex; align-items: center; gap: 0.6rem;
+            padding: 0.85rem 1.3rem; border-bottom: 1px solid var(--line);
+            font-family: var(--font-mono); font-size: 0.72rem; letter-spacing: 0.1em;
+            text-transform: uppercase; color: var(--accent);
         }
-        .award-line b { color: var(--accent); font-weight: 500; }
+        .arch-live-head .arch-live-stack { margin-left: auto; color: var(--dim); letter-spacing: 0.04em; text-transform: none; }
+        .arch-live svg { width: 100%; height: auto; display: block; padding: 1.2rem 1.2rem 0.4rem; }
+        .arch-caption {
+            font-family: var(--font-mono); font-size: 0.7rem; color: var(--dim);
+            padding: 0.7rem 1.3rem 1rem; letter-spacing: 0.04em;
+        }
+        .arch-caption b { color: var(--accent); font-weight: 500; }
+        .arch-live .arch-node, .arch-live .arch-edge, .arch-live .arch-packet { opacity: 0; }
+        .arch-live.in .arch-edge { animation: archIn 0.5s ease both; }
+        .arch-live.in .arch-node { animation: archIn 0.5s ease both; }
+        .arch-live.in .arch-packet { opacity: 1; transition: opacity 0.4s ease 1s; }
+
+        /* award band */
+        .award-band { display: grid; grid-template-columns: 1fr 1fr; gap: 1.2rem; margin-top: 0.3rem; }
+        .award-card {
+            display: flex; align-items: center; gap: 1.1rem;
+            border: 1px solid var(--accent-dim); background: var(--accent-faint);
+            border-radius: 12px; padding: 1.25rem 1.5rem;
+        }
+        .award-ico {
+            width: 46px; height: 46px; border-radius: 10px; flex-shrink: 0;
+            background: rgba(255, 107, 53, 0.14);
+            display: flex; align-items: center; justify-content: center;
+        }
+        .award-ico svg { width: 25px; height: 25px; stroke: var(--accent); fill: none; stroke-width: 1.7; stroke-linecap: round; stroke-linejoin: round; }
+        .award-title { font-family: var(--font-display); font-weight: 600; font-size: 1.02rem; letter-spacing: -0.01em; }
+        .award-sub { font-family: var(--font-mono); font-size: 0.7rem; color: var(--dim); margin-top: 0.25rem; letter-spacing: 0.03em; }
 
         /* ─────────────────────────  PILLARS (what I lead)  ───────────────────────── */
         .pillars { display: grid; grid-template-columns: repeat(3, 1fr); gap: 0; border: 1px solid var(--line); border-radius: 12px; overflow: hidden; }
@@ -503,6 +536,73 @@
         @media (prefers-reduced-motion: reduce) { .chat-typing span { animation: none; opacity: 0.6; } }
         @media (max-width: 600px) { .chat-msg { max-width: 92%; } }
 
+        /* ── CHAT LAUNCHER (ember FAB) + POPOVER ── */
+        #chat-fab {
+            position: fixed; right: 22px; bottom: 22px; z-index: 1400;
+            width: 58px; height: 58px; border-radius: 50%;
+            background: var(--accent); border: none; cursor: pointer;
+            display: flex; align-items: center; justify-content: center;
+            box-shadow: 0 6px 24px rgba(0,0,0,0.45), 0 0 20px rgba(255,107,53,0.4);
+            transition: transform 0.15s, background 0.15s;
+        }
+        #chat-fab:hover { transform: translateY(-2px); background: #FF8557; }
+        #chat-fab .pg { width: 46px; height: 46px; animation: pgBob 3.4s ease-in-out infinite; }
+        #chat-fab .ic-close { display: none; width: 26px; height: 26px; stroke: #210D02; fill: none; stroke-width: 2; stroke-linecap: round; }
+        #chat-fab.open .ic-chat { display: none; }
+        #chat-fab.open .ic-close { display: block; }
+        /* Skipper — original penguin mascot */
+        .pg-avatar { width: 27px; height: 27px; flex-shrink: 0; display: inline-flex; }
+        .pg-avatar .pg { width: 100%; height: 100%; }
+        .pg-eyes { animation: pgBlink 4.6s infinite; transform-origin: 32px 18px; }
+        .pg-wing-l { transform-origin: 18px 35px; animation: pgWave 6.2s ease-in-out infinite; }
+        .pg-ember { animation: pulse 2s ease infinite; }
+        @keyframes pgBlink { 0%, 91%, 100% { transform: scaleY(1); } 93.5%, 95.5% { transform: scaleY(0.12); } }
+        @keyframes pgWave { 0%, 76%, 100% { transform: rotate(0deg); } 82%, 90% { transform: rotate(-18deg); } 86% { transform: rotate(-26deg); } }
+        @keyframes pgBob { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-2.5px); } }
+        @media (prefers-reduced-motion: reduce) { .pg-eyes, .pg-wing-l, .pg-ember, #chat-fab .pg { animation: none; } }
+        #chat-fab::after {
+            content: ''; position: absolute; inset: -4px; border-radius: 50%;
+            border: 2px solid var(--accent-dim);
+            animation: fabPulse 2.6s ease infinite; pointer-events: none;
+        }
+        #chat-fab.open::after { display: none; }
+        @keyframes fabPulse { 0% { transform: scale(0.9); opacity: 0.9; } 70% { transform: scale(1.35); opacity: 0; } 100% { transform: scale(1.35); opacity: 0; } }
+        #chat-pop {
+            position: fixed; right: 22px; bottom: 94px; z-index: 1400;
+            width: min(400px, calc(100vw - 32px));
+            display: none;
+        }
+        #chat-pop.open { display: block; animation: popIn 0.22s ease; }
+        @keyframes popIn { from { opacity: 0; transform: translateY(14px); } to { opacity: 1; transform: none; } }
+        #chat-pop .chat-panel { box-shadow: 0 24px 70px rgba(0,0,0,0.55); }
+        .chat-pop-close {
+            margin-left: 0.8rem; width: 28px; height: 28px; border-radius: 7px; flex-shrink: 0;
+            background: var(--surface-2); border: 1px solid var(--line-strong);
+            color: var(--muted); font-size: 1rem; line-height: 1; cursor: pointer; transition: all 0.15s;
+        }
+        .chat-pop-close:hover { color: var(--text); border-color: var(--accent); }
+        #fab-nudge {
+            position: fixed; right: 92px; bottom: 32px; z-index: 1400;
+            display: none; max-width: 240px; cursor: pointer;
+            background: var(--surface-2); border: 1px solid var(--accent-dim); border-radius: 12px;
+            border-bottom-right-radius: 4px;
+            padding: 0.75rem 1rem; font-size: 0.84rem; color: var(--text); line-height: 1.5;
+            box-shadow: 0 10px 34px rgba(0,0,0,0.5);
+            animation: popIn 0.3s ease;
+        }
+        #fab-nudge b { color: var(--accent); font-weight: 600; }
+        @media (max-width: 600px) {
+            #chat-pop { right: 0; bottom: 0; width: 100%; }
+            #chat-pop.open { position: fixed; inset: 0; }
+            #chat-pop .chat-panel { height: 100%; border-radius: 0; display: flex; flex-direction: column; }
+            #chat-pop .chat-log { flex: 1; max-height: none; }
+            #fab-nudge { right: 16px; bottom: 92px; }
+        }
+        @media (prefers-reduced-motion: reduce) {
+            #chat-fab::after { animation: none; display: none; }
+            #chat-pop.open, #fab-nudge { animation: none; }
+        }
+
         /* ─────────────────────────  EPILOGUE / CONTACT  ───────────────────────── */
         .contact { text-align: left; border-bottom: none; padding-bottom: 4.5rem; }
         .contact-grid {
@@ -691,6 +791,7 @@
             .pillars { grid-template-columns: 1fr; }
             .pillar { border-right: none; border-bottom: 1px solid var(--line); }
             .pillar:last-child { border-bottom: none; }
+            .award-band { grid-template-columns: 1fr; }
             .principles { grid-template-columns: 1fr; }
             .principle:nth-child(odd) { border-right: none; padding-right: 0; }
             .principle:nth-child(even) { padding-left: 0; }
@@ -860,15 +961,6 @@
             <div class="milestone reveal">
                 <span class="m-node" data-spark></span>
                 <div class="m-card">
-                    <div class="m-year">ATOS — PROGRAM DELIVERY</div>
-                    <h3>12,000 devices, moved without the business noticing</h3>
-                    <p>A Windows 11 migration program owned end to end — plans, budgets, vendors, stakeholders. Enterprise delivery at scale.</p>
-                    <span class="m-chip">12,000 devices</span>
-                </div>
-            </div>
-            <div class="milestone reveal">
-                <span class="m-node" data-spark></span>
-                <div class="m-card">
                     <div class="m-year">NATIONAL GRID — AIOPS</div>
                     <h3>Predictive operations across a 40,000-device estate</h3>
                     <p>AIOps (Nexthink / ITOM) plus enterprise backup &amp; recovery — turning reactive IT operations into measured, proactive ones.</p>
@@ -880,8 +972,17 @@
                 <div class="m-card">
                     <div class="m-year">MICROSOFT — COPILOT FOR SECURITY</div>
                     <h3>Grading an AI before the world used it</h3>
-                    <p>Rubric-driven evaluation of Microsoft Copilot (Entra) with Microsoft Engineering — accuracy, correctness, user satisfaction. The score moved 20%.</p>
-                    <span class="m-chip">+20% RSAT</span>
+                    <p>My first direct step into AI — straight off the AIOps program. Rubric-driven evaluation of Microsoft Copilot (Entra) with Microsoft Engineering: accuracy, correctness, user satisfaction. The score moved 20%.</p>
+                    <span class="m-chip">+20% RSAT · first AI role</span>
+                </div>
+            </div>
+            <div class="milestone reveal">
+                <span class="m-node" data-spark></span>
+                <div class="m-card">
+                    <div class="m-year">ATOS — PROGRAM DELIVERY · THE INTERIM</div>
+                    <h3>12,000 devices, moved with AI in the toolkit</h3>
+                    <p>In the interim, a Windows 11 migration owned end to end — with AI-assisted analytics sharpening readiness assessment and adoption strategy. Delivery at scale, now AI-informed.</p>
+                    <span class="m-chip">12,000 devices</span>
                 </div>
             </div>
         </div>
@@ -905,26 +1006,68 @@
             An enterprise multi-agent AI platform on Google Cloud, powered by Vertex AI / Gemini —
             delivering real consulting workflows with governance and cost discipline engineered in.
         </p>
-        <div class="live-tag"><span class="live-dot"></span>Running now</div>
-        <div class="metrics reveal">
-            <div class="metric">
-                <div class="metric-num" style="font-size:1.45rem; padding-top:0.45rem;">Multi-agent</div>
-                <div class="metric-lbl">AI platform — concept to production, founded and run by me</div>
+        <div class="arch-live reveal">
+            <div class="arch-live-head">
+                <span class="live-dot"></span>
+                <span>Platform architecture — running now</span>
+                <span class="arch-live-stack">google cloud · serverless · regional-only</span>
             </div>
-            <div class="metric">
-                <div class="metric-num"><span data-countup="20" data-prefix="+" data-suffix="">+20</span><small>%</small></div>
-                <div class="metric-lbl">RSAT lift on Microsoft Copilot (Entra) evaluation</div>
-            </div>
-            <div class="metric">
-                <div class="metric-num"><span data-countup="0">0</span></div>
-                <div class="metric-lbl">exposed endpoints — private backend behind a hosting proxy</div>
-            </div>
-            <div class="metric">
-                <div class="metric-num"><span data-countup="100">100</span><small>%</small></div>
-                <div class="metric-lbl">audit-traceable outputs — governance built in</div>
-            </div>
+            <svg viewBox="0 0 860 410" role="img" aria-label="Multi-agent AI platform architecture: browser and Firebase proxy reach a private FastAPI backend on Cloud Run hosting one router per agent, backed by Vertex AI Gemini and Firestore, deployed from a regional Artifact Registry">
+                <rect class="arch-region" x="248" y="14" width="596" height="382" rx="14"/>
+                <text class="arch-region-label" x="260" y="34">us-central1</text>
+                <g class="arch-badge"><rect x="688" y="26" width="140" height="22" rx="11"/><text x="758" y="37.5" text-anchor="middle" dominant-baseline="middle">REGIONAL ONLY</text></g>
+
+                <path class="arch-edge" d="M 156 116 L 318 155" style="animation-delay:0.05s"/>
+                <text class="arch-edge-label" x="235" y="124" text-anchor="middle">/api</text>
+                <path class="arch-edge" d="M 156 267 L 318 202" style="animation-delay:0.12s"/>
+                <text class="arch-edge-label" x="235" y="226" text-anchor="middle">proxy</text>
+                <path class="arch-edge" d="M 564 145 L 648 115" style="animation-delay:0.19s"/>
+                <path class="arch-edge" d="M 564 200 L 648 227" style="animation-delay:0.26s"/>
+                <path class="arch-edge dashed" d="M 441 300 L 441 236" style="animation-delay:0.33s"/>
+                <text class="arch-edge-label" x="470" y="272" text-anchor="middle">deploy</text>
+
+                <circle class="arch-packet" r="3.5"><animateMotion dur="2.4s" begin="1s" repeatCount="indefinite" path="M 156 116 L 318 155"/></circle>
+                <circle class="arch-packet" r="3.5"><animateMotion dur="2.4s" begin="1.5s" repeatCount="indefinite" path="M 156 267 L 318 202"/></circle>
+                <circle class="arch-packet" r="3.5"><animateMotion dur="2.4s" begin="2s" repeatCount="indefinite" path="M 564 145 L 648 115"/></circle>
+                <circle class="arch-packet" r="3.5"><animateMotion dur="2.4s" begin="2.5s" repeatCount="indefinite" path="M 564 200 L 648 227"/></circle>
+
+                <g class="arch-node muted" style="animation-delay:0.1s">
+                    <rect x="20" y="88" width="136" height="56" rx="9"/>
+                    <text class="nlabel" x="88" y="109" text-anchor="middle" dominant-baseline="middle">Browser</text>
+                    <text class="nsub" x="88" y="127" text-anchor="middle" dominant-baseline="middle">recruiter · client · you</text>
+                </g>
+                <g class="arch-node teal" style="animation-delay:0.18s">
+                    <rect x="20" y="238" width="136" height="58" rx="9"/>
+                    <text class="nlabel" x="88" y="260" text-anchor="middle" dominant-baseline="middle">Firebase</text>
+                    <text class="nsub" x="88" y="278" text-anchor="middle" dominant-baseline="middle">Hosting + CDN proxy</text>
+                </g>
+                <g class="arch-node teal" style="animation-delay:0.26s">
+                    <rect x="318" y="110" width="246" height="126" rx="9"/>
+                    <text class="nlabel" x="441" y="140" text-anchor="middle" dominant-baseline="middle">Cloud Run · FastAPI</text>
+                    <text class="nsub" x="441" y="158" text-anchor="middle" dominant-baseline="middle">one private router per agent</text>
+                    <rect class="arch-chip" x="328" y="196" width="49" height="20" rx="5"/><text class="arch-chip-text" x="352.5" y="206" text-anchor="middle" dominant-baseline="middle">OCM</text>
+                    <rect class="arch-chip" x="387" y="196" width="49" height="20" rx="5"/><text class="arch-chip-text" x="411.5" y="206" text-anchor="middle" dominant-baseline="middle">GWS</text>
+                    <rect class="arch-chip" x="446" y="196" width="49" height="20" rx="5"/><text class="arch-chip-text" x="470.5" y="206" text-anchor="middle" dominant-baseline="middle">HCI</text>
+                    <rect class="arch-chip" x="505" y="196" width="49" height="20" rx="5"/><text class="arch-chip-text" x="529.5" y="206" text-anchor="middle" dominant-baseline="middle">+</text>
+                </g>
+                <g class="arch-node gold" style="animation-delay:0.34s">
+                    <rect x="648" y="84" width="168" height="62" rx="9"/>
+                    <text class="nlabel" x="732" y="108" text-anchor="middle" dominant-baseline="middle">Vertex AI</text>
+                    <text class="nsub" x="732" y="126" text-anchor="middle" dominant-baseline="middle">Gemini</text>
+                </g>
+                <g class="arch-node teal" style="animation-delay:0.42s">
+                    <rect x="648" y="196" width="168" height="62" rx="9"/>
+                    <text class="nlabel" x="732" y="220" text-anchor="middle" dominant-baseline="middle">Firestore</text>
+                    <text class="nsub" x="732" y="238" text-anchor="middle" dominant-baseline="middle">state · logs · rate limits</text>
+                </g>
+                <g class="arch-node muted" style="animation-delay:0.5s">
+                    <rect x="318" y="300" width="246" height="56" rx="9"/>
+                    <text class="nlabel" x="441" y="320" text-anchor="middle" dominant-baseline="middle">Artifact Registry</text>
+                    <text class="nsub" x="441" y="338" text-anchor="middle" dominant-baseline="middle">regional build + deploy</text>
+                </g>
+            </svg>
+            <div class="arch-caption"><b>governance built in:</b> auth-gated · 0 exposed endpoints · 100% audit-traceable outputs · scale-to-zero · automated model-lifecycle steward · 1-command idempotent deploy</div>
         </div>
-        <p class="award-line">🏆 <b>Winner — Atos AI Mission Challenge 2025</b> · "Most Impactful Business Solution" &nbsp;·&nbsp; 🥉 Bronze — The Copilot Games 2024</p>
     </div>
 </section>
 
@@ -1080,13 +1223,34 @@
                 12-WEEK ROADMAP&nbsp;&nbsp;·&nbsp;&nbsp;Mobilization (wk 1–2) → Skill Foundation (3–6) → Embedded Enablement (6–9) → Review &amp; Direction (10–12)
             </p>
         </div>
+
+        <!-- Recognition -->
+        <div style="margin-top:2.8rem;">
+            <div class="side-label" style="margin-top:0;">Recognition — earned in the field</div>
+            <div class="award-band reveal">
+                <div class="award-card">
+                    <div class="award-ico"><svg viewBox="0 0 24 24"><path d="M8 21h8M12 17v4M7 4h10v5a5 5 0 0 1-10 0V4z"/><path d="M7 5H4a3 3 0 0 0 3 4M17 5h3a3 3 0 0 1-3 4"/></svg></div>
+                    <div>
+                        <div class="award-title">Winner — Atos AI Mission Challenge 2025</div>
+                        <div class="award-sub">"MOST IMPACTFUL BUSINESS SOLUTION" · SOLVED WITH MICROSOFT COPILOT</div>
+                    </div>
+                </div>
+                <div class="award-card">
+                    <div class="award-ico"><svg viewBox="0 0 24 24"><circle cx="12" cy="15" r="4.5"/><path d="M10 11 7.5 3M14 11l2.5-8M7.5 3h4M16.5 3h-4"/></svg></div>
+                    <div>
+                        <div class="award-title">Bronze — The Copilot Games 2024</div>
+                        <div class="award-sub">TEAM DWP NORTH AMERICA · ATOS</div>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
 </section>
 
 <!-- ── EPILOGUE · CONTACT + ASK MY AI ── -->
 <section id="contact" class="contact">
     <div class="wrap" style="padding-top:4rem;">
-        <div class="contact-grid">
+        <div>
             <div id="ask">
                 <div class="act-kicker">Epilogue — your move</div>
                 <h2>You've read the story. Now <span class="accent">interrogate</span> it.</h2>
@@ -1100,35 +1264,63 @@
                     <a href="mailto:skarthik1710@gmail.com" class="btn btn-ghost">skarthik1710@gmail.com</a>
                 </div>
                 <p style="color:var(--dim); font-size:0.85rem; margin-top:2rem; max-width:30em; line-height:1.7;">
-                    The assistant on the right runs on my own Firebase + Gemini stack,
-                    grounded in the career you just read. The ember that's been following
-                    you down the page? It lives there now. <b style="color:var(--muted); font-weight:600;">The site is the demo.</b>
+                    The ember that's been following you down the page? It's in safe flippers —
+                    <b style="color:var(--muted); font-weight:600;">Skipper, my AI, is holding it at the bottom-right</b>,
+                    one tap away on every page. Runs on my own Firebase + Gemini stack.
+                    The site is the demo.
                 </p>
-            </div>
-            <div class="chat-panel">
-                <div class="chat-head">
-                    <span class="live-dot" id="spark-dock" data-spark></span>
-                    <h3>KS Assist — ask my AI</h3>
-                    <span class="chat-stack">gemini · firebase functions</span>
-                </div>
-                <div class="chat-log" id="chat-log">
-                    <div class="chat-msg bot">Hi — I'm KS Assist, grounded in Karthikeyan's 18-year career. Ask me anything a hiring conversation would cover: the AI platform he runs, his governance approach, the Microsoft Copilot work, or why he fits an AI leadership role.</div>
-                </div>
-                <div class="chat-chips" id="chat-chips">
-                    <button class="chat-chip" type="button">Why hire him as an AI leader?</button>
-                    <button class="chat-chip" type="button">Tell me about his AI platform</button>
-                    <button class="chat-chip" type="button">How does he approach AI governance?</button>
-                    <button class="chat-chip" type="button">What did he do at Microsoft?</button>
-                </div>
-                <form class="chat-input-row" id="chat-form">
-                    <input id="chat-input" type="text" maxlength="500" placeholder="Ask about Karthikeyan's experience…" autocomplete="off"/>
-                    <button type="submit" id="chat-send">Send</button>
-                </form>
-                <div class="chat-note">answers come from his documented career only · conversations may be reviewed</div>
             </div>
         </div>
     </div>
 </section>
+
+<!-- ── CHAT LAUNCHER + POPOVER ── -->
+<div id="chat-pop" role="dialog" aria-label="Skipper chat">
+    <div class="chat-panel">
+        <div class="chat-head">
+            <span class="pg-avatar"><svg class="pg" viewBox="0 0 64 64" aria-hidden="true"><path class="pg-wing pg-wing-l" d="M16 32 Q8 39 11 50 Q18 47 21 39 Z" fill="#120F0C"/><path class="pg-wing" d="M48 32 Q56 39 53 50 Q46 47 43 39 Z" fill="#120F0C"/><ellipse cx="25.5" cy="56.5" rx="5" ry="2.6" fill="#210D02"/><ellipse cx="38.5" cy="56.5" rx="5" ry="2.6" fill="#210D02"/><path d="M32 7 C21 7 15.5 18 15.5 31.5 C15.5 46.5 22.5 55.5 32 55.5 C41.5 55.5 48.5 46.5 48.5 31.5 C48.5 18 43 7 32 7 Z" fill="#17130F"/><path d="M32 19.5 C25.2 19.5 21 27.5 21 36.5 C21 46.5 26 52.5 32 52.5 C38 52.5 43 46.5 43 36.5 C43 27.5 38.8 19.5 32 19.5 Z" fill="#F3EDE7"/><circle class="pg-ember" cx="32" cy="40" r="3.4" fill="#FF6B35"/><circle cx="26" cy="17.5" r="4.1" fill="#F3EDE7"/><circle cx="38" cy="17.5" r="4.1" fill="#F3EDE7"/><g class="pg-eyes"><circle cx="26.9" cy="18.2" r="1.9" fill="#0F0C0A"/><circle cx="37.1" cy="18.2" r="1.9" fill="#0F0C0A"/></g><rect x="21.4" y="12.2" width="9.4" height="3.4" rx="1.6" transform="rotate(9 26 14)" fill="#17130F"/><rect x="33.2" y="12.2" width="9.4" height="3.4" rx="1.6" transform="rotate(-9 38 14)" fill="#17130F"/><path d="M27.6 21.6 L36.4 21.6 L32 27.2 Z" fill="#FF6B35"/></svg></span>
+            <h3>Skipper — ask my AI</h3>
+            <span class="chat-stack">gemini · firebase functions</span>
+            <button class="chat-pop-close" aria-label="Close chat">&times;</button>
+        </div>
+        <div class="chat-log" id="chat-log">
+            <div class="chat-msg bot">Skipper here — Karthikeyan's AI, briefed on all 18 years. Ask me what a hiring conversation would cover: the AI platform he runs, his governance approach, the Microsoft Copilot work, or why he fits an AI leadership role.</div>
+        </div>
+        <div class="chat-chips" id="chat-chips">
+            <button class="chat-chip" type="button">Why hire him as an AI leader?</button>
+            <button class="chat-chip" type="button">Tell me about his AI platform</button>
+            <button class="chat-chip" type="button">How does he approach AI governance?</button>
+            <button class="chat-chip" type="button">What did he do at Microsoft?</button>
+        </div>
+        <form class="chat-input-row" id="chat-form">
+            <input id="chat-input" type="text" maxlength="500" placeholder="Ask about Karthikeyan's experience…" autocomplete="off"/>
+            <button type="submit" id="chat-send">Send</button>
+        </form>
+        <div class="chat-note">answers come from his documented career only · conversations may be reviewed</div>
+    </div>
+</div>
+<button id="chat-fab" data-spark aria-label="Chat with Skipper — Karthikeyan's AI" title="Chat with Skipper">
+    <svg class="ic-chat pg" viewBox="0 0 64 64" aria-hidden="true">
+        <path class="pg-wing pg-wing-l" d="M16 32 Q8 39 11 50 Q18 47 21 39 Z" fill="#120F0C"/>
+        <path class="pg-wing" d="M48 32 Q56 39 53 50 Q46 47 43 39 Z" fill="#120F0C"/>
+        <ellipse cx="25.5" cy="56.5" rx="5" ry="2.6" fill="#210D02"/>
+        <ellipse cx="38.5" cy="56.5" rx="5" ry="2.6" fill="#210D02"/>
+        <path d="M32 7 C21 7 15.5 18 15.5 31.5 C15.5 46.5 22.5 55.5 32 55.5 C41.5 55.5 48.5 46.5 48.5 31.5 C48.5 18 43 7 32 7 Z" fill="#17130F"/>
+        <path d="M32 19.5 C25.2 19.5 21 27.5 21 36.5 C21 46.5 26 52.5 32 52.5 C38 52.5 43 46.5 43 36.5 C43 27.5 38.8 19.5 32 19.5 Z" fill="#F3EDE7"/>
+        <circle class="pg-ember" cx="32" cy="40" r="3.4" fill="#FF6B35"/>
+        <circle cx="26" cy="17.5" r="4.1" fill="#F3EDE7"/>
+        <circle cx="38" cy="17.5" r="4.1" fill="#F3EDE7"/>
+        <g class="pg-eyes">
+            <circle cx="26.9" cy="18.2" r="1.9" fill="#0F0C0A"/>
+            <circle cx="37.1" cy="18.2" r="1.9" fill="#0F0C0A"/>
+        </g>
+        <rect x="21.4" y="12.2" width="9.4" height="3.4" rx="1.6" transform="rotate(9 26 14)" fill="#17130F"/>
+        <rect x="33.2" y="12.2" width="9.4" height="3.4" rx="1.6" transform="rotate(-9 38 14)" fill="#17130F"/>
+        <path d="M27.6 21.6 L36.4 21.6 L32 27.2 Z" fill="#FF6B35"/>
+    </svg>
+    <svg class="ic-close" viewBox="0 0 24 24"><path d="M18 6L6 18M6 6l12 12"/></svg>
+</button>
+<div id="fab-nudge" role="button" tabindex="0">You've read the story — now <b>interrogate it</b>. Skipper has the full briefing.</div>
 
 <!-- ── STORY OVERLAY ── -->
 <div id="story-overlay" role="dialog" aria-modal="true" aria-label="Project story">
@@ -1282,7 +1474,7 @@
             });
             if (!best) return;
             const r = best.getBoundingClientRect();
-            const isDock = best.id === 'spark-dock';
+            const isDock = best.id === 'spark-dock' || best.id === 'chat-fab';
             spark.classList.toggle('docked', isDock);
             if (isDock) { tx = r.left + r.width / 2; ty = r.top + r.height / 2; }
             else {
@@ -1593,7 +1785,7 @@
         else if (e.key === 'ArrowLeft') goTo(currentIdx - 1);
     });
 
-    // ── ASK MY AI (KS Assist) ──
+    // ── ASK MY AI (Skipper) ──
     const CHAT_ENDPOINT = 'https://us-central1-karthik-website-b5801.cloudfunctions.net/askKarthik';
     const chatLog = document.getElementById('chat-log');
     const chatForm = document.getElementById('chat-form');
@@ -1601,6 +1793,41 @@
     const chatSend = document.getElementById('chat-send');
     const chatChips = document.getElementById('chat-chips');
     let chatHistory = [], chatBusy = false;
+
+    // ── Launcher + popover ──
+    const chatPop = document.getElementById('chat-pop');
+    const chatFab = document.getElementById('chat-fab');
+    const fabNudge = document.getElementById('fab-nudge');
+    function hideNudge() { if (fabNudge) { fabNudge.style.display = 'none'; try { sessionStorage.setItem('ksNudge', '1'); } catch (e) {} } }
+    function openPop() {
+        chatPop.classList.add('open'); chatFab.classList.add('open'); hideNudge();
+        if (window.innerWidth > 600) chatInput.focus();
+    }
+    function closePop() { chatPop.classList.remove('open'); chatFab.classList.remove('open'); }
+    chatFab.addEventListener('click', () => chatPop.classList.contains('open') ? closePop() : openPop());
+    document.querySelector('.chat-pop-close').addEventListener('click', closePop);
+    const openChatBtn = document.getElementById('open-chat-btn');
+    if (openChatBtn) openChatBtn.addEventListener('click', openPop);
+    document.addEventListener('keydown', e => {
+        if (e.key === 'Escape' && chatPop.classList.contains('open') && !overlay.classList.contains('open')) closePop();
+    });
+    // proactive nudge — once per session, after dwell or 45% scroll
+    let nudgeArmed = true;
+    try { nudgeArmed = !sessionStorage.getItem('ksNudge'); } catch (e) {}
+    if (fabNudge && nudgeArmed && !reduceMotion) {
+        let nudged = false;
+        const showNudge = () => {
+            if (nudged || chatPop.classList.contains('open')) return;
+            nudged = true; fabNudge.style.display = 'block';
+            setTimeout(hideNudge, 9000);
+        };
+        setTimeout(showNudge, 14000);
+        window.addEventListener('scroll', () => {
+            if (window.scrollY > document.documentElement.scrollHeight * 0.45) showNudge();
+        }, { passive: true });
+        fabNudge.addEventListener('click', openPop);
+        fabNudge.addEventListener('keydown', e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); openPop(); } });
+    }
 
     function addChatMsg(role, text, isError) {
         const div = document.createElement('div');
@@ -1614,6 +1841,7 @@
     async function sendChat(text) {
         text = (text || '').trim();
         if (!text || chatBusy) return;
+        if (!chatPop.classList.contains('open')) openPop();
         chatBusy = true;
         chatSend.disabled = true;
         chatInput.value = '';
