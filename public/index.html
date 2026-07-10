@@ -524,8 +524,9 @@
         @media (max-width: 600px) { .chat-msg { max-width: 92%; } }
 
         /* ── CHAT LAUNCHER (ember FAB) + POPOVER ── */
+        #chat-launcher { position: fixed; right: 22px; bottom: 22px; z-index: 1400; width: 58px; height: 58px; }
         #chat-fab {
-            position: fixed; right: 22px; bottom: 22px; z-index: 1400;
+            position: absolute; inset: 0;
             width: 58px; height: 58px; border-radius: 50%;
             background: var(--accent); border: none; cursor: pointer;
             display: flex; align-items: center; justify-content: center;
@@ -538,7 +539,8 @@
         #chat-fab.open .ic-chat { display: none; }
         #chat-fab.open .ic-close { display: block; }
         #fab-caption {
-            position: fixed; right: 22px; bottom: 86px; z-index: 1400;
+            position: absolute; left: 50%; bottom: 100%; transform: translateX(-50%);
+            margin-bottom: 10px;
             font-family: var(--font-display); font-weight: 700; font-size: 0.82rem;
             letter-spacing: -0.01em; color: var(--accent);
             background: var(--surface-2); border: 1px solid var(--line-strong);
@@ -1294,28 +1296,30 @@
         <div class="chat-note">answers come from his documented career only · conversations may be reviewed</div>
     </div>
 </div>
-<button id="chat-fab" data-spark aria-label="Chat with Skipper — Karthikeyan's AI" title="Chat with Skipper">
-    <svg class="ic-chat pg" viewBox="0 0 64 64" aria-hidden="true">
-        <path class="pg-wing pg-wing-l" d="M16 32 Q8 39 11 50 Q18 47 21 39 Z" fill="#120F0C"/>
-        <path class="pg-wing" d="M48 32 Q56 39 53 50 Q46 47 43 39 Z" fill="#120F0C"/>
-        <ellipse cx="25.5" cy="56.5" rx="5" ry="2.6" fill="#210D02"/>
-        <ellipse cx="38.5" cy="56.5" rx="5" ry="2.6" fill="#210D02"/>
-        <path d="M32 7 C21 7 15.5 18 15.5 31.5 C15.5 46.5 22.5 55.5 32 55.5 C41.5 55.5 48.5 46.5 48.5 31.5 C48.5 18 43 7 32 7 Z" fill="#17130F"/>
-        <path d="M32 19.5 C25.2 19.5 21 27.5 21 36.5 C21 46.5 26 52.5 32 52.5 C38 52.5 43 46.5 43 36.5 C43 27.5 38.8 19.5 32 19.5 Z" fill="#F3EDE7"/>
-        <circle class="pg-ember" cx="32" cy="40" r="3.4" fill="#FF6B35"/>
-        <circle cx="26" cy="17.5" r="4.1" fill="#F3EDE7"/>
-        <circle cx="38" cy="17.5" r="4.1" fill="#F3EDE7"/>
-        <g class="pg-eyes">
-            <circle cx="26.9" cy="18.2" r="1.9" fill="#0F0C0A"/>
-            <circle cx="37.1" cy="18.2" r="1.9" fill="#0F0C0A"/>
-        </g>
-        <rect x="21.4" y="12.2" width="9.4" height="3.4" rx="1.6" transform="rotate(9 26 14)" fill="#17130F"/>
-        <rect x="33.2" y="12.2" width="9.4" height="3.4" rx="1.6" transform="rotate(-9 38 14)" fill="#17130F"/>
-        <path d="M27.6 21.6 L36.4 21.6 L32 27.2 Z" fill="#FF6B35"/>
-    </svg>
-    <svg class="ic-close" viewBox="0 0 24 24"><path d="M18 6L6 18M6 6l12 12"/></svg>
-</button>
-<div id="fab-caption" aria-hidden="true">Ask Skipper</div>
+<div id="chat-launcher">
+    <div id="fab-caption" aria-hidden="true">Ask Skipper</div>
+    <button id="chat-fab" data-spark aria-label="Chat with Skipper — Karthikeyan's AI" title="Chat with Skipper">
+        <svg class="ic-chat pg" viewBox="0 0 64 64" aria-hidden="true">
+            <path class="pg-wing pg-wing-l" d="M16 32 Q8 39 11 50 Q18 47 21 39 Z" fill="#120F0C"/>
+            <path class="pg-wing" d="M48 32 Q56 39 53 50 Q46 47 43 39 Z" fill="#120F0C"/>
+            <ellipse cx="25.5" cy="56.5" rx="5" ry="2.6" fill="#210D02"/>
+            <ellipse cx="38.5" cy="56.5" rx="5" ry="2.6" fill="#210D02"/>
+            <path d="M32 7 C21 7 15.5 18 15.5 31.5 C15.5 46.5 22.5 55.5 32 55.5 C41.5 55.5 48.5 46.5 48.5 31.5 C48.5 18 43 7 32 7 Z" fill="#17130F"/>
+            <path d="M32 19.5 C25.2 19.5 21 27.5 21 36.5 C21 46.5 26 52.5 32 52.5 C38 52.5 43 46.5 43 36.5 C43 27.5 38.8 19.5 32 19.5 Z" fill="#F3EDE7"/>
+            <circle class="pg-ember" cx="32" cy="40" r="3.4" fill="#FF6B35"/>
+            <circle cx="26" cy="17.5" r="4.1" fill="#F3EDE7"/>
+            <circle cx="38" cy="17.5" r="4.1" fill="#F3EDE7"/>
+            <g class="pg-eyes">
+                <circle cx="26.9" cy="18.2" r="1.9" fill="#0F0C0A"/>
+                <circle cx="37.1" cy="18.2" r="1.9" fill="#0F0C0A"/>
+            </g>
+            <rect x="21.4" y="12.2" width="9.4" height="3.4" rx="1.6" transform="rotate(9 26 14)" fill="#17130F"/>
+            <rect x="33.2" y="12.2" width="9.4" height="3.4" rx="1.6" transform="rotate(-9 38 14)" fill="#17130F"/>
+            <path d="M27.6 21.6 L36.4 21.6 L32 27.2 Z" fill="#FF6B35"/>
+        </svg>
+        <svg class="ic-close" viewBox="0 0 24 24"><path d="M18 6L6 18M6 6l12 12"/></svg>
+    </button>
+</div>
 <div id="fab-nudge" role="button" tabindex="0">You've read the story — now <b>interrogate it</b>. Skipper has the full briefing.</div>
 
 <!-- ── STORY OVERLAY ── -->
