@@ -45,6 +45,7 @@
             line-height: 1.65;
             font-size: 16px;
             -webkit-font-smoothing: antialiased;
+            overflow-x: hidden;
         }
         ::selection { background: var(--accent); color: #210D02; }
         ::-webkit-scrollbar { width: 8px; }
@@ -87,31 +88,45 @@
         }
         .nav-cta:hover { border-color: var(--accent); background: var(--accent-faint); }
 
-        /* ─────────────────────────  HERO  ───────────────────────── */
-        .hero { padding: 4.2rem 0 3.4rem; border-bottom: 1px solid var(--line); }
-        .hero-grid {
-            display: grid; grid-template-columns: minmax(0, 1.55fr) minmax(0, 1fr);
-            gap: 3.5rem; align-items: center;
+        /* ─────────────────────────  EMBER SPARK (guide)  ───────────────────────── */
+        #spark {
+            position: fixed; top: 0; left: 0; z-index: 90;
+            width: 10px; height: 10px; border-radius: 50%;
+            background: var(--accent);
+            box-shadow: 0 0 6px 2px rgba(255,107,53,0.8), 0 0 22px 8px rgba(255,107,53,0.35), 0 0 48px 18px rgba(255,107,53,0.12);
+            pointer-events: none; opacity: 0;
+            transition: opacity 0.6s ease;
+            will-change: transform;
         }
+        #spark.on { opacity: 1; }
+        #spark.docked { box-shadow: 0 0 5px 2px rgba(255,107,53,0.9), 0 0 14px 5px rgba(255,107,53,0.4); }
+        .spark-anchor { position: relative; }
+
+        /* ─────────────────────────  SHARED ACT / SECTION BITS  ───────────────────────── */
+        section { border-bottom: 1px solid var(--line); }
+        .act { padding: 4rem 0; }
+        .act-kicker {
+            font-family: var(--font-mono); font-size: 0.74rem; font-weight: 500;
+            letter-spacing: 0.16em; text-transform: uppercase; color: var(--accent);
+            display: flex; align-items: center; gap: 0.7rem; margin-bottom: 1.4rem;
+        }
+        .act-kicker::before { content: ''; width: 22px; height: 1px; background: var(--accent); flex-shrink: 0; }
+        .act-title {
+            font-family: var(--font-display);
+            font-size: clamp(1.8rem, 3.6vw, 2.7rem); font-weight: 700;
+            line-height: 1.12; letter-spacing: -0.025em;
+            max-width: 20em; margin-bottom: 0.9rem;
+        }
+        .act-title .accent { color: var(--accent); }
+        .act-desc { color: var(--muted); max-width: 42em; margin-bottom: 1.7rem; }
+        .act-desc a { color: var(--accent); text-decoration: none; }
+        .act-desc a:hover { text-decoration: underline; }
         .kicker {
             font-family: var(--font-mono); font-size: 0.76rem; font-weight: 500;
             letter-spacing: 0.14em; text-transform: uppercase; color: var(--accent);
             display: flex; align-items: center; gap: 0.7rem; margin-bottom: 1.6rem;
         }
         .kicker::before { content: ''; width: 22px; height: 1px; background: var(--accent); }
-        .hero h1 {
-            font-family: var(--font-display);
-            font-size: clamp(2.5rem, 5.2vw, 4.1rem);
-            font-weight: 700; line-height: 1.06; letter-spacing: -0.03em;
-            margin-bottom: 1.6rem;
-        }
-        .hero h1 .accent { color: var(--accent); }
-        .hero-sub {
-            color: var(--muted); font-size: 1.06rem; line-height: 1.75;
-            max-width: 34em; margin-bottom: 2.4rem;
-        }
-        .hero-sub strong { color: var(--text); font-weight: 600; }
-        .hero-actions { display: flex; gap: 0.9rem; flex-wrap: wrap; }
         .btn {
             font-family: var(--font-display); font-weight: 600; font-size: 0.92rem;
             padding: 0.8rem 1.6rem; border-radius: 7px; text-decoration: none;
@@ -121,25 +136,269 @@
         .btn-solid:hover { background: #FF8557; transform: translateY(-1px); }
         .btn-ghost { border: 1px solid var(--line-strong); color: var(--text); }
         .btn-ghost:hover { border-color: var(--accent); background: var(--accent-faint); }
+        .hero-actions { display: flex; gap: 0.9rem; flex-wrap: wrap; }
 
-        /* hero portrait + fact stack */
-        .hero-side { display: flex; flex-direction: column; gap: 0; border-left: 1px solid var(--line); padding-left: 2.6rem; }
+        /* scroll reveal (IO — used sitewide) */
+        .reveal { opacity: 0; transform: translateY(22px); transition: opacity 0.55s ease, transform 0.55s ease; }
+        .reveal.in { opacity: 1; transform: none; }
+        @media (prefers-reduced-motion: reduce) { .reveal { opacity: 1; transform: none; transition: none; } }
+
+        /* ─────────────────────────  PROLOGUE / HERO  ───────────────────────── */
+        .hero {
+            min-height: calc(100vh - 64px);
+            display: flex; flex-direction: column; justify-content: center;
+            position: relative; border-bottom: 1px solid var(--line);
+            padding: 2.5rem 0 4.5rem;
+        }
+        .hero-grid {
+            display: grid; grid-template-columns: minmax(0, 1.6fr) minmax(0, 1fr);
+            gap: 3.5rem; align-items: center;
+        }
+        .hero h1 {
+            font-family: var(--font-display);
+            font-size: clamp(2.6rem, 5.4vw, 4.3rem);
+            font-weight: 700; line-height: 1.05; letter-spacing: -0.03em;
+            margin-bottom: 1.5rem;
+        }
+        .hero h1 .accent { color: var(--accent); }
+        .hero-sub {
+            color: var(--muted); font-size: 1.08rem; line-height: 1.75;
+            max-width: 33em; margin-bottom: 2.3rem;
+        }
+        .hero-sub strong { color: var(--text); font-weight: 600; }
+        .hero-side { display: flex; flex-direction: column; align-items: stretch; gap: 1.7rem; border-left: 1px solid var(--line); padding-left: 2.6rem; }
         .portrait {
-            width: 128px; height: 128px; border-radius: 12px;
+            width: 118px; height: 118px; border-radius: 12px;
             object-fit: cover; display: block;
             filter: grayscale(28%);
             border: 1px solid var(--line-strong);
-            margin-bottom: 1.8rem;
             transition: filter 0.3s;
         }
         .portrait:hover { filter: grayscale(0%); }
-        .fact { padding: 0.95rem 0; border-bottom: 1px solid var(--line); }
-        .fact:last-child { border-bottom: none; }
+        .fact-num {
+            font-family: var(--font-display); font-size: 1.5rem; font-weight: 700;
+            letter-spacing: -0.02em; line-height: 1.1;
+        }
+        .fact-num em { font-style: normal; color: var(--accent); }
+        .fact-lbl { font-size: 0.8rem; color: var(--dim); margin-top: 0.1rem; }
+        .scroll-cue {
+            position: absolute; bottom: 2rem; left: 50%; transform: translateX(-50%);
+            font-family: var(--font-mono); font-size: 0.7rem; letter-spacing: 0.14em;
+            text-transform: uppercase; color: var(--dim); text-decoration: none;
+            display: flex; flex-direction: column; align-items: center; gap: 0.55rem;
+            transition: color 0.2s;
+        }
+        .scroll-cue:hover { color: var(--accent); }
+        .scroll-cue .arr { animation: cueBob 1.8s ease infinite; color: var(--accent); font-size: 0.9rem; }
+        @keyframes cueBob { 0%,100% { transform: translateY(0); } 50% { transform: translateY(6px); } }
+
+        /* ─────────────────────────  ACT I · ORIGIN (terminal)  ───────────────────────── */
+        #origin .origin-stage {
+            display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.15fr);
+            gap: 3.5rem; align-items: center;
+        }
+        .terminal {
+            border: 1px solid var(--line-strong); border-radius: 12px;
+            background: #100D0B; overflow: hidden;
+            box-shadow: 0 24px 70px rgba(0,0,0,0.45);
+        }
+        .term-bar {
+            display: flex; align-items: center; gap: 0.45rem;
+            padding: 0.7rem 1rem; border-bottom: 1px solid var(--line);
+            background: var(--surface);
+        }
+        .term-bar i { width: 10px; height: 10px; border-radius: 50%; background: var(--line-strong); }
+        .term-bar i:first-child { background: var(--accent-dim); }
+        .term-bar .term-title { margin-left: 0.6rem; font-family: var(--font-mono); font-size: 0.68rem; color: var(--dim); letter-spacing: 0.06em; }
+        .term-body { padding: 1.5rem 1.4rem 1.7rem; font-family: var(--font-mono); font-size: 0.82rem; line-height: 2.15; }
+        .t-line { white-space: nowrap; overflow: hidden; color: var(--muted); }
+        .t-line b { color: var(--text); font-weight: 500; }
+        .t-line .p { color: var(--accent); }
+        .t-line.lesson { color: var(--accent); }
+        .t-line.lesson::after {
+            content: ''; display: inline-block; width: 8px; height: 15px;
+            background: var(--accent); margin-left: 5px; vertical-align: -2px;
+            animation: caret 1.1s steps(1) infinite;
+        }
+        @keyframes caret { 50% { opacity: 0; } }
+
+        /* ─────────────────────────  ACT II · THE CLIMB (rail)  ───────────────────────── */
+        .climb-rail { position: relative; margin-top: 2.4rem; }
+        .climb-line, .climb-line-fill {
+            position: absolute; left: 50%; top: 0; bottom: 0; width: 2px; transform: translateX(-50%);
+        }
+        .climb-line { background: var(--line); }
+        .climb-line-fill {
+            background: linear-gradient(var(--accent), #FF8557);
+            box-shadow: 0 0 12px rgba(255,107,53,0.5);
+            transform-origin: top center;
+        }
+        .milestone {
+            position: relative; width: 50%;
+            padding: 0 3.2rem 3rem 0;
+        }
+        .milestone:nth-child(even) { margin-left: 50%; padding: 0 0 3rem 3.2rem; }
+        .milestone:last-child { padding-bottom: 0.5rem; }
+        .m-node {
+            position: absolute; top: 0.35rem; right: -8px;
+            width: 16px; height: 16px; border-radius: 50%;
+            background: var(--bg); border: 2px solid var(--line-strong);
+            transition: border-color 0.4s, box-shadow 0.4s;
+        }
+        .milestone:nth-child(even) .m-node { right: auto; left: -8px; }
+        .milestone.lit .m-node {
+            border-color: var(--accent);
+            box-shadow: 0 0 10px rgba(255,107,53,0.65), inset 0 0 4px rgba(255,107,53,0.8);
+        }
+        .m-year { font-family: var(--font-mono); font-size: 0.72rem; color: var(--accent); letter-spacing: 0.12em; margin-bottom: 0.4rem; }
+        .m-card h3 { font-family: var(--font-display); font-size: 1.14rem; font-weight: 600; letter-spacing: -0.01em; margin-bottom: 0.45rem; }
+        .m-card p { color: var(--muted); font-size: 0.9rem; line-height: 1.7; max-width: 26em; margin-bottom: 0.7rem; }
+        .milestone:nth-child(odd) .m-card { text-align: right; }
+        .milestone:nth-child(odd) .m-card p { margin-left: auto; }
+        .m-chip {
+            display: inline-block; font-family: var(--font-mono); font-size: 0.7rem; font-weight: 500;
+            color: var(--accent); border: 1px solid var(--accent-dim); border-radius: 5px;
+            padding: 0.25rem 0.6rem; background: var(--accent-faint);
+        }
+
+        /* ─────────────────────────  ACT III · THE TURN  ───────────────────────── */
+        #turn { border-bottom: 1px solid var(--line); }
+        .turn-stage {
+            min-height: 72vh; display: flex; align-items: center; justify-content: center;
+            position: relative; text-align: center; padding: 3rem 0;
+        }
+        .beat {
+            position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%);
+            width: min(90vw, 880px);
+            font-family: var(--font-display); font-weight: 700;
+            font-size: clamp(1.7rem, 4.4vw, 3.3rem); line-height: 1.14; letter-spacing: -0.03em;
+        }
+        .beat .accent { color: var(--accent); }
+        .beat .dim-t { color: var(--dim); }
+        /* static fallback: beats stack readably when JS/GSAP is absent */
+        .no-anim .turn-stage { min-height: 0; flex-direction: column; gap: 2rem; }
+        .no-anim .beat { position: static; transform: none; }
+
+        /* metrics band (the platform, running now) */
+        .metrics {
+            border: 1px solid var(--line); border-radius: 12px;
+            display: grid; grid-template-columns: repeat(4, 1fr);
+            background: var(--surface);
+            overflow: hidden;
+        }
+        .metric { padding: 1.9rem 1.7rem; border-right: 1px solid var(--line); position: relative; }
+        .metric:last-child { border-right: none; }
+        .metric-num {
+            font-family: var(--font-display); font-size: 2.1rem; font-weight: 700;
+            letter-spacing: -0.03em; line-height: 1; margin-bottom: 0.45rem;
+        }
+        .metric-num small { font-size: 1.1rem; color: var(--muted); font-weight: 500; }
+        .metric-lbl { font-size: 0.82rem; color: var(--muted); line-height: 1.45; }
+        .live-tag {
+            display: inline-flex; align-items: center; gap: 0.45rem;
+            font-family: var(--font-mono); font-size: 0.72rem; letter-spacing: 0.1em;
+            text-transform: uppercase; color: var(--accent);
+            margin-bottom: 1.2rem;
+        }
+        .live-dot { width: 7px; height: 7px; border-radius: 50%; background: var(--accent); animation: pulse 2s ease infinite; }
+        @keyframes pulse { 0%,100% { opacity: 1; } 50% { opacity: 0.35; } }
+        .award-line {
+            margin-top: 1.4rem; font-family: var(--font-mono); font-size: 0.78rem;
+            color: var(--muted); letter-spacing: 0.02em;
+        }
+        .award-line b { color: var(--accent); font-weight: 500; }
+
+        /* ─────────────────────────  PILLARS (what I lead)  ───────────────────────── */
+        .pillars { display: grid; grid-template-columns: repeat(3, 1fr); gap: 0; border: 1px solid var(--line); border-radius: 12px; overflow: hidden; }
+        .pillar { padding: 1.8rem 1.7rem 2rem; border-right: 1px solid var(--line); background: var(--surface); transition: background 0.2s; }
+        .pillar:last-child { border-right: none; }
+        .pillar:hover { background: var(--surface-2); }
+        .pillar-icon { width: 26px; height: 26px; stroke: var(--accent); fill: none; stroke-width: 1.6; margin-bottom: 1.3rem; }
+        .pillar h3 {
+            font-family: var(--font-display); font-size: 1.08rem; font-weight: 600;
+            margin-bottom: 0.7rem; letter-spacing: -0.01em;
+        }
+        .pillar p { color: var(--muted); font-size: 0.9rem; line-height: 1.7; margin-bottom: 1.1rem; }
+        .pillar-where { font-family: var(--font-mono); font-size: 0.72rem; color: var(--dim); letter-spacing: 0.02em; }
+        .pillar-where b { color: var(--muted); font-weight: 500; }
+
+        /* ─────────────────────────  ACT IV · SHIPPED (horizontal strip)  ───────────────────────── */
+        #work { overflow: hidden; }
+        .ship-head { padding-top: 4rem; }
+        .drag-cue {
+            font-family: var(--font-mono); font-size: 0.72rem; letter-spacing: 0.14em;
+            text-transform: uppercase; color: var(--dim);
+            display: inline-flex; align-items: center; gap: 0.6rem; margin-bottom: 2rem;
+        }
+        .drag-cue .sweep { color: var(--accent); animation: sweepX 1.8s ease infinite; display: inline-block; }
+        @keyframes sweepX { 0%,100% { transform: translateX(0); } 50% { transform: translateX(8px); } }
+        .ship-viewport { padding-bottom: 4rem; }
+        .ship-track {
+            display: flex; gap: 1.2rem; align-items: stretch;
+            padding: 0 max(2rem, calc((100vw - var(--w)) / 2 + 2rem));
+            width: max-content;
+        }
+        .work-card {
+            border: 1px solid var(--line); border-radius: 12px;
+            padding: 2rem 2rem 1.7rem; background: var(--surface);
+            cursor: pointer; transition: border-color 0.2s, background 0.2s;
+            position: relative;
+            width: min(420px, 84vw); flex-shrink: 0;
+            display: flex; flex-direction: column;
+        }
+        .work-card:hover { border-color: var(--accent-dim); background: var(--surface-2); }
+        .work-card:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; }
+        .work-top { display: flex; align-items: center; justify-content: space-between; margin-bottom: 1.1rem; }
+        .card-idx { font-family: var(--font-mono); font-size: 0.72rem; color: var(--dim); }
+        .status {
+            font-family: var(--font-mono); font-size: 0.68rem; letter-spacing: 0.12em;
+            text-transform: uppercase; color: var(--accent);
+            border: 1px solid var(--accent-dim); border-radius: 4px;
+            padding: 0.22rem 0.55rem;
+        }
+        .work-card h3 {
+            font-family: var(--font-display); font-size: 1.22rem; font-weight: 600;
+            letter-spacing: -0.01em; margin-bottom: 0.65rem;
+        }
+        .work-card > p { color: var(--muted); font-size: 0.9rem; line-height: 1.7; margin-bottom: 1.2rem; flex: 1; }
+        .stack {
+            font-family: var(--font-mono); font-size: 0.72rem; color: var(--dim);
+            padding-top: 1rem; border-top: 1px solid var(--line);
+            display: flex; justify-content: space-between; align-items: center; gap: 1rem;
+        }
+        .story-cue { color: var(--accent); font-weight: 500; white-space: nowrap; transition: transform 0.15s; display: inline-block; }
+        .work-card:hover .story-cue { transform: translateX(3px); }
+        /* mobile / no-anim fallback: native horizontal scroll */
+        @media (max-width: 899px) {
+            .ship-track { overflow-x: auto; width: auto; scroll-snap-type: x mandatory; padding: 0 2rem 1rem; -webkit-overflow-scrolling: touch; }
+            .work-card { scroll-snap-align: start; }
+        }
+        .no-anim .ship-track { overflow-x: auto; width: auto; scroll-snap-type: x mandatory; padding: 0 2rem 1rem; }
+        .no-anim .work-card { scroll-snap-align: start; }
+
+        /* ─────────────────────────  ACT V · PRINCIPLES  ───────────────────────── */
+        .principles { display: grid; grid-template-columns: 1fr 1fr; gap: 0; border-top: 1px solid var(--line); }
+        .principle {
+            padding: 1.6rem 2.2rem 1.6rem 0;
+            border-bottom: 1px solid var(--line);
+            display: grid; grid-template-columns: 52px 1fr; gap: 1.2rem;
+        }
+        .principle:nth-child(odd) { border-right: 1px solid var(--line); padding-right: 2.6rem; }
+        .principle:nth-child(even) { padding-left: 2.6rem; }
+        .p-idx { font-family: var(--font-mono); font-size: 0.85rem; color: var(--accent); padding-top: 0.28rem; }
+        .principle h3 {
+            font-family: var(--font-display); font-size: 1.05rem; font-weight: 600;
+            margin-bottom: 0.5rem; letter-spacing: -0.01em;
+        }
+        .principle p { color: var(--muted); font-size: 0.89rem; line-height: 1.7; }
+
+        /* ─────────────────────────  SKILLS / CERTS (hero side)  ───────────────────────── */
         .side-label {
             font-family: var(--font-mono); font-size: 0.68rem; font-weight: 500;
             letter-spacing: 0.14em; text-transform: uppercase; color: var(--accent);
             margin: 1.5rem 0 0.75rem;
         }
+        .side-label:first-child { margin-top: 0; }
         .skill-tags { display: flex; flex-wrap: wrap; gap: 0.45rem; }
         .skill-tag {
             font-family: var(--font-mono); font-size: 0.68rem; font-weight: 500;
@@ -161,130 +420,6 @@
             color: var(--accent); text-decoration: none;
         }
         .all-certs:hover { text-decoration: underline; }
-        .fact-num {
-            font-family: var(--font-display); font-size: 1.5rem; font-weight: 700;
-            letter-spacing: -0.02em; line-height: 1.1;
-        }
-        .fact-num em { font-style: normal; color: var(--accent); }
-        .fact-lbl { font-size: 0.8rem; color: var(--dim); margin-top: 0.1rem; }
-
-        /* ─────────────────────────  SECTIONS  ───────────────────────── */
-        section { padding: 3.8rem 0; border-bottom: 1px solid var(--line); }
-        .sec-head { display: flex; align-items: baseline; gap: 1.4rem; margin-bottom: 0.9rem; }
-        .sec-idx {
-            font-family: var(--font-mono); font-size: 0.8rem; color: var(--accent);
-        }
-        .sec-title {
-            font-family: var(--font-display);
-            font-size: clamp(1.6rem, 3vw, 2.2rem); font-weight: 700;
-            letter-spacing: -0.02em;
-        }
-        .sec-desc { color: var(--muted); max-width: 40em; margin-bottom: 1.8rem; }
-        .sec-desc a { color: var(--accent); text-decoration: none; }
-        .sec-desc a:hover { text-decoration: underline; }
-
-        /* ─────────────────────────  METRICS (live from production)  ───────────────────────── */
-        .metrics {
-            border: 1px solid var(--line); border-radius: 12px;
-            display: grid; grid-template-columns: repeat(4, 1fr);
-            background: var(--surface);
-            overflow: hidden;
-        }
-        .metric {
-            padding: 1.9rem 1.7rem;
-            border-right: 1px solid var(--line);
-            position: relative;
-        }
-        .metric:last-child { border-right: none; }
-        .metric-num {
-            font-family: var(--font-display); font-size: 2.1rem; font-weight: 700;
-            letter-spacing: -0.03em; line-height: 1;
-            margin-bottom: 0.45rem;
-        }
-        .metric-num small { font-size: 1.1rem; color: var(--muted); font-weight: 500; }
-        .metric-lbl { font-size: 0.82rem; color: var(--muted); line-height: 1.45; }
-        .live-tag {
-            display: inline-flex; align-items: center; gap: 0.45rem;
-            font-family: var(--font-mono); font-size: 0.72rem; letter-spacing: 0.1em;
-            text-transform: uppercase; color: var(--accent);
-            margin-bottom: 1.2rem;
-        }
-        .live-dot {
-            width: 7px; height: 7px; border-radius: 50%; background: var(--accent);
-            animation: pulse 2s ease infinite;
-        }
-        @keyframes pulse { 0%,100% { opacity: 1; } 50% { opacity: 0.35; } }
-        .metrics-note { font-size: 0.82rem; color: var(--dim); margin-top: 1rem; }
-
-        /* ─────────────────────────  PILLARS  ───────────────────────── */
-        .pillars { display: grid; grid-template-columns: repeat(3, 1fr); gap: 0; border: 1px solid var(--line); border-radius: 12px; overflow: hidden; }
-        .pillar { padding: 1.8rem 1.7rem 2rem; border-right: 1px solid var(--line); background: var(--surface); transition: background 0.2s; }
-        .pillar:last-child { border-right: none; }
-        .pillar:hover { background: var(--surface-2); }
-        .pillar-icon { width: 26px; height: 26px; stroke: var(--accent); fill: none; stroke-width: 1.6; margin-bottom: 1.3rem; }
-        .pillar h3 {
-            font-family: var(--font-display); font-size: 1.08rem; font-weight: 600;
-            margin-bottom: 0.7rem; letter-spacing: -0.01em;
-        }
-        .pillar p { color: var(--muted); font-size: 0.9rem; line-height: 1.7; margin-bottom: 1.1rem; }
-        .pillar-where {
-            font-family: var(--font-mono); font-size: 0.72rem; color: var(--dim);
-            letter-spacing: 0.02em;
-        }
-        .pillar-where b { color: var(--muted); font-weight: 500; }
-
-        /* ─────────────────────────  WORK / PROJECTS  ───────────────────────── */
-        .work-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1.2rem; }
-        .work-card {
-            border: 1px solid var(--line); border-radius: 12px;
-            padding: 2rem 2rem 1.7rem; background: var(--surface);
-            cursor: pointer; transition: border-color 0.2s, background 0.2s;
-            position: relative;
-        }
-        .work-card:hover { border-color: var(--accent-dim); background: var(--surface-2); }
-        .work-card:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; }
-        .work-top { display: flex; align-items: center; justify-content: space-between; margin-bottom: 1.1rem; }
-        .status {
-            font-family: var(--font-mono); font-size: 0.68rem; letter-spacing: 0.12em;
-            text-transform: uppercase; color: var(--accent);
-            border: 1px solid var(--accent-dim); border-radius: 4px;
-            padding: 0.22rem 0.55rem;
-        }
-        .work-card h3 {
-            font-family: var(--font-display); font-size: 1.22rem; font-weight: 600;
-            letter-spacing: -0.01em; margin-bottom: 0.65rem;
-        }
-        .work-card > p { color: var(--muted); font-size: 0.9rem; line-height: 1.7; margin-bottom: 1.2rem; }
-        .stack {
-            font-family: var(--font-mono); font-size: 0.72rem; color: var(--dim);
-            padding-top: 1rem; border-top: 1px solid var(--line);
-            display: flex; justify-content: space-between; align-items: center; gap: 1rem;
-        }
-        .story-cue {
-            color: var(--accent); font-weight: 500; white-space: nowrap;
-            transition: transform 0.15s; display: inline-block;
-        }
-        .work-card:hover .story-cue { transform: translateX(3px); }
-        /* scroll reveal */
-        .reveal { opacity: 0; transform: translateY(22px); transition: opacity 0.55s ease, transform 0.55s ease; }
-        .reveal.in { opacity: 1; transform: none; }
-        @media (prefers-reduced-motion: reduce) { .reveal { opacity: 1; transform: none; transition: none; } }
-
-        /* ─────────────────────────  PRINCIPLES  ───────────────────────── */
-        .principles { display: grid; grid-template-columns: 1fr 1fr; gap: 0; border-top: 1px solid var(--line); }
-        .principle {
-            padding: 1.6rem 2.2rem 1.6rem 0;
-            border-bottom: 1px solid var(--line);
-            display: grid; grid-template-columns: 52px 1fr; gap: 1.2rem;
-        }
-        .principle:nth-child(odd) { border-right: 1px solid var(--line); padding-right: 2.6rem; }
-        .principle:nth-child(even) { padding-left: 2.6rem; }
-        .p-idx { font-family: var(--font-mono); font-size: 0.85rem; color: var(--accent); padding-top: 0.28rem; }
-        .principle h3 {
-            font-family: var(--font-display); font-size: 1.05rem; font-weight: 600;
-            margin-bottom: 0.5rem; letter-spacing: -0.01em;
-        }
-        .principle p { color: var(--muted); font-size: 0.89rem; line-height: 1.7; }
 
         /* ─────────────────────────  ASK MY AI  ───────────────────────── */
         .chat-panel {
@@ -368,7 +503,7 @@
         @media (prefers-reduced-motion: reduce) { .chat-typing span { animation: none; opacity: 0.6; } }
         @media (max-width: 600px) { .chat-msg { max-width: 92%; } }
 
-        /* ─────────────────────────  CONTACT  ───────────────────────── */
+        /* ─────────────────────────  EPILOGUE / CONTACT  ───────────────────────── */
         .contact { text-align: left; border-bottom: none; padding-bottom: 4.5rem; }
         .contact-grid {
             display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.08fr);
@@ -400,7 +535,7 @@
         .foot-links a { color: var(--dim); text-decoration: none; font-size: 0.82rem; transition: color 0.15s; }
         .foot-links a:hover { color: var(--text); }
 
-        /* ─────────────────────────  STORY OVERLAY (restyled)  ───────────────────────── */
+        /* ─────────────────────────  STORY OVERLAY  ───────────────────────── */
         #story-overlay {
             position: fixed; inset: 0; z-index: 2000;
             display: none; align-items: center; justify-content: center;
@@ -531,34 +666,42 @@
             #story-overlay.open, .story-scene.active .anim,
             .story-scene.active .viz-phases .cell,
             .story-scene.active .arch-node, .story-scene.active .arch-edge,
-            .arch-badge, .live-dot { animation: none; }
+            .arch-badge, .live-dot, .scroll-cue .arr, .drag-cue .sweep,
+            .t-line.lesson::after { animation: none; }
             .arch-node, .arch-edge { opacity: 1 !important; transform: none !important; }
             .story-scene { opacity: 1; }
+            #spark { display: none; }
         }
 
         /* ─────────────────────────  RESPONSIVE  ───────────────────────── */
         @media (max-width: 900px) {
-            .hero-grid { grid-template-columns: 1fr; gap: 3rem; }
-            .hero-side { border-left: none; padding-left: 0; border-top: 1px solid var(--line); padding-top: 2rem; flex-direction: row; flex-wrap: wrap; gap: 0 2.5rem; align-items: center; }
-            .portrait { margin-bottom: 0; }
-            .fact { border-bottom: none; padding: 0.4rem 0; }
+            .hero { min-height: 0; }
+            .hero-grid { grid-template-columns: 1fr; gap: 2.4rem; }
+            .hero-side { border-left: none; padding-left: 0; border-top: 1px solid var(--line); padding-top: 2rem; flex-direction: row; flex-wrap: wrap; align-items: flex-start; gap: 1.4rem 2.5rem; }
+            .scroll-cue { display: none; }
+            #origin .origin-stage { grid-template-columns: 1fr; gap: 2.4rem; }
+            .climb-line, .climb-line-fill { left: 8px; }
+            .milestone, .milestone:nth-child(even) { width: auto; margin-left: 0; padding: 0 0 3.2rem 2.4rem; }
+            .m-node, .milestone:nth-child(even) .m-node { right: auto; left: 1px; }
+            .milestone:nth-child(odd) .m-card { text-align: left; }
+            .milestone:nth-child(odd) .m-card p { margin-left: 0; }
             .metrics { grid-template-columns: 1fr 1fr; }
             .metric:nth-child(2) { border-right: none; }
             .metric:nth-child(1), .metric:nth-child(2) { border-bottom: 1px solid var(--line); }
             .pillars { grid-template-columns: 1fr; }
             .pillar { border-right: none; border-bottom: 1px solid var(--line); }
             .pillar:last-child { border-bottom: none; }
-            .work-grid { grid-template-columns: 1fr; }
             .principles { grid-template-columns: 1fr; }
             .principle:nth-child(odd) { border-right: none; padding-right: 0; }
             .principle:nth-child(even) { padding-left: 0; }
+            #spark { display: none; }
         }
         @media (max-width: 600px) {
             .nav-links { gap: 1.1rem; }
             .nav-links a:not(.nav-cta) { display: none; }
-            .hero { padding: 4rem 0 3rem; }
-            section { padding: 3.8rem 0; }
-            #story-overlay { padding: 0; }
+            .act { padding: 3.2rem 0; }
+            .ship-head { padding-top: 3.2rem; }
+            .term-body { font-size: 0.68rem; }
             .story-modal { max-width: 100%; max-height: 100vh; height: 100vh; border-radius: 0; }
             .story-stage { padding: 1.4rem 1.4rem 1rem; }
             .viz-stats { gap: 1.4rem; }
@@ -567,6 +710,9 @@
     </style>
 </head>
 <body>
+
+<!-- ── EMBER GUIDE ── -->
+<div id="spark" aria-hidden="true"></div>
 
 <!-- ── NAV ── -->
 <nav class="nav">
@@ -581,27 +727,26 @@
     </div>
 </nav>
 
-<!-- ── HERO ── -->
+<!-- ── PROLOGUE · HERO ── -->
 <header class="hero">
     <div class="wrap hero-grid">
         <div>
-            <div class="kicker">AI Product &amp; Enablement Leader · Middletown, DE</div>
+            <div class="kicker" data-spark>Prologue · AI Product &amp; Enablement Leader</div>
             <h1>I take enterprise AI from slideware to <span class="accent">shipped</span>.</h1>
             <p class="hero-sub">
-                18+ years in enterprise IT across global technology and energy — most recently
-                <strong>founding and running a multi-agent AI platform in production</strong>.
-                Microsoft Copilot evaluation, RPA at scale, AIOps, and the governance
-                that keeps all of it defensible.
+                18+ years in enterprise IT — ending up, for now, as the founder of a
+                <strong>multi-agent AI platform running in production</strong>.
+                This page tells that story the way I ship: start to finish, with evidence.
             </p>
             <div class="hero-actions">
-                <a href="#work" class="btn btn-solid">See the platform</a>
-                <a href="#playbook" class="btn btn-ghost">How I operate</a>
+                <a href="#origin" class="btn btn-solid">Read the story</a>
+                <a href="#work" class="btn btn-ghost">Skip to the work</a>
             </div>
         </div>
         <div class="hero-side">
             <div style="display:flex; align-items:center; gap:1.3rem;">
-                <img class="portrait" src="Profile.jpg" alt="Karthikeyan Selvam" style="margin-bottom:0;"/>
-                <div class="fact" style="border-bottom:none; padding:0;">
+                <img class="portrait" src="Profile.jpg" alt="Karthikeyan Selvam"/>
+                <div>
                     <div class="fact-num">18<em>+</em></div>
                     <div class="fact-lbl">years in<br/>enterprise IT</div>
                 </div>
@@ -638,9 +783,9 @@
                         <span class="mono-mark" style="background:#82154D; color:#fff;">P2</span>
                         <span>PRINCE2</span>
                     </div>
-                    <div class="brand" title="Six Sigma — Process Excellence">
-                        <span class="mono-mark" style="background:#1F6F43; color:#fff;">6σ</span>
-                        <span>Six Sigma</span>
+                    <div class="brand" title="Professional Scrum Master — Scrum.org">
+                        <span class="mono-mark" style="background:#1F6F43; color:#fff;">SM</span>
+                        <span>Scrum.org</span>
                     </div>
                     <div class="brand" title="Atos Lean">
                         <span class="mono-mark" style="background:#0073C6; color:#fff;">At</span>
@@ -651,48 +796,147 @@
             </div>
         </div>
     </div>
+    <a class="scroll-cue" href="#origin">every good system has an origin story<span class="arr">↓</span></a>
 </header>
 
-<!-- ── 01 LIVE FROM PRODUCTION ── -->
-<section id="platform">
+<!-- ── ACT I · ORIGIN ── -->
+<section id="origin">
+    <div class="wrap act">
+        <div class="origin-stage">
+            <div>
+                <div class="act-kicker" data-spark>Act I — Origin · 2007</div>
+                <h2 class="act-title">Every AI story I trust starts in production. Mine starts on an <span class="accent">AS/400</span>.</h2>
+                <p class="act-desc">
+                    Tata Consultancy Services. Sales-audit reconciliation posting to Oracle —
+                    millions moving nightly, and the books had to balance by morning.
+                    No demos, no slideware. Just systems that either worked or didn't.
+                    That standard never left.
+                </p>
+            </div>
+            <div class="terminal reveal">
+                <div class="term-bar"><i></i><i></i><i></i><span class="term-title">tcs — session · 2007</span></div>
+                <div class="term-body">
+                    <div class="t-line"><span class="p">&gt;</span> login: <b>karthikeyan.s</b> · chennai</div>
+                    <div class="t-line"><span class="p">&gt;</span> platform: <b>IBM AS/400</b> · sales-audit recon</div>
+                    <div class="t-line"><span class="p">&gt;</span> job: nightly batch → <b>oracle</b> · zero-error tolerance</div>
+                    <div class="t-line"><span class="p">&gt;</span> status: <b>balanced by morning. every morning.</b></div>
+                    <div class="t-line lesson">&gt; lesson_01: trust is earned in production</div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- ── ACT II · THE CLIMB ── -->
+<section id="climb">
+    <div class="wrap act">
+        <div class="act-kicker" data-spark>Act II — The Climb · 2011–2023</div>
+        <h2 class="act-title">Sixteen years of shipping things that had to work.</h2>
+        <p class="act-desc">
+            Not a straight line — a widening one. Data, then automation, then
+            programs measured in tens of thousands of devices. Follow the ember.
+        </p>
+        <div class="climb-rail">
+            <div class="climb-line"></div>
+            <div class="climb-line-fill"></div>
+            <div class="milestone reveal">
+                <span class="m-node" data-spark></span>
+                <div class="m-card">
+                    <div class="m-year">2011 · HEWLETT-PACKARD</div>
+                    <h3>Learning to read an enterprise through its data</h3>
+                    <p>Assistant Manager — data analysis, process assessment, functional design, change controls. Where process discipline was built.</p>
+                    <span class="m-chip">data &amp; process</span>
+                </div>
+            </div>
+            <div class="milestone reveal">
+                <span class="m-node" data-spark></span>
+                <div class="m-card">
+                    <div class="m-year">2015 · ATOS — RPA LEAD</div>
+                    <h3>Teaching software to do the work</h3>
+                    <p>50+ RPA automations across HR, Finance, and Procurement — leading consultants, business analysts, and developers.</p>
+                    <span class="m-chip">50+ automations</span>
+                </div>
+            </div>
+            <div class="milestone reveal">
+                <span class="m-node" data-spark></span>
+                <div class="m-card">
+                    <div class="m-year">ATOS — PROGRAM DELIVERY</div>
+                    <h3>12,000 devices, moved without the business noticing</h3>
+                    <p>A Windows 11 migration program owned end to end — plans, budgets, vendors, stakeholders. Enterprise delivery at scale.</p>
+                    <span class="m-chip">12,000 devices</span>
+                </div>
+            </div>
+            <div class="milestone reveal">
+                <span class="m-node" data-spark></span>
+                <div class="m-card">
+                    <div class="m-year">NATIONAL GRID — AIOPS</div>
+                    <h3>Predictive operations across a 40,000-device estate</h3>
+                    <p>AIOps (Nexthink / ITOM) plus enterprise backup &amp; recovery — turning reactive IT operations into measured, proactive ones.</p>
+                    <span class="m-chip">40,000-device estate</span>
+                </div>
+            </div>
+            <div class="milestone reveal">
+                <span class="m-node" data-spark></span>
+                <div class="m-card">
+                    <div class="m-year">MICROSOFT — COPILOT FOR SECURITY</div>
+                    <h3>Grading an AI before the world used it</h3>
+                    <p>Rubric-driven evaluation of Microsoft Copilot (Entra) with Microsoft Engineering — accuracy, correctness, user satisfaction. The score moved 20%.</p>
+                    <span class="m-chip">+20% RSAT</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- ── ACT III · THE TURN ── -->
+<section id="turn">
     <div class="wrap">
-        <div class="sec-head"><span class="sec-idx">01</span><h2 class="sec-title">Live from production</h2></div>
-        <p class="sec-desc">
-            Not a case study — a system I designed, govern, and run today.
-            An enterprise multi-agent AI platform on Google Cloud, powered by Vertex AI / Gemini.
+        <div class="turn-stage" id="turn-stage">
+            <div class="beat">Then the industry <span class="accent">turned</span>.</div>
+            <div class="beat">Enterprises stopped asking <span class="dim-t">whether AI works…</span></div>
+            <div class="beat">…and started asking <span class="accent">who can make it work</span> in production.</div>
+            <div class="beat">So I built the answer.<br/><span class="dim-t" style="font-size:0.5em; font-weight:500; letter-spacing:0;">— and I run it every day.</span></div>
+        </div>
+    </div>
+    <div class="wrap" style="padding-bottom:4rem;">
+        <div class="act-kicker" data-spark>Act III — The Turn · Live from production</div>
+        <h2 class="act-title">Not a case study. A system I designed, govern, and <span class="accent">run today</span>.</h2>
+        <p class="act-desc">
+            An enterprise multi-agent AI platform on Google Cloud, powered by Vertex AI / Gemini —
+            delivering real consulting workflows with governance and cost discipline engineered in.
         </p>
         <div class="live-tag"><span class="live-dot"></span>Running now</div>
-        <div class="metrics">
+        <div class="metrics reveal">
             <div class="metric">
                 <div class="metric-num" style="font-size:1.45rem; padding-top:0.45rem;">Multi-agent</div>
                 <div class="metric-lbl">AI platform — concept to production, founded and run by me</div>
             </div>
             <div class="metric">
-                <div class="metric-num">+20<small>%</small></div>
+                <div class="metric-num"><span data-countup="20" data-prefix="+" data-suffix="">+20</span><small>%</small></div>
                 <div class="metric-lbl">RSAT lift on Microsoft Copilot (Entra) evaluation</div>
             </div>
             <div class="metric">
-                <div class="metric-num">50<small>+</small></div>
-                <div class="metric-lbl">RPA automations delivered across HR, Finance, Procurement</div>
+                <div class="metric-num"><span data-countup="0">0</span></div>
+                <div class="metric-lbl">exposed endpoints — private backend behind a hosting proxy</div>
             </div>
             <div class="metric">
-                <div class="metric-num">100<small>%</small></div>
+                <div class="metric-num"><span data-countup="100">100</span><small>%</small></div>
                 <div class="metric-lbl">audit-traceable outputs — governance built in</div>
             </div>
         </div>
-        <p class="metrics-note">Numbers from real systems and engagements — details in the project stories below.</p>
+        <p class="award-line">🏆 <b>Winner — Atos AI Mission Challenge 2025</b> · "Most Impactful Business Solution" &nbsp;·&nbsp; 🥉 Bronze — The Copilot Games 2024</p>
     </div>
 </section>
 
-<!-- ── 02 WHAT I LEAD ── -->
+<!-- ── WHAT I LEAD (today) ── -->
 <section id="lead">
-    <div class="wrap">
-        <div class="sec-head"><span class="sec-idx">02</span><h2 class="sec-title">What I lead</h2></div>
-        <p class="sec-desc">
-            Three disciplines, one throughline: getting AI and automation adopted,
-            governed, and paying for itself.
+    <div class="wrap act">
+        <div class="act-kicker" data-spark>Meanwhile — what I lead now</div>
+        <h2 class="act-title">Three disciplines, one throughline.</h2>
+        <p class="act-desc">
+            Getting AI and automation adopted, governed, and paying for itself.
         </p>
-        <div class="pillars">
+        <div class="pillars reveal">
             <div class="pillar">
                 <svg class="pillar-icon" viewBox="0 0 24 24"><path d="M12 2l3 5.5 6 .9-4.4 4.3 1 6.1L12 16l-5.6 2.8 1-6.1L3 8.4l6-.9L12 2z" stroke-linejoin="round"/></svg>
                 <h3>AI Product &amp; Platforms</h3>
@@ -715,48 +959,52 @@
     </div>
 </section>
 
-<!-- ── 03 PROOF OF WORK ── -->
+<!-- ── ACT IV · SHIPPED (horizontal strip) ── -->
 <section id="work">
-    <div class="wrap">
-        <div class="sec-head"><span class="sec-idx">03</span><h2 class="sec-title">Shipped.</h2></div>
-        <p class="sec-desc">
+    <div class="wrap ship-head">
+        <div class="act-kicker" data-spark>Act IV — Shipped</div>
+        <h2 class="act-title">Proof, not promises.</h2>
+        <p class="act-desc">
             AI systems I've founded and run — from a production multi-agent platform on GCP
             to a governed compliance control on the Microsoft stack. Each card opens an
             interactive story with the decisions behind it.
         </p>
-        <div class="work-grid">
-            <div class="work-card reveal" data-story="platform" role="button" tabindex="0" aria-label="Open the story: Multi-Agent AI Platform">
-                <div class="work-top"><span class="status">Production</span></div>
+        <div class="drag-cue">keep scrolling — the shelf slides<span class="sweep">→</span></div>
+    </div>
+    <div class="ship-viewport">
+        <div class="ship-track">
+            <div class="work-card" data-story="platform" role="button" tabindex="0" aria-label="Open the story: Multi-Agent AI Platform">
+                <div class="work-top"><span class="card-idx">01 / 06</span><span class="status">Production</span></div>
                 <h3>Multi-Agent AI Platform</h3>
                 <p>An enterprise AI platform delivering consulting workflows — specialized agents on a serverless GCP stack, hardened against strict org policies, with governance and cost engineering built in.</p>
                 <div class="stack"><span>FastAPI · Cloud Run · Vertex AI · Firestore</span><span class="story-cue">View story →</span></div>
             </div>
-            <div class="work-card reveal" data-story="ocm" role="button" tabindex="0" aria-label="Open the story: Change Management Agent">
-                <div class="work-top"><span class="status">Production</span></div>
+            <div class="work-card" data-story="ocm" role="button" tabindex="0" aria-label="Open the story: Change Management Agent">
+                <div class="work-top"><span class="card-idx">02 / 06</span><span class="status">Production</span></div>
                 <h3>Change Management Agent</h3>
                 <p>Generates a complete OCM deliverable set — 4 phases, 18 deliverables — from a formal methodology, with version-tagged, audit-traceable outputs and branded PDF export.</p>
                 <div class="stack"><span>Python · Vertex AI · Versioned skill engine</span><span class="story-cue">View story →</span></div>
             </div>
-            <div class="work-card reveal" data-story="gws" role="button" tabindex="0" aria-label="Open the story: Workspace License Right-Sizing">
-                <div class="work-top"><span class="status">Production</span></div>
+            <div class="work-card" data-story="gws" role="button" tabindex="0" aria-label="Open the story: Workspace License Right-Sizing">
+                <div class="work-top"><span class="card-idx">03 / 06</span><span class="status">Production</span></div>
                 <h3>License Right-Sizing Agent</h3>
                 <p>Reads real Google Workspace usage across a tenant and surfaces defensible savings — with a zero-usage guard so quiet-but-active users are never wrongly downgraded.</p>
                 <div class="stack"><span>Admin SDK · Reports API · Cloud Run Jobs</span><span class="story-cue">View story →</span></div>
             </div>
-            <div class="work-card reveal" data-story="hci" role="button" tabindex="0" aria-label="Open the story: Infrastructure Health Check Agent">
-                <div class="work-top"><span class="status">Production</span></div>
+            <div class="work-card" data-story="hci" role="button" tabindex="0" aria-label="Open the story: Infrastructure Health Check Agent">
+                <div class="work-top"><span class="card-idx">04 / 06</span><span class="status">Production</span></div>
                 <h3>Infra Health Check Agent</h3>
                 <p>Automated infrastructure health monitoring that produces shippable PDF reports and emails them out — replacing manual review cycles with a repeatable pipeline.</p>
                 <div class="stack"><span>Python · Analysis pipeline · Email automation</span><span class="story-cue">View story →</span></div>
             </div>
-            <div class="work-card reveal" data-story="revokai" role="button" tabindex="0" aria-label="Open the story: RevokAI governed access revocation">
-                <div class="work-top"><span class="status">Pilot</span></div>
+            <div class="work-card" data-story="revokai" role="button" tabindex="0" aria-label="Open the story: RevokAI governed access revocation">
+                <div class="work-top"><span class="card-idx">05 / 06</span><span class="status">Pilot</span></div>
                 <h3>RevokAI — Governed Access Control</h3>
                 <p>An AI compliance control for access revocation: AI correlates the hard identity matches a report can't, deterministic rules plus mandatory human approval decide, and every action lands in an exportable audit trail.</p>
                 <div class="stack"><span>Copilot Studio · Power Automate · Office Scripts</span><span class="story-cue">View story →</span></div>
             </div>
-            <div class="work-card reveal" data-story="outreach" role="button" tabindex="0" aria-label="Open the story: AI Customer Outreach Agent">
-                <div class="work-top"><span class="status">Production</span></div>
+            <div class="work-card" data-story="outreach" role="button" tabindex="0" aria-label="Open the story: AI Customer Outreach Agent">
+                <div class="work-top"><span class="card-idx">06 / 06</span><span class="status">Production</span></div>
                 <h3>Customer Outreach Agent</h3>
                 <p>Autonomously researches a customer's strategic priorities with live web search, scores alignment against a service portfolio, and drafts personalized outreach — only opportunities that clear a strict evidence threshold are ever actioned.</p>
                 <div class="stack"><span>Vertex AI (Gemini) · Live research · Scoring engine</span><span class="story-cue">View story →</span></div>
@@ -765,36 +1013,37 @@
     </div>
 </section>
 
-<!-- ── 04 OPERATING PRINCIPLES ── -->
+<!-- ── ACT V · HOW I OPERATE ── -->
 <section id="playbook">
-    <div class="wrap">
-        <div class="sec-head"><span class="sec-idx">04</span><h2 class="sec-title">How I operate</h2></div>
-        <p class="sec-desc">
-            The operating system behind every engagement — pilot to production without the stall.
+    <div class="wrap act">
+        <div class="act-kicker" data-spark>Act V — How I operate</div>
+        <h2 class="act-title">The operating system behind every engagement.</h2>
+        <p class="act-desc">
+            Pilot to production without the stall.
         </p>
         <div class="principles">
-            <div class="principle">
+            <div class="principle reveal">
                 <span class="p-idx">/01</span>
                 <div>
                     <h3>Evaluate before you ship</h3>
                     <p>Rubric-driven LLM evaluation — accuracy, technical correctness, user satisfaction — before anything reaches users. It's how a Microsoft product metric moved 20%.</p>
                 </div>
             </div>
-            <div class="principle">
+            <div class="principle reveal">
                 <span class="p-idx">/02</span>
                 <div>
                     <h3>Governance is a feature</h3>
                     <p>Role-based access, audit-traceable outputs, and an automated model-lifecycle steward that migrates agents off retired LLMs — compliance without manual toil.</p>
                 </div>
             </div>
-            <div class="principle">
+            <div class="principle reveal">
                 <span class="p-idx">/03</span>
                 <div>
                     <h3>Adoption is the product</h3>
                     <p>Technology is 30% of a transformation. Readiness measurement, communications, and executive alignment are what make the other 70% land.</p>
                 </div>
             </div>
-            <div class="principle">
+            <div class="principle reveal">
                 <span class="p-idx">/04</span>
                 <div>
                     <h3>Cost is architecture</h3>
@@ -806,11 +1055,11 @@
         <!-- Copilot Enablement Playbook -->
         <div style="margin-top:2.6rem;">
             <h3 style="font-family:var(--font-display); font-size:1.35rem; font-weight:700; letter-spacing:-0.01em; margin-bottom:0.6rem;">The Copilot Enablement Playbook</h3>
-            <p class="sec-desc" style="margin-bottom:2rem;">
+            <p class="act-desc" style="margin-bottom:2rem;">
                 My structured 12-week program for moving an organization from Copilot curiosity
                 to dependable, everyday use — because access is no longer the constraint; intentional adoption is.
             </p>
-            <div class="pillars">
+            <div class="pillars reveal">
                 <div class="pillar">
                     <div style="font-family:var(--font-mono); font-size:0.72rem; color:var(--accent); letter-spacing:0.12em; margin-bottom:0.9rem;">01 · BUILD</div>
                     <h3>Practical confidence</h3>
@@ -834,12 +1083,13 @@
     </div>
 </section>
 
-<!-- ── CONTACT + ASK MY AI ── -->
+<!-- ── EPILOGUE · CONTACT + ASK MY AI ── -->
 <section id="contact" class="contact">
-    <div class="wrap">
+    <div class="wrap" style="padding-top:4rem;">
         <div class="contact-grid">
             <div id="ask">
-                <h2>Let's build something that actually <span class="accent">works</span>.</h2>
+                <div class="act-kicker">Epilogue — your move</div>
+                <h2>You've read the story. Now <span class="accent">interrogate</span> it.</h2>
                 <p class="contact-sub">
                     Consulting engagement, a leadership conversation, or a hard question about
                     where enterprise AI is really headed — I'm open to all three.
@@ -850,14 +1100,14 @@
                     <a href="mailto:skarthik1710@gmail.com" class="btn btn-ghost">skarthik1710@gmail.com</a>
                 </div>
                 <p style="color:var(--dim); font-size:0.85rem; margin-top:2rem; max-width:30em; line-height:1.7;">
-                    Or don't take the site's word for it — <b style="color:var(--muted); font-weight:600;">interrogate it</b>.
                     The assistant on the right runs on my own Firebase + Gemini stack,
-                    grounded in the career you just read. The site is the demo.
+                    grounded in the career you just read. The ember that's been following
+                    you down the page? It lives there now. <b style="color:var(--muted); font-weight:600;">The site is the demo.</b>
                 </p>
             </div>
             <div class="chat-panel">
                 <div class="chat-head">
-                    <span class="live-dot"></span>
+                    <span class="live-dot" id="spark-dock" data-spark></span>
                     <h3>KS Assist — ask my AI</h3>
                     <span class="chat-stack">gemini · firebase functions</span>
                 </div>
@@ -907,12 +1157,18 @@
     </div>
 </footer>
 
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
 <script>
-    // Scroll reveal
+    const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    const gsapOK = typeof gsap !== 'undefined' && typeof ScrollTrigger !== 'undefined' && !reduceMotion;
+    if (!gsapOK) document.body.classList.add('no-anim');
+
+    // ── Scroll reveal (IO — all viewports) ──
     const revealEls = document.querySelectorAll('.reveal');
     if ('IntersectionObserver' in window && revealEls.length) {
         const io = new IntersectionObserver((entries, obs) => {
-            entries.forEach((entry, i) => {
+            entries.forEach(entry => {
                 if (entry.isIntersecting) {
                     entry.target.style.transitionDelay = (entry.target.dataset.d || 0) + 's';
                     entry.target.classList.add('in');
@@ -924,6 +1180,129 @@
     } else {
         revealEls.forEach(el => el.classList.add('in'));
     }
+
+    // ── Count-up numbers (IO) ──
+    const countEls = document.querySelectorAll('[data-countup]');
+    if ('IntersectionObserver' in window && countEls.length && !reduceMotion) {
+        const cio = new IntersectionObserver((entries, obs) => {
+            entries.forEach(entry => {
+                if (!entry.isIntersecting) return;
+                obs.unobserve(entry.target);
+                const el = entry.target, target = parseFloat(el.dataset.countup);
+                const pre = el.dataset.prefix || '', suf = el.dataset.suffix || '';
+                if (target === 0) { el.textContent = pre + '0' + suf; return; }
+                const dur = 1100, t0 = performance.now();
+                (function tick(now) {
+                    const p = Math.min((now - t0) / dur, 1);
+                    el.textContent = pre + Math.round(target * (1 - Math.pow(1 - p, 3))) + suf;
+                    if (p < 1) requestAnimationFrame(tick);
+                })(t0);
+            });
+        }, { threshold: 0.5 });
+        countEls.forEach(el => cio.observe(el));
+    }
+
+    // ── GSAP story choreography ──
+    if (gsapOK) {
+        gsap.registerPlugin(ScrollTrigger);
+        const mm = gsap.matchMedia();
+
+        // Terminal lines wipe in (all sizes)
+        gsap.utils.toArray('#origin .t-line').forEach((line, i) => {
+            gsap.from(line, {
+                clipPath: 'inset(0 100% 0 0)',
+                ease: 'none',
+                scrollTrigger: { trigger: line, start: 'top 88%', end: 'top 55%', scrub: 0.4 }
+            });
+        });
+
+        // Climb rail fill (all sizes)
+        gsap.from('.climb-line-fill', {
+            scaleY: 0,
+            ease: 'none',
+            scrollTrigger: { trigger: '.climb-rail', start: 'top 72%', end: 'bottom 55%', scrub: 0.5 }
+        });
+        // Milestone nodes ignite as the fill passes
+        gsap.utils.toArray('.milestone').forEach(m => {
+            ScrollTrigger.create({
+                trigger: m, start: 'top 62%',
+                onEnter: () => m.classList.add('lit'),
+                onLeaveBack: () => m.classList.remove('lit')
+            });
+        });
+
+        mm.add('(min-width: 900px)', () => {
+            // Act III beats — pinned title cards
+            const beats = gsap.utils.toArray('#turn-stage .beat');
+            gsap.set(beats, { autoAlpha: 0, y: 30 });
+            const tl = gsap.timeline({
+                scrollTrigger: { trigger: '#turn-stage', start: 'top 64px', end: '+=' + (beats.length * 620), pin: true, scrub: 0.45 }
+            });
+            beats.forEach((b, i) => {
+                tl.to(b, { autoAlpha: 1, y: 0, duration: 1 });
+                if (i < beats.length - 1) tl.to(b, { autoAlpha: 0, y: -30, duration: 1 }, '+=0.6');
+                else tl.to(b, { autoAlpha: 1, duration: 0.6 }); // last beat holds
+            });
+
+            // Act IV — horizontal shelf
+            const track = document.querySelector('.ship-track');
+            const getScroll = () => Math.max(0, track.scrollWidth - window.innerWidth);
+            const shipTween = gsap.to(track, {
+                x: () => -getScroll(),
+                ease: 'none',
+                scrollTrigger: {
+                    trigger: '.ship-viewport', start: 'top 55%', end: () => '+=' + (getScroll() + 200),
+                    pin: '#work', scrub: 0.5, invalidateOnRefresh: true
+                }
+            });
+
+            return () => { /* matchMedia cleanup handled by GSAP */ };
+        });
+
+        window.addEventListener('load', () => ScrollTrigger.refresh());
+    }
+
+    // ── Ember spark guide (desktop, fine pointer, motion OK) ──
+    (function initSpark() {
+        const spark = document.getElementById('spark');
+        if (!spark || reduceMotion || window.innerWidth < 900 || !window.matchMedia('(pointer: fine)').matches) return;
+        const anchors = Array.from(document.querySelectorAll('[data-spark]'));
+        if (!anchors.length) return;
+        let sx = window.innerWidth / 2, sy = -30, tx = sx, ty = sy, t = 0, shown = false;
+
+        function pickTarget() {
+            const vc = window.innerHeight / 2;
+            let best = null, bestDist = Infinity;
+            anchors.forEach(a => {
+                const r = a.getBoundingClientRect();
+                if (r.width === 0 && r.height === 0) return;
+                const cy = r.top + r.height / 2;
+                const d = Math.abs(cy - vc);
+                if (d < bestDist) { bestDist = d; best = a; }
+            });
+            if (!best) return;
+            const r = best.getBoundingClientRect();
+            const isDock = best.id === 'spark-dock';
+            spark.classList.toggle('docked', isDock);
+            if (isDock) { tx = r.left + r.width / 2; ty = r.top + r.height / 2; }
+            else {
+                tx = Math.max(18, r.left - 26);
+                ty = Math.min(Math.max(r.top + r.height / 2, 70), window.innerHeight - 40);
+            }
+            if (!shown) { spark.classList.add('on'); shown = true; sx = tx; sy = ty - 40; }
+        }
+
+        function frame() {
+            t += 0.03;
+            pickTarget();
+            sx += (tx - sx) * 0.075;
+            sy += (ty - sy) * 0.075;
+            const bob = spark.classList.contains('docked') ? 0 : Math.sin(t * 2.1) * 4;
+            spark.style.transform = 'translate(' + (sx - 5) + 'px,' + (sy - 5 + bob) + 'px)';
+            requestAnimationFrame(frame);
+        }
+        requestAnimationFrame(frame);
+    })();
 
     // ── PROJECT STORY PRESENTATIONS ──
     const STORIES = {
@@ -1059,7 +1438,6 @@
     const prevBtn = document.getElementById('story-prev');
     const nextBtn = document.getElementById('story-next');
     const closeBtn = document.querySelector('.story-close');
-    const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
     let currentStory = [], currentIdx = 0, lastFocused = null;
 
     function esc(s) { const d = document.createElement('div'); d.textContent = s; return d.innerHTML; }
