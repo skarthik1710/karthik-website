@@ -24,7 +24,7 @@ SITE_URL    = os.environ.get("SITE_URL", "https://karthikeyanselvam.com")
 # Auto-publish (Option B): generated articles go live immediately. The only
 # safeguards before subscribers see them are the grounded prompt + validate_article().
 # REVIEW_MODE flips a run to save drafts (pending_review) instead — for test runs you
-# eyeball in admin/review.html before anything is public.
+# eyeball at /admin/ (review desk) before anything is public.
 REVIEW_MODE    = os.environ.get("NEWSLETTER_REVIEW_MODE", "").strip().lower() in ("1", "true", "yes")
 RECENCY_DAYS   = 7      # only write about news from the last week
 MIN_BODY_WORDS = 350    # reject anything thinner than this
@@ -629,7 +629,7 @@ if __name__ == "__main__":
         print("\n✉️  No email written (no content) — workflow will skip the send.")
 
     if REVIEW_MODE:
-        print(f"\n🧐 Done. {len(published_articles)} draft article(s) saved for review at {SITE_URL}/admin/review.html")
+        print(f"\n🧐 Done. {len(published_articles)} draft article(s) saved for review at {SITE_URL}/admin/")
     else:
         print(f"\n🎉 Done. {len(published_articles)} article(s) auto-published and live:")
     for a in published_articles:

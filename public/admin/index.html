@@ -1,0 +1,492 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Review Desk — KS Admin</title>
+    <meta name="robots" content="noindex"/>
+    <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%23141110'/%3E%3Ctext x='32' y='42' font-family='Arial,sans-serif' font-size='30' font-weight='700' fill='%23FF6B35' text-anchor='middle'%3EK%3C/text%3E%3Ccircle cx='47' cy='40' r='3.4' fill='%23F3EDE7'/%3E%3C/svg%3E"/>
+    <link rel="preconnect" href="https://fonts.googleapis.com"/>
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet"/>
+
+    <style>
+        :root {
+            --bg: #141110;
+            --surface: #1A1614;
+            --surface-2: #201B18;
+            --line: #292320;
+            --line-strong: #37302B;
+            --text: #F3EDE7;
+            --muted: #A69C92;
+            --dim: #75695E;
+            --accent: #FF6B35;
+            --accent-dim: rgba(255, 107, 53, 0.4);
+            --accent-faint: rgba(255, 107, 53, 0.09);
+            --amber: #D9A441;
+            --amber-dim: rgba(217, 164, 65, 0.4);
+            --amber-faint: rgba(217, 164, 65, 0.1);
+            --red: #D65A5A;
+            --red-dim: rgba(214, 90, 90, 0.4);
+            --red-faint: rgba(214, 90, 90, 0.1);
+            --font-display: 'Space Grotesk', 'Inter', sans-serif;
+            --font-body: 'Inter', -apple-system, sans-serif;
+            --font-mono: 'JetBrains Mono', 'SFMono-Regular', monospace;
+            --w: 940px;
+        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: var(--font-body);
+            background: var(--bg); color: var(--text);
+            min-height: 100vh; line-height: 1.65; font-size: 16px;
+            -webkit-font-smoothing: antialiased;
+        }
+        ::selection { background: var(--accent); color: #210D02; }
+        ::-webkit-scrollbar { width: 8px; }
+        ::-webkit-scrollbar-track { background: var(--bg); }
+        ::-webkit-scrollbar-thumb { background: var(--line-strong); border-radius: 4px; }
+
+        /* ── NAV ── */
+        .nav {
+            position: sticky; top: 0; z-index: 100;
+            background: rgba(20, 17, 16, 0.88);
+            backdrop-filter: blur(14px);
+            border-bottom: 1px solid var(--line);
+        }
+        .nav-inner {
+            max-width: var(--w); margin: 0 auto; padding: 0 2rem;
+            height: 64px; display: flex; align-items: center; gap: 1rem;
+        }
+        .brand {
+            font-family: var(--font-display); font-weight: 700;
+            font-size: 1.1rem; letter-spacing: -0.02em;
+            text-decoration: none; color: var(--text);
+        }
+        .brand b { color: var(--accent); font-weight: 700; }
+        .desk-chip {
+            font-family: var(--font-mono); font-size: 0.66rem; font-weight: 500;
+            letter-spacing: 0.14em; text-transform: uppercase; color: var(--accent);
+            border: 1px solid var(--accent-dim); border-radius: 4px;
+            padding: 0.22rem 0.6rem; background: var(--accent-faint);
+        }
+        .nav-right { margin-left: auto; display: flex; align-items: center; gap: 0.9rem; }
+        #who { font-family: var(--font-mono); font-size: 0.7rem; color: var(--dim); }
+        .private-chip {
+            display: inline-flex; align-items: center; gap: 0.4rem;
+            font-family: var(--font-mono); font-size: 0.66rem; letter-spacing: 0.1em;
+            text-transform: uppercase; color: var(--dim);
+            border: 1px solid var(--line-strong); border-radius: 4px; padding: 0.22rem 0.6rem;
+        }
+        .private-chip svg { width: 11px; height: 11px; stroke: var(--dim); fill: none; stroke-width: 2; }
+
+        /* ── BUTTONS ── */
+        .btn {
+            font-family: var(--font-display); font-weight: 600; font-size: 0.88rem;
+            padding: 0.72rem 1.5rem; border-radius: 7px; border: none;
+            cursor: pointer; transition: all 0.15s; text-decoration: none;
+            display: inline-flex; align-items: center; gap: 0.5rem;
+        }
+        .btn-solid { background: var(--accent); color: #210D02; }
+        .btn-solid:hover { background: #FF8557; transform: translateY(-1px); }
+        .btn-ghost { background: transparent; border: 1px solid var(--line-strong); color: var(--muted); }
+        .btn-ghost:hover { color: var(--text); border-color: var(--accent); }
+        .btn-danger { background: transparent; border: 1px solid var(--red-dim); color: var(--red); }
+        .btn-danger:hover { background: var(--red-faint); border-color: var(--red); }
+        .btn-sm { padding: 0.4rem 1rem; font-size: 0.78rem; }
+
+        /* ── LAYOUT ── */
+        .container { max-width: var(--w); margin: 0 auto; padding: 3rem 2rem 5rem; }
+        .kicker {
+            font-family: var(--font-mono); font-size: 0.74rem; font-weight: 500;
+            letter-spacing: 0.16em; text-transform: uppercase; color: var(--accent);
+            display: flex; align-items: center; gap: 0.7rem; margin-bottom: 1.1rem;
+        }
+        .kicker::before { content: ''; width: 22px; height: 1px; background: var(--accent); }
+        h1 {
+            font-family: var(--font-display);
+            font-size: clamp(1.7rem, 4vw, 2.4rem); font-weight: 700;
+            letter-spacing: -0.025em; line-height: 1.12; margin-bottom: 0.7rem;
+        }
+        h1 .accent { color: var(--accent); }
+        .subtitle { color: var(--muted); max-width: 40em; margin-bottom: 2.2rem; }
+
+        /* ── GATE / DENIED (Skipper the gatekeeper) ── */
+        .gate {
+            text-align: center; padding: 4rem 2rem;
+            border: 1px solid var(--line); border-radius: 14px; background: var(--surface);
+            max-width: 520px; margin: 3rem auto 0;
+        }
+        .gate .pg { width: 92px; height: 92px; margin-bottom: 1.4rem; animation: pgBob 3.4s ease-in-out infinite; }
+        .gate .kicker { justify-content: center; }
+        .gate .kicker::before { display: none; }
+        .gate h2 { font-family: var(--font-display); font-size: 1.45rem; font-weight: 700; letter-spacing: -0.02em; margin-bottom: 0.7rem; }
+        .gate p { color: var(--muted); font-size: 0.92rem; margin-bottom: 1.6rem; max-width: 28em; margin-left: auto; margin-right: auto; }
+        .gate .denied-email { font-family: var(--font-mono); font-size: 0.75rem; color: var(--red); margin-top: -0.9rem; }
+        .pg-eyes { animation: pgLook 5.2s ease-in-out infinite; }
+        .pg-wing-l { transform-origin: 18px 35px; animation: pgWave 6.2s ease-in-out infinite; }
+        .pg-ember { animation: pulse 2s ease infinite; }
+        @keyframes pgBob { 0%,100% { transform: translateY(0); } 50% { transform: translateY(-3px); } }
+        @keyframes pgLook { 0%, 34%, 100% { transform: translateX(0); } 40%, 58% { transform: translateX(-2.4px); } 64%, 86% { transform: translateX(2.4px); } }
+        @keyframes pgWave { 0%, 76%, 100% { transform: rotate(0deg); } 82%, 90% { transform: rotate(-18deg); } 86% { transform: rotate(-26deg); } }
+        @keyframes pulse { 0%,100% { opacity: 1; } 50% { opacity: 0.35; } }
+
+        /* ── COUNTS + FILTERS ── */
+        .desk-bar { display: flex; align-items: center; gap: 0.7rem; flex-wrap: wrap; margin-bottom: 1.8rem; }
+        .count-chip {
+            font-family: var(--font-mono); font-size: 0.74rem; font-weight: 500;
+            padding: 0.45rem 1rem; border-radius: 6px; letter-spacing: 0.04em;
+            border: 1px solid var(--line-strong); color: var(--muted);
+            background: var(--surface); cursor: pointer; transition: all 0.15s;
+        }
+        .count-chip b { font-weight: 600; }
+        .count-chip.f-pending b { color: var(--amber); }
+        .count-chip.f-approved b { color: var(--accent); }
+        .count-chip.f-rejected b { color: var(--red); }
+        .count-chip:hover { border-color: var(--accent-dim); color: var(--text); }
+        .count-chip.active { border-color: var(--accent); color: var(--text); background: var(--accent-faint); }
+
+        /* ── ARTICLE CARDS ── */
+        .article-review {
+            background: var(--surface); border: 1px solid var(--line);
+            border-left: 3px solid var(--amber);
+            border-radius: 12px; padding: 1.8rem 2rem; margin-bottom: 1.4rem;
+            transition: border-color 0.2s;
+        }
+        .article-review.approved { border-left-color: var(--accent); }
+        .article-review.rejected { border-left-color: var(--red); opacity: 0.55; }
+        .meta { display: flex; gap: 0.7rem; align-items: center; margin-bottom: 1rem; flex-wrap: wrap; }
+        .cat {
+            font-family: var(--font-mono); font-size: 0.66rem; font-weight: 500;
+            letter-spacing: 0.12em; text-transform: uppercase; color: var(--accent);
+            border: 1px solid var(--accent-dim); border-radius: 4px;
+            padding: 0.2rem 0.55rem; background: var(--accent-faint);
+        }
+        .date { font-family: var(--font-mono); font-size: 0.7rem; color: var(--dim); }
+        .status-badge {
+            font-family: var(--font-mono); font-size: 0.66rem; font-weight: 500;
+            letter-spacing: 0.12em; text-transform: uppercase;
+            padding: 0.2rem 0.55rem; border-radius: 4px; margin-left: auto;
+        }
+        .status-pending  { background: var(--amber-faint); border: 1px solid var(--amber-dim); color: var(--amber); }
+        .status-approved { background: var(--accent-faint); border: 1px solid var(--accent-dim); color: var(--accent); }
+        .status-rejected { background: var(--red-faint); border: 1px solid var(--red-dim); color: var(--red); }
+        .article-review h3 {
+            font-family: var(--font-display); font-size: 1.22rem; font-weight: 600;
+            letter-spacing: -0.01em; line-height: 1.3; margin-bottom: 0.55rem;
+        }
+        .excerpt { color: var(--muted); font-size: 0.9rem; margin-bottom: 1.1rem; line-height: 1.7; }
+        .sources { background: var(--surface-2); border: 1px solid var(--line); border-radius: 8px; padding: 0.9rem 1.1rem; margin-bottom: 1.1rem; }
+        .sources h4 {
+            font-family: var(--font-mono); font-size: 0.64rem; color: var(--accent);
+            text-transform: uppercase; letter-spacing: 0.14em; margin-bottom: 0.55rem; font-weight: 500;
+        }
+        .sources a {
+            display: block; color: var(--muted); font-size: 0.8rem;
+            text-decoration: none; margin-bottom: 0.25rem; transition: color 0.15s;
+        }
+        .sources a::before { content: '→ '; color: var(--accent); }
+        .sources a:hover { color: var(--text); }
+        .sources .none { color: var(--dim); font-size: 0.8rem; }
+        .body-preview {
+            color: var(--muted); font-size: 0.87rem; line-height: 1.8;
+            white-space: pre-wrap; max-height: 280px; overflow-y: auto;
+            padding: 1rem 1.1rem; background: var(--surface-2);
+            border: 1px solid var(--line); border-radius: 8px; margin-bottom: 1.2rem;
+        }
+        .actions { display: flex; gap: 0.9rem; flex-wrap: wrap; align-items: center; }
+        .result-line { font-family: var(--font-mono); font-size: 0.76rem; letter-spacing: 0.03em; }
+        .result-line.live { color: var(--accent); }
+        .result-line.gone { color: var(--red); }
+
+        /* ── EMPTY / LOADING / TOAST ── */
+        .empty { text-align: center; padding: 4rem 2rem; color: var(--dim); font-family: var(--font-mono); font-size: 0.85rem; }
+        .toast {
+            position: fixed; bottom: 1.6rem; right: 1.6rem; z-index: 999; display: none;
+            background: var(--surface-2); border: 1px solid var(--accent-dim);
+            color: var(--text); padding: 0.9rem 1.3rem; border-radius: 10px;
+            font-family: var(--font-mono); font-size: 0.78rem;
+            box-shadow: 0 12px 40px rgba(0,0,0,0.5);
+        }
+        .toast.err { border-color: var(--red-dim); }
+
+        @media (prefers-reduced-motion: reduce) {
+            .gate .pg, .pg-eyes, .pg-wing-l, .pg-ember { animation: none; }
+        }
+        @media (max-width: 600px) {
+            .container { padding: 2rem 1.2rem 3.5rem; }
+            .article-review { padding: 1.4rem 1.3rem; }
+            #who { display: none; }
+        }
+    </style>
+</head>
+<body>
+
+<!-- ── NAV ── -->
+<nav class="nav">
+    <div class="nav-inner">
+        <a class="brand" href="/">Karthikeyan Selvam<b>.</b></a>
+        <span class="desk-chip">Review desk</span>
+        <div class="nav-right">
+            <span id="who"></span>
+            <button id="signout-btn" class="btn btn-ghost btn-sm" style="display:none;" onclick="signOutAdmin()">Sign out</button>
+            <span class="private-chip"><svg viewBox="0 0 24 24"><rect x="4" y="11" width="16" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg>Private</span>
+        </div>
+    </div>
+</nav>
+
+<div class="container">
+
+    <!-- ── SIGN-IN GATE ── -->
+    <div id="auth-gate" class="gate" style="display:none;">
+        <svg class="pg" viewBox="0 0 64 64" aria-hidden="true">
+            <path class="pg-wing pg-wing-l" d="M16 32 Q8 39 11 50 Q18 47 21 39 Z" fill="#120F0C"/>
+            <path class="pg-wing" d="M48 32 Q56 39 53 50 Q46 47 43 39 Z" fill="#120F0C"/>
+            <ellipse cx="25.5" cy="56.5" rx="5" ry="2.6" fill="#210D02"/>
+            <ellipse cx="38.5" cy="56.5" rx="5" ry="2.6" fill="#210D02"/>
+            <path d="M32 7 C21 7 15.5 18 15.5 31.5 C15.5 46.5 22.5 55.5 32 55.5 C41.5 55.5 48.5 46.5 48.5 31.5 C48.5 18 43 7 32 7 Z" fill="#17130F"/>
+            <path d="M32 19.5 C25.2 19.5 21 27.5 21 36.5 C21 46.5 26 52.5 32 52.5 C38 52.5 43 46.5 43 36.5 C43 27.5 38.8 19.5 32 19.5 Z" fill="#F3EDE7"/>
+            <circle class="pg-ember" cx="32" cy="40" r="3.4" fill="#FF6B35"/>
+            <circle cx="26" cy="17.5" r="4.1" fill="#F3EDE7"/>
+            <circle cx="38" cy="17.5" r="4.1" fill="#F3EDE7"/>
+            <g class="pg-eyes">
+                <circle cx="26.9" cy="18.2" r="1.9" fill="#0F0C0A"/>
+                <circle cx="37.1" cy="18.2" r="1.9" fill="#0F0C0A"/>
+            </g>
+            <rect x="21.4" y="12.2" width="9.4" height="3.4" rx="1.6" transform="rotate(9 26 14)" fill="#17130F"/>
+            <rect x="33.2" y="12.2" width="9.4" height="3.4" rx="1.6" transform="rotate(-9 38 14)" fill="#17130F"/>
+            <path d="M27.6 21.6 L36.4 21.6 L32 27.2 Z" fill="#FF6B35"/>
+        </svg>
+        <div class="kicker">Restricted · editorial control</div>
+        <h2>Skipper guards this one.</h2>
+        <p>The review desk decides what the newsletter pipeline publishes. Sign in with the authorized account to proceed.</p>
+        <button class="btn btn-solid" onclick="signInAdmin()">Sign in with Google</button>
+    </div>
+
+    <!-- ── DENIED ── -->
+    <div id="denied" class="gate" style="display:none;">
+        <svg class="pg" viewBox="0 0 64 64" aria-hidden="true" style="animation:none;">
+            <path class="pg-wing" d="M16 32 Q8 39 11 50 Q18 47 21 39 Z" fill="#120F0C"/>
+            <path class="pg-wing" d="M48 32 Q56 39 53 50 Q46 47 43 39 Z" fill="#120F0C"/>
+            <ellipse cx="25.5" cy="56.5" rx="5" ry="2.6" fill="#210D02"/>
+            <ellipse cx="38.5" cy="56.5" rx="5" ry="2.6" fill="#210D02"/>
+            <path d="M32 7 C21 7 15.5 18 15.5 31.5 C15.5 46.5 22.5 55.5 32 55.5 C41.5 55.5 48.5 46.5 48.5 31.5 C48.5 18 43 7 32 7 Z" fill="#17130F"/>
+            <path d="M32 19.5 C25.2 19.5 21 27.5 21 36.5 C21 46.5 26 52.5 32 52.5 C38 52.5 43 46.5 43 36.5 C43 27.5 38.8 19.5 32 19.5 Z" fill="#F3EDE7"/>
+            <circle cx="26" cy="17.5" r="4.1" fill="#F3EDE7"/>
+            <circle cx="38" cy="17.5" r="4.1" fill="#F3EDE7"/>
+            <circle cx="26.9" cy="18.2" r="1.9" fill="#0F0C0A"/>
+            <circle cx="37.1" cy="18.2" r="1.9" fill="#0F0C0A"/>
+            <rect x="21.4" y="13.6" width="9.4" height="3.4" rx="1.6" transform="rotate(16 26 15)" fill="#17130F"/>
+            <rect x="33.2" y="13.6" width="9.4" height="3.4" rx="1.6" transform="rotate(-16 38 15)" fill="#17130F"/>
+            <path d="M27.6 21.6 L36.4 21.6 L32 27.2 Z" fill="#FF6B35"/>
+        </svg>
+        <div class="kicker" style="color:var(--red);">Access denied</div>
+        <h2>This account isn't on the crew manifest.</h2>
+        <p class="denied-email" id="denied-email"></p>
+        <p>Only the authorized reviewer account can read drafts. Sign out and try the right one.</p>
+        <button class="btn btn-danger" onclick="signOutAdmin()">Sign out</button>
+    </div>
+
+    <!-- ── DESK ── -->
+    <div id="desk" style="display:none;">
+        <div class="kicker">The review desk</div>
+        <h1>Nothing publishes without <span class="accent">your approval</span>.</h1>
+        <p class="subtitle">AI-drafted articles land here first. Approve to put one live on the newsletter page; reject to bury it.</p>
+
+        <div class="desk-bar" id="desk-bar">
+            <button class="count-chip active" data-filter="all" onclick="setFilter('all', this)">All · <b id="count-all">0</b></button>
+            <button class="count-chip f-pending" data-filter="pending_review" onclick="setFilter('pending_review', this)">Pending · <b id="count-pending">0</b></button>
+            <button class="count-chip f-approved" data-filter="approved" onclick="setFilter('approved', this)">Live · <b id="count-approved">0</b></button>
+            <button class="count-chip f-rejected" data-filter="rejected" onclick="setFilter('rejected', this)">Rejected · <b id="count-rejected">0</b></button>
+        </div>
+
+        <div id="articles-container"></div>
+    </div>
+
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.0/firebase-app.js";
+    import { getFirestore, collection, getDocs, doc, updateDoc, query, orderBy, where }
+        from "https://www.gstatic.com/firebasejs/10.7.0/firebase-firestore.js";
+    import { getAuth, GoogleAuthProvider, signInWithPopup, signOut, onAuthStateChanged }
+        from "https://www.gstatic.com/firebasejs/10.7.0/firebase-auth.js";
+
+    const firebaseConfig = {
+        apiKey: "AIzaSyCTmJf_t33Fia2n06xDASC5W4vk7LbvMBc",
+        authDomain: "karthik-website-b5801.firebaseapp.com",
+        projectId: "karthik-website-b5801"
+    };
+
+    const app  = initializeApp(firebaseConfig);
+    const db   = getFirestore(app);
+    const auth = getAuth(app);
+
+    window.signInAdmin = () => signInWithPopup(auth, new GoogleAuthProvider())
+        .catch(e => showToast("Sign-in failed: " + e.message, true));
+    window.signOutAdmin = () => signOut(auth);
+
+    const show = (id, on) => document.getElementById(id).style.display = on ? "" : "none";
+
+    function showToast(msg, isError = false) {
+        const t = document.getElementById("toast");
+        t.textContent = msg;
+        t.classList.toggle("err", isError);
+        t.style.display = "block";
+        setTimeout(() => t.style.display = "none", 3000);
+    }
+
+    // ── status counts + filter tabs ──
+    let currentFilter = "all";
+    window.setFilter = function(f, chip) {
+        currentFilter = f;
+        document.querySelectorAll(".count-chip").forEach(c => c.classList.remove("active"));
+        if (chip) chip.classList.add("active");
+        document.querySelectorAll(".article-review").forEach(card => {
+            card.style.display = (f === "all" || card.dataset.status === f) ? "" : "none";
+        });
+    };
+
+    function refreshCounts() {
+        const cards = document.querySelectorAll(".article-review");
+        const counts = { all: cards.length, pending_review: 0, approved: 0, rejected: 0 };
+        cards.forEach(c => { counts[c.dataset.status] = (counts[c.dataset.status] || 0) + 1; });
+        document.getElementById("count-all").textContent = counts.all;
+        document.getElementById("count-pending").textContent = counts.pending_review;
+        document.getElementById("count-approved").textContent = counts.approved;
+        document.getElementById("count-rejected").textContent = counts.rejected;
+    }
+
+    window.approveArticle = async function(docId) {
+        try {
+            await updateDoc(doc(db, "newsletter_articles", docId), {
+                status: "approved",
+                approved_at: new Date().toISOString()
+            });
+            const card = document.getElementById("card-" + docId);
+            card.className = "article-review approved";
+            card.dataset.status = "approved";
+            document.getElementById("status-" + docId).className = "status-badge status-approved";
+            document.getElementById("status-" + docId).textContent = "Live";
+            document.getElementById("actions-" + docId).innerHTML = "<span class='result-line live'>APPROVED — this article is now live on the newsletter page.</span>";
+            refreshCounts();
+            showToast("Approved and published.");
+        } catch(e) {
+            console.error(e);
+            showToast("Error: " + e.message, true);
+        }
+    };
+
+    window.rejectArticle = async function(docId) {
+        if (!confirm("Reject this article? It will be hidden from the website.")) return;
+        try {
+            await updateDoc(doc(db, "newsletter_articles", docId), { status: "rejected" });
+            const card = document.getElementById("card-" + docId);
+            card.className = "article-review rejected";
+            card.dataset.status = "rejected";
+            document.getElementById("status-" + docId).className = "status-badge status-rejected";
+            document.getElementById("status-" + docId).textContent = "Rejected";
+            document.getElementById("actions-" + docId).innerHTML = "<span class='result-line gone'>REJECTED — hidden from the website.</span>";
+            refreshCounts();
+            showToast("Article rejected.", true);
+        } catch(e) {
+            console.error(e);
+            showToast("Error: " + e.message, true);
+        }
+    };
+
+    function esc(s) { const d = document.createElement("div"); d.textContent = s || ""; return d.innerHTML; }
+
+    async function loadArticles() {
+        const container = document.getElementById("articles-container");
+        try {
+            const q = query(collection(db, "newsletter_articles"), orderBy("created_at", "desc"));
+            const snap = await getDocs(q);
+            if (snap.empty) {
+                container.innerHTML = '<div class="empty">Queue is empty — run the generator to draft some articles.</div>';
+                return;
+            }
+            let html = '';
+            snap.forEach(docSnap => {
+                const d = docSnap.data();
+                const id = docSnap.id;
+                const status = d.status || "pending_review";
+                const statusLabel = status === "approved" ? "Live" : status === "rejected" ? "Rejected" : "Pending review";
+                const statusClass = status === "approved" ? "status-approved" : status === "rejected" ? "status-rejected" : "status-pending";
+                const cardClass   = status === "approved" ? "approved" : status === "rejected" ? "rejected" : "";
+                const sources = (d.news_sources || []).map(s =>
+                    `<a href="${s.url}" target="_blank" rel="noopener">${esc(s.title)} — ${esc(s.source)}</a>`
+                ).join("") || "<span class='none'>No sources recorded</span>";
+
+                const actions = status === "pending_review"
+                    ? `<button class="btn btn-solid" onclick="approveArticle('${id}')">Approve &amp; publish</button>
+                       <button class="btn btn-danger" onclick="rejectArticle('${id}')">Reject</button>`
+                    : status === "approved"
+                    ? `<span class="result-line live">APPROVED — this article is live on the newsletter page.</span>`
+                    : `<span class="result-line gone">REJECTED — hidden from the website.</span>`;
+
+                html += `
+                <div class="article-review ${cardClass}" id="card-${id}" data-status="${status}">
+                    <div class="meta">
+                        <span class="cat">${esc(d.category || "AI")}</span>
+                        <span class="date">${esc(d.date || "")}</span>
+                        <span class="status-badge ${statusClass}" id="status-${id}">${statusLabel}</span>
+                    </div>
+                    <h3>${esc(d.title || "Untitled")}</h3>
+                    <p class="excerpt">${esc(d.excerpt || "")}</p>
+                    <div class="sources">
+                        <h4>Sources used</h4>
+                        ${sources}
+                    </div>
+                    <div class="body-preview">${esc(d.body || "No body content.")}</div>
+                    <div class="actions" id="actions-${id}">${actions}</div>
+                </div>`;
+            });
+            container.innerHTML = html;
+            refreshCounts();
+            window.setFilter(currentFilter, document.querySelector('.count-chip[data-filter="' + currentFilter + '"]'));
+        } catch(e) {
+            console.error(e);
+            if (e.code === "permission-denied") {
+                show("desk", false);
+                show("denied", true);
+                document.getElementById("denied-email").textContent =
+                    auth.currentUser ? auth.currentUser.email : "";
+                return;
+            }
+            container.innerHTML = `<div class="empty">Error loading articles: ${esc(e.message)}</div>`;
+        }
+    }
+
+    function runQuickAction() {
+        const params = new URLSearchParams(window.location.search);
+        if (params.get("id") && params.get("action")) {
+            const id     = params.get("id");
+            const action = params.get("action");
+            if (action === "approve") window.approveArticle(id);
+            if (action === "reject")  window.rejectArticle(id);
+        }
+    }
+
+    onAuthStateChanged(auth, user => {
+        if (user) {
+            document.getElementById("who").textContent = user.email;
+            show("signout-btn", true);
+            show("auth-gate", false);
+            show("denied", false);
+            show("desk", true);
+            document.getElementById("articles-container").innerHTML =
+                '<div class="empty">Loading the queue…</div>';
+            loadArticles().then(runQuickAction);
+        } else {
+            document.getElementById("who").textContent = "";
+            show("signout-btn", false);
+            show("desk", false);
+            show("denied", false);
+            show("auth-gate", true);
+        }
+    });
+</script>
+</body>
+</html>
