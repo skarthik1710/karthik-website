@@ -368,24 +368,6 @@
         @media (prefers-reduced-motion: reduce) { .chat-typing span { animation: none; opacity: 0.6; } }
         @media (max-width: 600px) { .chat-msg { max-width: 92%; } }
 
-        /* ─────────────────────────  WRITING  ───────────────────────── */
-        .writing-list { border-top: 1px solid var(--line); }
-        .writing-item {
-            display: flex; align-items: center; justify-content: space-between; gap: 2rem;
-            padding: 1.5rem 0.4rem; border-bottom: 1px solid var(--line);
-            text-decoration: none; transition: background 0.15s, padding 0.15s;
-        }
-        .writing-item:hover { background: var(--surface); padding-left: 1rem; }
-        .writing-item h3 { font-family: var(--font-display); font-size: 1.02rem; font-weight: 600; letter-spacing: -0.01em; }
-        .writing-item .arrow { color: var(--accent); font-family: var(--font-mono); flex-shrink: 0; }
-        .pipeline-note {
-            margin-top: 2rem; padding: 1.3rem 1.6rem;
-            border: 1px dashed var(--line-strong); border-radius: 10px;
-            font-size: 0.86rem; color: var(--muted); line-height: 1.7;
-        }
-        .pipeline-note b { color: var(--text); font-weight: 600; }
-        .pipeline-note .flow { font-family: var(--font-mono); font-size: 0.76rem; color: var(--accent); }
-
         /* ─────────────────────────  CONTACT  ───────────────────────── */
         .contact { text-align: left; border-bottom: none; padding-bottom: 4.5rem; }
         .contact-grid {
@@ -593,7 +575,6 @@
         <ul class="nav-links">
             <li><a href="#work">Work</a></li>
             <li><a href="/experience.html">Experience</a></li>
-            <li><a href="#writing">Writing</a></li>
             <li><a href="/newsletter.html">Newsletter</a></li>
             <li><a class="nav-cta" href="#contact">Get in touch</a></li>
         </ul>
@@ -848,37 +829,6 @@
             <p style="font-family:var(--font-mono); font-size:0.74rem; color:var(--dim); margin-top:1.4rem; letter-spacing:0.02em;">
                 12-WEEK ROADMAP&nbsp;&nbsp;·&nbsp;&nbsp;Mobilization (wk 1–2) → Skill Foundation (3–6) → Embedded Enablement (6–9) → Review &amp; Direction (10–12)
             </p>
-        </div>
-    </div>
-</section>
-
-<!-- ── 05 WRITING ── -->
-<section id="writing">
-    <div class="wrap">
-        <div class="sec-head"><span class="sec-idx">05</span><h2 class="sec-title">Writing</h2></div>
-        <p class="sec-desc">
-            Ongoing analysis on enterprise AI, governance, and automation —
-            <a href="/newsletter.html">read or subscribe here</a>.
-        </p>
-        <div class="writing-list">
-            <a class="writing-item" href="/newsletter.html">
-                <h3>AI's Next Chapter: Governance as the Cornerstone of Enterprise Trust</h3>
-                <span class="arrow">→</span>
-            </a>
-            <a class="writing-item" href="/newsletter.html">
-                <h3>Beyond Bots: The Hyper-Intelligent Evolution of Automation</h3>
-                <span class="arrow">→</span>
-            </a>
-            <a class="writing-item" href="/newsletter.html">
-                <h3>Copilot's Maturation: Beyond Novelty to Strategic Imperative</h3>
-                <span class="arrow">→</span>
-            </a>
-        </div>
-        <div class="pipeline-note">
-            <b>Full disclosure — this newsletter runs on my own AI pipeline.</b><br/>
-            <span class="flow">research → draft → my review queue → approve → publish → LinkedIn</span><br/>
-            Every issue is machine-drafted and human-approved. Building editorially-governed AI content
-            systems is part of the job — so I run one.
         </div>
     </div>
 </section>
@@ -1333,7 +1283,7 @@
     // Console note
     console.log(
         '%cKarthikeyan Selvam — karthikeyanselvam.com\n' +
-        '%cAI from slideware to shipped. Yes, this site runs on my own AI pipeline.\n' +
+        '%cAI from slideware to shipped.\n' +
         '%cThe thinking? Still mine.',
         'color: #FF6B35; font-size: 16px; font-weight: bold;',
         'color: #A69C92; font-size: 12px;',
