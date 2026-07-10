@@ -88,10 +88,10 @@
         .nav-cta:hover { border-color: var(--accent); background: var(--accent-faint); }
 
         /* ─────────────────────────  HERO  ───────────────────────── */
-        .hero { padding: 6.5rem 0 4.5rem; border-bottom: 1px solid var(--line); }
+        .hero { padding: 4.2rem 0 3.4rem; border-bottom: 1px solid var(--line); }
         .hero-grid {
             display: grid; grid-template-columns: minmax(0, 1.55fr) minmax(0, 1fr);
-            gap: 4.5rem; align-items: center;
+            gap: 3.5rem; align-items: center;
         }
         .kicker {
             font-family: var(--font-mono); font-size: 0.76rem; font-weight: 500;
@@ -169,7 +169,7 @@
         .fact-lbl { font-size: 0.8rem; color: var(--dim); margin-top: 0.1rem; }
 
         /* ─────────────────────────  SECTIONS  ───────────────────────── */
-        section { padding: 5.5rem 0; border-bottom: 1px solid var(--line); }
+        section { padding: 3.8rem 0; border-bottom: 1px solid var(--line); }
         .sec-head { display: flex; align-items: baseline; gap: 1.4rem; margin-bottom: 0.9rem; }
         .sec-idx {
             font-family: var(--font-mono); font-size: 0.8rem; color: var(--accent);
@@ -179,7 +179,7 @@
             font-size: clamp(1.6rem, 3vw, 2.2rem); font-weight: 700;
             letter-spacing: -0.02em;
         }
-        .sec-desc { color: var(--muted); max-width: 40em; margin-bottom: 2.8rem; }
+        .sec-desc { color: var(--muted); max-width: 40em; margin-bottom: 1.8rem; }
         .sec-desc a { color: var(--accent); text-decoration: none; }
         .sec-desc a:hover { text-decoration: underline; }
 
@@ -218,7 +218,7 @@
 
         /* ─────────────────────────  PILLARS  ───────────────────────── */
         .pillars { display: grid; grid-template-columns: repeat(3, 1fr); gap: 0; border: 1px solid var(--line); border-radius: 12px; overflow: hidden; }
-        .pillar { padding: 2.2rem 2rem 2.4rem; border-right: 1px solid var(--line); background: var(--surface); transition: background 0.2s; }
+        .pillar { padding: 1.8rem 1.7rem 2rem; border-right: 1px solid var(--line); background: var(--surface); transition: background 0.2s; }
         .pillar:last-child { border-right: none; }
         .pillar:hover { background: var(--surface-2); }
         .pillar-icon { width: 26px; height: 26px; stroke: var(--accent); fill: none; stroke-width: 1.6; margin-bottom: 1.3rem; }
@@ -273,7 +273,7 @@
         /* ─────────────────────────  PRINCIPLES  ───────────────────────── */
         .principles { display: grid; grid-template-columns: 1fr 1fr; gap: 0; border-top: 1px solid var(--line); }
         .principle {
-            padding: 2.1rem 2.2rem 2.1rem 0;
+            padding: 1.6rem 2.2rem 1.6rem 0;
             border-bottom: 1px solid var(--line);
             display: grid; grid-template-columns: 52px 1fr; gap: 1.2rem;
         }
@@ -302,7 +302,7 @@
             font-size: 0.68rem; color: var(--dim); letter-spacing: 0.04em;
         }
         .chat-log {
-            padding: 1.4rem; min-height: 280px; max-height: 430px;
+            padding: 1.2rem 1.4rem; min-height: 220px; max-height: 320px;
             overflow-y: auto; display: flex; flex-direction: column; gap: 0.9rem;
         }
         .chat-msg {
@@ -387,11 +387,16 @@
         .pipeline-note .flow { font-family: var(--font-mono); font-size: 0.76rem; color: var(--accent); }
 
         /* ─────────────────────────  CONTACT  ───────────────────────── */
-        .contact { text-align: left; border-bottom: none; padding-bottom: 6rem; }
+        .contact { text-align: left; border-bottom: none; padding-bottom: 4.5rem; }
+        .contact-grid {
+            display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.08fr);
+            gap: 3.2rem; align-items: start;
+        }
+        @media (max-width: 900px) { .contact-grid { grid-template-columns: 1fr; gap: 2.4rem; } }
         .contact h2 {
             font-family: var(--font-display);
-            font-size: clamp(2rem, 4.5vw, 3.2rem); font-weight: 700;
-            letter-spacing: -0.03em; line-height: 1.1; margin-bottom: 1.3rem;
+            font-size: clamp(1.9rem, 3.4vw, 2.6rem); font-weight: 700;
+            letter-spacing: -0.03em; line-height: 1.12; margin-bottom: 1.2rem;
             max-width: 15em;
         }
         .contact h2 .accent { color: var(--accent); }
@@ -613,10 +618,12 @@
             </div>
         </div>
         <div class="hero-side">
-            <img class="portrait" src="Profile.jpg" alt="Karthikeyan Selvam"/>
-            <div class="fact" style="border-bottom:none;">
-                <div class="fact-num">18<em>+</em></div>
-                <div class="fact-lbl">years in enterprise IT</div>
+            <div style="display:flex; align-items:center; gap:1.3rem;">
+                <img class="portrait" src="Profile.jpg" alt="Karthikeyan Selvam" style="margin-bottom:0;"/>
+                <div class="fact" style="border-bottom:none; padding:0;">
+                    <div class="fact-num">18<em>+</em></div>
+                    <div class="fact-lbl">years in<br/>enterprise IT</div>
+                </div>
             </div>
             <div>
                 <div class="side-label">Core skills</div>
@@ -815,7 +822,7 @@
         </div>
 
         <!-- Copilot Enablement Playbook -->
-        <div style="margin-top:4rem;">
+        <div style="margin-top:2.6rem;">
             <h3 style="font-family:var(--font-display); font-size:1.35rem; font-weight:700; letter-spacing:-0.01em; margin-bottom:0.6rem;">The Copilot Enablement Playbook</h3>
             <p class="sec-desc" style="margin-bottom:2rem;">
                 My structured 12-week program for moving an organization from Copilot curiosity
@@ -845,42 +852,10 @@
     </div>
 </section>
 
-<!-- ── 05 ASK MY AI ── -->
-<section id="ask">
-    <div class="wrap">
-        <div class="sec-head"><span class="sec-idx">05</span><h2 class="sec-title">Ask my AI</h2></div>
-        <p class="sec-desc">
-            Don't take the site's word for it — interrogate it. This assistant runs on my own
-            Firebase + Gemini stack, grounded in the career you just read. The site is the demo.
-        </p>
-        <div class="chat-panel">
-            <div class="chat-head">
-                <span class="live-dot"></span>
-                <h3>KS Assist</h3>
-                <span class="chat-stack">gemini-2.5-flash · firebase functions</span>
-            </div>
-            <div class="chat-log" id="chat-log">
-                <div class="chat-msg bot">Hi — I'm KS Assist, grounded in Karthikeyan's 18-year career. Ask me anything a hiring conversation would cover: the AI platform he runs, his governance approach, the Microsoft Copilot work, or why he fits an AI leadership role.</div>
-            </div>
-            <div class="chat-chips" id="chat-chips">
-                <button class="chat-chip" type="button">Why hire him as an AI leader?</button>
-                <button class="chat-chip" type="button">Tell me about his AI platform</button>
-                <button class="chat-chip" type="button">How does he approach AI governance?</button>
-                <button class="chat-chip" type="button">What did he do at Microsoft?</button>
-            </div>
-            <form class="chat-input-row" id="chat-form">
-                <input id="chat-input" type="text" maxlength="500" placeholder="Ask about Karthikeyan's experience…" autocomplete="off"/>
-                <button type="submit" id="chat-send">Send</button>
-            </form>
-            <div class="chat-note">answers come from his documented career only · conversations may be reviewed to improve the assistant</div>
-        </div>
-    </div>
-</section>
-
-<!-- ── 06 WRITING ── -->
+<!-- ── 05 WRITING ── -->
 <section id="writing">
     <div class="wrap">
-        <div class="sec-head"><span class="sec-idx">06</span><h2 class="sec-title">Writing</h2></div>
+        <div class="sec-head"><span class="sec-idx">05</span><h2 class="sec-title">Writing</h2></div>
         <p class="sec-desc">
             Ongoing analysis on enterprise AI, governance, and automation —
             <a href="/newsletter.html">read or subscribe here</a>.
@@ -908,18 +883,48 @@
     </div>
 </section>
 
-<!-- ── CONTACT ── -->
+<!-- ── CONTACT + ASK MY AI ── -->
 <section id="contact" class="contact">
     <div class="wrap">
-        <h2>Let's build something that actually <span class="accent">works</span>.</h2>
-        <p class="contact-sub">
-            Consulting engagement, a leadership conversation, or a hard question about
-            where enterprise AI is really headed — I'm open to all three.
-        </p>
-        <p class="roles-line">Open to: <b>AI Program Management · AI Adoption · AI Enablement · AI Product Leadership</b></p>
-        <div class="hero-actions">
-            <a href="https://www.linkedin.com/in/karthikeyan-selvam-567b52157/" target="_blank" rel="noopener" class="btn btn-solid">Connect on LinkedIn</a>
-            <a href="mailto:skarthik1710@gmail.com" class="btn btn-ghost">skarthik1710@gmail.com</a>
+        <div class="contact-grid">
+            <div id="ask">
+                <h2>Let's build something that actually <span class="accent">works</span>.</h2>
+                <p class="contact-sub">
+                    Consulting engagement, a leadership conversation, or a hard question about
+                    where enterprise AI is really headed — I'm open to all three.
+                </p>
+                <p class="roles-line">Open to: <b>AI Program Management · AI Adoption · AI Enablement · AI Product Leadership</b></p>
+                <div class="hero-actions">
+                    <a href="https://www.linkedin.com/in/karthikeyan-selvam-567b52157/" target="_blank" rel="noopener" class="btn btn-solid">Connect on LinkedIn</a>
+                    <a href="mailto:skarthik1710@gmail.com" class="btn btn-ghost">skarthik1710@gmail.com</a>
+                </div>
+                <p style="color:var(--dim); font-size:0.85rem; margin-top:2rem; max-width:30em; line-height:1.7;">
+                    Or don't take the site's word for it — <b style="color:var(--muted); font-weight:600;">interrogate it</b>.
+                    The assistant on the right runs on my own Firebase + Gemini stack,
+                    grounded in the career you just read. The site is the demo.
+                </p>
+            </div>
+            <div class="chat-panel">
+                <div class="chat-head">
+                    <span class="live-dot"></span>
+                    <h3>KS Assist — ask my AI</h3>
+                    <span class="chat-stack">gemini-2.5-flash · firebase</span>
+                </div>
+                <div class="chat-log" id="chat-log">
+                    <div class="chat-msg bot">Hi — I'm KS Assist, grounded in Karthikeyan's 18-year career. Ask me anything a hiring conversation would cover: the AI platform he runs, his governance approach, the Microsoft Copilot work, or why he fits an AI leadership role.</div>
+                </div>
+                <div class="chat-chips" id="chat-chips">
+                    <button class="chat-chip" type="button">Why hire him as an AI leader?</button>
+                    <button class="chat-chip" type="button">Tell me about his AI platform</button>
+                    <button class="chat-chip" type="button">How does he approach AI governance?</button>
+                    <button class="chat-chip" type="button">What did he do at Microsoft?</button>
+                </div>
+                <form class="chat-input-row" id="chat-form">
+                    <input id="chat-input" type="text" maxlength="500" placeholder="Ask about Karthikeyan's experience…" autocomplete="off"/>
+                    <button type="submit" id="chat-send">Send</button>
+                </form>
+                <div class="chat-note">answers come from his documented career only · conversations may be reviewed</div>
+            </div>
         </div>
     </div>
 </section>
