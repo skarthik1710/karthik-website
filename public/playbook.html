@@ -1,0 +1,1109 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Enterprise Agent Playbook — Karthikeyan Selvam</title>
+    <meta name="description" content="A vendor-neutral playbook for building and scaling enterprise AI agents: a layered reference architecture, the production controls that matter, evals, security, governance, delivery and cost, plus what to retire from first-generation agent patterns."/>
+    <link rel="canonical" href="https://karthikeyanselvam.com/playbook.html"/>
+    <meta property="og:title" content="Building Enterprise Agents That Survive Production — a 2026 playbook"/>
+    <meta property="og:description" content="A vendor-neutral playbook for building and scaling enterprise AI agents: a layered reference architecture, the production controls that matter, evals, security, governance, delivery and cost, plus what to retire from first-generation agent patterns."/>
+    <meta property="og:image" content="https://karthikeyanselvam.com/og-image.png"/>
+    <meta property="og:url" content="https://karthikeyanselvam.com/playbook.html"/>
+    <meta property="og:type" content="article"/>
+    <meta name="twitter:card" content="summary_large_image"/>
+    <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%23141110'/%3E%3Ctext x='32' y='42' font-family='Arial,sans-serif' font-size='30' font-weight='700' fill='%23FF6B35' text-anchor='middle'%3EK%3C/text%3E%3Ccircle cx='47' cy='40' r='3.4' fill='%23F3EDE7'/%3E%3C/svg%3E"/>
+    <link rel="preconnect" href="https://fonts.googleapis.com"/>
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet"/>
+    <style>
+        /* ── DESIGN TOKENS (Ember) ── */
+        :root {
+            --bg: #141110;
+            --surface: #1A1614;
+            --surface-2: #201B18;
+            --line: #292320;
+            --line-strong: #37302B;
+            --text: #F3EDE7;
+            --muted: #A69C92;
+            --dim: #75695E;
+            --accent: #FF6B35;
+            --accent-dim: rgba(255, 107, 53, 0.4);
+            --accent-faint: rgba(255, 107, 53, 0.09);
+            --font-display: 'Space Grotesk', 'Inter', sans-serif;
+            --font-body: 'Inter', -apple-system, sans-serif;
+            --font-mono: 'JetBrains Mono', 'SFMono-Regular', monospace;
+            --w: 1120px;
+        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        html { scroll-behavior: smooth; }
+        body {
+            font-family: var(--font-body);
+            background: var(--bg);
+            color: var(--text);
+            line-height: 1.65;
+            font-size: 16px;
+            -webkit-font-smoothing: antialiased;
+        }
+        ::selection { background: var(--accent); color: #210D02; }
+        ::-webkit-scrollbar { width: 8px; }
+        ::-webkit-scrollbar-track { background: var(--bg); }
+        ::-webkit-scrollbar-thumb { background: var(--line-strong); border-radius: 4px; }
+        ::-webkit-scrollbar-thumb:hover { background: var(--dim); }
+        .wrap { max-width: var(--w); margin: 0 auto; padding: 0 2rem; }
+        a { color: inherit; }
+
+        /* ── EMBER SPARK (guide) ── */
+        #spark {
+            position: fixed; top: 0; left: 0; z-index: 90;
+            width: 10px; height: 10px; border-radius: 50%;
+            background: var(--accent);
+            box-shadow: 0 0 6px 2px rgba(255,107,53,0.8), 0 0 22px 8px rgba(255,107,53,0.35), 0 0 48px 18px rgba(255,107,53,0.12);
+            pointer-events: none; opacity: 0;
+            transition: opacity 0.6s ease;
+            will-change: transform;
+        }
+        #spark.on { opacity: 1; }
+        #spark.docked { box-shadow: 0 0 5px 2px rgba(255,107,53,0.9), 0 0 14px 5px rgba(255,107,53,0.4); }
+
+        /* ── SCROLL REVEAL ── */
+        .reveal { opacity: 0; transform: translateY(22px); transition: opacity 0.55s ease, transform 0.55s ease; }
+        .reveal.in { opacity: 1; transform: none; }
+        .live-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--accent); display: inline-block; margin-right: 0.55rem; animation: pulse 2s ease infinite; }
+        @keyframes pulse { 0%,100% { opacity: 1; } 50% { opacity: 0.35; } }
+        @media (prefers-reduced-motion: reduce) {
+            .reveal { opacity: 1; transform: none; transition: none; }
+            .live-dot { animation: none; }
+            #spark { display: none; }
+        }
+
+        /* ── NAV ── */
+        .nav {
+            position: sticky; top: 0; z-index: 100;
+            background: rgba(20, 17, 16, 0.88);
+            backdrop-filter: blur(14px);
+            border-bottom: 1px solid var(--line);
+        }
+        .nav-inner {
+            max-width: var(--w); margin: 0 auto; padding: 0 2rem;
+            height: 64px; display: flex; align-items: center; justify-content: space-between;
+        }
+        .brand {
+            font-family: var(--font-display); font-weight: 700;
+            font-size: 1.15rem; letter-spacing: -0.02em;
+            text-decoration: none; color: var(--text);
+        }
+        .brand b { color: var(--accent); font-weight: 700; }
+        .nav-links { display: flex; align-items: center; gap: 1.8rem; list-style: none; }
+        .nav-links a {
+            text-decoration: none; color: var(--muted);
+            font-size: 0.88rem; font-weight: 500;
+            transition: color 0.15s;
+        }
+        .nav-links a:hover, .nav-links a.active { color: var(--text); }
+        .nav-cta {
+            font-family: var(--font-display);
+            padding: 0.5rem 1.05rem; border: 1px solid var(--line-strong); border-radius: 6px;
+            color: var(--text) !important; font-weight: 600; font-size: 0.84rem !important;
+            transition: border-color 0.15s, background 0.15s;
+        }
+        .nav-cta:hover { border-color: var(--accent); background: var(--accent-faint); }
+
+        /* ── PAGE HERO ── */
+        .page-hero { padding: 5.5rem 0 3.8rem; border-bottom: 1px solid var(--line); }
+        .kicker {
+            font-family: var(--font-mono); font-size: 0.76rem; font-weight: 500;
+            letter-spacing: 0.14em; text-transform: uppercase; color: var(--accent);
+            display: flex; align-items: center; gap: 0.7rem; margin-bottom: 1.4rem;
+        }
+        .kicker::before { content: ''; width: 22px; height: 1px; background: var(--accent); }
+        .page-hero h1 {
+            font-family: var(--font-display);
+            font-size: clamp(2.2rem, 4.5vw, 3.4rem);
+            font-weight: 700; line-height: 1.1; letter-spacing: -0.03em;
+            margin-bottom: 1.2rem; max-width: 18em;
+        }
+        .page-hero h1 .accent { color: var(--accent); }
+        .page-hero p { color: var(--muted); max-width: 40em; font-size: 1.02rem; line-height: 1.75; }
+
+        /* ── LAYOUT ── */
+        .content-grid {
+            max-width: var(--w); margin: 0 auto; padding: 4rem 2rem 5rem;
+            display: grid; grid-template-columns: minmax(0, 1fr) 340px; gap: 4rem;
+        }
+
+        .sec-head { display: flex; align-items: baseline; gap: 1.4rem; margin-bottom: 0.9rem; }
+        .sec-idx { font-family: var(--font-mono); font-size: 0.8rem; color: var(--accent); }
+        .sec-title {
+            font-family: var(--font-display);
+            font-size: clamp(1.4rem, 2.6vw, 1.9rem); font-weight: 700;
+            letter-spacing: -0.02em;
+        }
+        .summary-text {
+            color: var(--muted); line-height: 1.8; font-size: 0.95rem;
+            margin: 1.4rem 0 3rem;
+            padding: 1.5rem 1.7rem; background: var(--surface);
+            border-radius: 12px; border: 1px solid var(--line);
+            border-left: 3px solid var(--accent);
+        }
+        .summary-text strong { color: var(--text); font-weight: 600; }
+
+        /* ── TIMELINE (story rail) ── */
+        .timeline { position: relative; margin-bottom: 4.5rem; }
+        .timeline::before {
+            content: ''; position: absolute;
+            left: 7px; top: 10px; bottom: 10px; width: 1px;
+            background: var(--line-strong);
+        }
+        .timeline-fill {
+            position: absolute; left: 6.5px; top: 10px; bottom: 10px; width: 2px;
+            background: linear-gradient(var(--accent), #FF8557);
+            box-shadow: 0 0 10px rgba(255,107,53,0.5);
+            transform-origin: top center;
+            opacity: 0;
+        }
+        .timeline.rail-armed .timeline-fill { opacity: 1; }
+        .timeline-item { padding-left: 42px; margin-bottom: 1.4rem; position: relative; }
+        .timeline-dot {
+            position: absolute; left: 0; top: 26px;
+            width: 15px; height: 15px; border-radius: 50%;
+            background: var(--bg); border: 2px solid var(--accent);
+            transition: border-color 0.4s, box-shadow 0.4s;
+        }
+        .timeline.rail-armed .timeline-item:not(.lit) .timeline-dot { border-color: var(--line-strong); }
+        .timeline.rail-armed .timeline-item.lit .timeline-dot {
+            border-color: var(--accent);
+            box-shadow: 0 0 10px rgba(255,107,53,0.6), inset 0 0 4px rgba(255,107,53,0.8);
+        }
+        .timeline-card {
+            background: var(--surface); border: 1px solid var(--line);
+            border-radius: 12px; padding: 1.7rem 1.9rem;
+            transition: border-color 0.2s, background 0.2s;
+        }
+        .timeline-card:hover { border-color: var(--accent-dim); background: var(--surface-2); }
+        .timeline-period {
+            font-family: var(--font-mono); font-size: 0.72rem; color: var(--accent);
+            font-weight: 500; letter-spacing: 0.08em; text-transform: uppercase; margin-bottom: 0.5rem;
+        }
+        .timeline-role {
+            font-family: var(--font-display); font-size: 1.14rem; font-weight: 600;
+            letter-spacing: -0.01em; margin-bottom: 0.25rem;
+        }
+        .timeline-org { font-size: 0.86rem; color: var(--dim); margin-bottom: 0.9rem; }
+        .timeline-desc { font-size: 0.9rem; color: var(--muted); line-height: 1.72; }
+        .timeline-tags { display: flex; flex-wrap: wrap; gap: 0.45rem; margin-top: 1.1rem; }
+        .timeline-tag {
+            font-family: var(--font-mono);
+            padding: 0.22rem 0.6rem; border-radius: 5px;
+            background: var(--accent-faint); border: 1px solid var(--line-strong);
+            font-size: 0.68rem; color: var(--muted); font-weight: 500;
+        }
+
+        /* ── SCOPE OF LEADERSHIP ── */
+        .scope { border: 1px solid var(--line); border-radius: 12px; overflow: hidden; margin-top: 1.6rem; }
+        .scope-row {
+            display: grid; grid-template-columns: 190px 1fr;
+            border-bottom: 1px solid var(--line); background: var(--surface);
+        }
+        .scope-row:last-child { border-bottom: none; }
+        .scope-key {
+            font-family: var(--font-mono); font-size: 0.74rem; letter-spacing: 0.06em;
+            text-transform: uppercase; color: var(--accent);
+            padding: 1.15rem 1.4rem; border-right: 1px solid var(--line);
+            display: flex; align-items: center;
+        }
+        .scope-val { padding: 1.05rem 1.4rem; font-size: 0.9rem; color: var(--muted); line-height: 1.65; }
+        .scope-val b { color: var(--text); font-weight: 600; }
+
+        /* ── SIDEBAR ── */
+        .sidebar { display: flex; flex-direction: column; gap: 1.6rem; }
+        .sidebar-card {
+            background: var(--surface); border: 1px solid var(--line);
+            border-radius: 12px; padding: 1.7rem;
+        }
+        .sidebar-card h3 {
+            font-family: var(--font-display); font-size: 1rem; font-weight: 600;
+            margin-bottom: 1.1rem; display: flex; align-items: center;
+        }
+        .cert-count {
+            font-family: var(--font-mono); font-size: 0.7rem; font-weight: 500; color: var(--accent);
+            background: var(--accent-faint); border: 1px solid var(--line-strong);
+            border-radius: 20px; padding: 0.12rem 0.6rem; margin-left: 0.6rem;
+        }
+        .cert-group-label {
+            font-family: var(--font-mono); font-size: 0.66rem; font-weight: 500; color: var(--accent);
+            letter-spacing: 0.12em; text-transform: uppercase;
+            margin: 1.4rem 0 0.7rem; padding-bottom: 0.4rem;
+            border-bottom: 1px solid var(--line);
+        }
+        .cert-group-label:first-of-type { margin-top: 0.2rem; }
+        .cert-item {
+            display: flex; align-items: center; gap: 0.85rem;
+            padding: 0.7rem 0.75rem; border-radius: 8px;
+            background: var(--surface-2); margin-bottom: 0.55rem;
+            border: 1px solid var(--line); transition: border-color 0.15s;
+        }
+        .cert-item:hover { border-color: var(--accent-dim); }
+        .cert-mark {
+            width: 7px; height: 7px; border-radius: 2px; background: var(--accent);
+            flex-shrink: 0; opacity: 0.85;
+        }
+        .cert-info { flex: 1; min-width: 0; }
+        .cert-name { font-size: 0.8rem; font-weight: 600; margin-bottom: 0.05rem; }
+        .cert-issuer { font-size: 0.7rem; color: var(--dim); }
+        .cert-verify {
+            font-family: var(--font-mono); font-size: 0.68rem; color: var(--accent); font-weight: 500;
+            text-decoration: none; transition: opacity 0.15s; white-space: nowrap;
+        }
+        .cert-verify:hover { opacity: 0.75; text-decoration: underline; }
+
+        /* numbers */
+        .num-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 0.7rem; }
+        .num-cell {
+            text-align: left; padding: 1rem 1.1rem;
+            background: var(--surface-2); border-radius: 9px; border: 1px solid var(--line);
+        }
+        .num-cell .n {
+            font-family: var(--font-display); font-size: 1.7rem; font-weight: 700;
+            color: var(--accent); line-height: 1; letter-spacing: -0.02em;
+        }
+        .num-cell .l {
+            font-size: 0.7rem; color: var(--dim);
+            text-transform: uppercase; letter-spacing: 0.05em; margin-top: 0.35rem;
+        }
+
+        /* CTA */
+        .cta-card {
+            background: var(--surface); border: 1px solid var(--line-strong);
+            border-radius: 12px; padding: 1.8rem; text-align: left;
+        }
+        .cta-card h3 { font-family: var(--font-display); font-size: 1.05rem; font-weight: 600; margin-bottom: 0.6rem; }
+        .cta-card p { color: var(--muted); font-size: 0.86rem; margin-bottom: 1.4rem; line-height: 1.65; }
+        .btn {
+            font-family: var(--font-display); font-weight: 600; font-size: 0.88rem;
+            padding: 0.72rem 1.4rem; border-radius: 7px; text-decoration: none;
+            transition: all 0.15s; display: inline-block;
+        }
+        .btn-solid { background: var(--accent); color: #210D02; }
+        .btn-solid:hover { background: #FF8557; transform: translateY(-1px); }
+
+        /* ── KS ASSIST (launcher + popover) ── */
+        .chat-panel { border: 1px solid var(--line); border-radius: 12px; background: var(--surface); overflow: hidden; }
+        .chat-head { display: flex; align-items: center; gap: 0.7rem; padding: 1rem 1.4rem; border-bottom: 1px solid var(--line); }
+        .chat-head .live-dot { width: 8px; height: 8px; margin-right: 0; }
+        .chat-head h3 { font-family: var(--font-display); font-size: 0.98rem; font-weight: 600; margin-bottom: 0; }
+        .chat-head .chat-stack { margin-left: auto; font-family: var(--font-mono); font-size: 0.68rem; color: var(--dim); letter-spacing: 0.04em; }
+        .chat-log { padding: 1.2rem 1.4rem; min-height: 220px; max-height: 320px; overflow-y: auto; display: flex; flex-direction: column; gap: 0.9rem; }
+        .chat-msg { max-width: 78%; padding: 0.8rem 1.05rem; border-radius: 12px; font-size: 0.9rem; line-height: 1.65; white-space: pre-wrap; overflow-wrap: break-word; }
+        .chat-msg.user { align-self: flex-end; background: var(--accent-faint); border: 1px solid var(--accent-dim); color: var(--text); border-bottom-right-radius: 4px; }
+        .chat-msg.bot { align-self: flex-start; background: var(--surface-2); border: 1px solid var(--line); color: var(--muted); border-bottom-left-radius: 4px; }
+        .chat-msg.bot.error { border-color: var(--accent-dim); color: var(--text); }
+        .chat-typing { align-self: flex-start; display: flex; gap: 5px; padding: 0.95rem 1.05rem; background: var(--surface-2); border: 1px solid var(--line); border-radius: 12px; border-bottom-left-radius: 4px; }
+        .chat-typing span { width: 6px; height: 6px; border-radius: 50%; background: var(--dim); animation: typing 1.2s ease infinite; }
+        .chat-typing span:nth-child(2) { animation-delay: 0.15s; }
+        .chat-typing span:nth-child(3) { animation-delay: 0.3s; }
+        @keyframes typing { 0%, 60%, 100% { opacity: 0.3; transform: translateY(0); } 30% { opacity: 1; transform: translateY(-3px); } }
+        .chat-chips { display: flex; flex-wrap: wrap; gap: 0.55rem; padding: 0 1.4rem 1.1rem; }
+        .chat-chip { font-family: var(--font-mono); font-size: 0.72rem; font-weight: 500; padding: 0.45rem 0.9rem; border-radius: 20px; cursor: pointer; background: transparent; border: 1px solid var(--line-strong); color: var(--muted); transition: all 0.15s; }
+        .chat-chip:hover { border-color: var(--accent); color: var(--accent); background: var(--accent-faint); }
+        .chat-input-row { display: flex; gap: 0.7rem; padding: 1rem 1.4rem; border-top: 1px solid var(--line); }
+        .chat-input-row input { flex: 1; padding: 0.75rem 1.1rem; border-radius: 8px; border: 1px solid var(--line-strong); background: var(--bg); color: var(--text); font-size: 0.9rem; font-family: var(--font-body); transition: border-color 0.15s; }
+        .chat-input-row input:focus { outline: none; border-color: var(--accent); }
+        .chat-input-row input::placeholder { color: var(--dim); }
+        .chat-input-row button { font-family: var(--font-display); padding: 0.75rem 1.5rem; border-radius: 8px; border: none; background: var(--accent); color: #210D02; font-weight: 600; font-size: 0.88rem; cursor: pointer; transition: all 0.15s; }
+        .chat-input-row button:hover:not(:disabled) { background: #FF8557; }
+        .chat-input-row button:disabled { opacity: 0.55; cursor: default; }
+        .chat-note { font-family: var(--font-mono); font-size: 0.68rem; color: var(--dim); padding: 0 1.4rem 1rem; letter-spacing: 0.02em; }
+        #chat-launcher { position: fixed; right: 22px; bottom: 22px; z-index: 1400; width: 58px; height: 58px; }
+        #chat-fab {
+            position: absolute; inset: 0;
+            width: 58px; height: 58px; border-radius: 50%;
+            background: var(--accent); border: none; cursor: pointer;
+            display: flex; align-items: center; justify-content: center;
+            box-shadow: 0 6px 24px rgba(0,0,0,0.45), 0 0 20px rgba(255,107,53,0.4);
+            transition: transform 0.15s, background 0.15s;
+        }
+        #chat-fab:hover { transform: translateY(-2px); background: #FF8557; }
+        #chat-fab .pg { width: 46px; height: 46px; animation: pgBob 3.4s ease-in-out infinite; }
+        #chat-fab .ic-close { display: none; width: 26px; height: 26px; stroke: #210D02; fill: none; stroke-width: 2; stroke-linecap: round; }
+        #chat-fab.open .ic-chat { display: none; }
+        #chat-fab.open .ic-close { display: block; }
+        #fab-caption {
+            position: absolute; left: 50%; bottom: 100%; transform: translateX(-50%);
+            margin-bottom: 10px;
+            font-family: var(--font-display); font-weight: 700; font-size: 0.82rem;
+            letter-spacing: -0.01em; color: var(--accent);
+            background: var(--surface-2); border: 1px solid var(--line-strong);
+            border-radius: 999px; padding: 0.4rem 0.95rem;
+            box-shadow: 0 8px 24px rgba(0,0,0,0.4);
+            pointer-events: none; white-space: nowrap;
+        }
+        #fab-caption.hide { display: none; }
+        /* Skipper — original penguin mascot */
+        .pg-avatar { width: 27px; height: 27px; flex-shrink: 0; display: inline-flex; }
+        .pg-avatar .pg { width: 100%; height: 100%; }
+        .pg-eyes { animation: pgBlink 4.6s infinite; transform-origin: 32px 18px; }
+        .pg-wing-l { transform-origin: 18px 35px; animation: pgWave 6.2s ease-in-out infinite; }
+        .pg-ember { animation: pulse 2s ease infinite; }
+        @keyframes pgBlink { 0%, 91%, 100% { transform: scaleY(1); } 93.5%, 95.5% { transform: scaleY(0.12); } }
+        @keyframes pgWave { 0%, 76%, 100% { transform: rotate(0deg); } 82%, 90% { transform: rotate(-18deg); } 86% { transform: rotate(-26deg); } }
+        @keyframes pgBob { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-2.5px); } }
+        @media (prefers-reduced-motion: reduce) { .pg-eyes, .pg-wing-l, .pg-ember, #chat-fab .pg { animation: none; } }
+        #chat-fab::after { content: ''; position: absolute; inset: -4px; border-radius: 50%; border: 2px solid var(--accent-dim); animation: fabPulse 2.6s ease infinite; pointer-events: none; }
+        #chat-fab.open::after { display: none; }
+        @keyframes fabPulse { 0% { transform: scale(0.9); opacity: 0.9; } 70% { transform: scale(1.35); opacity: 0; } 100% { transform: scale(1.35); opacity: 0; } }
+        #chat-pop { position: fixed; right: 22px; bottom: 94px; z-index: 1400; width: min(400px, calc(100vw - 32px)); display: none; }
+        #chat-pop.open { display: block; animation: popIn 0.22s ease; }
+        @keyframes popIn { from { opacity: 0; transform: translateY(14px); } to { opacity: 1; transform: none; } }
+        #chat-pop .chat-panel { box-shadow: 0 24px 70px rgba(0,0,0,0.55); }
+        .chat-pop-close { margin-left: 0.8rem; width: 28px; height: 28px; border-radius: 7px; flex-shrink: 0; background: var(--surface-2); border: 1px solid var(--line-strong); color: var(--muted); font-size: 1rem; line-height: 1; cursor: pointer; transition: all 0.15s; }
+        .chat-pop-close:hover { color: var(--text); border-color: var(--accent); }
+        @media (max-width: 600px) {
+            #chat-pop { right: 0; bottom: 0; width: 100%; }
+            #chat-pop.open { position: fixed; inset: 0; }
+            #chat-pop .chat-panel { height: 100%; border-radius: 0; display: flex; flex-direction: column; }
+            #chat-pop .chat-log { flex: 1; max-height: none; }
+            .chat-msg { max-width: 92%; }
+        }
+        @media (prefers-reduced-motion: reduce) {
+            #chat-fab::after { animation: none; display: none; }
+            #chat-pop.open { animation: none; }
+            .chat-typing span { animation: none; opacity: 0.6; }
+        }
+
+        /* ── FOOTER ── */
+        footer { border-top: 1px solid var(--line); padding: 2.2rem 0; }
+        .foot-inner {
+            max-width: var(--w); margin: 0 auto; padding: 0 2rem;
+            display: flex; align-items: center; justify-content: space-between; gap: 1.5rem; flex-wrap: wrap;
+        }
+        .foot-inner p { color: var(--dim); font-size: 0.82rem; }
+        .foot-links { display: flex; gap: 1.6rem; }
+        .foot-links a { color: var(--dim); text-decoration: none; font-size: 0.82rem; transition: color 0.15s; }
+        .foot-links a:hover { color: var(--text); }
+
+        /* ── RESPONSIVE ── */
+        @media (max-width: 1000px) {
+            .content-grid { grid-template-columns: 1fr; gap: 3rem; }
+        }
+        @media (max-width: 900px) { #spark { display: none; } }
+        @media (max-width: 600px) {
+            .nav-links a:not(.nav-cta) { display: none; }
+            /* hidden links' empty <li>s + default list padding were squeezing the bar until the name and CTA wrapped */
+            .nav-links { padding: 0; margin: 0; }
+            .nav-links li:not(:has(.nav-cta)) { display: none; }
+            .nav-inner { padding: 0 1.25rem; }
+            .brand, .nav-cta { white-space: nowrap; }
+            .page-hero { padding: 3.5rem 0 2.5rem; }
+            .content-grid { padding: 2.8rem 1.2rem 3.5rem; }
+            .scope-row { grid-template-columns: 1fr; }
+            .scope-key { border-right: none; border-bottom: 1px solid var(--line); padding-bottom: 0.6rem; }
+        }
+    </style>
+    <style>
+        /* ── PLAYBOOK (long-form article) ── */
+        .pb-meta { display: flex; flex-wrap: wrap; gap: 0.5rem 1.4rem; margin-top: 1.4rem;
+            font-family: var(--font-mono); font-size: 0.74rem; color: var(--dim); letter-spacing: 0.03em; }
+        .pb-meta b { color: var(--muted); font-weight: 500; }
+        .pb-layout { max-width: var(--w); margin: 0 auto; padding: 3rem 2rem 5rem;
+            display: grid; grid-template-columns: 250px minmax(0, 1fr); gap: 3.5rem; align-items: start; }
+        .pb-layout > * { min-width: 0; }
+        .pb-toc { position: sticky; top: 84px; max-height: calc(100vh - 110px); overflow-y: auto;
+            border-left: 1px solid var(--line); padding-left: 1.1rem; }
+        .pb-toc h2 { font-family: var(--font-mono); font-size: 0.68rem; letter-spacing: 0.12em; text-transform: uppercase;
+            color: var(--dim); margin-bottom: 0.8rem; font-weight: 500; }
+        .pb-toc ol { list-style: none; }
+        .pb-toc li a { display: block; padding: 0.3rem 0; font-size: 0.82rem; line-height: 1.4; color: var(--muted);
+            text-decoration: none; transition: color 0.15s; }
+        .pb-toc li a:hover, .pb-toc li a.on { color: var(--accent); }
+        .prose { max-width: 760px; color: var(--muted); font-size: 1rem; line-height: 1.8; }
+        .prose > * + * { margin-top: 1.05em; }
+        .prose h2 { font-family: var(--font-display); color: var(--text); font-size: 1.65rem; line-height: 1.25;
+            letter-spacing: -0.02em; margin-top: 2.6em; padding-top: 1.4em; border-top: 1px solid var(--line); scroll-margin-top: 84px; }
+        .prose h3 { font-family: var(--font-display); color: var(--text); font-size: 1.15rem; margin-top: 1.9em; scroll-margin-top: 84px; }
+        .prose strong { color: var(--text); font-weight: 600; }
+        .prose a { color: var(--accent); text-underline-offset: 2px; overflow-wrap: anywhere; }
+        .prose a.cite { font-family: var(--font-mono); font-size: 0.72em; text-decoration: none; vertical-align: 0.15em;
+            color: var(--accent); opacity: 0.85; margin-left: 0.05em; }
+        .prose a.cite:hover { opacity: 1; text-decoration: underline; }
+        .prose ul, .prose ol { padding-left: 1.3em; }
+        .prose li + li { margin-top: 0.4em; }
+        .prose hr { border: none; border-top: 1px solid var(--line); margin: 2.4em 0; }
+        .prose hr + h2 { border-top: none; padding-top: 0; margin-top: 0; }
+        .prose code { font-family: var(--font-mono); font-size: 0.86em; background: var(--surface-2);
+            border: 1px solid var(--line); border-radius: 4px; padding: 0.05em 0.35em; }
+        .prose blockquote { border-left: 2px solid var(--accent); padding-left: 1rem; color: var(--text); }
+        .table-wrap { overflow-x: auto; border: 1px solid var(--line); border-radius: 10px; background: var(--surface); }
+        .prose table { width: 100%; border-collapse: collapse; font-size: 0.86rem; line-height: 1.55; }
+        .prose th, .prose td { text-align: left; vertical-align: top; padding: 0.7rem 0.9rem; border-bottom: 1px solid var(--line); }
+        .prose th { color: var(--text); font-family: var(--font-display); font-weight: 600; background: var(--surface-2); }
+        .prose tr:last-child td { border-bottom: none; }
+        .prose ol.sources { font-size: 0.82rem; line-height: 1.6; }
+        .prose ol.sources li { scroll-margin-top: 90px; }
+        .prose ol.sources li:target { background: var(--accent-faint); outline: 1px solid var(--accent-dim); border-radius: 4px; }
+        .pb-cta { margin-top: 3rem; padding: 1.6rem 1.8rem; border: 1px solid var(--line); border-radius: 12px; background: var(--surface); }
+        .pb-cta h2 { border: none; padding: 0; margin: 0 0 0.5rem; font-size: 1.2rem; }
+        @media (max-width: 960px) {
+            .pb-layout { grid-template-columns: minmax(0, 1fr); gap: 1.6rem; padding: 2rem 1.25rem 4rem; }
+            .pb-toc { position: static; max-height: none; border-left: none; padding-left: 0;
+                border: 1px solid var(--line); border-radius: 10px; padding: 1rem 1.1rem; background: var(--surface); }
+            .pb-toc details summary { cursor: pointer; font-family: var(--font-mono); font-size: 0.72rem;
+                letter-spacing: 0.1em; text-transform: uppercase; color: var(--muted); }
+            .pb-toc details[open] summary { margin-bottom: 0.6rem; }
+            .prose { font-size: 0.97rem; }
+            .prose table { min-width: 560px; }  /* readable columns; the frame scrolls sideways */
+            .prose h2 { font-size: 1.4rem; }
+        }
+    </style>
+    <link rel="stylesheet" href="/chat.css?v=20261125"/>
+    <script type="application/ld+json">
+    {"@context": "https://schema.org", "@type": "TechArticle", "headline": "Building Enterprise Agents That Survive Production",
+      "description": "A vendor-neutral playbook for building and scaling enterprise AI agents: a layered reference architecture, the production controls that matter, evals, security, governance, delivery and cost, plus what to retire from first-generation agent patterns.", "author": {"@type": "Person", "name": "Karthikeyan Selvam",
+      "url": "https://karthikeyanselvam.com/"}, "datePublished": "2026-11-25", "url": "https://karthikeyanselvam.com/playbook.html"}
+    </script>
+</head>
+<body>
+
+<!-- ── NAV ── -->
+<nav class="nav">
+    <div class="nav-inner">
+        <a class="brand" href="/">Karthikeyan Selvam<b>.</b></a>
+        <ul class="nav-links">
+            <li><a href="/#work">Work</a></li>
+            <li><a href="/experience.html">Experience</a></li>
+            <li><a href="/newsletter.html">Newsletter</a></li>
+            <li><a href="/playbook.html" class="active">Playbook</a></li>
+            <li><a class="nav-cta" href="/#contact">Get in touch</a></li>
+        </ul>
+    </div>
+</nav>
+
+<!-- ── PAGE HERO ── -->
+<header class="page-hero">
+    <div class="wrap">
+        <div class="kicker">Playbook · November 2026</div>
+        <h1>Building enterprise agents that <span class="accent">survive production</span></h1>
+        <p>A vendor-neutral guide for leaders and architects: a layered reference architecture, the production
+        controls that matter, a crawl-walk-run path to scale, and a plain list of first-generation patterns to retire.</p>
+        <div class="pb-meta"><span>By <b>Karthikeyan Selvam</b></span><span><b>~34 min</b> read</span><span><b>94</b> cited sources</span></div>
+    </div>
+</header>
+
+<!-- ── ARTICLE ── -->
+<div class="pb-layout">
+    <nav class="pb-toc" aria-label="Contents">
+        <details open>
+            <summary>Contents</summary>
+            <ol>
+<li><a href="#why-agent-pilots-stall-before-production">1. Why agent pilots stall before production</a></li>
+<li><a href="#the-reference-architecture-layers-of-an-enterprise-agent">2. The reference architecture: layers of an enterprise agent</a></li>
+<li><a href="#build-principles">3. Build principles</a></li>
+<li><a href="#the-production-control-stack">4. The production control stack</a></li>
+<li><a href="#integration-and-interoperability">5. Integration and interoperability</a></li>
+<li><a href="#quality-evals-and-observability">6. Quality: evals and observability</a></li>
+<li><a href="#security-for-agents">7. Security for agents</a></li>
+<li><a href="#governance-and-the-autonomy-ladder">8. Governance and the autonomy ladder</a></li>
+<li><a href="#the-delivery-pipeline-commit-to-production">9. The delivery pipeline: commit to production</a></li>
+<li><a href="#scaling-and-cost">10. Scaling and cost</a></li>
+<li><a href="#getting-started-crawl-walk-run">11. Getting started: crawl, walk, run</a></li>
+<li><a href="#what-s-outdated-what-s-new">12. What&#x27;s outdated, what&#x27;s new</a></li>
+<li><a href="#production-readiness-checklist">13. Production-readiness checklist</a></li>
+<li><a href="#glossary">14. Glossary</a></li>
+<li><a href="#sources">15. Sources</a></li>
+            </ol>
+        </details>
+    </nav>
+    <article class="prose" id="playbook">
+<p>For the last couple of years I have built agents that run inside real enterprises. Some read production systems. Some draft decisions for a human to sign off. A few act on their own, inside tight limits. The same thing happens every time. Getting an agent to work in a prototype takes days. Getting one that security, audit, finance and operations will all sign off for production takes months, and most teams never get there.</p>
+<p>This playbook is the framework I use to close that gap. It treats an agent as a small reasoning core wrapped in production controls, and it lays that out as a layered reference architecture. I have checked each part against what changed in standards, research and platforms over the past eighteen months. Throughout, I compare it with the <strong>first-generation (2023–24) agent patterns</strong> that many teams across the industry still run. Where one of those patterns should be retired, I say so.</p>
+<p><strong>On vendors.</strong> I don't recommend products. Where an example helps, I name two or three side by side, as illustrations only. I do name open standards and specifications (MCP, A2A, OpenTelemetry, OWASP, NIST, ISO/IEC, the EU AI Act, SLSA), because they aren't vendors. They are the shared language you should build to. A short glossary near the end explains the acronyms.</p>
+<hr>
+<h2 id="why-agent-pilots-stall-before-production">1. Why agent pilots stall before production</h2>
+<p>The 2025 data all points the same way. One analyst firm predicts that more than 40% of agentic AI projects will be cancelled by the end of 2027, because of rising costs, unclear business value or weak risk controls <a class="cite" href="#src-1" aria-label="Source 1">[1]</a>. An MIT study reported that about 95% of enterprise generative-AI pilots showed no measurable P&amp;L impact <a class="cite" href="#src-2" aria-label="Source 2">[2]</a>. Its sample wasn't random, so treat the exact figure with care. Its diagnosis still rings true: the failures came from a "learning gap" and poor fit with how work actually gets done, not from model quality. A late-2025 enterprise survey found 11% of organisations using agentic AI in production, 38% piloting, and 35% with no formal strategy <a class="cite" href="#src-3" aria-label="Source 3">[3]</a>. Another study put only 5% of companies in the group getting value at scale, while 60% reported hardly any material value <a class="cite" href="#src-4" aria-label="Source 4">[4]</a>.</p>
+<p>Practitioners are more upbeat, but they name the same bottleneck. In a survey of 1,340 people building agents, 57.3% said they had agents in production, and quality was the top barrier (about 32%). The telling detail: 89% had observability, but only 52.4% ran offline evaluations and 37.3% ran online evaluations <a class="cite" href="#src-5" aria-label="Source 5">[5]</a>. Teams can see what their agents do. Far fewer can prove the agents do it well.</p>
+<p>From my own projects, pilots stall in five places:</p>
+<ol>
+<li><strong>Quality can't be proven.</strong> "It looked right in the playground" won't get past a risk committee.</li>
+<li><strong>Controls arrive late.</strong> Security review happens after the build, and hardening turns into a rewrite.</li>
+<li><strong>It only works on one instance.</strong> In-memory rate-limit counters, approval queues, circuit breakers and audit records quietly break once you run three replicas.</li>
+<li><strong>Cost is modelled per request.</strong> Real spend comes from tokens, reasoning, retries and agents calling other agents.</li>
+<li><strong>Nobody owns life after launch.</strong> There is no registry, no plan for when the model is retired, and no way to decommission the agent.</li>
+</ol>
+<p><strong>The core idea: a small reasoning core inside a deterministic shell.</strong> An enterprise agent is a small, non-deterministic reasoning core inside a large, deterministic and deliberately boring shell. Most of the engineering, and nearly all of the risk reduction, lives in the shell. First-generation frameworks already put production capabilities in layers around the model, so that part holds up. What has changed is <em>where</em> those layers should sit.</p>
+<hr>
+<h2 id="the-reference-architecture-layers-of-an-enterprise-agent">2. The reference architecture: layers of an enterprise agent</h2>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Layer</th>
+<th>Responsibility</th>
+<th>What changed by 2026</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>1. Channels &amp; experience</strong></td>
+<td>Chat, embedded UI, email, tickets, event and schedule triggers; streaming; telling users they are dealing with an AI</td>
+<td>Streaming that resumes after a disconnect; a stable event contract for clients; AI-disclosure duties now apply <a class="cite" href="#src-63" aria-label="Source 63">[63]</a></td>
+</tr>
+<tr>
+<td><strong>2. Orchestration</strong></td>
+<td>Deterministic workflow, routing, durable execution, waiting for a human</td>
+<td>Durable execution (checkpoint, replay, resume) is now the baseline, not an extra <a class="cite" href="#src-8" aria-label="Source 8">[8]</a><a class="cite" href="#src-15" aria-label="Source 15">[15]</a></td>
+</tr>
+<tr>
+<td><strong>3. Agent harness</strong></td>
+<td>Reasoning loop, context assembly, memory access, budgets, structured output, sub-agents</td>
+<td>Context engineering is the main discipline; harness features are set per agent <a class="cite" href="#src-12" aria-label="Source 12">[12]</a><a class="cite" href="#src-16" aria-label="Source 16">[16]</a></td>
+</tr>
+<tr>
+<td><strong>4. Model access</strong></td>
+<td>A model gateway: identity, routing, version pinning, token and cost quotas, caching, failover, chargeback (billing usage back to the team or tenant that caused it)</td>
+<td>Token-based quotas, failover and chargeback at the gateway <a class="cite" href="#src-76" aria-label="Source 76">[76]</a>; tracking each model's retirement date <a class="cite" href="#src-80" aria-label="Source 80">[80]</a></td>
+</tr>
+<tr>
+<td><strong>5. Tools &amp; interoperability</strong></td>
+<td>Tool gateway, MCP servers, A2A agents, code sandboxes, a curated registry</td>
+<td>Stateless MCP <a class="cite" href="#src-24" aria-label="Source 24">[24]</a>; A2A 1.0 with signed Agent Cards <a class="cite" href="#src-30" aria-label="Source 30">[30]</a>; tool definitions pinned and hashed by your own registry (recommended practice)</td>
+</tr>
+<tr>
+<td><strong>6. Knowledge &amp; state</strong></td>
+<td>Session event log, long-term memory, artifacts, permission-aware retrieval</td>
+<td>Memory split into separate layers <a class="cite" href="#src-14" aria-label="Source 14">[14]</a>, with provenance and defences against poisoning <a class="cite" href="#src-33" aria-label="Source 33">[33]</a></td>
+</tr>
+<tr>
+<td><strong>7. Control plane</strong> <em>(cross-cutting)</em></td>
+<td>Identity, policy-as-code, audit, telemetry, evals, the agent registry, the kill switch</td>
+<td>Enforcement moves out of the agent process <a class="cite" href="#src-42" aria-label="Source 42">[42]</a><a class="cite" href="#src-44" aria-label="Source 44">[44]</a></td>
+</tr>
+<tr>
+<td><strong>Delivery plane</strong></td>
+<td>CI/CD, supply chain, GitOps, eval gates</td>
+<td>AI bills of materials (AI-BOMs: an inventory of the models, prompts, tools and datasets in each release), signed artefacts, promotion gated on evals <a class="cite" href="#src-69" aria-label="Source 69">[69]</a><a class="cite" href="#src-71" aria-label="Source 71">[71]</a></td>
+</tr>
+</tbody>
+</table></div>
+<p><strong>Keep deterministic work deterministic.</strong> Triggers, scheduling, data clean-up and routing belong in an ordinary workflow layer. The agent receives a typed request and returns a typed result that downstream systems can act on without parsing prose. This is the "own your control flow" idea from the 12-factor agents work <a class="cite" href="#src-17" aria-label="Source 17">[17]</a>. It also matches the long-standing advice to use a fixed workflow wherever the steps are known in advance <a class="cite" href="#src-6" aria-label="Source 6">[6]</a>.</p>
+<p>Three structural moves separate a 2026 architecture from a first-generation one.</p>
+<p><strong>Enforcement moves out of process.</strong> First-generation frameworks usually put guardrails in library code inside the agent process. That is easy to teach. But anything inside the process can be misconfigured, skipped, or switched off by the very code it is meant to constrain. Keep in the process only what has to be there, such as context assembly and output validation, and use explicit middleware hooks for it. Policy, quotas, credential injection and audit belong in gateways and <em>policy decision points</em> (services that answer "is this action allowed?"), which the agent can't disable. OWASP's Agent Control Standard is an early attempt to standardise those hooks around tool calls and other agent steps <a class="cite" href="#src-44" aria-label="Source 44">[44]</a><a class="cite" href="#src-84" aria-label="Source 84">[84]</a>. CoSAI recommends centralising enforcement in a gateway at its higher assurance levels <a class="cite" href="#src-42" aria-label="Source 42">[42]</a>.</p>
+<p><strong>State moves out of memory.</strong> The session becomes a durable, append-only event log. Memory and large artifacts are stored separately, and the working context is rebuilt for every model call <a class="cite" href="#src-14" aria-label="Source 14">[14]</a>. One model provider moved the session log outside both the harness and the model's context window, which turned the harness into a restartable, stateless process. It reported median (p50) time-to-first-token falling by about 60%, and 95th-percentile (p95) by more than 90% <a class="cite" href="#src-15" aria-label="Source 15">[15]</a>. Every counter, breaker, approval and audit record belongs in a shared store.</p>
+<p><strong>The harness becomes configurable.</strong> Compaction, context resets, planning modes and evaluator passes each assume something the model can't yet do well. Those assumptions expire as models improve <a class="cite" href="#src-16" aria-label="Source 16">[16]</a>. The length of tasks agents can complete keeps growing exponentially, and METR reports no evidence of the trend slowing <a class="cite" href="#src-81" aria-label="Source 81">[81]</a>. Make each harness feature a per-agent setting, and re-run your evals after every model upgrade to decide which ones to keep.</p>
+<hr>
+<h2 id="build-principles">3. Build principles</h2>
+<ol>
+<li><strong>Use the lowest complexity that reliably works.</strong> If a function can do the job, write the function. If a fixed workflow with one LLM step can do it, build that. A single agent with tools is the usual enterprise default. Go multi-agent only for a clear reason: parallel breadth-first work, separate security boundaries, or tool overload that better tool design can't fix <a class="cite" href="#src-6" aria-label="Source 6">[6]</a><a class="cite" href="#src-7" aria-label="Source 7">[7]</a><a class="cite" href="#src-8" aria-label="Source 8">[8]</a>.</li>
+<li><strong>Least agency.</strong> OWASP now pairs least privilege with <em>least agency</em>: don't give a system autonomy it doesn't need, because extra autonomy widens the attack surface without adding value <a class="cite" href="#src-33" aria-label="Source 33">[33]</a>.</li>
+<li><strong>Treat context as an engineered budget.</strong> Reliability falls as input grows. A study of 18 models found that every one did better on short, focused prompts than on very long ones <a class="cite" href="#src-13" aria-label="Source 13">[13]</a>. The goal is the smallest set of high-signal tokens that gets the outcome you want <a class="cite" href="#src-12" aria-label="Source 12">[12]</a>. Build context assembly as a testable pipeline step, with a token budget, ordering rules and a stable prefix that can be cached.</li>
+<li><strong>Stateless harness, durable state.</strong> Write the agent as a stateless function over an event log <a class="cite" href="#src-17" aria-label="Source 17">[17]</a><a class="cite" href="#src-14" aria-label="Source 14">[14]</a>.</li>
+<li><strong>Put business rules in code, not prompts.</strong> A system prompt is neither a secret nor a security control <a class="cite" href="#src-34" aria-label="Source 34">[34]</a>. Authorisation must never be handed to the model <a class="cite" href="#src-43" aria-label="Source 43">[43]</a>.</li>
+<li><strong>Typed contracts everywhere.</strong> Major model providers now offer schema-constrained structured output (for example <a class="cite" href="#src-20" aria-label="Source 20">[20]</a><a class="cite" href="#src-89" aria-label="Source 89">[89]</a>). A schema-valid answer can still be wrong, so keep business validation in code, and validate each agent's output before it goes to the next step <a class="cite" href="#src-8" aria-label="Source 8">[8]</a><a class="cite" href="#src-89" aria-label="Source 89">[89]</a>.</li>
+<li><strong>Keep the model layer provider-neutral but reasoning-aware.</strong> For reasoning models, write short, direct prompts with clear success criteria, drop the "think step by step" scaffolding, and pass the model's opaque reasoning state back across tool calls <a class="cite" href="#src-19" aria-label="Source 19">[19]</a>. Where a provider offers a reasoning-effort setting, expose it as per-agent configuration <a class="cite" href="#src-88" aria-label="Source 88">[88]</a>.</li>
+<li><strong>Own your control flow.</strong> Use frameworks as libraries, not as black boxes that hide your prompts and loop <a class="cite" href="#src-17" aria-label="Source 17">[17]</a><a class="cite" href="#src-6" aria-label="Source 6">[6]</a>.</li>
+<li><strong>Deny by default and fail closed.</strong> Convenience defaults have a way of reaching production. Make fail-closed the default for every policy check, and have CI reject any bypass or fail-open flag in a production configuration.</li>
+</ol>
+<hr>
+<h2 id="the-production-control-stack">4. The production control stack</h2>
+<h3 id="resilience">4.1 Resilience</h3>
+<p><strong>The established baseline</strong> is standard distributed-systems practice. Split errors into ones worth retrying and ones that aren't. Retry with exponential backoff and jitter. Put a circuit breaker on each dependency. Degrade gracefully when a source fails. The agent-specific twist: when the agent falls back to cached or static information, it must say so. Tag every piece of data with its source and freshness, so the model can't present stale data as current and the user knows what they are looking at.</p>
+<p><strong>What 2026 practice adds.</strong> Decide what to retry from typed errors and status codes, not from exception text, and honour <code>Retry-After</code>. Set one retry budget across the SDK, the framework and the gateway. Otherwise the three layers multiply into retry storms. Put an <em>idempotency key</em> on every tool that has side effects, so a repeated call doesn't repeat the action, and never let the model choose the retry count. For long tasks, checkpoint and resume from the point of failure instead of starting over. One provider's research-agent team found that because agents carry state across many tool calls, "minor system failures can be catastrophic" <a class="cite" href="#src-11" aria-label="Source 11">[11]</a>. Fail over between models and providers at the gateway <a class="cite" href="#src-76" aria-label="Source 76">[76]</a>.</p>
+<h3 id="limits-and-budgets">4.2 Limits and budgets</h3>
+<p>First-generation agents usually limited requests per minute and capped loop iterations. Requests and steps are poor proxies for spend. Today, budgets are set in <strong>tokens and money</strong>, per run, per user and per tenant, and enforced at the gateway. Add wall-clock deadlines, and detect real loops, such as the same tool call repeating or a state that flips back and forth. For consequential workflows, set an <em>operating envelope</em> before the run starts. That means caps on records changed, money at stake, recipients, sub-agents, delegation depth and credential lifetime <a class="cite" href="#src-46" aria-label="Source 46">[46]</a>. Government guidance now frames managing token consumption as an operational-resilience issue, and names <em>denial-of-wallet</em> attacks (running up your bill) <a class="cite" href="#src-79" aria-label="Source 79">[79]</a>. OWASP lists unbounded consumption as a top-ten LLM risk <a class="cite" href="#src-34" aria-label="Source 34">[34]</a>.</p>
+<h3 id="audit">4.3 Audit</h3>
+<p><strong>The established baseline:</strong> keep two separate records. One is an operational log of what happened. The other is tamper-evident evidence that the log wasn't altered.</p>
+<p><strong>What 2026 practice adds.</strong> A hash chain with no external anchor only catches naive edits, because anyone with write access can recompute every hash. Sign entries with keys held outside the system. Periodically anchor the latest hash in a separate trust domain. Write to one central, serialised sink so replicas can't produce diverging records. Each record should capture the originating human, the agent's identity, the delegated authority, the model and prompt versions, every tool call and policy decision, and the budget consumed, all keyed to one workflow ID <a class="cite" href="#src-46" aria-label="Source 46">[46]</a>. Redact by content before you store anything, not just by field name. For high-risk systems, the EU AI Act requires automatic logging over the system's lifetime, and deployers must keep logs for at least six months <a class="cite" href="#src-65" aria-label="Source 65">[65]</a><a class="cite" href="#src-66" aria-label="Source 66">[66]</a>. And don't claim a logging library "satisfies" a compliance regime. Auditors want evidence of process, not code.</p>
+<h3 id="policy">4.4 Policy</h3>
+<p><strong>The established baseline:</strong> deny by default, and decide before the model runs, so a blocked request costs nothing.</p>
+<p><strong>What 2026 practice adds.</strong> Authorise <em>every tool call and its arguments</em>, not just the incoming request. Ship policies as signed, versioned bundles with unit tests in CI. Go beyond allow and deny. OWASP's Agent Control Standard (still a v0.1 specification) defines five outcomes: allow, deny, <em>modify</em>, <em>ask</em> (send to an approver) and <em>defer</em> (decide later) <a class="cite" href="#src-84" aria-label="Source 84">[84]</a>. Another industry body uses a different set: allow, constrain, throttle, require approval and suspend <a class="cite" href="#src-46" aria-label="Source 46">[46]</a>. So the vocabulary isn't settled yet, but the idea of graded outcomes is. Use an LLM judge only as an optional second layer.</p>
+<h3 id="kill-switch-preflight-and-dry-run">4.5 Kill switch, preflight and dry-run</h3>
+<ul>
+<li><strong>Suspend at every level: fleet, tenant, agent and tool.</strong> Activation must be authenticated and audited. Suspension must reject new requests, cancel queued work, block new sub-agents and refuse to renew credentials. As one guide puts it, "an alert after 10,000 calls does not stop call 10,001" <a class="cite" href="#src-46" aria-label="Source 46">[46]</a>. Add automatic triggers on velocity, cost and anomalies. The EU AI Act asks for a "stop" procedure that brings a high-risk system to a halt in a safe state <a class="cite" href="#src-64" aria-label="Source 64">[64]</a>.</li>
+<li><strong>Preflight checks</strong> before destructive actions should get their facts from the system of record, not from whatever the tool's caller asserts.</li>
+<li><strong>Dry-run</strong> becomes plan → approve → apply for each request, with a diff the reviewer can read.</li>
+</ul>
+<h3 id="health-and-telemetry">4.6 Health and telemetry</h3>
+<p>Readiness checks should test only local health. If readiness depends on a shared model gateway, one blip takes the whole fleet out of service at once. Handle dependency failures with degradation and circuit breakers instead.</p>
+<p>For telemetry, use the <strong>OpenTelemetry GenAI semantic conventions</strong>. They now define <code>invoke_agent</code>, <code>plan</code> and <code>execute_tool</code> spans, MCP spans, and a <code>gen_ai.evaluation.result</code> event that attaches quality scores to the trace being scored <a class="cite" href="#src-53" aria-label="Source 53">[53]</a>. They have moved to their own repository, with a first v0.1.0 release, and are still at <em>Development</em> stability. Pin a version and normalise attribute names in your collector. Capturing prompts and tool arguments is opt-in, and it should stay that way unless you redact. There is no standard cost metric, so compute cost centrally from token metrics. Alert when telemetry stops arriving. Losing observability silently is an incident in its own right.</p>
+<h3 id="multi-tenancy">4.7 Multi-tenancy</h3>
+<p><strong>The established baseline:</strong> resolve the tenant on every request; scope thread IDs, cache keys and storage by tenant; check access at resource boundaries; audit cross-tenant attempts.</p>
+<p><strong>What 2026 practice adds.</strong> Take the tenant from authenticated server-side context <em>only</em>. Never take it from a tool argument the model fills in, or from the prompt. Carry it end to end: request, agent, tools, MCP and A2A calls, telemetry and billing. A2A 1.0 has a native tenant field <a class="cite" href="#src-30" aria-label="Source 30">[30]</a>. Isolate prompt caches by tenant. One provider recommends separate cache keys per customer, partly to prevent cache-hit probing across users <a class="cite" href="#src-78" aria-label="Source 78">[78]</a>. Scope memory and retrieval by tenant, and decide whether to give each tenant its own stack or share one (silo or pool) according to risk.</p>
+<h3 id="secrets-and-identity">4.8 Secrets and identity</h3>
+<p>Keeping secrets in a vault behind a provider-neutral interface is still right. What has to go is agents authenticating with a person's token or with shared static application credentials. Each agent now needs <strong>its own non-human identity</strong>, with a named human sponsor, short-lived credentials, and an explicit choice between acting on its own authority and acting on behalf of a user <a class="cite" href="#src-52" aria-label="Source 52">[52]</a><a class="cite" href="#src-43" aria-label="Source 43">[43]</a>. The major clouds now document identity services built for agents. Microsoft Azure, Google Cloud and AWS are examples <a class="cite" href="#src-90" aria-label="Source 90">[90]</a><a class="cite" href="#src-91" aria-label="Source 91">[91]</a><a class="cite" href="#src-92" aria-label="Source 92">[92]</a>. The open standards are still emerging. The IETF has an OAuth working-group draft for identity-provider-brokered "cross-app access" <a class="cite" href="#src-49" aria-label="Source 49">[49]</a>, and a Transaction Tokens draft for carrying identity through chains of calls <a class="cite" href="#src-50" aria-label="Source 50">[50]</a>. The NIST agent standards initiative had published no final standards as of November 2026 <a class="cite" href="#src-51" aria-label="Source 51">[51]</a>. Keep credentials out of sandboxes and out of the model's context <a class="cite" href="#src-41" aria-label="Source 41">[41]</a>, and never copy vault secrets back into environment variables to keep an SDK happy.</p>
+<h3 id="pii-and-dlp">4.9 PII and DLP</h3>
+<p>Many first-generation designs redact personal data only in user input. The gap is everything else: tool results, retrieved documents and memory all flow into the context unredacted. Wrap <strong>every</strong> source that feeds the context. Prefer reversible pseudonymisation backed by a vault, so the model reasons over consistent placeholders and authorised outputs can be re-identified. Scan streamed output as it is produced. Route data by classification, for example sending sensitive data only to in-region endpoints. Treat egress control as a primary data-loss-prevention (DLP) measure. Private data, untrusted content and a way to send data out, all in one session, is the "lethal trifecta" <a class="cite" href="#src-40" aria-label="Source 40">[40]</a>.</p>
+<hr>
+<h2 id="integration-and-interoperability">5. Integration and interoperability</h2>
+<h3 id="tool-design">5.1 Tool design</h3>
+<p>Build a few consolidated, namespaced tools around high-impact workflows instead of wrapping every API endpoint. Have them return high-signal fields, paginate by default, and give error messages the agent can act on <a class="cite" href="#src-21" aria-label="Source 21">[21]</a>. Return structured results with explicit error flags, not plain strings. For large tool catalogues, load tool definitions on demand through a search step. In one provider's test with more than 50 tools, this cut the tokens spent on tool definitions by about 85% <a class="cite" href="#src-18" aria-label="Source 18">[18]</a>. Letting agents call tool APIs from code in a sandbox cut one worked example from about 150,000 tokens to about 2,000 <a class="cite" href="#src-22" aria-label="Source 22">[22]</a>. That is a single case, not a benchmark. Package procedural knowledge as versioned skills, using the open Agent Skills format <a class="cite" href="#src-23" aria-label="Source 23">[23]</a>. Don't split agents on tool count alone. Split them along security, ownership and permission boundaries.</p>
+<h3 id="mcp-what-s-current">5.2 MCP: what's current</h3>
+<p>The current MCP revision is <strong>2026-07-28</strong>, and it makes the protocol core stateless <a class="cite" href="#src-24" aria-label="Source 24">[24]</a>. The initialize handshake and protocol sessions are gone. Every request carries its own version and capabilities, servers expose a <code>server/discover</code> call, and routing headers let gateways meter traffic without parsing request bodies. List results can be cached, and servers should return tools in a fixed order, which helps prompt caching. Broken streams are no longer resumed, so make tool calls idempotent and let clients re-issue them. The legacy HTTP+SSE transport is deprecated, and so are Roots, Sampling and protocol Logging. Route model calls through your own model gateway, and send tool telemetry through OpenTelemetry instead.</p>
+<p><strong>Authorisation</strong> is a hardened OAuth 2.1 profile. Use resource indicators and audience validation, and never pass tokens through to downstream services. Dynamic Client Registration is deprecated in favour of Client ID Metadata Documents, though it is still allowed for backwards compatibility. Clients must validate the <code>iss</code> parameter when the authorisation server sends it, which prevents mix-up attacks <a class="cite" href="#src-24" aria-label="Source 24">[24]</a><a class="cite" href="#src-25" aria-label="Source 25">[25]</a>. The <strong>Enterprise-Managed Authorization</strong> extension is stable. It lets the corporate identity provider grant or deny agent access to MCP servers centrally, so users don't click through a consent screen for every server <a class="cite" href="#src-26" aria-label="Source 26">[26]</a>.</p>
+<p><strong>Governance:</strong> MCP is now part of the Linux Foundation's Agentic AI Foundation <a class="cite" href="#src-32" aria-label="Source 32">[32]</a>. It ships on a six-month cadence, with the next revision targeted for 2027-03-30 <a class="cite" href="#src-28" aria-label="Source 28">[28]</a>. Under the new feature-lifecycle policy, deprecated features get at least 12 months before removal <a class="cite" href="#src-24" aria-label="Source 24">[24]</a>. Plan an MCP upgrade cycle twice a year.</p>
+<h3 id="a2a-for-agent-to-agent-delegation">5.3 A2A for agent-to-agent delegation</h3>
+<p>A2A reached v1.0.0 on 2026-03-12, a breaking release <a class="cite" href="#src-30" aria-label="Source 30">[30]</a>. A v1.0.1 bug-fix release followed in May 2026 <a class="cite" href="#src-85" aria-label="Source 85">[85]</a>. Version 1.0 added Agent Cards signed with JSON Web Signatures (JWS), modern OAuth flows (PKCE and device code; the implicit and password flows are gone), mutual TLS (mTLS, where both sides present certificates), a native tenant field, and three functionally equivalent bindings <a class="cite" href="#src-30" aria-label="Source 30">[30]</a>. A2A joined the Agentic AI Foundation in August 2026 <a class="cite" href="#src-31" aria-label="Source 31">[31]</a>. The division of labour is now clear: <strong>MCP connects agents to tools and context, and A2A delegates work to agents owned by someone else.</strong> Verify card signatures. Pin the minor protocol version and take patch releases. Treat a remote agent's self-description and outputs as untrusted. Pasting a remote card's text straight into your model's tool description is a poisoning vector.</p>
+<h3 id="gateway-and-registry">5.4 Gateway and registry</h3>
+<p>Send all agent traffic through a central gateway for authentication, credential injection, policy, audit and tool search <a class="cite" href="#src-42" aria-label="Source 42">[42]</a>. Make a <strong>private, curated registry</strong> your only source of approved MCP servers and agents. The official MCP Registry holds public servers only, is still in preview, and leaves security scanning to others <a class="cite" href="#src-29" aria-label="Source 29">[29]</a>. Pin and hash tool definitions, and re-approve a tool whenever its definition changes. That catches a "rug pull", where a tool approved in one form is quietly changed later. Treat annotations such as "read-only" as hints, not controls <a class="cite" href="#src-27" aria-label="Source 27">[27]</a>. Tool misuse and the agentic supply chain both appear in OWASP's agentic top ten <a class="cite" href="#src-33" aria-label="Source 33">[33]</a>.</p>
+<h3 id="multi-agent-used-deliberately">5.5 Multi-agent, used deliberately</h3>
+<p>Cloud providers' architecture guides describe overlapping patterns (for example <a class="cite" href="#src-8" aria-label="Source 8">[8]</a><a class="cite" href="#src-86" aria-label="Source 86">[86]</a><a class="cite" href="#src-87" aria-label="Source 87">[87]</a>): sequential pipelines, concurrent fan-out, review-and-critique (maker-checker), handoff, and a coordinator or manager agent that routes work dynamically. One model provider's guide separates two ways to delegate: a manager agent that calls other agents as tools, and decentralised handoffs where one agent passes control to another <a class="cite" href="#src-7" aria-label="Source 7">[7]</a>. The evidence calls for restraint. Across 260 configurations, multi-agent setups ranged from 80.8% better to 70.0% worse than a single agent, depending on how the task was structured <a class="cite" href="#src-9" aria-label="Source 9">[9]</a>. A study of more than 1,600 traces catalogued 14 multi-agent failure modes <a class="cite" href="#src-10" aria-label="Source 10">[10]</a>. One provider measured multi-agent systems using about 15 times the tokens of chat <a class="cite" href="#src-11" aria-label="Source 11">[11]</a>. If you do go multi-agent, verify results centrally, use typed handoffs, carry identity, trace context and budget across every hop, and cap delegation depth.</p>
+<hr>
+<h2 id="quality-evals-and-observability">6. Quality: evals and observability</h2>
+<p>First-generation test suites mostly checked how an agent was <em>assembled</em>: unit tests for each tool, tests that the configuration loads, and a few integration tests that needed real credentials. They said little about how the agent <em>behaves</em>. Here is what to add.</p>
+<ul>
+<li><strong>Start small and real.</strong> Begin with 20–50 tasks taken from real failures. Keep a <em>capability</em> suite, which starts with a low pass rate and gives you something to climb, separate from a <em>regression</em> suite that should pass at close to 100% <a class="cite" href="#src-54" aria-label="Source 54">[54]</a>.</li>
+<li><strong>Grade the outcome.</strong> Check the end state of the real system (does the booking exist in the database?), not what the agent says it did <a class="cite" href="#src-54" aria-label="Source 54">[54]</a><a class="cite" href="#src-55" aria-label="Source 55">[55]</a>. Grade what the agent produced rather than the exact path it took, because rigid step-sequence checks make tests brittle <a class="cite" href="#src-54" aria-label="Source 54">[54]</a>. My own rule: where the path itself matters, such as a verification step that must come before a payment, add a targeted check that those steps happen in order, and leave the rest of the trajectory flexible.</li>
+<li><strong>Measure consistency.</strong> Use pass^k (all of k trials succeed) for customer-facing agents. An agent that succeeds 75% of the time per trial succeeds on all three of three trials only about 42% of the time <a class="cite" href="#src-54" aria-label="Source 54">[54]</a>. On one benchmark, top agents fell below 25% at pass^8 <a class="cite" href="#src-55" aria-label="Source 55">[55]</a>.</li>
+<li><strong>Separate the evaluator from the generator.</strong> Same-model self-critique is a weak check. Self-evaluating agents "confidently praise" mediocre work, and a separate, sceptical evaluator was easier to tune <a class="cite" href="#src-16" aria-label="Source 16">[16]</a>. LLM judges also favour their own model's outputs <a class="cite" href="#src-60" aria-label="Source 60">[60]</a>. Use narrow pass/fail judges, one per failure mode, checked against human labels.</li>
+<li><strong>Apply statistics.</strong> Report standard errors. Cluster them when test items are related, because clustered errors can be more than three times the naive ones. Gate releases on paired comparisons of baseline and candidate <a class="cite" href="#src-56" aria-label="Source 56">[56]</a>.</li>
+<li><strong>Read transcripts.</strong> NIST found agents gaming graders, for example by commenting out assertions <a class="cite" href="#src-57" aria-label="Source 57">[57]</a>. One provider stopped reporting a flagship coding benchmark after finding flawed tests and contamination <a class="cite" href="#src-58" aria-label="Source 58">[58]</a>. Models can often tell when they are being evaluated, more so in agentic settings <a class="cite" href="#src-62" aria-label="Source 62">[62]</a>. Build private eval sets from your own traffic.</li>
+<li><strong>Evaluate continuously.</strong> Run CI regression gates before deploying and online evaluation of sampled production traces after. Re-run on a schedule to catch drift, and feed new production failures back into the CI dataset <a class="cite" href="#src-54" aria-label="Source 54">[54]</a><a class="cite" href="#src-59" aria-label="Source 59">[59]</a>.</li>
+</ul>
+<p>One more pattern to retire: feeding user ratings or corrections straight back into production prompts or memory. That invites memory poisoning and leaks data across tenants. Curate feedback, scope it to a tenant, have a human review it, and add it to <em>eval datasets</em>, not production prompts.</p>
+<p><strong>The dashboard I insist on:</strong> task success and pass^k, escalation rate, tool-error rate, tokens per run, cost per successful outcome <a class="cite" href="#src-75" aria-label="Source 75">[75]</a>, time to first token, guardrail hits and cache hit rate, all broken down by agent version.</p>
+<hr>
+<h2 id="security-for-agents">7. Security for agents</h2>
+<p><strong>Threat model.</strong> Use the OWASP Top 10 for Agentic Applications (December 2025) as your agent threat checklist. It covers goal hijack, tool misuse, identity and privilege abuse, the agentic supply chain, unexpected code execution, memory and context poisoning, insecure inter-agent communication, cascading failures, exploitation of human trust in the agent, and rogue agents <a class="cite" href="#src-33" aria-label="Source 33">[33]</a>. Use the LLM Top 10 for model-level risks <a class="cite" href="#src-34" aria-label="Source 34">[34]</a>.</p>
+<p><strong>Prompt injection is a residual risk, not a bug you fix.</strong> The UK NCSC says LLMs have no boundary between instructions and data, so injection "may never be totally mitigated" the way SQL injection can <a class="cite" href="#src-35" aria-label="Source 35">[35]</a>. Adaptive attacks bypassed 12 published defences, with success rates above 90% against most of them <a class="cite" href="#src-36" aria-label="Source 36">[36]</a>. A NIST-run competition with more than 250,000 attack attempts found at least one successful hijack against every one of the 13 frontier models tested <a class="cite" href="#src-37" aria-label="Source 37">[37]</a>. Pattern-matching deny-lists on user input, the first-generation default, miss the main threat: indirect injection through tool output, documents, email and other agents. They also flag everyday words. Keep classifiers only as one layer that makes attacks harder.</p>
+<p><strong>Contain the agent by architecture.</strong> Under the "Rule of Two", within one session an agent should have at most two of three things: untrusted input, access to sensitive data, and the ability to change state or communicate externally. If it needs all three, it needs human supervision <a class="cite" href="#src-38" aria-label="Source 38">[38]</a>. Published design patterns such as plan-then-execute, dual-LLM, action-selector and context minimisation keep untrusted data out of the control flow <a class="cite" href="#src-39" aria-label="Source 39">[39]</a>.</p>
+<p><strong>Contain first, approve second.</strong> One provider found users approved about 93% of permission prompts. A sandbox that denies network access by default cut prompts by 84% <a class="cite" href="#src-41" aria-label="Source 41">[41]</a>. Treat egress allowlists as capability grants: in one case, data was exfiltrated through an <em>approved</em> domain using an attacker's key. Run agent-generated code in a strongly isolated sandbox: never as root, no <code>eval</code>, isolated from the network, and with no direct path to production <a class="cite" href="#src-33" aria-label="Source 33">[33]</a>.</p>
+<p><strong>Close the remaining surfaces.</strong> Scan memory writes before committing them, and require provenance <a class="cite" href="#src-33" aria-label="Source 33">[33]</a>. Use zero trust between agents: mutual authentication, signed messages and replay protection. Use agent-aware detection, because host-level endpoint monitoring sees nothing wrong when trusted binaries run under valid credentials <a class="cite" href="#src-33" aria-label="Source 33">[33]</a>. Red-team continuously. In NIST tests, new attacks raised hijack success from 11% to 81%, and simply repeating attacks raised it from 57% to 80% <a class="cite" href="#src-61" aria-label="Source 61">[61]</a>.</p>
+<hr>
+<h2 id="governance-and-the-autonomy-ladder">8. Governance and the autonomy ladder</h2>
+<p><strong>Make autonomy an explicit design decision.</strong> Every agent should have a recorded, approved level of autonomy that is enforced by policy, not just implied by its code. The clearest public scale I know defines five levels by the role the user plays <a class="cite" href="#src-48" aria-label="Source 48">[48]</a>. The level names and descriptions below follow that paper. The controls column is my own mapping.</p>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Level (user role) <a class="cite" href="#src-48" aria-label="Source 48">[48]</a></th>
+<th>How work is shared</th>
+<th>Typical controls (my mapping)</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1. Operator</td>
+<td>The user directs; the agent acts on request</td>
+<td>Narrow, mostly read-only permissions; the user confirms each action</td>
+</tr>
+<tr>
+<td>2. Collaborator</td>
+<td>User and agent plan and execute together; either can take over</td>
+<td>Typed output with provenance; visible plan; easy hand-back</td>
+</tr>
+<tr>
+<td>3. Consultant</td>
+<td>The agent leads, and asks the user for expertise or preferences</td>
+<td>Token and cost budgets; structured clarifying questions; full audit</td>
+</tr>
+<tr>
+<td>4. Approver</td>
+<td>The agent acts on its own and asks for approval only for high-risk actions or when it is stuck</td>
+<td>Policy that defines "high risk"; durable approval bound to exact arguments; operating envelope; rollback</td>
+</tr>
+<tr>
+<td>5. Observer</td>
+<td>The agent runs autonomously; the user monitors and can stop it</td>
+<td>Continuous monitoring; kill switch tested at fleet, tenant, agent and tool level; red teaming; sign-off from an accountable risk owner</td>
+</tr>
+</tbody>
+</table></div>
+<p>Pair the autonomy level with an impact assessment: what is the worst plausible outcome, who would be affected, and can it be reversed? Together these form an ordinary risk matrix (impact × autonomy). The higher either one goes, the more controls and evidence you need. Raising an agent's level should need re-approval backed by eval evidence.</p>
+<p><strong>Governance in the loop, not a human on every step.</strong> Requiring approval for everything leads to rubber-stamping. Current guidance makes pre-authorised policy the default. It reserves a named human approver for actions that can't be undone, disrupt production, are visible outside the organisation, or attest to something on the organisation's behalf. It also says to measure how well approvers actually perform <a class="cite" href="#src-45" aria-label="Source 45">[45]</a>. The EU AI Act names automation bias as a risk human overseers must be made aware of <a class="cite" href="#src-64" aria-label="Source 64">[64]</a>. An approval step that only sends a notification is not an approval. A real one pauses durably (for days if needed), binds the approval to a hash of the exact arguments, records the authenticated approver, enforces separation of duties, and has an expiry and an escalation path.</p>
+<p><strong>The agent registry is the system of record.</strong> A spreadsheet doesn't scale. For each agent, record the owner and sponsor, autonomy level, impact rating, impact assessment, allowed tools and MCP servers, the pinned model and its end-of-life date, the AI-BOM, and its signed Agent Card. Replace calendar-based recertification with continuous control monitoring that gathers evidence from CI, runtime policy decisions and evals. Detect unused agents, reduce their privileges, then decommission them, including revoking their credentials. One industry body reports, from its own survey, that 82% of enterprises found previously unknown agents in the past year, and only 21% have formal decommissioning processes <a class="cite" href="#src-47" aria-label="Source 47">[47]</a>.</p>
+<p><strong>Regulation, as of November 2026 (not legal advice).</strong> The EU AI Omnibus entered into force on 27 July 2026. It moved high-risk obligations to 2 December 2027 for use cases listed in Annex III (areas such as employment and credit) and to 2 August 2028 for AI in products covered by Annex I (existing EU product-safety law). General-purpose AI obligations have applied since August 2025, and transparency rules since August 2026 <a class="cite" href="#src-63" aria-label="Source 63">[63]</a>. The first harmonised standard, EN 18286 for AI quality management, now gives a presumption of conformity with the Act's Article 17 quality-management-system requirements for providers of high-risk systems, and maps to ISO/IEC 42001 <a class="cite" href="#src-67" aria-label="Source 67">[67]</a>. If you operate in Annex III areas, start building to these requirements now rather than waiting for 2027. NIST's AI RMF 1.0 is under revision <a class="cite" href="#src-68" aria-label="Source 68">[68]</a>.</p>
+<hr>
+<h2 id="the-delivery-pipeline-commit-to-production">9. The delivery pipeline: commit to production</h2>
+<p>Good software delivery practice still applies to agents: separation of duties, review by the code owners for the area being changed, human release approval in proportion to risk, and building an immutable artefact once and promoting that same artefact through every environment, with a GitOps controller reconciling the declared state <a class="cite" href="#src-74" aria-label="Source 74">[74]</a><a class="cite" href="#src-69" aria-label="Source 69">[69]</a>. What's new is evals, the agent's wider supply chain, and the non-code artefacts.</p>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Stage</th>
+<th>Gate</th>
+<th>2026 additions</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Pre-commit</td>
+<td>Lint, secret scan, unit tests</td>
+<td>A short repository file of instructions for coding agents; skills versioned in the repo</td>
+</tr>
+<tr>
+<td>Pull request CI</td>
+<td>Automated checks</td>
+<td>Policy unit tests; offline evals with mocked tools; prompt and tool-schema checks; CI actions pinned to a commit hash; short-lived federated CI credentials</td>
+</tr>
+<tr>
+<td>Review</td>
+<td>Code-owner approval</td>
+<td>AI reviewers get read-only access and treat pull-request text as untrusted input</td>
+</tr>
+<tr>
+<td>Build once</td>
+<td>Signed artefact</td>
+<td>SLSA Build L3 (builds run on isolated, hardened builders); AI-BOM covering models, prompts, tools and eval set; signed models</td>
+</tr>
+<tr>
+<td>Dev</td>
+<td>Automatic deploy</td>
+<td>Post-deploy verification with synthetic transactions and a fixed test case</td>
+</tr>
+<tr>
+<td>Staging</td>
+<td><strong>Eval and security gate</strong></td>
+<td>Full regression suite at pass^k; red-team suite; shadow traffic sized by statistics, not a fixed number of days</td>
+</tr>
+<tr>
+<td>Production</td>
+<td>Risk-proportionate release approval</td>
+<td>Canary (a small slice of traffic first) judged on LLM signals: eval score, tool errors, cost per outcome; old versions kept running until in-flight sessions finish</td>
+</tr>
+<tr>
+<td>Operate</td>
+<td>Continuous</td>
+<td>Online evals, drift checks, model-retirement calendar, continuous control monitoring</td>
+</tr>
+</tbody>
+</table></div>
+<p><strong>Supply chain.</strong> SLSA v1.2 added a Source Track <a class="cite" href="#src-69" aria-label="Source 69">[69]</a>. In May 2026 an attack on a package registry shipped malicious packages that carried <em>valid</em> provenance from a poisoned pipeline. SLSA's own analysis concluded that Build L3 isolation would have blocked the cache-poisoning step <a class="cite" href="#src-70" aria-label="Source 70">[70]</a>. Ship an AI-BOM with each agent version (CycloneDX ML-BOM is one format) <a class="cite" href="#src-71" aria-label="Source 71">[71]</a>, sign your models <a class="cite" href="#src-72" aria-label="Source 72">[72]</a>, and raise attestation maturity in stages <a class="cite" href="#src-73" aria-label="Source 73">[73]</a>. NIST SP 800-218A remains the secure-development baseline for generative AI <a class="cite" href="#src-83" aria-label="Source 83">[83]</a>.</p>
+<p><strong>Agent definitions as code.</strong> The prompt, model pin, toolbox version, quotas and eval thresholds are kept in Git as declarative state that is pulled and reconciled <a class="cite" href="#src-74" aria-label="Source 74">[74]</a>. Turn off in-place prompt edits in registry UIs, and never point production at a floating "latest" label. Model retirement is a scheduled event. One major provider keeps generally available models for at least 12 months and gives at least 45 days' notice for short-term models <a class="cite" href="#src-80" aria-label="Source 80">[80]</a>. Treat every model swap as an eval-gated, canaried release. For long-running agents, use "rainbow" deployments, which run several versions at once and shift traffic gradually so in-flight sessions survive <a class="cite" href="#src-11" aria-label="Source 11">[11]</a>. Rollback has to cover prompts, model pins and indexes. For side effects that can't be undone, define compensating actions.</p>
+<hr>
+<h2 id="scaling-and-cost">10. Scaling and cost</h2>
+<p><strong>Choose the runtime deliberately.</strong> Managed agent runtimes from the major clouds (for example Google Cloud, Microsoft Azure and AWS) now bundle sessions, memory, identity, tool gateways and evals. They are the fastest route to production but also the most opinionated. Serverless containers scale to zero but are stateless and have request timeouts. Kubernetes gives full control at a real operational cost <a class="cite" href="#src-82" aria-label="Source 82">[82]</a>. Decide based on task duration, statefulness, isolation and residency needs, cost model, and whether you must host your own MCP servers. Wherever the agent runs, autoscale on concurrency or queue depth, not CPU. Agents spend most of their time waiting on I/O.</p>
+<p><strong>Make the model gateway the control point.</strong> It handles token-based quotas, priority queues, failover, chargeback per tenant, and centrally managed canaries. Plan for its trade-offs: added latency, a possible single point of failure, and prompts that now fall within compliance scope <a class="cite" href="#src-76" aria-label="Source 76">[76]</a>. For self-hosted models, Kubernetes now has model-aware inference routing <a class="cite" href="#src-77" aria-label="Source 77">[77]</a>.</p>
+<p><strong>Model cost per task.</strong> One provider measured agents using about 4 times the tokens of chat, and multi-agent systems about 15 times <a class="cite" href="#src-11" aria-label="Source 11">[11]</a>. The levers:</p>
+<ul>
+<li><strong>Tier your models.</strong> Use small models for classification and extraction, and reasoning models only where they earn their cost <a class="cite" href="#src-8" aria-label="Source 8">[8]</a>.</li>
+<li><strong>Design for prompt caching.</strong> Put stable content first, keep tool definitions in the same order, and keep per-user data out of the prefix. Cached input tokens are heavily discounted. One provider now advertises discounts of up to 95% <a class="cite" href="#src-78" aria-label="Source 78">[78]</a>, but rates vary by provider and model generation, so check current pricing. Track cache hit rate as a KPI.</li>
+<li><strong>Batch non-interactive work.</strong> Evals and back-office runs rarely need instant answers. Two major providers price their batch APIs at 50% of standard rates <a class="cite" href="#src-93" aria-label="Source 93">[93]</a><a class="cite" href="#src-94" aria-label="Source 94">[94]</a>.</li>
+<li><strong>Report cost per successful outcome,</strong> not cost per call, and attribute spend by key, team and tenant <a class="cite" href="#src-75" aria-label="Source 75">[75]</a>.</li>
+</ul>
+<p><strong>Scaling the organisation.</strong> A platform team owns the shell: gateways, control plane, golden-path templates (pre-approved starter projects with the controls already wired in) and pipelines. Product teams own the reasoning core: context, tools and evals. That split is what lets you go from three agents to thirty without thirty separate security reviews.</p>
+<hr>
+<h2 id="getting-started-crawl-walk-run">11. Getting started: crawl, walk, run</h2>
+<p>You don't need the whole architecture before your first agent ships. You need the parts that are expensive to retrofit.</p>
+<p><strong>Crawl: one agent, done properly.</strong> Pick one agent at the operator or collaborator level: read-only, or drafting for a human. Put it behind a model gateway from day one, with its own identity, the tenant taken from authenticated context, and token and cost budgets. Emit OpenTelemetry GenAI traces. Build an eval set of 20–50 real tasks before launch, and register the agent with a named owner, even if the registry is simple at first.</p>
+<p><strong>Walk: let agents act, safely.</strong> Add policy-as-code on every tool call, durable approvals bound to arguments, a curated tool registry behind a tool gateway, and eval gates in CI. Extend PII protection to every context source. Move your first agent to the approver level for a narrow set of actions, backed by eval evidence.</p>
+<p><strong>Run: make it a platform.</strong> Stand up a platform team, golden-path templates, an agent registry that is the system of record, continuous control monitoring, online evals and a standing red-team programme. Add multi-agent designs and A2A delegation only where the evidence justifies them. Bring in per-tenant chargeback.</p>
+<p><strong>A worked example (illustrative).</strong> Take a finance agent that handles supplier invoices that fail automatic matching against purchase orders.</p>
+<ul>
+<li><em>Channel and orchestration:</em> the accounts-payable system emits an event. A workflow cleans up the invoice, purchase order and goods receipt into a typed request, and later waits durably for approval.</li>
+<li><em>Harness:</em> context assembly pulls the mismatched lines, the supplier's recent exception history and the relevant policy extract, within a token budget. The agent returns a typed result: likely cause, proposed action, evidence, and confidence derived from checks on that evidence.</li>
+<li><em>Model access:</em> a small model classifies the exception type, and a reasoning model is used only for multi-line mismatches. Budgets are set per business unit.</li>
+<li><em>Tools:</em> three read-only tools (purchase orders, receipts, supplier history) and one write tool that posts an adjustment, all from the curated registry and called through the tool gateway.</li>
+<li><em>State:</em> a session event log and permission-aware retrieval over finance policy. No long-term memory until there is a clear need.</li>
+<li><em>Control plane:</em> the agent has its own identity, sponsored by the process owner. Policy allows the write tool only below a value threshold and only with an approval bound to the exact amounts. Every step is audited under the invoice's workflow ID.</li>
+<li><em>Quality and delivery:</em> an eval set of about 40 historical exceptions with known resolutions, graded on the end state and run at pass^3, then a canary on one business unit.</li>
+<li><em>Autonomy:</em> it launches at collaborator level (it proposes, a clerk decides), moves to approver level for small adjustments once eval and production evidence supports it, and never goes to observer level.</li>
+</ul>
+<hr>
+<h2 id="what-s-outdated-what-s-new">12. What's outdated, what's new</h2>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>First-generation pattern (2023–24)</th>
+<th>Current approach</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Prompt engineering as the main quality lever</td>
+<td>Context engineering: rebuild a minimal, budgeted context on every call from durable state <a class="cite" href="#src-12" aria-label="Source 12">[12]</a><a class="cite" href="#src-14" aria-label="Source 14">[14]</a></td>
+</tr>
+<tr>
+<td>Guardrails as library code inside the agent process</td>
+<td>Explicit in-process hooks, with enforcement at gateways and policy decision points <a class="cite" href="#src-42" aria-label="Source 42">[42]</a><a class="cite" href="#src-44" aria-label="Source 44">[44]</a></td>
+</tr>
+<tr>
+<td>Pattern-matching deny-lists on user input as the injection defence</td>
+<td>Architectural containment (Rule of Two, plan-then-execute); classifiers as one layer <a class="cite" href="#src-35" aria-label="Source 35">[35]</a><a class="cite" href="#src-38" aria-label="Source 38">[38]</a><a class="cite" href="#src-39" aria-label="Source 39">[39]</a></td>
+</tr>
+<tr>
+<td>Tenant or approver identity taken from tool arguments or chat text</td>
+<td>Identity from authenticated context only, carried end to end <a class="cite" href="#src-30" aria-label="Source 30">[30]</a><a class="cite" href="#src-43" aria-label="Source 43">[43]</a></td>
+</tr>
+<tr>
+<td>Agents using a person's token or shared static keys</td>
+<td>A non-human identity per agent, with short-lived, delegated credentials <a class="cite" href="#src-52" aria-label="Source 52">[52]</a><a class="cite" href="#src-49" aria-label="Source 49">[49]</a></td>
+</tr>
+<tr>
+<td>Request-count rate limits and loop caps</td>
+<td>Token and cost budgets per run and tenant at the gateway, plus operating envelopes <a class="cite" href="#src-46" aria-label="Source 46">[46]</a><a class="cite" href="#src-79" aria-label="Source 79">[79]</a></td>
+</tr>
+<tr>
+<td>Local log files, sometimes hash-chained, with no external anchor</td>
+<td>Signed, externally anchored, central audit keyed to a workflow ID <a class="cite" href="#src-46" aria-label="Source 46">[46]</a><a class="cite" href="#src-65" aria-label="Source 65">[65]</a></td>
+</tr>
+<tr>
+<td>Approval as a notification or chat confirmation</td>
+<td>Durable, argument-bound, risk-tiered approval with an authenticated approver <a class="cite" href="#src-45" aria-label="Source 45">[45]</a></td>
+</tr>
+<tr>
+<td>A single on/off switch, not authenticated or audited</td>
+<td>Authenticated, audited suspension at fleet, tenant, agent and tool level that halts in a safe state <a class="cite" href="#src-46" aria-label="Source 46">[46]</a><a class="cite" href="#src-64" aria-label="Source 64">[64]</a></td>
+</tr>
+<tr>
+<td>Vendor-specific tracing SDKs</td>
+<td>OpenTelemetry GenAI conventions with opt-in content capture <a class="cite" href="#src-53" aria-label="Source 53">[53]</a></td>
+</tr>
+<tr>
+<td>Tests of how the agent is assembled; same-model self-critique</td>
+<td>End-state evals, pass^k, separate validated judges, transcript review <a class="cite" href="#src-54" aria-label="Source 54">[54]</a><a class="cite" href="#src-57" aria-label="Source 57">[57]</a></td>
+</tr>
+<tr>
+<td>User feedback written into production prompts</td>
+<td>Feedback curated into eval datasets, with a human gate <a class="cite" href="#src-33" aria-label="Source 33">[33]</a><a class="cite" href="#src-54" aria-label="Source 54">[54]</a></td>
+</tr>
+<tr>
+<td>Early MCP over HTTP+SSE with long-lived static tokens</td>
+<td>Stateless MCP 2026-07-28, OAuth 2.1, enterprise-managed authorisation <a class="cite" href="#src-24" aria-label="Source 24">[24]</a><a class="cite" href="#src-26" aria-label="Source 26">[26]</a></td>
+</tr>
+<tr>
+<td>Multi-agent by default, passing plain text</td>
+<td>Single agent by default; A2A 1.0 with signed cards for cross-team delegation <a class="cite" href="#src-9" aria-label="Source 9">[9]</a><a class="cite" href="#src-30" aria-label="Source 30">[30]</a></td>
+</tr>
+<tr>
+<td>Floating "latest" labels for frameworks, models and prompts</td>
+<td>Pinned versions, a model-retirement calendar, eval-gated promotion <a class="cite" href="#src-80" aria-label="Source 80">[80]</a></td>
+</tr>
+<tr>
+<td>SBOM plus image signing</td>
+<td>SLSA Build L3, AI-BOM, signed models; tool definitions pinned in your registry <a class="cite" href="#src-69" aria-label="Source 69">[69]</a><a class="cite" href="#src-71" aria-label="Source 71">[71]</a><a class="cite" href="#src-72" aria-label="Source 72">[72]</a></td>
+</tr>
+<tr>
+<td>Autoscaling on CPU</td>
+<td>Scaling on concurrency or queue depth; durable execution for long runs <a class="cite" href="#src-8" aria-label="Source 8">[8]</a><a class="cite" href="#src-82" aria-label="Source 82">[82]</a></td>
+</tr>
+<tr>
+<td>Waiting for AI Act standards</td>
+<td>Building the AI management system on ISO/IEC 42001 plus EN 18286 now <a class="cite" href="#src-67" aria-label="Source 67">[67]</a></td>
+</tr>
+<tr>
+<td>Each team building its own stack, pilot by pilot</td>
+<td>A platform-owned shell, golden paths and a crawl-walk-run rollout</td>
+</tr>
+</tbody>
+</table></div>
+<hr>
+<h2 id="production-readiness-checklist">13. Production-readiness checklist</h2>
+<p>Controls should scale with autonomy and impact. A read-only summariser doesn't need the same bar as an agent that moves money. Apply each tier on top of the ones before it.</p>
+<p><strong>Baseline: every agent</strong>
+- [ ] Simplest viable pattern chosen and written down (workflow, single agent or multi-agent)
+- [ ] Registry entry with owner, sponsor, autonomy level and impact rating
+- [ ] Its own identity, with short-lived credentials
+- [ ] Tenant and user taken from authenticated context only
+- [ ] Token, cost and time budgets enforced at the gateway
+- [ ] Central audit trail keyed by workflow ID, with retention set
+- [ ] Prompt, model, tools and protocol versions (MCP revision, A2A minor version) pinned in Git; model end-of-life date tracked
+- [ ] Regression eval suite in CI; OpenTelemetry GenAI spans emitted
+- [ ] Policy checks fail closed; no bypass flags in production
+- [ ] AI-disclosure and regulatory obligations reviewed for the jurisdiction</p>
+<p><strong>Add for agents that take actions (approver level, or any write access)</strong>
+- [ ] Every tool call authorised by policy-as-code, including its arguments
+- [ ] Durable approval bound to exact arguments, with an authenticated approver and separation of duties
+- [ ] Idempotency keys on side-effecting tools; one retry budget; durable checkpoints
+- [ ] PII and DLP applied to every context source and to streamed output
+- [ ] Tools and MCP servers come only from the curated registry, pinned and hashed
+- [ ] Rule-of-Two analysis done; code execution sandboxed with egress allowlists
+- [ ] Results at the agreed pass^k, with a paired comparison against baseline; canary criteria include LLM signals
+- [ ] Signed artefact; AI-BOM published</p>
+<p><strong>Add for high-autonomy or high-impact agents (observer level, or wide impact)</strong>
+- [ ] Operating envelope defined and enforced (records, money, recipients, sub-agents, delegation depth)
+- [ ] Kill switch drilled at fleet, tenant, agent and tool level, with automatic triggers
+- [ ] Red-team suite mapped to the OWASP agentic top ten, run continuously
+- [ ] Online evaluation of sampled traces and continuous control monitoring
+- [ ] Build on isolated (SLSA Build L3) builders
+- [ ] Rehearsed runbooks for suspending the agent, revoking its credentials, rolling back prompt, model and tool versions, switching to a manual process, and notifying affected users</p>
+<hr>
+<h2 id="glossary">14. Glossary</h2>
+<ul>
+<li><strong>A2A (Agent2Agent):</strong> an open protocol for one agent to delegate work to another, independently owned agent.</li>
+<li><strong>AI-BOM:</strong> an AI bill of materials, an inventory of the models, prompts, tools and datasets in a release.</li>
+<li><strong>Annex I / Annex III (EU AI Act):</strong> the two routes by which a system counts as high-risk. Annex I covers AI in products under existing EU product-safety law; Annex III lists use-case areas such as employment and credit.</li>
+<li><strong>Canary / rainbow deployment:</strong> a canary sends a small slice of traffic to a new version first. A rainbow deployment runs several versions at once and shifts traffic gradually.</li>
+<li><strong>Chargeback:</strong> billing usage back to the team or tenant that caused it.</li>
+<li><strong>Denial of wallet:</strong> an attack, or a runaway loop, that drives up usage costs rather than taking a service down.</li>
+<li><strong>Idempotency key:</strong> an identifier that makes a repeated request safe, so it doesn't repeat the action.</li>
+<li><strong>JWS / PKCE / mTLS:</strong> JSON Web Signature (signing structured data); Proof Key for Code Exchange (an OAuth safeguard against intercepted codes); mutual TLS (both sides authenticate with certificates).</li>
+<li><strong>MCP (Model Context Protocol):</strong> an open protocol for connecting agents to tools and data.</li>
+<li><strong>p50 / p95:</strong> the median and the 95th-percentile values of a measurement such as latency.</li>
+<li><strong>pass^k:</strong> the share of tasks an agent completes successfully on all k repeated attempts.</li>
+<li><strong>Policy decision point:</strong> a service that answers "is this action allowed?" so the application doesn't decide for itself.</li>
+<li><strong>Rug pull:</strong> a tool that is approved in one form and changed later without re-approval.</li>
+<li><strong>SLSA Build L3:</strong> a supply-chain security level where builds run on isolated, hardened builders that produce verifiable provenance.</li>
+</ul>
+<hr>
+<h2 id="sources">15. Sources</h2>
+<ol class="sources">
+<li id="src-1">The Register, "AI agents get office tasks wrong around 70% of the time, and a lot of them aren't AI at all" (reports Gartner's 2025-06-25 prediction that over 40% of agentic AI projects will be cancelled by end of 2027), 2025-06-29. <a href="https://www.theregister.com/2025/06/29/ai_agents_fail_a_lot/" target="_blank" rel="noopener">https://www.theregister.com/2025/06/29/ai_agents_fail_a_lot/</a></li>
+<li id="src-2">Fortune (reporting MIT NANDA), "MIT report: 95% of generative AI pilots at companies are failing", 2025-08-18. <a href="https://fortune.com/2025/08/18/mit-report-95-percent-generative-ai-pilots-at-companies-failing-cfo/" target="_blank" rel="noopener">https://fortune.com/2025/08/18/mit-report-95-percent-generative-ai-pilots-at-companies-failing-cfo/</a></li>
+<li id="src-3">Deloitte Insights, "Agentic AI strategy (Tech Trends 2026)", 2025-12-10. <a href="https://www.deloitte.com/us/en/insights/topics/technology-management/tech-trends/2026/agentic-ai-strategy.html" target="_blank" rel="noopener">https://www.deloitte.com/us/en/insights/topics/technology-management/tech-trends/2026/agentic-ai-strategy.html</a></li>
+<li id="src-4">BCG, "Are You Generating Value from AI? The Widening Gap", 2025-09-30. <a href="https://www.bcg.com/publications/2025/are-you-generating-value-from-ai-the-widening-gap" target="_blank" rel="noopener">https://www.bcg.com/publications/2025/are-you-generating-value-from-ai-the-widening-gap</a></li>
+<li id="src-5">LangChain, "State of Agent Engineering" (survey fielded 2025-11-18 to 2025-12-02). <a href="https://www.langchain.com/state-of-agent-engineering" target="_blank" rel="noopener">https://www.langchain.com/state-of-agent-engineering</a></li>
+<li id="src-6">Anthropic Engineering, "Building effective agents", 2024-12-19. <a href="https://www.anthropic.com/engineering/building-effective-agents" target="_blank" rel="noopener">https://www.anthropic.com/engineering/building-effective-agents</a></li>
+<li id="src-7">OpenAI, "A practical guide to building agents" (page dated 2026-01-15). <a href="https://openai.com/business/guides-and-resources/a-practical-guide-to-building-ai-agents/" target="_blank" rel="noopener">https://openai.com/business/guides-and-resources/a-practical-guide-to-building-ai-agents/</a></li>
+<li id="src-8">Microsoft Azure Architecture Center, "AI agent orchestration patterns", updated 2026-09-21. <a href="https://learn.microsoft.com/en-us/azure/architecture/ai-ml/guide/ai-agent-design-patterns" target="_blank" rel="noopener">https://learn.microsoft.com/en-us/azure/architecture/ai-ml/guide/ai-agent-design-patterns</a></li>
+<li id="src-9">arXiv:2512.08296, "Towards a Science of Scaling Agent Systems", 2025-12-09 (v3 2026-04-08). <a href="https://arxiv.org/abs/2512.08296" target="_blank" rel="noopener">https://arxiv.org/abs/2512.08296</a></li>
+<li id="src-10">arXiv:2503.13657, "Why Do Multi-Agent LLM Systems Fail?", 2025-03-17. <a href="https://arxiv.org/abs/2503.13657" target="_blank" rel="noopener">https://arxiv.org/abs/2503.13657</a></li>
+<li id="src-11">Anthropic Engineering, "How we built our multi-agent research system", 2025-06-13. <a href="https://www.anthropic.com/engineering/multi-agent-research-system" target="_blank" rel="noopener">https://www.anthropic.com/engineering/multi-agent-research-system</a></li>
+<li id="src-12">Anthropic Engineering, "Effective context engineering for AI agents", 2025-09-29. <a href="https://www.anthropic.com/engineering/effective-context-engineering-for-ai-agents" target="_blank" rel="noopener">https://www.anthropic.com/engineering/effective-context-engineering-for-ai-agents</a></li>
+<li id="src-13">Chroma, "Context Rot: How Increasing Input Tokens Impacts LLM Performance", 2025-07-14. <a href="https://www.trychroma.com/research/context-rot" target="_blank" rel="noopener">https://www.trychroma.com/research/context-rot</a></li>
+<li id="src-14">Google Developers Blog, "Architecting an efficient, context-aware multi-agent framework for production", 2025-12-04. <a href="https://developers.googleblog.com/architecting-efficient-context-aware-multi-agent-framework-for-production/" target="_blank" rel="noopener">https://developers.googleblog.com/architecting-efficient-context-aware-multi-agent-framework-for-production/</a></li>
+<li id="src-15">Anthropic Engineering, "Scaling Managed Agents: Decoupling the brain from the hands", 2026-04-08. <a href="https://www.anthropic.com/engineering/managed-agents" target="_blank" rel="noopener">https://www.anthropic.com/engineering/managed-agents</a></li>
+<li id="src-16">Anthropic Engineering, "Harness design for long-running application development", 2026-03-24. <a href="https://www.anthropic.com/engineering/harness-design-long-running-apps" target="_blank" rel="noopener">https://www.anthropic.com/engineering/harness-design-long-running-apps</a></li>
+<li id="src-17">HumanLayer, "12-Factor Agents" (open source, 2025, ongoing). <a href="https://github.com/humanlayer/12-factor-agents" target="_blank" rel="noopener">https://github.com/humanlayer/12-factor-agents</a></li>
+<li id="src-18">Anthropic Engineering, "Introducing advanced tool use on the Claude Developer Platform" (Tool Search Tool section), 2025-11-24. <a href="https://www.anthropic.com/engineering/advanced-tool-use" target="_blank" rel="noopener">https://www.anthropic.com/engineering/advanced-tool-use</a></li>
+<li id="src-19">OpenAI, "Reasoning best practices" (accessed 2026-11-25). <a href="https://developers.openai.com/api/docs/guides/reasoning-best-practices" target="_blank" rel="noopener">https://developers.openai.com/api/docs/guides/reasoning-best-practices</a></li>
+<li id="src-20">OpenAI, "Structured Outputs" (accessed 2026-11-25). <a href="https://developers.openai.com/api/docs/guides/structured-outputs" target="_blank" rel="noopener">https://developers.openai.com/api/docs/guides/structured-outputs</a></li>
+<li id="src-21">Anthropic Engineering, "Writing effective tools for agents — with agents", 2025-09-11. <a href="https://www.anthropic.com/engineering/writing-tools-for-agents" target="_blank" rel="noopener">https://www.anthropic.com/engineering/writing-tools-for-agents</a></li>
+<li id="src-22">Anthropic Engineering, "Code execution with MCP", 2025-11-04. <a href="https://www.anthropic.com/engineering/code-execution-with-mcp" target="_blank" rel="noopener">https://www.anthropic.com/engineering/code-execution-with-mcp</a></li>
+<li id="src-23">Agent Skills open format (accessed 2026-11-25). <a href="https://agentskills.io/" target="_blank" rel="noopener">https://agentskills.io/</a></li>
+<li id="src-24">Model Context Protocol, "Specification 2026-07-28 – Key Changes" (includes the feature-lifecycle policy), 2026-07-28. <a href="https://modelcontextprotocol.io/specification/2026-07-28/changelog" target="_blank" rel="noopener">https://modelcontextprotocol.io/specification/2026-07-28/changelog</a></li>
+<li id="src-25">Model Context Protocol, "Authorization (2026-07-28)", 2026-07-28. <a href="https://modelcontextprotocol.io/specification/2026-07-28/basic/authorization" target="_blank" rel="noopener">https://modelcontextprotocol.io/specification/2026-07-28/basic/authorization</a></li>
+<li id="src-26">MCP Blog, "Enterprise-Managed Authorization: Zero-touch OAuth for MCP", 2026-06-18. <a href="https://blog.modelcontextprotocol.io/posts/enterprise-managed-auth/" target="_blank" rel="noopener">https://blog.modelcontextprotocol.io/posts/enterprise-managed-auth/</a></li>
+<li id="src-27">MCP Blog, "Tool Annotations as Risk Vocabulary", 2026-03-16. <a href="https://blog.modelcontextprotocol.io/posts/2026-03-16-tool-annotations/" target="_blank" rel="noopener">https://blog.modelcontextprotocol.io/posts/2026-03-16-tool-annotations/</a></li>
+<li id="src-28">MCP Blog, "A More Predictable Release Cycle for MCP", 2026-11-11. <a href="https://blog.modelcontextprotocol.io/posts/mcp-release-cycle/" target="_blank" rel="noopener">https://blog.modelcontextprotocol.io/posts/mcp-release-cycle/</a></li>
+<li id="src-29">Model Context Protocol, "The MCP Registry (About)" (accessed 2026-11-25). <a href="https://modelcontextprotocol.io/registry/about" target="_blank" rel="noopener">https://modelcontextprotocol.io/registry/about</a></li>
+<li id="src-30">A2A Project, "What's New in A2A v1.0" (v1.0.0 released 2026-03-12). <a href="https://a2a-protocol.org/latest/whats-new-v1/" target="_blank" rel="noopener">https://a2a-protocol.org/latest/whats-new-v1/</a></li>
+<li id="src-31">A2A Project, "A new chapter for A2A: joining the Agentic AI Foundation", 2026-08-27. <a href="https://a2a-protocol.org/latest/blog/2026/08/27/a-new-chapter-for-a2a-joining-the-agentic-ai-foundation/" target="_blank" rel="noopener">https://a2a-protocol.org/latest/blog/2026/08/27/a-new-chapter-for-a2a-joining-the-agentic-ai-foundation/</a></li>
+<li id="src-32">Linux Foundation, "Linux Foundation Announces the Formation of the Agentic AI Foundation", 2025-12-09. <a href="https://www.linuxfoundation.org/press/linux-foundation-announces-the-formation-of-the-agentic-ai-foundation" target="_blank" rel="noopener">https://www.linuxfoundation.org/press/linux-foundation-announces-the-formation-of-the-agentic-ai-foundation</a></li>
+<li id="src-33">OWASP GenAI Security Project, "OWASP Top 10 for Agentic Applications for 2026", 2025-12-09. <a href="https://genai.owasp.org/resource/owasp-top-10-for-agentic-applications-for-2026/" target="_blank" rel="noopener">https://genai.owasp.org/resource/owasp-top-10-for-agentic-applications-for-2026/</a></li>
+<li id="src-34">OWASP GenAI Security Project, "OWASP Top 10 for LLM Applications 2025" (LLM06, LLM07, LLM10). <a href="https://genai.owasp.org/llm-top-10/" target="_blank" rel="noopener">https://genai.owasp.org/llm-top-10/</a></li>
+<li id="src-35">UK NCSC, "Prompt injection is not SQL injection (it may be worse)", 2025-12-08. <a href="https://www.ncsc.gov.uk/blog-post/prompt-injection-is-not-sql-injection" target="_blank" rel="noopener">https://www.ncsc.gov.uk/blog-post/prompt-injection-is-not-sql-injection</a></li>
+<li id="src-36">arXiv:2510.09023, "The Attacker Moves Second", 2025-10-10. <a href="https://arxiv.org/abs/2510.09023" target="_blank" rel="noopener">https://arxiv.org/abs/2510.09023</a></li>
+<li id="src-37">NIST CAISI, "Insights into AI Agent Security from a Large-Scale Red-Teaming Competition", 2026-03-23. <a href="https://www.nist.gov/blogs/caissi-research-blog/insights-ai-agent-security-large-scale-red-teaming-competition" target="_blank" rel="noopener">https://www.nist.gov/blogs/caissi-research-blog/insights-ai-agent-security-large-scale-red-teaming-competition</a></li>
+<li id="src-38">Meta AI, "Agents Rule of Two: A Practical Approach to AI Agent Security", 2025-10-31. <a href="https://ai.meta.com/blog/practical-ai-agent-security/" target="_blank" rel="noopener">https://ai.meta.com/blog/practical-ai-agent-security/</a></li>
+<li id="src-39">arXiv:2506.08837, "Design Patterns for Securing LLM Agents against Prompt Injections", 2025-06-10. <a href="https://arxiv.org/abs/2506.08837" target="_blank" rel="noopener">https://arxiv.org/abs/2506.08837</a></li>
+<li id="src-40">Simon Willison, "The lethal trifecta for AI agents", 2025-06-16. <a href="https://simonwillison.net/2025/Jun/16/the-lethal-trifecta/" target="_blank" rel="noopener">https://simonwillison.net/2025/Jun/16/the-lethal-trifecta/</a></li>
+<li id="src-41">Anthropic, "How we contain Claude across products", 2026-05-25. <a href="https://www.anthropic.com/research/how-we-contain-claude" target="_blank" rel="noopener">https://www.anthropic.com/research/how-we-contain-claude</a></li>
+<li id="src-42">Coalition for Secure AI, "MCP Security, Version 2.0", 2026-09-25. <a href="https://www.coalitionforsecureai.org/mcp-security-version-2-0-from-threat-taxonomy-to-a-model-you-can-actually-audit-against/" target="_blank" rel="noopener">https://www.coalitionforsecureai.org/mcp-security-version-2-0-from-threat-taxonomy-to-a-model-you-can-actually-audit-against/</a></li>
+<li id="src-43">Coalition for Secure AI, "Zero Trust for AI Systems: Why Authorization Can't Live Inside the Model", 2026-09-16. <a href="https://www.coalitionforsecureai.org/zero-trust-for-ai-systems-why-authorization-cant-live-inside-the-model/" target="_blank" rel="noopener">https://www.coalitionforsecureai.org/zero-trust-for-ai-systems-why-authorization-cant-live-inside-the-model/</a></li>
+<li id="src-44">OWASP GenAI Security Project, "Agent Control Standard (ACS)", 2026-09-01. <a href="https://genai.owasp.org/resource/agent-control-standard-acs/" target="_blank" rel="noopener">https://genai.owasp.org/resource/agent-control-standard-acs/</a></li>
+<li id="src-45">Cloud Security Alliance, "Human-in-the-Loop: When Should a Human Approve an AI Action?", 2026-11-19. <a href="https://cloudsecurityalliance.org/articles/human-in-the-loop-when-should-a-human-approve-an-ai-action" target="_blank" rel="noopener">https://cloudsecurityalliance.org/articles/human-in-the-loop-when-should-a-human-approve-an-ai-action</a></li>
+<li id="src-46">Cloud Security Alliance, "When Valid Agent Actions Become a Security Incident", 2026-11-25. <a href="https://cloudsecurityalliance.org/articles/when-valid-agent-actions-become-a-security-incident-governing-ai-agents-at-machine-speed" target="_blank" rel="noopener">https://cloudsecurityalliance.org/articles/when-valid-agent-actions-become-a-security-incident-governing-ai-agents-at-machine-speed</a></li>
+<li id="src-47">Cloud Security Alliance, "Lost in Delegation", 2026-11-23. <a href="https://cloudsecurityalliance.org/articles/lost-in-delegation" target="_blank" rel="noopener">https://cloudsecurityalliance.org/articles/lost-in-delegation</a></li>
+<li id="src-48">arXiv:2506.12469, "Levels of Autonomy for AI Agents", 2025-06-14 (v2 2025-07-28). <a href="https://arxiv.org/abs/2506.12469" target="_blank" rel="noopener">https://arxiv.org/abs/2506.12469</a></li>
+<li id="src-49">IETF OAuth WG, draft-ietf-oauth-identity-assertion-authz-grant-06, October 2026. <a href="https://datatracker.ietf.org/doc/draft-ietf-oauth-identity-assertion-authz-grant/" target="_blank" rel="noopener">https://datatracker.ietf.org/doc/draft-ietf-oauth-identity-assertion-authz-grant/</a></li>
+<li id="src-50">IETF OAuth WG, draft-ietf-oauth-transaction-tokens-11, 2026-07-30. <a href="https://datatracker.ietf.org/doc/draft-ietf-oauth-transaction-tokens/" target="_blank" rel="noopener">https://datatracker.ietf.org/doc/draft-ietf-oauth-transaction-tokens/</a></li>
+<li id="src-51">NIST CAISI, "AI Agent Standards Initiative", created 2026-02-17, updated 2026-11-09. <a href="https://www.nist.gov/caisi/ai-agent-standards-initiative" target="_blank" rel="noopener">https://www.nist.gov/caisi/ai-agent-standards-initiative</a></li>
+<li id="src-52">OWASP, "Non-Human Identities Top 10 – 2025". <a href="https://owasp.github.io/www-project-non-human-identities-top-10/2025" target="_blank" rel="noopener">https://owasp.github.io/www-project-non-human-identities-top-10/2025</a></li>
+<li id="src-53">OpenTelemetry, "semantic-conventions-genai" repository (v0.1.0, Development stability; accessed 2026-11-25). <a href="https://github.com/open-telemetry/semantic-conventions-genai" target="_blank" rel="noopener">https://github.com/open-telemetry/semantic-conventions-genai</a></li>
+<li id="src-54">Anthropic Engineering, "Demystifying evals for AI agents", 2026-01-09. <a href="https://www.anthropic.com/engineering/demystifying-evals-for-ai-agents" target="_blank" rel="noopener">https://www.anthropic.com/engineering/demystifying-evals-for-ai-agents</a></li>
+<li id="src-55">arXiv:2406.12045, "τ-bench: A Benchmark for Tool-Agent-User Interaction in Real-World Domains", 2024-06-17. <a href="https://arxiv.org/abs/2406.12045" target="_blank" rel="noopener">https://arxiv.org/abs/2406.12045</a></li>
+<li id="src-56">Anthropic, "A statistical approach to model evaluations", 2024-11-19. <a href="https://www.anthropic.com/research/statistical-approach-to-model-evals" target="_blank" rel="noopener">https://www.anthropic.com/research/statistical-approach-to-model-evals</a></li>
+<li id="src-57">NIST CAISI, "Cheating On AI Agent Evaluations", 2025-12-02. <a href="https://www.nist.gov/blogs/caissi-research-blog/cheating-ai-agent-evaluations" target="_blank" rel="noopener">https://www.nist.gov/blogs/caissi-research-blog/cheating-ai-agent-evaluations</a></li>
+<li id="src-58">OpenAI, "Why we no longer evaluate SWE-bench Verified", 2026-02-23. <a href="https://openai.com/index/why-we-no-longer-evaluate-swe-bench-verified/" target="_blank" rel="noopener">https://openai.com/index/why-we-no-longer-evaluate-swe-bench-verified/</a></li>
+<li id="src-59">Hamel Husain &amp; Shreya Shankar, "LLM Evals: Everything You Need to Know (Evals FAQ)", 2026-09-18. <a href="https://hamel.dev/blog/posts/evals-faq/" target="_blank" rel="noopener">https://hamel.dev/blog/posts/evals-faq/</a></li>
+<li id="src-60">arXiv:2404.13076, "LLM Evaluators Recognize and Favor Their Own Generations", 2024-04-15. <a href="https://arxiv.org/abs/2404.13076" target="_blank" rel="noopener">https://arxiv.org/abs/2404.13076</a></li>
+<li id="src-61">NIST CAISI, "Technical Blog: Strengthening AI Agent Hijacking Evaluations", 2025-01-17 (updated 2025-12-19). <a href="https://www.nist.gov/news-events/news/2025/01/technical-blog-strengthening-ai-agent-hijacking-evaluations" target="_blank" rel="noopener">https://www.nist.gov/news-events/news/2025/01/technical-blog-strengthening-ai-agent-hijacking-evaluations</a></li>
+<li id="src-62">arXiv:2505.23836, "Large Language Models Often Know When They Are Being Evaluated", 2025-05-28 (v3 2025-07-16). <a href="https://arxiv.org/abs/2505.23836" target="_blank" rel="noopener">https://arxiv.org/abs/2505.23836</a></li>
+<li id="src-63">European Commission, "AI Act – Regulatory framework for AI", last updated 2026-11-25. <a href="https://digital-strategy.ec.europa.eu/en/policies/regulatory-framework-ai" target="_blank" rel="noopener">https://digital-strategy.ec.europa.eu/en/policies/regulatory-framework-ai</a></li>
+<li id="src-64">AI Act Explorer, "Article 14: Human oversight" (accessed 2026-11-25). <a href="https://artificialintelligenceact.eu/article/14/" target="_blank" rel="noopener">https://artificialintelligenceact.eu/article/14/</a></li>
+<li id="src-65">AI Act Explorer, "Article 12: Record-keeping" (accessed 2026-11-25). <a href="https://artificialintelligenceact.eu/article/12/" target="_blank" rel="noopener">https://artificialintelligenceact.eu/article/12/</a></li>
+<li id="src-66">AI Act Explorer, "Article 26: Obligations of deployers" (accessed 2026-11-25). <a href="https://artificialintelligenceact.eu/article/26/" target="_blank" rel="noopener">https://artificialintelligenceact.eu/article/26/</a></li>
+<li id="src-67">CEN-CENELEC JTC 21, "EN 18286 becomes the first harmonised standard under the EU AI Act", 2026-10-14. <a href="https://jtc21.eu/en-18286-becomes-the-first-harmonised-standard-under-the-eu-ai-act/" target="_blank" rel="noopener">https://jtc21.eu/en-18286-becomes-the-first-harmonised-standard-under-the-eu-ai-act/</a></li>
+<li id="src-68">NIST, "AI Risk Management Framework" (accessed 2026-11-25). <a href="https://www.nist.gov/itl/ai-risk-management-framework" target="_blank" rel="noopener">https://www.nist.gov/itl/ai-risk-management-framework</a></li>
+<li id="src-69">SLSA / OpenSSF, "Announcing SLSA v1.2", 2025-11-24. <a href="https://slsa.dev/blog/2025/11/announce-slsa-v1.2" target="_blank" rel="noopener">https://slsa.dev/blog/2025/11/announce-slsa-v1.2</a></li>
+<li id="src-70">SLSA / OpenSSF, "Mini Shai-Hulud: Where SLSA's Boundaries Fall", 2026-05-15. <a href="https://slsa.dev/blog/2026/05/mini-shai-hulud-what-slsa-can-and-cannot-do" target="_blank" rel="noopener">https://slsa.dev/blog/2026/05/mini-shai-hulud-what-slsa-can-and-cannot-do</a></li>
+<li id="src-71">OWASP CycloneDX, "Machine Learning Bill of Materials (ML-BOM)" (accessed 2026-11-25). <a href="https://cyclonedx.org/capabilities/mlbom/" target="_blank" rel="noopener">https://cyclonedx.org/capabilities/mlbom/</a></li>
+<li id="src-72">OpenSSF, "Launch of Model Signing v1.0", 2025-04-04. <a href="https://openssf.org/blog/2025/04/04/launch-of-model-signing-v1-0-openssf-ai-ml-working-group-secures-the-machine-learning-supply-chain/" target="_blank" rel="noopener">https://openssf.org/blog/2025/04/04/launch-of-model-signing-v1-0-openssf-ai-ml-working-group-secures-the-machine-learning-supply-chain/</a></li>
+<li id="src-73">Coalition for Secure AI, "How Much Assurance Does Your AI Supply Chain Need?", 2026-10-05. <a href="https://www.coalitionforsecureai.org/how-much-assurance-does-your-ai-supply-chain-need/" target="_blank" rel="noopener">https://www.coalitionforsecureai.org/how-much-assurance-does-your-ai-supply-chain-need/</a></li>
+<li id="src-74">OpenGitOps (CNCF), "OpenGitOps Principles v1.0.0". <a href="https://opengitops.dev/" target="_blank" rel="noopener">https://opengitops.dev/</a></li>
+<li id="src-75">FinOps Foundation, "FinOps for AI Overview", updated 2026-10-28. <a href="https://www.finops.org/wg/finops-for-ai-overview/" target="_blank" rel="noopener">https://www.finops.org/wg/finops-for-ai-overview/</a></li>
+<li id="src-76">Microsoft Azure Architecture Center, "Access Foundry Models and Other Language Models Through a Gateway", 2026-04-30 (updated 2026-11-23). <a href="https://learn.microsoft.com/en-us/azure/architecture/ai-ml/guide/generative-ai-gateway" target="_blank" rel="noopener">https://learn.microsoft.com/en-us/azure/architecture/ai-ml/guide/generative-ai-gateway</a></li>
+<li id="src-77">Kubernetes SIGs, "Gateway API Inference Extension" (accessed 2026-11-25). <a href="https://gateway-api-inference-extension.sigs.k8s.io/" target="_blank" rel="noopener">https://gateway-api-inference-extension.sigs.k8s.io/</a></li>
+<li id="src-78">OpenAI, "Prompt caching" (accessed 2026-11-25). <a href="https://developers.openai.com/api/docs/guides/prompt-caching" target="_blank" rel="noopener">https://developers.openai.com/api/docs/guides/prompt-caching</a></li>
+<li id="src-79">CISA / Canadian Centre for Cyber Security, "Managing AI Token Consumption for Operational Resilience", 2026-10-22. <a href="https://www.cisa.gov/resources-tools/resources/managing-ai-token-consumption-operational-resilience" target="_blank" rel="noopener">https://www.cisa.gov/resources-tools/resources/managing-ai-token-consumption-operational-resilience</a></li>
+<li id="src-80">Google Cloud, "Model versions and lifecycle" (accessed 2026-11-25). <a href="https://docs.cloud.google.com/vertex-ai/generative-ai/docs/learn/model-versions" target="_blank" rel="noopener">https://docs.cloud.google.com/vertex-ai/generative-ai/docs/learn/model-versions</a></li>
+<li id="src-81">METR, "Time horizons", updated 2026-09-08. <a href="https://metr.org/time-horizons/" target="_blank" rel="noopener">https://metr.org/time-horizons/</a></li>
+<li id="src-82">Google Cloud Architecture Center, "Choose your agentic AI architecture components" (accessed 2026-11-25). <a href="https://docs.cloud.google.com/architecture/choose-agentic-ai-architecture-components" target="_blank" rel="noopener">https://docs.cloud.google.com/architecture/choose-agentic-ai-architecture-components</a></li>
+<li id="src-83">NIST, "SP 800-218A: Secure Software Development Practices for Generative AI and Dual-Use Foundation Models", 2024-07-26. <a href="https://csrc.nist.gov/pubs/sp/800/218/a/final" target="_blank" rel="noopener">https://csrc.nist.gov/pubs/sp/800/218/a/final</a></li>
+<li id="src-84">OWASP GenAI Security Project, "agent-control-standard" GitHub repository (release 0.1.5 implementing specification v0.1.0; five dispositions, nineteen lifecycle hooks; accessed 2026-11-25). <a href="https://github.com/GenAI-Security-Project/agent-control-standard" target="_blank" rel="noopener">https://github.com/GenAI-Security-Project/agent-control-standard</a></li>
+<li id="src-85">A2A Project, GitHub releases (v1.0.1, 2026-05-28; v1.0.0, 2026-03-12; accessed 2026-11-25). <a href="https://github.com/a2aproject/A2A/releases" target="_blank" rel="noopener">https://github.com/a2aproject/A2A/releases</a></li>
+<li id="src-86">Google Cloud Architecture Center, "Choose a design pattern for your agentic AI system" (accessed 2026-11-25). <a href="https://docs.cloud.google.com/architecture/choose-design-pattern-agentic-ai-system" target="_blank" rel="noopener">https://docs.cloud.google.com/architecture/choose-design-pattern-agentic-ai-system</a></li>
+<li id="src-87">AWS Prescriptive Guidance, "Agentic AI patterns and workflows on AWS" (accessed 2026-11-25). <a href="https://docs.aws.amazon.com/prescriptive-guidance/latest/agentic-ai-patterns/introduction.html" target="_blank" rel="noopener">https://docs.aws.amazon.com/prescriptive-guidance/latest/agentic-ai-patterns/introduction.html</a></li>
+<li id="src-88">OpenAI, "Reasoning models" (reasoning.effort parameter; accessed 2026-11-25). <a href="https://developers.openai.com/api/docs/guides/reasoning" target="_blank" rel="noopener">https://developers.openai.com/api/docs/guides/reasoning</a></li>
+<li id="src-89">Google AI for Developers, "Structured outputs" (accessed 2026-11-25). <a href="https://aistudio.google.com/docs/structured-output" target="_blank" rel="noopener">https://aistudio.google.com/docs/structured-output</a></li>
+<li id="src-90">Microsoft Learn, "Microsoft Entra Agent ID documentation", updated 2026-11-17. <a href="https://learn.microsoft.com/en-us/entra/agent-id/" target="_blank" rel="noopener">https://learn.microsoft.com/en-us/entra/agent-id/</a></li>
+<li id="src-91">Google Cloud, "Agent Identity overview" (accessed 2026-11-25). <a href="https://docs.cloud.google.com/gemini-enterprise-agent-platform/govern/agent-identity-overview" target="_blank" rel="noopener">https://docs.cloud.google.com/gemini-enterprise-agent-platform/govern/agent-identity-overview</a></li>
+<li id="src-92">AWS, "Provide identity and credential management for agent applications with Amazon Bedrock AgentCore Identity" (accessed 2026-11-25). <a href="https://docs.aws.amazon.com/bedrock-agentcore/latest/devguide/identity.html" target="_blank" rel="noopener">https://docs.aws.amazon.com/bedrock-agentcore/latest/devguide/identity.html</a></li>
+<li id="src-93">OpenAI, "Batch API" ("50% cost discount compared to synchronous APIs"; accessed 2026-11-25). <a href="https://developers.openai.com/api/docs/guides/batch" target="_blank" rel="noopener">https://developers.openai.com/api/docs/guides/batch</a></li>
+<li id="src-94">Google AI for Developers, "Batch API" ("50% of the standard cost"; accessed 2026-11-25). <a href="https://aistudio.google.com/docs/batch-api" target="_blank" rel="noopener">https://aistudio.google.com/docs/batch-api</a></li>
+</ol>
+        <aside class="pb-cta">
+            <h2>Building agents in your organisation?</h2>
+            <p>I'm happy to compare notes on architecture, governance or getting a first agent to production —
+            <a href="mailto:skarthik1710@gmail.com">email me</a> or connect on
+            <a href="https://www.linkedin.com/in/karthikeyan-selvam-567b52157/" target="_blank" rel="noopener">LinkedIn</a>.
+            Or ask Skipper, my AI assistant, in the corner of this page.</p>
+        </aside>
+    </article>
+</div>
+
+<!-- ── CHAT LAUNCHER + POPOVER ── -->
+<div id="chat-pop" role="dialog" aria-label="Skipper chat">
+    <div class="chat-panel">
+        <div class="chat-head">
+            <span class="pg-avatar"><svg class="pg" viewBox="0 0 64 64" aria-hidden="true"><path class="pg-wing pg-wing-l" d="M16 32 Q8 39 11 50 Q18 47 21 39 Z" fill="#120F0C"/><path class="pg-wing" d="M48 32 Q56 39 53 50 Q46 47 43 39 Z" fill="#120F0C"/><ellipse cx="25.5" cy="56.5" rx="5" ry="2.6" fill="#210D02"/><ellipse cx="38.5" cy="56.5" rx="5" ry="2.6" fill="#210D02"/><path d="M32 7 C21 7 15.5 18 15.5 31.5 C15.5 46.5 22.5 55.5 32 55.5 C41.5 55.5 48.5 46.5 48.5 31.5 C48.5 18 43 7 32 7 Z" fill="#17130F"/><path d="M32 19.5 C25.2 19.5 21 27.5 21 36.5 C21 46.5 26 52.5 32 52.5 C38 52.5 43 46.5 43 36.5 C43 27.5 38.8 19.5 32 19.5 Z" fill="#F3EDE7"/><circle class="pg-ember" cx="32" cy="40" r="3.4" fill="#FF6B35"/><circle cx="26" cy="17.5" r="4.1" fill="#F3EDE7"/><circle cx="38" cy="17.5" r="4.1" fill="#F3EDE7"/><g class="pg-eyes"><circle cx="26.9" cy="18.2" r="1.9" fill="#0F0C0A"/><circle cx="37.1" cy="18.2" r="1.9" fill="#0F0C0A"/></g><rect x="21.4" y="12.2" width="9.4" height="3.4" rx="1.6" transform="rotate(9 26 14)" fill="#17130F"/><rect x="33.2" y="12.2" width="9.4" height="3.4" rx="1.6" transform="rotate(-9 38 14)" fill="#17130F"/><path d="M27.6 21.6 L36.4 21.6 L32 27.2 Z" fill="#FF6B35"/></svg></span>
+            <h3>Skipper — ask my AI</h3>
+            <span class="chat-stack">gemini · firebase functions</span>
+            <button class="chat-pop-close" aria-label="Close chat">&times;</button>
+        </div>
+        <div class="chat-log" id="chat-log">
+            <div class="chat-msg bot">Hi, I'm Skipper — Karthikeyan's AI assistant. Ask me anything about his experience and work.</div>
+        </div>
+        <div class="chat-chips" id="chat-chips">
+            <button class="chat-chip" type="button">Walk me through his career</button>
+            <button class="chat-chip" type="button">What did he do for Microsoft?</button>
+            <button class="chat-chip" type="button">Which certifications does he hold?</button>
+            <button class="chat-chip" type="button">Why hire him as an AI leader?</button>
+        </div>
+        <form class="chat-input-row" id="chat-form">
+            <input id="chat-input" type="text" maxlength="500" placeholder="Ask about Karthikeyan's experience…" autocomplete="off"/>
+            <button type="submit" id="chat-send">Send</button>
+        </form>
+        <div class="chat-note">answers come from his documented career only · conversations may be reviewed</div>
+    </div>
+</div>
+<div id="chat-launcher">
+    <div id="fab-caption" aria-hidden="true">Ask Skipper</div>
+    <button id="chat-fab" aria-label="Chat with Skipper — Karthikeyan's AI" title="Chat with Skipper">
+        <svg class="ic-chat pg" viewBox="0 0 64 64" aria-hidden="true"><path class="pg-wing pg-wing-l" d="M16 32 Q8 39 11 50 Q18 47 21 39 Z" fill="#120F0C"/><path class="pg-wing" d="M48 32 Q56 39 53 50 Q46 47 43 39 Z" fill="#120F0C"/><ellipse cx="25.5" cy="56.5" rx="5" ry="2.6" fill="#210D02"/><ellipse cx="38.5" cy="56.5" rx="5" ry="2.6" fill="#210D02"/><path d="M32 7 C21 7 15.5 18 15.5 31.5 C15.5 46.5 22.5 55.5 32 55.5 C41.5 55.5 48.5 46.5 48.5 31.5 C48.5 18 43 7 32 7 Z" fill="#17130F"/><path d="M32 19.5 C25.2 19.5 21 27.5 21 36.5 C21 46.5 26 52.5 32 52.5 C38 52.5 43 46.5 43 36.5 C43 27.5 38.8 19.5 32 19.5 Z" fill="#F3EDE7"/><circle class="pg-ember" cx="32" cy="40" r="3.4" fill="#FF6B35"/><circle cx="26" cy="17.5" r="4.1" fill="#F3EDE7"/><circle cx="38" cy="17.5" r="4.1" fill="#F3EDE7"/><g class="pg-eyes"><circle cx="26.9" cy="18.2" r="1.9" fill="#0F0C0A"/><circle cx="37.1" cy="18.2" r="1.9" fill="#0F0C0A"/></g><rect x="21.4" y="12.2" width="9.4" height="3.4" rx="1.6" transform="rotate(9 26 14)" fill="#17130F"/><rect x="33.2" y="12.2" width="9.4" height="3.4" rx="1.6" transform="rotate(-9 38 14)" fill="#17130F"/><path d="M27.6 21.6 L36.4 21.6 L32 27.2 Z" fill="#FF6B35"/></svg>
+        <svg class="ic-close" viewBox="0 0 24 24"><path d="M18 6L6 18M6 6l12 12"/></svg>
+    </button>
+</div>
+
+
+<!-- ── FOOTER ── -->
+<footer>
+    <div class="foot-inner">
+        <p>© 2026 Karthikeyan Selvam — AI Product &amp; Enablement Leader</p>
+        <div class="foot-links">
+            <a href="/">Home</a>
+            <a href="/newsletter.html">Newsletter</a>
+            <a href="https://www.linkedin.com/in/karthikeyan-selvam-567b52157/" target="_blank" rel="noopener">LinkedIn</a>
+            <a href="mailto:skarthik1710@gmail.com">Contact</a>
+        </div>
+    </div>
+</footer>
+
+<script>
+    // Collapse the contents list by default on small screens; highlight the current section on wide ones.
+    (function () {
+        var toc = document.querySelector('.pb-toc details');
+        if (toc && window.matchMedia('(max-width: 960px)').matches) toc.removeAttribute('open');
+        var links = document.querySelectorAll('.pb-toc a');
+        if (!('IntersectionObserver' in window) || !links.length) return;
+        var map = {};
+        links.forEach(function (a) { map[a.getAttribute('href').slice(1)] = a; });
+        var io = new IntersectionObserver(function (entries) {
+            entries.forEach(function (e) {
+                if (e.isIntersecting && map[e.target.id]) {
+                    links.forEach(function (a) { a.classList.remove('on'); });
+                    map[e.target.id].classList.add('on');
+                }
+            });
+        }, { rootMargin: '-80px 0px -70% 0px' });
+        document.querySelectorAll('.prose h2[id]').forEach(function (h) { io.observe(h); });
+    })();
+</script>
+<script src="/chat.js?v=20261125"></script>
+</body>
+</html>
