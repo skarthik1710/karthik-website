@@ -4,11 +4,12 @@
 // issue that waits for approval and email the admin a review digest.
 const { onRequest, onCall, HttpsError } = require("firebase-functions/v2/https");
 const { defineSecret } = require("firebase-functions/params");
-const admin = require("firebase-admin");
+const { initializeApp } = require("firebase-admin/app");
+const { getFirestore, FieldValue, Timestamp } = require("firebase-admin/firestore");
 const nodemailer = require("nodemailer");
 const crypto = require("crypto");
 
-admin.initializeApp();
+initializeApp();
 
 const GMAIL_USER = defineSecret("GMAIL_USER");
 const GMAIL_PASSWORD = defineSecret("GMAIL_PASSWORD");
@@ -115,7 +116,7 @@ exports.sendNewsletter = onRequest({ secrets: MAIL_SECRETS }, async (req, res) =
         }
 
         const issueId = "custom-" + new Date().toISOString().slice(0, 16).replace(/[:T]/g, "-");
-        await admin.firestore().collection("newsletter_issues").doc(issueId).create({
+        await getFirestore().collection("newsletter_issues").doc(issueId).create({
             issue_id: issueId,
             kind: "custom",
             date: new Date().toISOString().slice(0, 10),
@@ -125,7 +126,7 @@ exports.sendNewsletter = onRequest({ secrets: MAIL_SECRETS }, async (req, res) =
             fallback_subject: String(subject).slice(0, 200),
             email_html: body,
             theme: "dark",
-            created_at: admin.firestore.FieldValue.serverTimestamp(),
+            created_at: FieldValue.serverTimestamp(),
         });
         await transporter().sendMail({
             from: FROM(), to: ADMIN_EMAIL,
@@ -152,7 +153,7 @@ exports.approveIssue = onCall({ secrets: MAIL_SECRETS, timeoutSeconds: 540 }, as
     const issueId = String((request.data || {}).issueId || "");
     if (!/^[A-Za-z0-9-]{4,40}$/.test(issueId)) throw new HttpsError("invalid-argument", "Bad issue id.");
 
-    const db = admin.firestore();
+    const db = getFirestore();
     const issueRef = db.collection("newsletter_issues").doc(issueId);
 
     // 1. Claim the issue (awaiting_approval | send_incomplete → publishing).
@@ -170,8 +171,8 @@ exports.approveIssue = onCall({ secrets: MAIL_SECRETS, timeoutSeconds: 540 }, as
         tx.update(issueRef, {
             status: "publishing",
             // If this run dies (timeout/crash) the lease lapses and approving again resumes.
-            publishing_lease_until: admin.firestore.Timestamp.fromMillis(Date.now() + 10 * 60 * 1000),
-            approved_at: d.approved_at || admin.firestore.FieldValue.serverTimestamp(),
+            publishing_lease_until: Timestamp.fromMillis(Date.now() + 10 * 60 * 1000),
+            approved_at: d.approved_at || FieldValue.serverTimestamp(),
             approved_by: request.auth.token.email,
         });
         return d;
@@ -188,7 +189,7 @@ exports.approveIssue = onCall({ secrets: MAIL_SECRETS, timeoutSeconds: 540 }, as
                 if (!s.exists) continue;
                 const st = s.data().status;
                 if (st === "pending_review") {
-                    batch.update(s.ref, { status: "approved", published_at: admin.firestore.FieldValue.serverTimestamp() });
+                    batch.update(s.ref, { status: "approved", published_at: FieldValue.serverTimestamp() });
                     approvedIds.add(s.id);
                 } else if (st === "approved") {
                     approvedIds.add(s.id);
@@ -200,7 +201,7 @@ exports.approveIssue = onCall({ secrets: MAIL_SECRETS, timeoutSeconds: 540 }, as
         const isCustom = issue.kind === "custom";
         if (!isCustom && approvedIds.size === 0) {
             await issueRef.update({ status: "rejected", note: "every item was dropped before approval",
-                publishing_lease_until: admin.firestore.FieldValue.delete() });
+                publishing_lease_until: FieldValue.delete() });
             return { status: "rejected", sent: 0, message: "Every item was dropped, so nothing was sent." };
         }
 
@@ -222,7 +223,7 @@ exports.approveIssue = onCall({ secrets: MAIL_SECRETS, timeoutSeconds: 540 }, as
             // Claim BEFORE sending: at-most-once. A crash after the claim may skip
             // one person, but nobody is ever emailed twice.
             try {
-                await dref.create({ state: "sending", at: admin.firestore.FieldValue.serverTimestamp() });
+                await dref.create({ state: "sending", at: FieldValue.serverTimestamp() });
             } catch (e) {
                 if (e.code === 6 /* ALREADY_EXISTS */) { skipped++; continue; }
                 throw e;
@@ -251,17 +252,17 @@ exports.approveIssue = onCall({ secrets: MAIL_SECRETS, timeoutSeconds: 540 }, as
         const status = failed ? "send_incomplete" : "sent";
         await issueRef.update({
             status, subject,
-            publishing_lease_until: admin.firestore.FieldValue.delete(),
+            publishing_lease_until: FieldValue.delete(),
             approved_item_ids: [...approvedIds],
-            sent_count: admin.firestore.FieldValue.increment(sent),
+            sent_count: FieldValue.increment(sent),
             failed_count: failed,
-            sent_at: admin.firestore.FieldValue.serverTimestamp(),
+            sent_at: FieldValue.serverTimestamp(),
         });
         return { status, sent, skipped, failed, subscribers: emails.length };
     } catch (err) {
         // Anything unexpected: leave it retryable rather than stuck in "publishing".
         console.error("approveIssue error:", err);
-        await issueRef.update({ status: "send_incomplete", publishing_lease_until: admin.firestore.FieldValue.delete(), error: String(err.message || err).slice(0, 300) });
+        await issueRef.update({ status: "send_incomplete", publishing_lease_until: FieldValue.delete(), error: String(err.message || err).slice(0, 300) });
         throw new HttpsError("internal", "Publishing failed part-way; it is safe to approve again to resume.");
     }
 });
@@ -272,7 +273,7 @@ exports.rejectIssue = onCall(async (request) => {
     requireAdmin(request);
     const issueId = String((request.data || {}).issueId || "");
     if (!/^[A-Za-z0-9-]{4,40}$/.test(issueId)) throw new HttpsError("invalid-argument", "Bad issue id.");
-    const db = admin.firestore();
+    const db = getFirestore();
     const issueRef = db.collection("newsletter_issues").doc(issueId);
     const issue = await db.runTransaction(async (tx) => {
         const snap = await tx.get(issueRef);
@@ -280,7 +281,7 @@ exports.rejectIssue = onCall(async (request) => {
         if (snap.data().status !== "awaiting_approval") {
             throw new HttpsError("failed-precondition", `Issue is already ${snap.data().status}.`);
         }
-        tx.update(issueRef, { status: "rejected", rejected_at: admin.firestore.FieldValue.serverTimestamp() });
+        tx.update(issueRef, { status: "rejected", rejected_at: FieldValue.serverTimestamp() });
         return snap.data();
     });
     const refs = (issue.item_ids || []).map((id) => db.collection("newsletter_articles").doc(id));
@@ -316,11 +317,11 @@ exports.unsubscribe = onRequest({ secrets: ["NEWSLETTER_SECRET"] }, async (req, 
 
     if (req.method === "POST") {
         // Emails are stored as typed (mixed case), so match on the normalised form.
-        const snap = await admin.firestore().collection("customers").where("active", "==", true).get();
+        const snap = await getFirestore().collection("customers").where("active", "==", true).get();
         const matches = snap.docs.filter((d) => String(d.data().email || "").trim().toLowerCase() === email);
         if (matches.length) {
-            const batch = admin.firestore().batch();
-            matches.forEach((d) => batch.update(d.ref, { active: false, unsubscribed_at: admin.firestore.FieldValue.serverTimestamp() }));
+            const batch = getFirestore().batch();
+            matches.forEach((d) => batch.update(d.ref, { active: false, unsubscribed_at: FieldValue.serverTimestamp() }));
             await batch.commit();
         }
         return page(matches.length ? "You're unsubscribed. You won't receive any more issues."
