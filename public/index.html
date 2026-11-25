@@ -268,6 +268,12 @@
         /* static fallback: beats stack readably when JS/GSAP is absent */
         .no-anim .turn-stage { min-height: 0; flex-direction: column; gap: 2rem; }
         .no-anim .beat { position: static; transform: none; }
+        /* Below 900px the pinned beat animation is off (GSAP matchMedia is min-width: 900px),
+           so stack the beats instead of leaving them absolutely positioned on top of each other. */
+        @media (max-width: 899.98px) {
+            .turn-stage { min-height: 0; flex-direction: column; align-items: stretch; gap: 1.4rem; padding: 3.5rem 0 1rem; }
+            .beat { position: static; transform: none; width: auto; font-size: clamp(1.45rem, 6.2vw, 2.4rem); }
+        }
 
         /* metrics band (the platform, as built) */
         .metrics {
@@ -798,6 +804,11 @@
         @media (max-width: 600px) {
             .nav-links { gap: 1.1rem; }
             .nav-links a:not(.nav-cta) { display: none; }
+            /* hidden links' empty <li>s + default list padding were squeezing the bar until the name and CTA wrapped */
+            .nav-links { padding: 0; margin: 0; }
+            .nav-links li:not(:has(.nav-cta)) { display: none; }
+            .nav-inner { padding: 0 1.25rem; }
+            .brand, .nav-cta { white-space: nowrap; }
             .act { padding: 3.2rem 0; }
             .ship-head { padding-top: 3.2rem; }
             .term-body { font-size: 0.68rem; }
