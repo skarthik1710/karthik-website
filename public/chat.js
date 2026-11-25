@@ -28,7 +28,7 @@
     var POOL = [
         'Tell me about his AI platform',
         'How does he approach AI governance?',
-        'What did he do at Microsoft?',
+        'What did he do for Microsoft?',
         'What is RevokAI?',
         'How does he drive Copilot adoption?',
         'Walk me through his career',

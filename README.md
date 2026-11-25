@@ -1,6 +1,6 @@
 # Karthik Website - Professional Portfolio
 
-Personal portfolio website for Karthikeyan Selvam - Digital Workplace & AI Consultant
+Personal portfolio website for Karthikeyan Selvam - AI Transformation & Enablement Leader
 
 🌐 **Live Site**: [https://karthikeyanselvam.com](https://karthikeyanselvam.com)
 
@@ -9,9 +9,9 @@ Personal portfolio website for Karthikeyan Selvam - Digital Workplace & AI Consu
 ## 👨‍💻 About
 
 Professional portfolio showcasing:
-- 18+ years of experience in Digital Workplace Solutions
+- 19+ years of experience in Digital Workplace Solutions
 - Microsoft Copilot & Azure AI expertise
-- RPA automation implementations (50+ projects)
+- 50+ RPA automations delivered by his team
 - Product management and technical leadership
 - Microsoft Azure & Google Cloud certifications
 
