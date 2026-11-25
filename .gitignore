@@ -65,3 +65,16 @@ functions/.env.local
 # Python bytecode
 __pycache__/
 *.pyc
+
+# ── Secrets: never commit (broad patterns; the 2026-03 leak was functions/.env.txt) ──
+.env*
+!.env.example
+*.env
+*.env.txt
+*.pem
+*.key
+*.p12
+*credentials*.json
+*service-account*.json
+*serviceaccount*.json
+.deploy-secrets*
