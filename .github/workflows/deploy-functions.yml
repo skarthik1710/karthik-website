@@ -7,6 +7,7 @@ on:
     paths:
       - 'functions/**'
       - 'functions-chat/**'
+      - 'functions-python/**'
   workflow_dispatch:
 
 permissions:
@@ -30,6 +31,17 @@ jobs:
           npm install --prefix functions --no-audit --no-fund
           npm install --prefix functions-chat --no-audit --no-fund
 
+      # Python codebase (reviseIssue). firebase deploy analyses it from functions-python/venv.
+      - name: Set up Python
+        uses: actions/setup-python@v7
+        with:
+          python-version: '3.12'
+
+      - name: Install Python function dependencies
+        run: |
+          python -m venv functions-python/venv
+          functions-python/venv/bin/pip install -q -r functions-python/requirements.txt
+
       # askKarthik needs GEMINI_API_KEY in Firebase Secret Manager.
       # Value comes from the same GH secret the newsletter pipeline uses;
       # sets a fresh secret version on each functions deploy (rare).
@@ -40,12 +52,10 @@ jobs:
         env:
           FIREBASE_TOKEN: ${{ secrets.FIREBASE_TOKEN }}
 
-      # Deploys BOTH codebases: default (sendNewsletter — secrets GMAIL_USER,
-      # GMAIL_PASSWORD, NEWSLETTER_SECRET restored by owner 2026-07-09) and
-      # chat (askKarthik — GEMINI_API_KEY installed by the step above).
+      # Deploys ALL codebases: default (newsletter: GMAIL_USER, GMAIL_PASSWORD,
+      # NEWSLETTER_SECRET), chat (askKarthik: GEMINI_API_KEY) and revise
+      # (reviseIssue: GEMINI_API_KEY, NEWSLETTER_SECRET). Runs the CLI on the runner (not in a container) so it can use the venv above.
       - name: Deploy functions
-        uses: w9jds/firebase-action@e01972352bce28ca4658ce13d6abefd26053a4e2 # v15.37.0
-        with:
-          args: deploy --only functions
+        run: npx -y firebase-tools@15.37.0 deploy --only functions --project karthik-website-b5801 --non-interactive
         env:
           FIREBASE_TOKEN: ${{ secrets.FIREBASE_TOKEN }}

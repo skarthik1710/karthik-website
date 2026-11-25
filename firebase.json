@@ -35,6 +35,17 @@
         "firebase-debug.*.log",
         "*.local"
       ]
+    },
+    {
+      "source": "functions-python",
+      "codebase": "revise",
+      "runtime": "python312",
+      "ignore": [
+        "venv",
+        "__pycache__",
+        ".git",
+        "*.local"
+      ]
     }
   ]
 }

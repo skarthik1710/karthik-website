@@ -268,6 +268,52 @@ exports.approveIssue = onCall({ secrets: MAIL_SECRETS, timeoutSeconds: 540 }, as
 });
 
 // ────────────────────────────────────────────────────────────────────────────
+// requestRevision — admin-only. Queues a rewrite of the issue from the admin's
+// notes; the Python function reviseIssue does the work and emails version n+1.
+// Nothing is published: the issue sits in "revising", then back to awaiting_approval.
+const MAX_NOTE = 2000;
+exports.requestRevision = onCall(async (request) => {
+    requireAdmin(request);
+    const data = request.data || {};
+    const issueId = String(data.issueId || "");
+    if (!/^[A-Za-z0-9-]{4,40}$/.test(issueId)) throw new HttpsError("invalid-argument", "Bad issue id.");
+    const overall = String(data.overallNote || "").trim().slice(0, MAX_NOTE);
+    const itemNotes = {};
+    for (const [id, note] of Object.entries(data.itemNotes || {}).slice(0, 30)) {
+        const n = String(note || "").trim().slice(0, MAX_NOTE);
+        if (/^[A-Za-z0-9]{10,40}$/.test(id) && n) itemNotes[id] = n;
+    }
+    if (!overall && Object.keys(itemNotes).length === 0) {
+        throw new HttpsError("invalid-argument", "Write at least one note.");
+    }
+
+    const db = getFirestore();
+    const issueRef = db.collection("newsletter_issues").doc(issueId);
+    return db.runTransaction(async (tx) => {
+        const snap = await tx.get(issueRef);
+        if (!snap.exists) throw new HttpsError("not-found", "No such issue.");
+        const d = snap.data();
+        if (d.kind === "custom") throw new HttpsError("failed-precondition", "Custom issues can't be auto-revised.");
+        // A revision stuck for 15+ minutes (function crashed) may be re-requested.
+        const stuck = d.status === "revising" && d.revision_requested_at &&
+            d.revision_requested_at.toMillis() < Date.now() - 15 * 60 * 1000;
+        if (d.status !== "awaiting_approval" && !stuck) {
+            throw new HttpsError("failed-precondition", `Issue is ${d.status}.`);
+        }
+        for (const id of Object.keys(itemNotes)) {
+            if (!(d.item_ids || []).includes(id)) delete itemNotes[id];
+        }
+        const version = (d.version || 1) + 1;
+        tx.update(issueRef, { status: "revising", revision_requested_at: FieldValue.serverTimestamp() });
+        tx.set(issueRef.collection("revisions").doc(String(version)), {
+            version, overall_note: overall, item_notes: itemNotes, status: "queued",
+            requested_by: request.auth.token.email, requested_at: FieldValue.serverTimestamp(),
+        });
+        return { status: "revising", version };
+    });
+});
+
+// ────────────────────────────────────────────────────────────────────────────
 // rejectIssue — admin-only. Nothing is published or sent; drafts are buried.
 exports.rejectIssue = onCall(async (request) => {
     requireAdmin(request);
