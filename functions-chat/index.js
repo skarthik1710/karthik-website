@@ -1,9 +1,10 @@
 const { onRequest } = require("firebase-functions/v2/https");
 const { defineSecret } = require("firebase-functions/params");
-const admin = require("firebase-admin");
+const { initializeApp } = require("firebase-admin/app");
+const { getFirestore, FieldValue } = require("firebase-admin/firestore");
 const crypto = require("crypto");
 
-admin.initializeApp();
+initializeApp();
 
 /* ────────────────────────────────────────────────────────────────────────────
    askKarthik — career-grounded chat assistant for karthikeyanselvam.com
@@ -112,7 +113,7 @@ exports.askKarthik = onRequest(
         }
 
         // ── rate limits ──
-        const db = admin.firestore();
+        const db = getFirestore();
         const day = new Date().toISOString().slice(0, 10).replace(/-/g, "");
         const ip = (req.get("x-forwarded-for") || req.ip || "unknown").split(",")[0].trim();
         const ipHash = crypto.createHash("sha256").update(ip).digest("hex").slice(0, 12);
@@ -167,7 +168,7 @@ exports.askKarthik = onRequest(
                 q: lastUser,
                 a: reply.slice(0, 2000),
                 ipHash: ipHash,
-                at: admin.firestore.FieldValue.serverTimestamp()
+                at: FieldValue.serverTimestamp()
             }).catch(err => console.error("chat_logs write failed:", err.message));
 
             return res.json({ reply });
