@@ -25,7 +25,7 @@ jobs:
         uses: actions/checkout@v4
 
       - name: Deploy to Firebase Hosting
-        uses: w9jds/firebase-action@master
+        uses: w9jds/firebase-action@e01972352bce28ca4658ce13d6abefd26053a4e2 # v15.37.0
         with:
           args: deploy --only hosting
         env:

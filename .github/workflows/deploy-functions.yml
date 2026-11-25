@@ -44,7 +44,7 @@ jobs:
       # GMAIL_PASSWORD, NEWSLETTER_SECRET restored by owner 2026-07-09) and
       # chat (askKarthik — GEMINI_API_KEY installed by the step above).
       - name: Deploy functions
-        uses: w9jds/firebase-action@master
+        uses: w9jds/firebase-action@e01972352bce28ca4658ce13d6abefd26053a4e2 # v15.37.0
         with:
           args: deploy --only functions
         env:

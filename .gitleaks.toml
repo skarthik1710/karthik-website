@@ -1,0 +1,12 @@
+# Extends gitleaks' default rules.
+[extend]
+useDefault = true
+
+[allowlist]
+description = "Known public values and already-rotated historical leaks"
+# Firebase web API key: public by design (identifies the project; access is
+# enforced by Firestore rules and Auth), embedded in client pages.
+regexes = ['''AIzaSyCTmJf_t33Fia2n06xDASC5W4vk7LbvMBc''']
+# Commit that added functions/.env*.txt (Gmail app password, rotated 2026-11).
+# Remove this line after the history rewrite.
+commits = ["262990e4439aabea89018256169e0ad5417a524a"]
