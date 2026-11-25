@@ -219,6 +219,16 @@
         .claim a { color: var(--accent); }
         .claim.bad { border-left-color: var(--red); } .claim.warn { border-left-color: var(--amber); }
         .decision { font-family: var(--font-mono); font-size: 0.7rem; margin-bottom: 0.8rem; }
+        .changes-form { margin-top: 1.2rem; padding-top: 1.2rem; border-top: 1px solid var(--line); }
+        .note-label { display: block; font-family: var(--font-mono); font-size: 0.68rem; letter-spacing: 0.1em; text-transform: uppercase; color: var(--muted); margin-bottom: 0.4rem; }
+        textarea.note {
+            width: 100%; min-height: 80px; resize: vertical; margin: 0.6rem 0;
+            background: var(--surface-2); color: var(--text); border: 1px solid var(--line-strong);
+            border-radius: 8px; padding: 0.7rem 0.9rem; font-family: var(--font-body); font-size: 0.88rem;
+        }
+        textarea.note:focus { outline: none; border-color: var(--accent); }
+        .note-help { color: var(--dim); font-size: 0.8rem; margin-bottom: 0.8rem; }
+        .history summary { cursor: pointer; color: var(--muted); font-size: 0.8rem; margin-bottom: 0.6rem; }
 
         /* ── EMPTY / LOADING / TOAST ── */
         .empty { text-align: center; padding: 4rem 2rem; color: var(--dim); font-family: var(--font-mono); font-size: 0.85rem; }
@@ -461,7 +471,7 @@
     async function loadIssues() {
         const box = document.getElementById("issues-container");
         const snap = await getDocs(query(collection(db, "newsletter_issues"),
-            where("status", "in", ["awaiting_approval", "send_incomplete", "publishing"])));
+            where("status", "in", ["awaiting_approval", "send_incomplete", "publishing", "revising"])));
         pendingIssueIds = new Set();
         reviewerDropped = new Set();
         const focus = new URLSearchParams(location.search).get("issue");
@@ -474,20 +484,33 @@
             const retry = d.status === "send_incomplete";
             const busy = d.status === "publishing" && d.publishing_lease_until && d.publishing_lease_until.toMillis() > Date.now();
             const stuck = d.status === "publishing" && !busy;
+            const revising = d.status === "revising";
+            const revStuck = revising && d.revision_requested_at && d.revision_requested_at.toMillis() < Date.now() - 15 * 60 * 1000;
+            const canRevise = (d.status === "awaiting_approval" || revStuck) && !custom;
             html += `<div class="issue ${s.id === focus ? "highlight" : ""}" id="issue-${esc(s.id)}">
-                <div class="kicker">${custom ? "Custom issue" : "Weekly issue"} · ${esc(s.id)}</div>
+                <div class="kicker">${custom ? "Custom issue" : "Weekly issue"} · ${esc(s.id)}${(d.version || 1) > 1 ? " · v" + esc(String(d.version)) : ""}</div>
                 <h2>${esc(custom ? d.fallback_subject : ((d.subject_candidates || [])[0] || {}).title || d.fallback_subject)}</h2>
                 <div class="stats">${custom ? "Custom HTML email" : `<b>${(d.item_ids || []).length}</b> item(s) in issue · <b>${(d.dropped_ids || []).length}</b> dropped by reviewers`}
                     · status <b>${esc(d.status)}</b>${d.sent_count ? ` · sent <b>${d.sent_count}</b>` : ""}</div>
-                <p>${busy ? "Publishing is in progress… refresh in a minute." : stuck
+                <p>${revStuck ? "The revision seems stuck (15+ min). You can request it again or reject the issue." : revising ? "Revising per your notes — both reviewers re-check the rewrites. The next version arrives by email in a few minutes." : busy ? "Publishing is in progress… refresh in a minute." : stuck
                     ? "Publishing was interrupted. Resuming continues where it stopped; nobody is emailed twice."
                     : retry
                     ? "Sending stopped part-way. Approving again resumes it; nobody who already received it is emailed twice."
                     : "Approving publishes every item below that you haven't dropped, then emails all subscribers once."}</p>
-                <div class="actions" id="issue-actions-${esc(s.id)}">${busy ? "" : `
+                <div class="actions" id="issue-actions-${esc(s.id)}">${revising ? `
+                    ${revStuck ? `<button class="btn btn-ghost" onclick="openChanges('${esc(s.id)}')">Request changes again</button>` : ""}
+                    <button class="btn btn-danger" onclick="rejectIssue('${esc(s.id)}')">Reject issue</button>` : busy ? "" : `
                     <button class="btn btn-solid" onclick="approveIssue('${esc(s.id)}')">${retry || stuck ? "Resume sending" : "Approve &amp; send to subscribers"}</button>
+                    ${canRevise ? `<button class="btn btn-ghost" onclick="openChanges('${esc(s.id)}')">Request changes</button>` : ""}
                     ${retry || stuck ? "" : `<button class="btn btn-danger" onclick="rejectIssue('${esc(s.id)}')">Reject issue</button>`}`}
-                </div></div>`;
+                </div>
+                ${canRevise ? `<div class="changes-form" id="changes-${esc(s.id)}" style="display:none;">
+                    <label class="note-label">Note for the whole issue (optional)</label>
+                    <textarea class="note" id="overall-${esc(s.id)}" maxlength="2000" placeholder="e.g. Tone down the hype; make the takeaways more specific for IT leaders."></textarea>
+                    <p class="note-help">Add notes on individual items in their cards below. Only items with a note are rewritten — or every item, if you only write an issue-wide note. Both reviewers re-check every rewrite.</p>
+                    <div class="actions"><button class="btn btn-solid" onclick="submitChanges('${esc(s.id)}')">Send for revision</button>
+                    <button class="btn btn-ghost" onclick="openChanges('${esc(s.id)}', false)">Cancel</button></div>
+                </div>` : ""}</div>`;
         });
         box.innerHTML = html;
         if (focus) document.getElementById("issue-" + focus)?.scrollIntoView({ behavior: "smooth", block: "start" });
@@ -513,6 +536,47 @@
         await reload();
     };
 
+    window.openChanges = function(id, on = true) {
+        const form = document.getElementById("changes-" + id);
+        if (!form) return;
+        form.style.display = on ? "" : "none";
+        document.querySelectorAll(`.item-note[data-issue="${CSS.escape(id)}"]`).forEach(t => t.style.display = on ? "" : "none");
+        if (on) { form.scrollIntoView({ behavior: "smooth", block: "start" }); document.getElementById("overall-" + id)?.focus(); }
+    };
+
+    window.submitChanges = async function(id) {
+        const overallNote = (document.getElementById("overall-" + id)?.value || "").trim();
+        const itemNotes = {};
+        document.querySelectorAll(`.item-note[data-issue="${CSS.escape(id)}"]`).forEach(t => {
+            if (t.value.trim()) itemNotes[t.dataset.id] = t.value.trim();
+        });
+        if (!overallNote && !Object.keys(itemNotes).length) { showToast("Write at least one note.", true); return; }
+        const n = Object.keys(itemNotes).length;
+        if (!confirm(`Send for revision? ${n ? n + " item(s) will be rewritten" : "Every item will be rewritten"}, re-reviewed, and you'll get the next version by email.`)) return;
+        try {
+            const r = (await httpsCallable(fns, "requestRevision")({ issueId: id, overallNote, itemNotes })).data;
+            showToast(`Revision v${r.version} started — watch your inbox.`);
+        } catch (e) { console.error(e); showToast("Error: " + e.message, true); }
+        await reload();
+    };
+
+    // Buttons in the review email open the desk with an intent; act on it once,
+    // always through the same confirm dialogs (an email link alone never acts).
+    let intentHandled = false;
+    function handleIntent() {
+        if (intentHandled) return;
+        intentHandled = true;
+        const params = new URLSearchParams(location.search);
+        const id = params.get("issue"), intent = params.get("intent");
+        if (!id || !intent) return;
+        params.delete("intent");
+        history.replaceState(null, "", location.pathname + "?" + params.toString());
+        if (!pendingIssueIds.has(id)) { showToast("This issue is no longer awaiting approval.", true); return; }
+        if (intent === "approve") window.approveIssue(id);
+        else if (intent === "reject") window.rejectIssue(id);
+        else if (intent === "changes") window.openChanges(id);
+    }
+
     window.restoreArticle = async function(docId) {
         try {
             await updateDoc(doc(db, "newsletter_articles", docId), { status: "pending_review" });
@@ -524,6 +588,7 @@
     async function reload() {
         try { await loadIssues(); } catch (e) { console.error(e); }
         await loadArticles();
+        setTimeout(handleIntent, 50);   // after the cards (and item note boxes) exist
     }
 
     async function loadArticles() {
@@ -550,7 +615,9 @@
                 const inOpenIssue = d.issue_id && pendingIssueIds.has(d.issue_id);
                 const actions = inOpenIssue && status === "pending_review"
                     ? `<button class="btn btn-danger" onclick="rejectArticle('${id}')">Drop from issue</button>
-                       <span class="result-line">Goes live when issue ${esc(d.issue_id)} is approved.</span>`
+                       <span class="result-line">Goes live when issue ${esc(d.issue_id)} is approved.</span>
+                       <textarea class="note item-note" data-issue="${esc(d.issue_id)}" data-id="${esc(id)}" maxlength="2000"
+                           style="display:none;" placeholder="Note for this item (optional) — what should change?"></textarea>`
                     : inOpenIssue && status === "rejected" && reviewerDropped.has(id)
                     ? `<span class="result-line gone">Dropped by both reviewers — not part of this issue.</span>`
                     : inOpenIssue && status === "rejected"
@@ -573,7 +640,11 @@
                         <span class="status-badge ${statusClass}" id="status-${id}">${statusLabel}</span>
                     </div>
                     <h3>${esc(d.title || (d.type === "hype_check" ? "Hype check" : "Untitled"))}</h3>
+                    ${d.revision_version > 1 ? `<div class="decision v-pass">Version ${esc(String(d.revision_version))}${d.last_changes ? " · What changed: " + esc(d.last_changes) : ""}</div>` : ""}
                     ${renderReviews(d)}
+                    ${(d.versions || []).length ? `<details class="history"><summary>Previous versions (${d.versions.length})</summary>${
+                        d.versions.slice().reverse().map(v => `<div class="body-preview"><b>v${esc(String(v.version))}</b> ${esc(v.title || v.claim || "")}\n\n${esc(v.body || v.reality || (v.items || []).map(h => h.title + " — " + (h.take || "")).join("\n"))}</div>`).join("")
+                    }</details>` : ""}
                     <p class="excerpt">${esc(d.excerpt || "")}</p>
                     <div class="sources">
                         <h4>Sources used</h4>
