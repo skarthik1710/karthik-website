@@ -48,6 +48,6 @@ jobs:
           NEWSLETTER_FORCE: ${{ github.event.inputs.force }}
           # Optional overrides (repo Settings → Variables) if a model is retired.
           NEWSLETTER_WRITER_MODEL: ${{ vars.NEWSLETTER_WRITER_MODEL || 'models/gemini-2.5-flash' }}
-          NEWSLETTER_FACTCHECK_MODEL: ${{ vars.NEWSLETTER_FACTCHECK_MODEL || 'models/gemini-2.5-pro' }}
+          NEWSLETTER_FACTCHECK_MODEL: ${{ vars.NEWSLETTER_FACTCHECK_MODEL || 'models/gemini-3.1-pro-preview' }}
           NEWSLETTER_EDITOR_MODEL: ${{ vars.NEWSLETTER_EDITOR_MODEL || 'models/gemini-2.5-flash' }}
         run: python scripts/generate_newsletter.py

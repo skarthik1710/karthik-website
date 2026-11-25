@@ -15,6 +15,9 @@ from newsletter_review import REVIEWERS, review_item, decide
 
 # --- Clients ---
 client = genai.Client(api_key=os.environ["GEMINI_API_KEY"])
+# Google Search grounding is only enabled on the v1beta API surface.
+review_client = genai.Client(api_key=os.environ["GEMINI_API_KEY"],
+                             http_options={"api_version": "v1beta"})
 firebase_key = json.loads(os.environ["FIREBASE_SERVICE_ACCOUNT"])
 cred = credentials.Certificate(firebase_key)
 firebase_admin.initialize_app(cred)
@@ -34,7 +37,7 @@ QUICK_HITS     = 3      # "links worth your time" — headline + one-line take
 
 WRITER_MODEL   = os.environ.get("NEWSLETTER_WRITER_MODEL", "models/gemini-2.5-flash")
 REVIEW_MODELS  = {
-    "fact_checker": os.environ.get("NEWSLETTER_FACTCHECK_MODEL", "models/gemini-2.5-pro"),
+    "fact_checker": os.environ.get("NEWSLETTER_FACTCHECK_MODEL", "models/gemini-3.1-pro-preview"),
     "editor":       os.environ.get("NEWSLETTER_EDITOR_MODEL", "models/gemini-2.5-flash"),
 }
 REVIEW_EMAIL_URL = os.environ.get(
@@ -713,7 +716,7 @@ if __name__ == "__main__":
     print(f"\n🔎 Reviewing {len(drafts)} draft(s) with {', '.join(REVIEW_MODELS.values())}...")
     reviewed = []
     for kind, rec in drafts:
-        reviews = review_item(client, REVIEW_MODELS, rec, today)
+        reviews = review_item(review_client, REVIEW_MODELS, rec, today)
         decision, reason = decide(reviews)
         ref = db.collection("newsletter_articles").document()
         reviewed.append({"id": ref.id, "ref": ref, "kind": kind, "record": rec,
