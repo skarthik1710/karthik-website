@@ -395,6 +395,7 @@
             .scope-key { border-right: none; border-bottom: 1px solid var(--line); padding-bottom: 0.6rem; }
         }
     </style>
+    <link rel="stylesheet" href="/chat.css?v=20261125"/>
 </head>
 <body>
 
@@ -886,87 +887,6 @@
         'color: #A69C92; font-size: 12px;'
     );
 </script>
-<script>
-    // ── Skipper (launcher + popover) ──
-    const CHAT_ENDPOINT = 'https://us-central1-karthik-website-b5801.cloudfunctions.net/askKarthik';
-    const chatLog = document.getElementById('chat-log');
-    const chatForm = document.getElementById('chat-form');
-    const chatInput = document.getElementById('chat-input');
-    const chatSend = document.getElementById('chat-send');
-    const chatChips = document.getElementById('chat-chips');
-    const chatPop = document.getElementById('chat-pop');
-    const chatFab = document.getElementById('chat-fab');
-    const fabCaption = document.getElementById('fab-caption');
-    let chatHistory = [], chatBusy = false;
-
-    function openPop() {
-        chatPop.classList.add('open'); chatFab.classList.add('open');
-        if (fabCaption) fabCaption.classList.add('hide');
-        if (window.innerWidth > 600) chatInput.focus();
-    }
-    function closePop() {
-        chatPop.classList.remove('open'); chatFab.classList.remove('open');
-        if (fabCaption) fabCaption.classList.remove('hide');
-    }
-    chatFab.addEventListener('click', () => chatPop.classList.contains('open') ? closePop() : openPop());
-    document.querySelector('.chat-pop-close').addEventListener('click', closePop);
-    document.addEventListener('keydown', e => { if (e.key === 'Escape' && chatPop.classList.contains('open')) closePop(); });
-
-    function addChatMsg(role, text, isError) {
-        const div = document.createElement('div');
-        div.className = 'chat-msg ' + (role === 'user' ? 'user' : 'bot') + (isError ? ' error' : '');
-        div.textContent = text;
-        chatLog.appendChild(div);
-        chatLog.scrollTop = chatLog.scrollHeight;
-        return div;
-    }
-
-    async function sendChat(text) {
-        text = (text || '').trim();
-        if (!text || chatBusy) return;
-        if (!chatPop.classList.contains('open')) openPop();
-        chatBusy = true;
-        chatSend.disabled = true;
-        chatInput.value = '';
-        if (chatChips) chatChips.style.display = 'none';
-        addChatMsg('user', text);
-        chatHistory.push({ role: 'user', content: text });
-
-        const typing = document.createElement('div');
-        typing.className = 'chat-typing';
-        typing.innerHTML = '<span></span><span></span><span></span>';
-        chatLog.appendChild(typing);
-        chatLog.scrollTop = chatLog.scrollHeight;
-
-        try {
-            const r = await fetch(CHAT_ENDPOINT, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ messages: chatHistory.slice(-12) })
-            });
-            const data = await r.json().catch(() => ({}));
-            typing.remove();
-            if (r.ok && data.reply) {
-                addChatMsg('bot', data.reply);
-                chatHistory.push({ role: 'assistant', content: data.reply });
-            } else {
-                addChatMsg('bot', data.error || 'Something went wrong — please try again, or email skarthik1710@gmail.com.', true);
-                chatHistory.pop(); // let the user retry the same question
-            }
-        } catch (err) {
-            typing.remove();
-            addChatMsg('bot', 'Connection problem — please try again, or email skarthik1710@gmail.com.', true);
-            chatHistory.pop();
-        }
-        chatBusy = false;
-        chatSend.disabled = false;
-        chatInput.focus();
-    }
-
-    chatForm.addEventListener('submit', e => { e.preventDefault(); sendChat(chatInput.value); });
-    document.querySelectorAll('.chat-chip').forEach(chip => {
-        chip.addEventListener('click', () => sendChat(chip.textContent));
-    });
-</script>
+<script src="/chat.js?v=20261125"></script>
 </body>
 </html>
