@@ -719,6 +719,9 @@ if __name__ == "__main__":
         reviewed.append({"id": ref.id, "ref": ref, "kind": kind, "record": rec,
                          "reviews": reviews, "decision": decision, "reason": reason})
         print(f"   {decision.upper():5} {_item_title(kind, rec)[:70]} — {reason}")
+        for key, rev in reviews.items():
+            if rev.get("error"):
+                print(f"         {key} error: {rev['error'][:240]}")
 
     # ── Persist drafts (pending_review, or rejected if both reviewers failed) ──
     existed_at_start = existing.exists

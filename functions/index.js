@@ -90,7 +90,8 @@ exports.sendReviewEmail = onRequest({ secrets: MAIL_SECRETS }, async (req, res) 
         return res.json({ success: true });
     } catch (err) {
         console.error("Review email error:", err);
-        return res.status(500).json({ error: "send failed" });
+        // Secret-gated caller (CI): return the SMTP error class only, e.g. EAUTH.
+        return res.status(500).json({ error: "send failed", code: err.code || "", response: err.responseCode || "" });
     }
 });
 
