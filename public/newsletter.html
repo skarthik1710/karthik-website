@@ -414,6 +414,15 @@
             .article-card.featured .article-banner { width: 100%; height: 180px; border-right: none; border-bottom: 1px solid var(--line); }
             .this-week { grid-template-columns: 1fr; }
         }
+        /* tablets: five nav links + CTA no longer fit beside the name, so tighten, then fall back to the phone bar */
+        @media (max-width: 900px) {
+            .nav-links { gap: 1.15rem; }
+            .brand, .nav-cta { white-space: nowrap; }
+        }
+        @media (max-width: 800px) {
+            .nav-links { padding: 0; margin: 0; }
+            .nav-links li:not(:has(.nav-cta)) { display: none; }
+        }
         @media (max-width: 600px) {
             .nav-links a:not(.nav-cta) { display: none; }
             /* hidden links' empty <li>s + default list padding were squeezing the bar until the name and CTA wrapped */
@@ -440,6 +449,7 @@
             <li><a href="/#work">Work</a></li>
             <li><a href="/experience.html">Experience</a></li>
             <li><a href="/newsletter.html" class="active">Newsletter</a></li>
+            <li><a href="/projects.html">Projects</a></li>
             <li><a href="/playbook.html">Playbook</a></li>
             <li><a class="nav-cta" href="/#contact">Get in touch</a></li>
         </ul>

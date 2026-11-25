@@ -24,11 +24,49 @@ From my own projects, pilots stall in five places:
 4. **Cost is modelled per request.** Real spend comes from tokens, reasoning, retries and agents calling other agents.
 5. **Nobody owns life after launch.** There is no registry, no plan for when the model is retired, and no way to decommission the agent.
 
+<div class="callout callout-key" role="note" markdown="1">
+<p class="callout-label">Key takeaway</p>
+
 **The core idea: a small reasoning core inside a deterministic shell.** An enterprise agent is a small, non-deterministic reasoning core inside a large, deterministic and deliberately boring shell. Most of the engineering, and nearly all of the risk reduction, lives in the shell. First-generation frameworks already put production capabilities in layers around the model, so that part holds up. What has changed is *where* those layers should sit.
+
+</div>
 
 ---
 
 ## 2. The reference architecture: layers of an enterprise agent
+
+<figure class="pb-fig" aria-labelledby="fig-arch-cap">
+<div class="pb-fig-frame">
+<svg class="pb-arch pb-arch-wide" viewBox="0 0 760 468" role="img" aria-labelledby="fig-arch-title fig-arch-desc">
+<title id="fig-arch-title">Reference architecture: layers of an enterprise agent</title>
+<desc id="fig-arch-desc">Six stacked layers: 1 channels and experience, 2 orchestration, 3 agent harness, 4 model access, 5 tools and interoperability, 6 knowledge and state. A cross-cutting control plane (layer 7: identity, policy-as-code, audit, telemetry, evals, agent registry, kill switch) spans all six. A delivery plane (CI/CD, supply chain, GitOps, eval gates) runs underneath.</desc>
+<g class="arch-node"><rect x="16" y="16" width="540" height="50" rx="9"/><text class="arch-num" x="38" y="41" dominant-baseline="middle">1</text><text class="nlabel" x="62" y="33" dominant-baseline="middle">Channels &amp; experience</text><text class="nsub" x="62" y="52" dominant-baseline="middle">chat · embedded UI · email · tickets · event and schedule triggers · streaming</text></g>
+<g class="arch-node"><rect x="16" y="76" width="540" height="50" rx="9"/><text class="arch-num" x="38" y="101" dominant-baseline="middle">2</text><text class="nlabel" x="62" y="93" dominant-baseline="middle">Orchestration</text><text class="nsub" x="62" y="112" dominant-baseline="middle">deterministic workflow · routing · durable execution · waiting for a human</text></g>
+<g class="arch-node"><rect x="16" y="136" width="540" height="50" rx="9"/><text class="arch-num" x="38" y="161" dominant-baseline="middle">3</text><text class="nlabel" x="62" y="153" dominant-baseline="middle">Agent harness</text><text class="nsub" x="62" y="172" dominant-baseline="middle">reasoning loop · context assembly · memory access · budgets · structured output</text></g>
+<g class="arch-node"><rect x="16" y="196" width="540" height="50" rx="9"/><text class="arch-num" x="38" y="221" dominant-baseline="middle">4</text><text class="nlabel" x="62" y="213" dominant-baseline="middle">Model access</text><text class="nsub" x="62" y="232" dominant-baseline="middle">model gateway · identity · routing · version pinning · quotas · failover · chargeback</text></g>
+<g class="arch-node"><rect x="16" y="256" width="540" height="50" rx="9"/><text class="arch-num" x="38" y="281" dominant-baseline="middle">5</text><text class="nlabel" x="62" y="273" dominant-baseline="middle">Tools &amp; interoperability</text><text class="nsub" x="62" y="292" dominant-baseline="middle">tool gateway · MCP servers · A2A agents · code sandboxes · curated registry</text></g>
+<g class="arch-node"><rect x="16" y="316" width="540" height="50" rx="9"/><text class="arch-num" x="38" y="341" dominant-baseline="middle">6</text><text class="nlabel" x="62" y="333" dominant-baseline="middle">Knowledge &amp; state</text><text class="nsub" x="62" y="352" dominant-baseline="middle">session event log · long-term memory · artifacts · permission-aware retrieval</text></g>
+<path class="arch-edge dashed" d="M 556 41 H 584 M 556 101 H 584 M 556 161 H 584 M 556 221 H 584 M 556 281 H 584 M 556 341 H 584"/>
+<g class="arch-plane"><rect x="584" y="16" width="160" height="350" rx="12"/><text class="arch-plane-label" x="664" y="40" text-anchor="middle">7 · Control plane</text><text class="arch-plane-sub" x="664" y="58" text-anchor="middle">cross-cutting</text><text class="nsub" x="664" y="100" text-anchor="middle">identity</text><text class="nsub" x="664" y="132" text-anchor="middle">policy-as-code</text><text class="nsub" x="664" y="164" text-anchor="middle">audit</text><text class="nsub" x="664" y="196" text-anchor="middle">telemetry</text><text class="nsub" x="664" y="228" text-anchor="middle">evals</text><text class="nsub" x="664" y="260" text-anchor="middle">agent registry</text><text class="nsub" x="664" y="292" text-anchor="middle">kill switch</text></g>
+<path class="arch-edge dashed" d="M 120 366 V 392 M 286 366 V 392 M 452 366 V 392 M 664 366 V 392"/>
+<g class="arch-plane delivery"><rect x="16" y="392" width="728" height="60" rx="12"/><text class="arch-plane-label" x="38" y="416">Delivery plane</text><text class="nsub" x="38" y="437">CI/CD · supply chain · GitOps · eval gates · AI-BOMs · signed artefacts</text></g>
+</svg>
+<svg class="pb-arch pb-arch-tall" viewBox="0 0 400 612" role="img" aria-labelledby="fig-arch-title-m fig-arch-desc-m">
+<title id="fig-arch-title-m">Reference architecture: layers of an enterprise agent</title>
+<desc id="fig-arch-desc-m">A cross-cutting control plane (layer 7: identity, policy-as-code, audit, telemetry, evals, agent registry, kill switch) encloses six stacked layers: 1 channels and experience, 2 orchestration, 3 agent harness, 4 model access, 5 tools and interoperability, 6 knowledge and state. A delivery plane (CI/CD, supply chain, GitOps, eval gates) runs underneath.</desc>
+<g class="arch-plane"><rect x="6" y="6" width="388" height="508" rx="12"/><text class="arch-plane-label" x="20" y="28">7 · Control plane · cross-cutting</text><text class="nsub" x="20" y="50">identity · policy-as-code · audit · telemetry</text><text class="nsub" x="20" y="67">evals · agent registry · kill switch</text></g>
+<g class="arch-node"><rect x="18" y="84" width="364" height="62" rx="9"/><text class="arch-num" x="36" y="115" dominant-baseline="middle">1</text><text class="nlabel" x="58" y="104" dominant-baseline="middle">Channels &amp; experience</text><text class="nsub" x="58" y="122" dominant-baseline="middle">chat · embedded UI · email · tickets</text><text class="nsub" x="58" y="137" dominant-baseline="middle">event and schedule triggers · streaming</text></g>
+<g class="arch-node"><rect x="18" y="154" width="364" height="62" rx="9"/><text class="arch-num" x="36" y="185" dominant-baseline="middle">2</text><text class="nlabel" x="58" y="174" dominant-baseline="middle">Orchestration</text><text class="nsub" x="58" y="192" dominant-baseline="middle">deterministic workflow · routing</text><text class="nsub" x="58" y="207" dominant-baseline="middle">durable execution · waiting for a human</text></g>
+<g class="arch-node"><rect x="18" y="224" width="364" height="62" rx="9"/><text class="arch-num" x="36" y="255" dominant-baseline="middle">3</text><text class="nlabel" x="58" y="244" dominant-baseline="middle">Agent harness</text><text class="nsub" x="58" y="262" dominant-baseline="middle">reasoning loop · context assembly</text><text class="nsub" x="58" y="277" dominant-baseline="middle">memory access · budgets · structured output</text></g>
+<g class="arch-node"><rect x="18" y="294" width="364" height="62" rx="9"/><text class="arch-num" x="36" y="325" dominant-baseline="middle">4</text><text class="nlabel" x="58" y="314" dominant-baseline="middle">Model access</text><text class="nsub" x="58" y="332" dominant-baseline="middle">model gateway · identity · routing · quotas</text><text class="nsub" x="58" y="347" dominant-baseline="middle">version pinning · failover · chargeback</text></g>
+<g class="arch-node"><rect x="18" y="364" width="364" height="62" rx="9"/><text class="arch-num" x="36" y="395" dominant-baseline="middle">5</text><text class="nlabel" x="58" y="384" dominant-baseline="middle">Tools &amp; interoperability</text><text class="nsub" x="58" y="402" dominant-baseline="middle">tool gateway · MCP servers · A2A agents</text><text class="nsub" x="58" y="417" dominant-baseline="middle">code sandboxes · curated registry</text></g>
+<g class="arch-node"><rect x="18" y="434" width="364" height="62" rx="9"/><text class="arch-num" x="36" y="465" dominant-baseline="middle">6</text><text class="nlabel" x="58" y="454" dominant-baseline="middle">Knowledge &amp; state</text><text class="nsub" x="58" y="472" dominant-baseline="middle">session event log · long-term memory</text><text class="nsub" x="58" y="487" dominant-baseline="middle">artifacts · permission-aware retrieval</text></g>
+<path class="arch-edge dashed" d="M 120 514 V 532 M 280 514 V 532"/>
+<g class="arch-plane delivery"><rect x="6" y="532" width="388" height="74" rx="12"/><text class="arch-plane-label" x="20" y="555">Delivery plane</text><text class="nsub" x="20" y="576">CI/CD · supply chain · GitOps · eval gates</text><text class="nsub" x="20" y="593">AI-BOMs · signed artefacts</text></g>
+</svg>
+</div>
+<figcaption id="fig-arch-cap">The layers from the table below. The control plane cuts across every layer (see <a href="#the-production-control-stack">the production control stack</a>); the delivery plane ships all of them (see <a href="#the-delivery-pipeline-commit-to-production">the delivery pipeline</a>).</figcaption>
+</figure>
 
 | Layer | Responsibility | What changed by 2026 |
 |---|---|---|
@@ -41,7 +79,12 @@ From my own projects, pilots stall in five places:
 | **7. Control plane** *(cross-cutting)* | Identity, policy-as-code, audit, telemetry, evals, the agent registry, the kill switch | Enforcement moves out of the agent process [42][44] |
 | **Delivery plane** | CI/CD, supply chain, GitOps, eval gates | AI bills of materials (AI-BOMs: an inventory of the models, prompts, tools and datasets in each release), signed artefacts, promotion gated on evals [69][71] |
 
+<div class="callout callout-key" role="note" markdown="1">
+<p class="callout-label">Key takeaway</p>
+
 **Keep deterministic work deterministic.** Triggers, scheduling, data clean-up and routing belong in an ordinary workflow layer. The agent receives a typed request and returns a typed result that downstream systems can act on without parsing prose. This is the "own your control flow" idea from the 12-factor agents work [17]. It also matches the long-standing advice to use a fixed workflow wherever the steps are known in advance [6].
+
+</div>
 
 Three structural moves separate a 2026 architecture from a first-generation one.
 
@@ -68,6 +111,21 @@ Three structural moves separate a 2026 architecture from a first-generation one.
 ---
 
 ## 4. The production control stack
+
+<figure class="pb-fig" aria-labelledby="fig-stack-cap">
+<ol class="cs-grid" aria-label="The production control stack">
+<li><a href="#resilience"><span class="cs-n">4.1</span><span class="cs-t">Resilience</span><span class="cs-d">Typed retries, one retry budget, idempotency keys, checkpoints</span></a></li>
+<li><a href="#limits-and-budgets"><span class="cs-n">4.2</span><span class="cs-t">Limits and budgets</span><span class="cs-d">Tokens and money per run, user and tenant; an operating envelope</span></a></li>
+<li><a href="#audit"><span class="cs-n">4.3</span><span class="cs-t">Audit</span><span class="cs-d">Signed, externally anchored, central, keyed to one workflow ID</span></a></li>
+<li><a href="#policy"><span class="cs-n">4.4</span><span class="cs-t">Policy</span><span class="cs-d">Authorise every tool call and its arguments; graded outcomes</span></a></li>
+<li><a href="#kill-switch-preflight-and-dry-run"><span class="cs-n">4.5</span><span class="cs-t">Kill switch, preflight, dry-run</span><span class="cs-d">Suspend at fleet, tenant, agent and tool level; plan → approve → apply</span></a></li>
+<li><a href="#health-and-telemetry"><span class="cs-n">4.6</span><span class="cs-t">Health and telemetry</span><span class="cs-d">Local-only readiness; OpenTelemetry GenAI conventions</span></a></li>
+<li><a href="#multi-tenancy"><span class="cs-n">4.7</span><span class="cs-t">Multi-tenancy</span><span class="cs-d">Tenant from authenticated context only, carried end to end</span></a></li>
+<li><a href="#secrets-and-identity"><span class="cs-n">4.8</span><span class="cs-t">Secrets and identity</span><span class="cs-d">Its own non-human identity per agent; short-lived credentials</span></a></li>
+<li><a href="#pii-and-dlp"><span class="cs-n">4.9</span><span class="cs-t">PII and DLP</span><span class="cs-d">Wrap every context source; egress control</span></a></li>
+</ol>
+<figcaption id="fig-stack-cap">The nine controls in this section, at a glance. Each tile jumps to its subsection.</figcaption>
+</figure>
 
 ### 4.1 Resilience
 
@@ -111,7 +169,27 @@ For telemetry, use the **OpenTelemetry GenAI semantic conventions**. They now de
 
 ### 4.8 Secrets and identity
 
-Keeping secrets in a vault behind a provider-neutral interface is still right. What has to go is agents authenticating with a person's token or with shared static application credentials. Each agent now needs **its own non-human identity**, with a named human sponsor, short-lived credentials, and an explicit choice between acting on its own authority and acting on behalf of a user [52][43]. The major clouds now document identity services built for agents. Microsoft Azure, Google Cloud and AWS are examples [90][91][92]. The open standards are still emerging. The IETF has an OAuth working-group draft for identity-provider-brokered "cross-app access" [49], and a Transaction Tokens draft for carrying identity through chains of calls [50]. The NIST agent standards initiative had published no final standards as of November 2026 [51]. Keep credentials out of sandboxes and out of the model's context [41], and never copy vault secrets back into environment variables to keep an SDK happy.
+Keeping secrets in a vault behind a provider-neutral interface is still right.
+
+<div class="callout-pair" markdown="1">
+
+<div class="callout callout-retire" role="note" markdown="1">
+<p class="callout-label">Retire</p>
+
+What has to go is agents authenticating with a person's token or with shared static application credentials.
+
+</div>
+
+<div class="callout callout-instead" role="note" markdown="1">
+<p class="callout-label">Do instead</p>
+
+Each agent now needs **its own non-human identity**, with a named human sponsor, short-lived credentials, and an explicit choice between acting on its own authority and acting on behalf of a user [52][43].
+
+</div>
+
+</div>
+
+The major clouds now document identity services built for agents. Microsoft Azure, Google Cloud and AWS are examples [90][91][92]. The open standards are still emerging. The IETF has an OAuth working-group draft for identity-provider-brokered "cross-app access" [49], and a Transaction Tokens draft for carrying identity through chains of calls [50]. The NIST agent standards initiative had published no final standards as of November 2026 [51]. Keep credentials out of sandboxes and out of the model's context [41], and never copy vault secrets back into environment variables to keep an SDK happy.
 
 ### 4.9 PII and DLP
 
@@ -159,7 +237,23 @@ First-generation test suites mostly checked how an agent was *assembled*: unit t
 - **Read transcripts.** NIST found agents gaming graders, for example by commenting out assertions [57]. One provider stopped reporting a flagship coding benchmark after finding flawed tests and contamination [58]. Models can often tell when they are being evaluated, more so in agentic settings [62]. Build private eval sets from your own traffic.
 - **Evaluate continuously.** Run CI regression gates before deploying and online evaluation of sampled production traces after. Re-run on a schedule to catch drift, and feed new production failures back into the CI dataset [54][59].
 
-One more pattern to retire: feeding user ratings or corrections straight back into production prompts or memory. That invites memory poisoning and leaks data across tenants. Curate feedback, scope it to a tenant, have a human review it, and add it to *eval datasets*, not production prompts.
+<div class="callout-pair" markdown="1">
+
+<div class="callout callout-retire" role="note" markdown="1">
+<p class="callout-label">Retire</p>
+
+One more pattern to retire: feeding user ratings or corrections straight back into production prompts or memory. That invites memory poisoning and leaks data across tenants.
+
+</div>
+
+<div class="callout callout-instead" role="note" markdown="1">
+<p class="callout-label">Do instead</p>
+
+Curate feedback, scope it to a tenant, have a human review it, and add it to *eval datasets*, not production prompts.
+
+</div>
+
+</div>
 
 **The dashboard I insist on:** task success and pass^k, escalation rate, tool-error rate, tokens per run, cost per successful outcome [75], time to first token, guardrail hits and cache hit rate, all broken down by agent version.
 
@@ -169,7 +263,25 @@ One more pattern to retire: feeding user ratings or corrections straight back in
 
 **Threat model.** Use the OWASP Top 10 for Agentic Applications (December 2025) as your agent threat checklist. It covers goal hijack, tool misuse, identity and privilege abuse, the agentic supply chain, unexpected code execution, memory and context poisoning, insecure inter-agent communication, cascading failures, exploitation of human trust in the agent, and rogue agents [33]. Use the LLM Top 10 for model-level risks [34].
 
-**Prompt injection is a residual risk, not a bug you fix.** The UK NCSC says LLMs have no boundary between instructions and data, so injection "may never be totally mitigated" the way SQL injection can [35]. Adaptive attacks bypassed 12 published defences, with success rates above 90% against most of them [36]. A NIST-run competition with more than 250,000 attack attempts found at least one successful hijack against every one of the 13 frontier models tested [37]. Pattern-matching deny-lists on user input, the first-generation default, miss the main threat: indirect injection through tool output, documents, email and other agents. They also flag everyday words. Keep classifiers only as one layer that makes attacks harder.
+**Prompt injection is a residual risk, not a bug you fix.** The UK NCSC says LLMs have no boundary between instructions and data, so injection "may never be totally mitigated" the way SQL injection can [35]. Adaptive attacks bypassed 12 published defences, with success rates above 90% against most of them [36]. A NIST-run competition with more than 250,000 attack attempts found at least one successful hijack against every one of the 13 frontier models tested [37].
+
+<div class="callout-pair" markdown="1">
+
+<div class="callout callout-retire" role="note" markdown="1">
+<p class="callout-label">Retire</p>
+
+Pattern-matching deny-lists on user input, the first-generation default, miss the main threat: indirect injection through tool output, documents, email and other agents. They also flag everyday words.
+
+</div>
+
+<div class="callout callout-instead" role="note" markdown="1">
+<p class="callout-label">Do instead</p>
+
+Keep classifiers only as one layer that makes attacks harder.
+
+</div>
+
+</div>
 
 **Contain the agent by architecture.** Under the "Rule of Two", within one session an agent should have at most two of three things: untrusted input, access to sensitive data, and the ability to change state or communicate externally. If it needs all three, it needs human supervision [38]. Published design patterns such as plan-then-execute, dual-LLM, action-selector and context minimisation keep untrusted data out of the control flow [39].
 
@@ -182,6 +294,20 @@ One more pattern to retire: feeding user ratings or corrections straight back in
 ## 8. Governance and the autonomy ladder
 
 **Make autonomy an explicit design decision.** Every agent should have a recorded, approved level of autonomy that is enforced by policy, not just implied by its code. The clearest public scale I know defines five levels by the role the user plays [48]. The level names and descriptions below follow that paper. The controls column is my own mapping.
+
+<figure class="pb-fig" aria-labelledby="fig-ladder-cap">
+<div class="al-wrap">
+<ol class="al" aria-label="Autonomy ladder, level 1 (operator) to level 5 (observer)">
+<li style="--lvl:1"><span class="al-bar"><span class="al-n">L1</span><span class="al-t">Operator</span></span><span class="al-d">The user directs; the agent acts on request</span></li>
+<li style="--lvl:2"><span class="al-bar"><span class="al-n">L2</span><span class="al-t">Collaborator</span></span><span class="al-d">User and agent plan and execute together</span></li>
+<li style="--lvl:3"><span class="al-bar"><span class="al-n">L3</span><span class="al-t">Consultant</span></span><span class="al-d">The agent leads and asks the user for expertise</span></li>
+<li style="--lvl:4"><span class="al-bar"><span class="al-n">L4</span><span class="al-t">Approver</span></span><span class="al-d">The agent acts; asks approval only for high-risk actions or when stuck</span></li>
+<li style="--lvl:5"><span class="al-bar"><span class="al-n">L5</span><span class="al-t">Observer</span></span><span class="al-d">The agent runs autonomously; the user monitors and can stop it</span></li>
+</ol>
+<p class="al-axis" aria-hidden="true"><span>L1 → L5: more autonomy</span><span>more controls and evidence needed</span></p>
+</div>
+<figcaption id="fig-ladder-cap">The five levels, named by the role the user plays [48]. Raising an agent's level should need re-approval backed by eval evidence.</figcaption>
+</figure>
 
 | Level (user role) [48] | How work is shared | Typical controls (my mapping) |
 |---|---|---|
@@ -204,6 +330,20 @@ Pair the autonomy level with an impact assessment: what is the worst plausible o
 ## 9. The delivery pipeline: commit to production
 
 Good software delivery practice still applies to agents: separation of duties, review by the code owners for the area being changed, human release approval in proportion to risk, and building an immutable artefact once and promoting that same artefact through every environment, with a GitOps controller reconciling the declared state [74][69]. What's new is evals, the agent's wider supply chain, and the non-code artefacts.
+
+<figure class="pb-fig" aria-labelledby="fig-pipe-cap">
+<ol class="pp" aria-label="Delivery pipeline stages, in order">
+<li class="pp-step"><span class="pp-n">1</span><span class="pp-t">Pre-commit</span><span class="pp-g">Lint, secret scan, unit tests</span></li>
+<li class="pp-step"><span class="pp-n">2</span><span class="pp-t">Pull request CI</span><span class="pp-g">Automated checks</span></li>
+<li class="pp-step"><span class="pp-n">3</span><span class="pp-t">Review</span><span class="pp-g">Code-owner approval</span></li>
+<li class="pp-step"><span class="pp-n">4</span><span class="pp-t">Build once</span><span class="pp-g">Signed artefact</span></li>
+<li class="pp-step"><span class="pp-n">5</span><span class="pp-t">Dev</span><span class="pp-g">Automatic deploy</span></li>
+<li class="pp-step is-gate"><span class="pp-n">6</span><span class="pp-t">Staging</span><span class="pp-g">Eval and security gate</span></li>
+<li class="pp-step"><span class="pp-n">7</span><span class="pp-t">Production</span><span class="pp-g">Risk-proportionate release approval</span></li>
+<li class="pp-step is-loop"><span class="pp-n">8</span><span class="pp-t">Operate</span><span class="pp-g">Continuous</span></li>
+</ol>
+<figcaption id="fig-pipe-cap">Each stage and its gate, from the table below. The artefact is built once and the same artefact is promoted through every environment.</figcaption>
+</figure>
 
 | Stage | Gate | 2026 additions |
 |---|---|---|
@@ -241,7 +381,21 @@ Good software delivery practice still applies to agents: separation of duties, r
 
 ## 11. Getting started: crawl, walk, run
 
+<div class="callout callout-key" role="note" markdown="1">
+<p class="callout-label">Key takeaway</p>
+
 You don't need the whole architecture before your first agent ships. You need the parts that are expensive to retrofit.
+
+</div>
+
+<figure class="pb-fig" aria-labelledby="fig-cwr-cap">
+<ol class="cwr" aria-label="Crawl, walk, run">
+<li><span class="cwr-k">Crawl</span><span class="cwr-t">One agent, done properly</span><span class="cwr-lvl">Autonomy: operator or collaborator</span><ul class="cwr-d"><li>Model gateway from day one</li><li>Its own identity</li><li>Tenant from authenticated context</li><li>Token and cost budgets</li><li>OpenTelemetry GenAI traces</li><li>20–50 real eval tasks</li><li>Registered with a named owner</li></ul></li>
+<li><span class="cwr-k">Walk</span><span class="cwr-t">Let agents act, safely</span><span class="cwr-lvl">Autonomy: approver, for a narrow set of actions</span><ul class="cwr-d"><li>Policy-as-code on every tool call</li><li>Durable approvals bound to arguments</li><li>Curated tool registry behind a tool gateway</li><li>Eval gates in CI</li><li>PII protection on every context source</li></ul></li>
+<li><span class="cwr-k">Run</span><span class="cwr-t">Make it a platform</span><span class="cwr-lvl">Owner: a platform team, with golden paths</span><ul class="cwr-d"><li>Agent registry as the system of record</li><li>Continuous control monitoring</li><li>Online evals</li><li>Standing red team</li><li>Multi-agent and A2A only where justified</li><li>Per-tenant chargeback</li></ul></li>
+</ol>
+<figcaption id="fig-cwr-cap">The three stages described below, at a glance.</figcaption>
+</figure>
 
 **Crawl: one agent, done properly.** Pick one agent at the operator or collaborator level: read-only, or drafting for a human. Put it behind a model gateway from day one, with its own identity, the tenant taken from authenticated context, and token and cost budgets. Emit OpenTelemetry GenAI traces. Build an eval set of 20–50 real tasks before launch, and register the agent with a named owner, even if the registry is simple at first.
 
@@ -264,27 +418,29 @@ You don't need the whole architecture before your first agent ships. You need th
 
 ## 12. What's outdated, what's new
 
-| First-generation pattern (2023–24) | Current approach |
+<p class="chip-legend"><span><span class="chip chip-retire">retire</span> stop doing it</span> <span><span class="chip chip-update">update</span> keep the intent, change how it is done</span> <span><span class="chip chip-new">new</span> the current approach</span></p>
+
+| First-generation pattern (2023–24) | Current approach <span class="chip chip-new">new</span> |
 |---|---|
-| Prompt engineering as the main quality lever | Context engineering: rebuild a minimal, budgeted context on every call from durable state [12][14] |
-| Guardrails as library code inside the agent process | Explicit in-process hooks, with enforcement at gateways and policy decision points [42][44] |
-| Pattern-matching deny-lists on user input as the injection defence | Architectural containment (Rule of Two, plan-then-execute); classifiers as one layer [35][38][39] |
-| Tenant or approver identity taken from tool arguments or chat text | Identity from authenticated context only, carried end to end [30][43] |
-| Agents using a person's token or shared static keys | A non-human identity per agent, with short-lived, delegated credentials [52][49] |
-| Request-count rate limits and loop caps | Token and cost budgets per run and tenant at the gateway, plus operating envelopes [46][79] |
-| Local log files, sometimes hash-chained, with no external anchor | Signed, externally anchored, central audit keyed to a workflow ID [46][65] |
-| Approval as a notification or chat confirmation | Durable, argument-bound, risk-tiered approval with an authenticated approver [45] |
-| A single on/off switch, not authenticated or audited | Authenticated, audited suspension at fleet, tenant, agent and tool level that halts in a safe state [46][64] |
-| Vendor-specific tracing SDKs | OpenTelemetry GenAI conventions with opt-in content capture [53] |
-| Tests of how the agent is assembled; same-model self-critique | End-state evals, pass^k, separate validated judges, transcript review [54][57] |
-| User feedback written into production prompts | Feedback curated into eval datasets, with a human gate [33][54] |
-| Early MCP over HTTP+SSE with long-lived static tokens | Stateless MCP 2026-07-28, OAuth 2.1, enterprise-managed authorisation [24][26] |
-| Multi-agent by default, passing plain text | Single agent by default; A2A 1.0 with signed cards for cross-team delegation [9][30] |
-| Floating "latest" labels for frameworks, models and prompts | Pinned versions, a model-retirement calendar, eval-gated promotion [80] |
-| SBOM plus image signing | SLSA Build L3, AI-BOM, signed models; tool definitions pinned in your registry [69][71][72] |
-| Autoscaling on CPU | Scaling on concurrency or queue depth; durable execution for long runs [8][82] |
-| Waiting for AI Act standards | Building the AI management system on ISO/IEC 42001 plus EN 18286 now [67] |
-| Each team building its own stack, pilot by pilot | A platform-owned shell, golden paths and a crawl-walk-run rollout |
+| <span class="chip chip-update">update</span> Prompt engineering as the main quality lever | Context engineering: rebuild a minimal, budgeted context on every call from durable state [12][14] |
+| <span class="chip chip-update">update</span> Guardrails as library code inside the agent process | Explicit in-process hooks, with enforcement at gateways and policy decision points [42][44] |
+| <span class="chip chip-retire">retire</span> Pattern-matching deny-lists on user input as the injection defence | Architectural containment (Rule of Two, plan-then-execute); classifiers as one layer [35][38][39] |
+| <span class="chip chip-retire">retire</span> Tenant or approver identity taken from tool arguments or chat text | Identity from authenticated context only, carried end to end [30][43] |
+| <span class="chip chip-retire">retire</span> Agents using a person's token or shared static keys | A non-human identity per agent, with short-lived, delegated credentials [52][49] |
+| <span class="chip chip-update">update</span> Request-count rate limits and loop caps | Token and cost budgets per run and tenant at the gateway, plus operating envelopes [46][79] |
+| <span class="chip chip-update">update</span> Local log files, sometimes hash-chained, with no external anchor | Signed, externally anchored, central audit keyed to a workflow ID [46][65] |
+| <span class="chip chip-retire">retire</span> Approval as a notification or chat confirmation | Durable, argument-bound, risk-tiered approval with an authenticated approver [45] |
+| <span class="chip chip-update">update</span> A single on/off switch, not authenticated or audited | Authenticated, audited suspension at fleet, tenant, agent and tool level that halts in a safe state [46][64] |
+| <span class="chip chip-update">update</span> Vendor-specific tracing SDKs | OpenTelemetry GenAI conventions with opt-in content capture [53] |
+| <span class="chip chip-update">update</span> Tests of how the agent is assembled; same-model self-critique | End-state evals, pass^k, separate validated judges, transcript review [54][57] |
+| <span class="chip chip-retire">retire</span> User feedback written into production prompts | Feedback curated into eval datasets, with a human gate [33][54] |
+| <span class="chip chip-retire">retire</span> Early MCP over HTTP+SSE with long-lived static tokens | Stateless MCP 2026-07-28, OAuth 2.1, enterprise-managed authorisation [24][26] |
+| <span class="chip chip-update">update</span> Multi-agent by default, passing plain text | Single agent by default; A2A 1.0 with signed cards for cross-team delegation [9][30] |
+| <span class="chip chip-retire">retire</span> Floating "latest" labels for frameworks, models and prompts | Pinned versions, a model-retirement calendar, eval-gated promotion [80] |
+| <span class="chip chip-update">update</span> SBOM plus image signing | SLSA Build L3, AI-BOM, signed models; tool definitions pinned in your registry [69][71][72] |
+| <span class="chip chip-retire">retire</span> Autoscaling on CPU | Scaling on concurrency or queue depth; durable execution for long runs [8][82] |
+| <span class="chip chip-retire">retire</span> Waiting for AI Act standards | Building the AI management system on ISO/IEC 42001 plus EN 18286 now [67] |
+| <span class="chip chip-update">update</span> Each team building its own stack, pilot by pilot | A platform-owned shell, golden paths and a crawl-walk-run rollout |
 
 ---
 

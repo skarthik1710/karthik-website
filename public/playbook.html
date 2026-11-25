@@ -387,6 +387,15 @@
             .content-grid { grid-template-columns: 1fr; gap: 3rem; }
         }
         @media (max-width: 900px) { #spark { display: none; } }
+        /* tablets: five nav links + CTA no longer fit beside the name, so tighten, then fall back to the phone bar */
+        @media (max-width: 900px) {
+            .nav-links { gap: 1.15rem; }
+            .brand, .nav-cta { white-space: nowrap; }
+        }
+        @media (max-width: 800px) {
+            .nav-links { padding: 0; margin: 0; }
+            .nav-links li:not(:has(.nav-cta)) { display: none; }
+        }
         @media (max-width: 600px) {
             .nav-links a:not(.nav-cta) { display: none; }
             /* hidden links' empty <li>s + default list padding were squeezing the bar until the name and CTA wrapped */
@@ -443,6 +452,129 @@
         .prose ol.sources li:target { background: var(--accent-faint); outline: 1px solid var(--accent-dim); border-radius: 4px; }
         .pb-cta { margin-top: 3rem; padding: 1.6rem 1.8rem; border: 1px solid var(--line); border-radius: 12px; background: var(--surface); }
         .pb-cta h2 { border: none; padding: 0; margin: 0 0 0.5rem; font-size: 1.2rem; }
+
+        /* ── VISUAL CUES: figures, callouts, chips ── */
+        .prose .pb-fig { margin: 1.7em 0; }
+        .pb-fig figcaption { margin-top: 0.7rem; font-size: 0.8rem; line-height: 1.55; color: var(--muted); }
+        .pb-fig ol { list-style: none; padding-left: 0; }
+        .pb-fig ol > li { margin-top: 0; }
+        .pb-fig-frame { border: 1px solid var(--line); border-radius: 12px; background: var(--surface); padding: 1rem; }
+        .cs-grid a:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+        /* Reference architecture (same visual language as the homepage diagram) */
+        .pb-arch { display: block; width: 100%; height: auto; }
+        .pb-arch-tall { display: none; max-width: 460px; margin: 0 auto; }  /* portrait variant for phones */
+        .pb-arch .arch-node rect { fill: var(--surface-2); stroke: var(--line-strong); stroke-width: 1.2; }
+        .pb-arch .nlabel { fill: var(--text); font-family: var(--font-display); font-size: 14px; font-weight: 600; }
+        .pb-arch .nsub { fill: var(--muted); font-size: 11px; }
+        .pb-arch .arch-num { fill: var(--accent); font-family: var(--font-mono); font-size: 13px; font-weight: 600; }
+        .pb-arch .arch-plane rect { fill: rgba(255, 107, 53, 0.045); stroke: var(--accent); stroke-width: 1.1; stroke-dasharray: 7 5; }
+        .pb-arch .arch-plane-label { fill: var(--accent); font-family: var(--font-mono); font-size: 11.5px; font-weight: 600;
+            letter-spacing: 1px; text-transform: uppercase; }
+        .pb-arch .arch-plane-sub { fill: var(--muted); font-family: var(--font-mono); font-size: 10.5px; }
+        .pb-arch .arch-edge { stroke: var(--line-strong); stroke-width: 1.5; fill: none; stroke-dasharray: 5 4; }
+        /* Production control stack */
+        .cs-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 0.6rem; }
+        .cs-grid a { display: flex; flex-direction: column; gap: 0.2rem; height: 100%; padding: 0.85rem 0.95rem;
+            border: 1px solid var(--line); border-radius: 10px; background: var(--surface); text-decoration: none;
+            transition: border-color 0.15s, background 0.15s; }
+        .cs-grid a:hover { border-color: var(--accent-dim); background: var(--surface-2); }
+        .cs-n { font-family: var(--font-mono); font-size: 0.7rem; color: var(--accent); letter-spacing: 0.04em; }
+        .cs-t { font-family: var(--font-display); font-size: 0.95rem; font-weight: 600; color: var(--text); line-height: 1.3; }
+        .cs-d { font-size: 0.8rem; line-height: 1.45; color: var(--muted); }
+        /* Autonomy ladder */
+        .al-wrap { border: 1px solid var(--line); border-radius: 12px; background: var(--surface); padding: 1.2rem 1.2rem 1rem; }
+        .al { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); grid-template-rows: auto auto; gap: 0.5rem 0.55rem; }
+        .al > li { display: grid; grid-row: span 2; grid-template-rows: subgrid; gap: 0.5rem; }
+        .al-bar { align-self: end; display: flex; flex-direction: column; justify-content: flex-end; gap: 0.1rem;
+            height: calc(3.4rem + var(--lvl) * 1.4rem); padding: 0.55rem 0.65rem; border-radius: 8px 8px 4px 4px;
+            border: 1px solid var(--accent-dim); background: rgba(255, 107, 53, calc(0.04 + var(--lvl) * 0.045)); }
+        .al-n { font-family: var(--font-mono); font-size: 0.7rem; font-weight: 600; color: #FFB08F; }
+        .al-t { font-family: var(--font-display); font-size: 0.92rem; font-weight: 600; color: var(--text); line-height: 1.2; }
+        .al-d { font-size: 0.76rem; line-height: 1.45; color: var(--muted); }
+        .al-axis { display: flex; justify-content: space-between; gap: 1rem; margin-top: 0.9rem; padding-top: 0.55rem;
+            border-top: 2px solid; border-image: linear-gradient(90deg, var(--line-strong), var(--accent)) 1;
+            font-family: var(--font-mono); font-size: 0.68rem; letter-spacing: 0.04em; color: var(--muted); }
+        /* Delivery pipeline */
+        .pp { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 0.7rem 1.4rem; }
+        .pp-step { position: relative; display: flex; flex-direction: column; gap: 0.15rem; padding: 0.75rem 0.85rem;
+            border: 1px solid var(--line); border-radius: 10px; background: var(--surface); }
+        .pp-step:not(:nth-child(4n)):not(:last-child)::after { content: "→" / ""; position: absolute; right: -1.15rem; top: 50%;
+            transform: translateY(-50%); color: var(--accent); font-size: 0.95rem; line-height: 1; }
+        .pp-n { font-family: var(--font-mono); font-size: 0.68rem; color: var(--muted); }
+        .pp-t { font-family: var(--font-display); font-size: 0.93rem; font-weight: 600; color: var(--text); line-height: 1.3; }
+        .pp-g { font-size: 0.78rem; line-height: 1.45; color: var(--muted); }
+        .pp-step.is-gate { border-color: var(--accent); background: var(--accent-faint); }
+        .pp-step.is-gate .pp-g { color: var(--text); font-weight: 600; }
+        .pp-step.is-loop { border-style: dashed; border-color: var(--line-strong); }
+        /* Crawl / walk / run */
+        .cwr { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 1.4rem; counter-reset: cwr; }
+        .cwr > li { position: relative; display: flex; flex-direction: column; gap: 0.4rem; padding: 1rem 1.05rem 1.1rem;
+            border: 1px solid var(--line); border-top: 3px solid var(--accent-dim); border-radius: 10px; background: var(--surface);
+            counter-increment: cwr; }
+        .cwr > li:last-child { border-top-color: var(--accent); }
+        .cwr > li:not(:last-child)::after { content: "→" / ""; position: absolute; right: -1.15rem; top: 1.25rem;
+            color: var(--accent); font-size: 0.95rem; line-height: 1; }
+        .cwr-k { font-family: var(--font-mono); font-size: 0.7rem; font-weight: 600; letter-spacing: 0.14em; text-transform: uppercase; color: var(--accent); }
+        .cwr-k::before { content: "0" counter(cwr) " · "; color: var(--muted); font-weight: 500; }
+        .cwr-t { font-family: var(--font-display); font-size: 1.02rem; font-weight: 600; color: var(--text); line-height: 1.3; }
+        .cwr-lvl { align-self: flex-start; font-family: var(--font-mono); font-size: 0.68rem; line-height: 1.4; color: var(--text);
+            background: var(--surface-2); border: 1px solid var(--line-strong); border-radius: 6px; padding: 0.2rem 0.45rem; }
+        .cwr-d { list-style: none; padding-left: 0 !important; font-size: 0.8rem; line-height: 1.5; color: var(--muted); }
+        .cwr-d li { position: relative; padding-left: 0.9rem; }
+        .prose .cwr-d li + li { margin-top: 0.25rem; }
+        .cwr-d li::before { content: "" / ""; position: absolute; left: 0; top: 0.62em; width: 4px; height: 4px; border-radius: 50%; background: var(--accent-dim); }
+        /* Callouts */
+        .callout { border: 1px solid var(--line); border-left: 3px solid var(--accent); border-radius: 10px;
+            background: var(--surface); padding: 0.95rem 1.15rem 1rem; }
+        .callout > * + * { margin-top: 0.55em; }
+        .prose .callout-label { display: flex; align-items: center; gap: 0.45rem; font-family: var(--font-mono); font-size: 0.68rem;
+            font-weight: 600; letter-spacing: 0.12em; text-transform: uppercase; color: var(--accent); line-height: 1.4; }
+        .callout-label::before { content: "★" / ""; font-size: 0.8rem; letter-spacing: 0; }
+        .callout-retire { border-left-color: #F2837B; }
+        .callout-retire .callout-label { color: #F2837B; }
+        .callout-retire .callout-label::before { content: "✕" / ""; }
+        .callout-instead { border-left-color: #6CCF9C; }
+        .callout-instead .callout-label { color: #6CCF9C; }
+        .callout-instead .callout-label::before { content: "→" / ""; }
+        .callout-pair { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 0.7rem; }
+        .callout-pair > .callout { margin: 0; }
+        /* Status chips (What's outdated, what's new) */
+        .chip { display: inline-block; font-family: var(--font-mono); font-size: 0.64rem; font-weight: 600; letter-spacing: 0.08em;
+            text-transform: uppercase; line-height: 1.5; padding: 0.05em 0.55em; border: 1px solid; border-radius: 999px; white-space: nowrap; }
+        .chip-retire { color: #F2837B; background: rgba(242, 131, 123, 0.1); border-color: rgba(242, 131, 123, 0.4); }
+        .chip-update { color: #EDC06D; background: rgba(237, 192, 109, 0.1); border-color: rgba(237, 192, 109, 0.4); }
+        .chip-new { color: #6CCF9C; background: rgba(108, 207, 156, 0.1); border-color: rgba(108, 207, 156, 0.4); }
+        .prose td .chip { display: block; width: max-content; margin-bottom: 0.35rem; }
+        .prose th .chip { margin-left: 0.4rem; vertical-align: 0.12em; }
+        .prose .chip-legend { display: flex; flex-wrap: wrap; gap: 0.45rem 1.2rem; font-size: 0.8rem; color: var(--muted); }
+        .chip-legend .chip { margin-right: 0.3rem; }
+        @media (prefers-reduced-motion: reduce) {
+            .cs-grid a { transition: none; }
+        }
+        @media (max-width: 760px) {
+            .cwr { grid-template-columns: minmax(0, 1fr); gap: 1.3rem; }
+            .cwr > li:not(:last-child)::after { content: "↓" / ""; right: auto; left: 1.2rem; top: auto; bottom: -1.2rem; }
+            .callout-pair { grid-template-columns: minmax(0, 1fr); }
+        }
+        @media (max-width: 640px) {
+            .pb-arch-wide { display: none; }
+            .pb-arch-tall { display: block; }
+            .pb-fig-frame { padding: 0.6rem; }
+            .cs-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+            .pp { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+            .pp .pp-step:nth-child(even)::after { content: none; }  /* arrows only between the two columns */
+            .al-axis { flex-direction: column; gap: 0.15rem; }
+            .al-wrap { padding: 1rem; }
+            .al { grid-template-columns: minmax(0, 1fr); grid-template-rows: none; gap: 0.7rem; }
+            .al > li { display: flex; flex-direction: column; grid-row: auto; gap: 0.25rem; }
+            .al-bar { align-self: flex-start; flex-direction: row; align-items: baseline; justify-content: flex-start; gap: 0.55rem; height: auto;
+                width: calc(40% + var(--lvl) * 12%); border-radius: 4px 8px 8px 4px; }
+        }
+        @media (max-width: 420px) {
+            .cs-grid { grid-template-columns: minmax(0, 1fr); gap: 0.45rem; }
+            .cs-grid a { display: grid; grid-template-columns: 2.1rem minmax(0, 1fr); align-items: baseline; row-gap: 0.15rem; padding: 0.65rem 0.85rem; }
+            .cs-d { grid-column: 2; }
+        }
         @media (max-width: 960px) {
             .pb-layout { grid-template-columns: minmax(0, 1fr); gap: 1.6rem; padding: 2rem 1.25rem 4rem; }
             .pb-toc { position: static; max-height: none; border-left: none; padding-left: 0;
@@ -472,6 +604,7 @@
             <li><a href="/#work">Work</a></li>
             <li><a href="/experience.html">Experience</a></li>
             <li><a href="/newsletter.html">Newsletter</a></li>
+            <li><a href="/projects.html">Projects</a></li>
             <li><a href="/playbook.html" class="active">Playbook</a></li>
             <li><a class="nav-cta" href="/#contact">Get in touch</a></li>
         </ul>
@@ -529,9 +662,45 @@
 <li><strong>Cost is modelled per request.</strong> Real spend comes from tokens, reasoning, retries and agents calling other agents.</li>
 <li><strong>Nobody owns life after launch.</strong> There is no registry, no plan for when the model is retired, and no way to decommission the agent.</li>
 </ol>
+<div class="callout callout-key" role="note">
+<p class="callout-label">Key takeaway</p>
 <p><strong>The core idea: a small reasoning core inside a deterministic shell.</strong> An enterprise agent is a small, non-deterministic reasoning core inside a large, deterministic and deliberately boring shell. Most of the engineering, and nearly all of the risk reduction, lives in the shell. First-generation frameworks already put production capabilities in layers around the model, so that part holds up. What has changed is <em>where</em> those layers should sit.</p>
+</div>
 <hr>
 <h2 id="the-reference-architecture-layers-of-an-enterprise-agent">2. The reference architecture: layers of an enterprise agent</h2>
+<figure class="pb-fig" aria-labelledby="fig-arch-cap">
+<div class="pb-fig-frame">
+<svg class="pb-arch pb-arch-wide" viewBox="0 0 760 468" role="img" aria-labelledby="fig-arch-title fig-arch-desc">
+<title id="fig-arch-title">Reference architecture: layers of an enterprise agent</title>
+<desc id="fig-arch-desc">Six stacked layers: 1 channels and experience, 2 orchestration, 3 agent harness, 4 model access, 5 tools and interoperability, 6 knowledge and state. A cross-cutting control plane (layer 7: identity, policy-as-code, audit, telemetry, evals, agent registry, kill switch) spans all six. A delivery plane (CI/CD, supply chain, GitOps, eval gates) runs underneath.</desc>
+<g class="arch-node"><rect x="16" y="16" width="540" height="50" rx="9"/><text class="arch-num" x="38" y="41" dominant-baseline="middle">1</text><text class="nlabel" x="62" y="33" dominant-baseline="middle">Channels &amp; experience</text><text class="nsub" x="62" y="52" dominant-baseline="middle">chat · embedded UI · email · tickets · event and schedule triggers · streaming</text></g>
+<g class="arch-node"><rect x="16" y="76" width="540" height="50" rx="9"/><text class="arch-num" x="38" y="101" dominant-baseline="middle">2</text><text class="nlabel" x="62" y="93" dominant-baseline="middle">Orchestration</text><text class="nsub" x="62" y="112" dominant-baseline="middle">deterministic workflow · routing · durable execution · waiting for a human</text></g>
+<g class="arch-node"><rect x="16" y="136" width="540" height="50" rx="9"/><text class="arch-num" x="38" y="161" dominant-baseline="middle">3</text><text class="nlabel" x="62" y="153" dominant-baseline="middle">Agent harness</text><text class="nsub" x="62" y="172" dominant-baseline="middle">reasoning loop · context assembly · memory access · budgets · structured output</text></g>
+<g class="arch-node"><rect x="16" y="196" width="540" height="50" rx="9"/><text class="arch-num" x="38" y="221" dominant-baseline="middle">4</text><text class="nlabel" x="62" y="213" dominant-baseline="middle">Model access</text><text class="nsub" x="62" y="232" dominant-baseline="middle">model gateway · identity · routing · version pinning · quotas · failover · chargeback</text></g>
+<g class="arch-node"><rect x="16" y="256" width="540" height="50" rx="9"/><text class="arch-num" x="38" y="281" dominant-baseline="middle">5</text><text class="nlabel" x="62" y="273" dominant-baseline="middle">Tools &amp; interoperability</text><text class="nsub" x="62" y="292" dominant-baseline="middle">tool gateway · MCP servers · A2A agents · code sandboxes · curated registry</text></g>
+<g class="arch-node"><rect x="16" y="316" width="540" height="50" rx="9"/><text class="arch-num" x="38" y="341" dominant-baseline="middle">6</text><text class="nlabel" x="62" y="333" dominant-baseline="middle">Knowledge &amp; state</text><text class="nsub" x="62" y="352" dominant-baseline="middle">session event log · long-term memory · artifacts · permission-aware retrieval</text></g>
+<path class="arch-edge dashed" d="M 556 41 H 584 M 556 101 H 584 M 556 161 H 584 M 556 221 H 584 M 556 281 H 584 M 556 341 H 584"/>
+<g class="arch-plane"><rect x="584" y="16" width="160" height="350" rx="12"/><text class="arch-plane-label" x="664" y="40" text-anchor="middle">7 · Control plane</text><text class="arch-plane-sub" x="664" y="58" text-anchor="middle">cross-cutting</text><text class="nsub" x="664" y="100" text-anchor="middle">identity</text><text class="nsub" x="664" y="132" text-anchor="middle">policy-as-code</text><text class="nsub" x="664" y="164" text-anchor="middle">audit</text><text class="nsub" x="664" y="196" text-anchor="middle">telemetry</text><text class="nsub" x="664" y="228" text-anchor="middle">evals</text><text class="nsub" x="664" y="260" text-anchor="middle">agent registry</text><text class="nsub" x="664" y="292" text-anchor="middle">kill switch</text></g>
+<path class="arch-edge dashed" d="M 120 366 V 392 M 286 366 V 392 M 452 366 V 392 M 664 366 V 392"/>
+<g class="arch-plane delivery"><rect x="16" y="392" width="728" height="60" rx="12"/><text class="arch-plane-label" x="38" y="416">Delivery plane</text><text class="nsub" x="38" y="437">CI/CD · supply chain · GitOps · eval gates · AI-BOMs · signed artefacts</text></g>
+</svg>
+<svg class="pb-arch pb-arch-tall" viewBox="0 0 400 612" role="img" aria-labelledby="fig-arch-title-m fig-arch-desc-m">
+<title id="fig-arch-title-m">Reference architecture: layers of an enterprise agent</title>
+<desc id="fig-arch-desc-m">A cross-cutting control plane (layer 7: identity, policy-as-code, audit, telemetry, evals, agent registry, kill switch) encloses six stacked layers: 1 channels and experience, 2 orchestration, 3 agent harness, 4 model access, 5 tools and interoperability, 6 knowledge and state. A delivery plane (CI/CD, supply chain, GitOps, eval gates) runs underneath.</desc>
+<g class="arch-plane"><rect x="6" y="6" width="388" height="508" rx="12"/><text class="arch-plane-label" x="20" y="28">7 · Control plane · cross-cutting</text><text class="nsub" x="20" y="50">identity · policy-as-code · audit · telemetry</text><text class="nsub" x="20" y="67">evals · agent registry · kill switch</text></g>
+<g class="arch-node"><rect x="18" y="84" width="364" height="62" rx="9"/><text class="arch-num" x="36" y="115" dominant-baseline="middle">1</text><text class="nlabel" x="58" y="104" dominant-baseline="middle">Channels &amp; experience</text><text class="nsub" x="58" y="122" dominant-baseline="middle">chat · embedded UI · email · tickets</text><text class="nsub" x="58" y="137" dominant-baseline="middle">event and schedule triggers · streaming</text></g>
+<g class="arch-node"><rect x="18" y="154" width="364" height="62" rx="9"/><text class="arch-num" x="36" y="185" dominant-baseline="middle">2</text><text class="nlabel" x="58" y="174" dominant-baseline="middle">Orchestration</text><text class="nsub" x="58" y="192" dominant-baseline="middle">deterministic workflow · routing</text><text class="nsub" x="58" y="207" dominant-baseline="middle">durable execution · waiting for a human</text></g>
+<g class="arch-node"><rect x="18" y="224" width="364" height="62" rx="9"/><text class="arch-num" x="36" y="255" dominant-baseline="middle">3</text><text class="nlabel" x="58" y="244" dominant-baseline="middle">Agent harness</text><text class="nsub" x="58" y="262" dominant-baseline="middle">reasoning loop · context assembly</text><text class="nsub" x="58" y="277" dominant-baseline="middle">memory access · budgets · structured output</text></g>
+<g class="arch-node"><rect x="18" y="294" width="364" height="62" rx="9"/><text class="arch-num" x="36" y="325" dominant-baseline="middle">4</text><text class="nlabel" x="58" y="314" dominant-baseline="middle">Model access</text><text class="nsub" x="58" y="332" dominant-baseline="middle">model gateway · identity · routing · quotas</text><text class="nsub" x="58" y="347" dominant-baseline="middle">version pinning · failover · chargeback</text></g>
+<g class="arch-node"><rect x="18" y="364" width="364" height="62" rx="9"/><text class="arch-num" x="36" y="395" dominant-baseline="middle">5</text><text class="nlabel" x="58" y="384" dominant-baseline="middle">Tools &amp; interoperability</text><text class="nsub" x="58" y="402" dominant-baseline="middle">tool gateway · MCP servers · A2A agents</text><text class="nsub" x="58" y="417" dominant-baseline="middle">code sandboxes · curated registry</text></g>
+<g class="arch-node"><rect x="18" y="434" width="364" height="62" rx="9"/><text class="arch-num" x="36" y="465" dominant-baseline="middle">6</text><text class="nlabel" x="58" y="454" dominant-baseline="middle">Knowledge &amp; state</text><text class="nsub" x="58" y="472" dominant-baseline="middle">session event log · long-term memory</text><text class="nsub" x="58" y="487" dominant-baseline="middle">artifacts · permission-aware retrieval</text></g>
+<path class="arch-edge dashed" d="M 120 514 V 532 M 280 514 V 532"/>
+<g class="arch-plane delivery"><rect x="6" y="532" width="388" height="74" rx="12"/><text class="arch-plane-label" x="20" y="555">Delivery plane</text><text class="nsub" x="20" y="576">CI/CD · supply chain · GitOps · eval gates</text><text class="nsub" x="20" y="593">AI-BOMs · signed artefacts</text></g>
+</svg>
+</div>
+<figcaption id="fig-arch-cap">The layers from the table below. The control plane cuts across every layer (see <a href="#the-production-control-stack">the production control stack</a>); the delivery plane ships all of them (see <a href="#the-delivery-pipeline-commit-to-production">the delivery pipeline</a>).</figcaption>
+</figure>
+
 <div class="table-wrap"><table>
 <thead>
 <tr>
@@ -583,7 +752,10 @@
 </tr>
 </tbody>
 </table></div>
+<div class="callout callout-key" role="note">
+<p class="callout-label">Key takeaway</p>
 <p><strong>Keep deterministic work deterministic.</strong> Triggers, scheduling, data clean-up and routing belong in an ordinary workflow layer. The agent receives a typed request and returns a typed result that downstream systems can act on without parsing prose. This is the "own your control flow" idea from the 12-factor agents work <a class="cite" href="#src-17" aria-label="Source 17">[17]</a>. It also matches the long-standing advice to use a fixed workflow wherever the steps are known in advance <a class="cite" href="#src-6" aria-label="Source 6">[6]</a>.</p>
+</div>
 <p>Three structural moves separate a 2026 architecture from a first-generation one.</p>
 <p><strong>Enforcement moves out of process.</strong> First-generation frameworks usually put guardrails in library code inside the agent process. That is easy to teach. But anything inside the process can be misconfigured, skipped, or switched off by the very code it is meant to constrain. Keep in the process only what has to be there, such as context assembly and output validation, and use explicit middleware hooks for it. Policy, quotas, credential injection and audit belong in gateways and <em>policy decision points</em> (services that answer "is this action allowed?"), which the agent can't disable. OWASP's Agent Control Standard is an early attempt to standardise those hooks around tool calls and other agent steps <a class="cite" href="#src-44" aria-label="Source 44">[44]</a><a class="cite" href="#src-84" aria-label="Source 84">[84]</a>. CoSAI recommends centralising enforcement in a gateway at its higher assurance levels <a class="cite" href="#src-42" aria-label="Source 42">[42]</a>.</p>
 <p><strong>State moves out of memory.</strong> The session becomes a durable, append-only event log. Memory and large artifacts are stored separately, and the working context is rebuilt for every model call <a class="cite" href="#src-14" aria-label="Source 14">[14]</a>. One model provider moved the session log outside both the harness and the model's context window, which turned the harness into a restartable, stateless process. It reported median (p50) time-to-first-token falling by about 60%, and 95th-percentile (p95) by more than 90% <a class="cite" href="#src-15" aria-label="Source 15">[15]</a>. Every counter, breaker, approval and audit record belongs in a shared store.</p>
@@ -603,6 +775,21 @@
 </ol>
 <hr>
 <h2 id="the-production-control-stack">4. The production control stack</h2>
+<figure class="pb-fig" aria-labelledby="fig-stack-cap">
+<ol class="cs-grid" aria-label="The production control stack">
+<li><a href="#resilience"><span class="cs-n">4.1</span><span class="cs-t">Resilience</span><span class="cs-d">Typed retries, one retry budget, idempotency keys, checkpoints</span></a></li>
+<li><a href="#limits-and-budgets"><span class="cs-n">4.2</span><span class="cs-t">Limits and budgets</span><span class="cs-d">Tokens and money per run, user and tenant; an operating envelope</span></a></li>
+<li><a href="#audit"><span class="cs-n">4.3</span><span class="cs-t">Audit</span><span class="cs-d">Signed, externally anchored, central, keyed to one workflow ID</span></a></li>
+<li><a href="#policy"><span class="cs-n">4.4</span><span class="cs-t">Policy</span><span class="cs-d">Authorise every tool call and its arguments; graded outcomes</span></a></li>
+<li><a href="#kill-switch-preflight-and-dry-run"><span class="cs-n">4.5</span><span class="cs-t">Kill switch, preflight, dry-run</span><span class="cs-d">Suspend at fleet, tenant, agent and tool level; plan → approve → apply</span></a></li>
+<li><a href="#health-and-telemetry"><span class="cs-n">4.6</span><span class="cs-t">Health and telemetry</span><span class="cs-d">Local-only readiness; OpenTelemetry GenAI conventions</span></a></li>
+<li><a href="#multi-tenancy"><span class="cs-n">4.7</span><span class="cs-t">Multi-tenancy</span><span class="cs-d">Tenant from authenticated context only, carried end to end</span></a></li>
+<li><a href="#secrets-and-identity"><span class="cs-n">4.8</span><span class="cs-t">Secrets and identity</span><span class="cs-d">Its own non-human identity per agent; short-lived credentials</span></a></li>
+<li><a href="#pii-and-dlp"><span class="cs-n">4.9</span><span class="cs-t">PII and DLP</span><span class="cs-d">Wrap every context source; egress control</span></a></li>
+</ol>
+<figcaption id="fig-stack-cap">The nine controls in this section, at a glance. Each tile jumps to its subsection.</figcaption>
+</figure>
+
 <h3 id="resilience">4.1 Resilience</h3>
 <p><strong>The established baseline</strong> is standard distributed-systems practice. Split errors into ones worth retrying and ones that aren't. Retry with exponential backoff and jitter. Put a circuit breaker on each dependency. Degrade gracefully when a source fails. The agent-specific twist: when the agent falls back to cached or static information, it must say so. Tag every piece of data with its source and freshness, so the model can't present stale data as current and the user knows what they are looking at.</p>
 <p><strong>What 2026 practice adds.</strong> Decide what to retry from typed errors and status codes, not from exception text, and honour <code>Retry-After</code>. Set one retry budget across the SDK, the framework and the gateway. Otherwise the three layers multiply into retry storms. Put an <em>idempotency key</em> on every tool that has side effects, so a repeated call doesn't repeat the action, and never let the model choose the retry count. For long tasks, checkpoint and resume from the point of failure instead of starting over. One provider's research-agent team found that because agents carry state across many tool calls, "minor system failures can be catastrophic" <a class="cite" href="#src-11" aria-label="Source 11">[11]</a>. Fail over between models and providers at the gateway <a class="cite" href="#src-76" aria-label="Source 76">[76]</a>.</p>
@@ -627,7 +814,18 @@
 <p><strong>The established baseline:</strong> resolve the tenant on every request; scope thread IDs, cache keys and storage by tenant; check access at resource boundaries; audit cross-tenant attempts.</p>
 <p><strong>What 2026 practice adds.</strong> Take the tenant from authenticated server-side context <em>only</em>. Never take it from a tool argument the model fills in, or from the prompt. Carry it end to end: request, agent, tools, MCP and A2A calls, telemetry and billing. A2A 1.0 has a native tenant field <a class="cite" href="#src-30" aria-label="Source 30">[30]</a>. Isolate prompt caches by tenant. One provider recommends separate cache keys per customer, partly to prevent cache-hit probing across users <a class="cite" href="#src-78" aria-label="Source 78">[78]</a>. Scope memory and retrieval by tenant, and decide whether to give each tenant its own stack or share one (silo or pool) according to risk.</p>
 <h3 id="secrets-and-identity">4.8 Secrets and identity</h3>
-<p>Keeping secrets in a vault behind a provider-neutral interface is still right. What has to go is agents authenticating with a person's token or with shared static application credentials. Each agent now needs <strong>its own non-human identity</strong>, with a named human sponsor, short-lived credentials, and an explicit choice between acting on its own authority and acting on behalf of a user <a class="cite" href="#src-52" aria-label="Source 52">[52]</a><a class="cite" href="#src-43" aria-label="Source 43">[43]</a>. The major clouds now document identity services built for agents. Microsoft Azure, Google Cloud and AWS are examples <a class="cite" href="#src-90" aria-label="Source 90">[90]</a><a class="cite" href="#src-91" aria-label="Source 91">[91]</a><a class="cite" href="#src-92" aria-label="Source 92">[92]</a>. The open standards are still emerging. The IETF has an OAuth working-group draft for identity-provider-brokered "cross-app access" <a class="cite" href="#src-49" aria-label="Source 49">[49]</a>, and a Transaction Tokens draft for carrying identity through chains of calls <a class="cite" href="#src-50" aria-label="Source 50">[50]</a>. The NIST agent standards initiative had published no final standards as of November 2026 <a class="cite" href="#src-51" aria-label="Source 51">[51]</a>. Keep credentials out of sandboxes and out of the model's context <a class="cite" href="#src-41" aria-label="Source 41">[41]</a>, and never copy vault secrets back into environment variables to keep an SDK happy.</p>
+<p>Keeping secrets in a vault behind a provider-neutral interface is still right.</p>
+<div class="callout-pair">
+<div class="callout callout-retire" role="note">
+<p class="callout-label">Retire</p>
+<p>What has to go is agents authenticating with a person's token or with shared static application credentials.</p>
+</div>
+<div class="callout callout-instead" role="note">
+<p class="callout-label">Do instead</p>
+<p>Each agent now needs <strong>its own non-human identity</strong>, with a named human sponsor, short-lived credentials, and an explicit choice between acting on its own authority and acting on behalf of a user <a class="cite" href="#src-52" aria-label="Source 52">[52]</a><a class="cite" href="#src-43" aria-label="Source 43">[43]</a>.</p>
+</div>
+</div>
+<p>The major clouds now document identity services built for agents. Microsoft Azure, Google Cloud and AWS are examples <a class="cite" href="#src-90" aria-label="Source 90">[90]</a><a class="cite" href="#src-91" aria-label="Source 91">[91]</a><a class="cite" href="#src-92" aria-label="Source 92">[92]</a>. The open standards are still emerging. The IETF has an OAuth working-group draft for identity-provider-brokered "cross-app access" <a class="cite" href="#src-49" aria-label="Source 49">[49]</a>, and a Transaction Tokens draft for carrying identity through chains of calls <a class="cite" href="#src-50" aria-label="Source 50">[50]</a>. The NIST agent standards initiative had published no final standards as of November 2026 <a class="cite" href="#src-51" aria-label="Source 51">[51]</a>. Keep credentials out of sandboxes and out of the model's context <a class="cite" href="#src-41" aria-label="Source 41">[41]</a>, and never copy vault secrets back into environment variables to keep an SDK happy.</p>
 <h3 id="pii-and-dlp">4.9 PII and DLP</h3>
 <p>Many first-generation designs redact personal data only in user input. The gap is everything else: tool results, retrieved documents and memory all flow into the context unredacted. Wrap <strong>every</strong> source that feeds the context. Prefer reversible pseudonymisation backed by a vault, so the model reasons over consistent placeholders and authorised outputs can be re-identified. Scan streamed output as it is produced. Route data by classification, for example sending sensitive data only to in-region endpoints. Treat egress control as a primary data-loss-prevention (DLP) measure. Private data, untrusted content and a way to send data out, all in one session, is the "lethal trifecta" <a class="cite" href="#src-40" aria-label="Source 40">[40]</a>.</p>
 <hr>
@@ -656,18 +854,51 @@
 <li><strong>Read transcripts.</strong> NIST found agents gaming graders, for example by commenting out assertions <a class="cite" href="#src-57" aria-label="Source 57">[57]</a>. One provider stopped reporting a flagship coding benchmark after finding flawed tests and contamination <a class="cite" href="#src-58" aria-label="Source 58">[58]</a>. Models can often tell when they are being evaluated, more so in agentic settings <a class="cite" href="#src-62" aria-label="Source 62">[62]</a>. Build private eval sets from your own traffic.</li>
 <li><strong>Evaluate continuously.</strong> Run CI regression gates before deploying and online evaluation of sampled production traces after. Re-run on a schedule to catch drift, and feed new production failures back into the CI dataset <a class="cite" href="#src-54" aria-label="Source 54">[54]</a><a class="cite" href="#src-59" aria-label="Source 59">[59]</a>.</li>
 </ul>
-<p>One more pattern to retire: feeding user ratings or corrections straight back into production prompts or memory. That invites memory poisoning and leaks data across tenants. Curate feedback, scope it to a tenant, have a human review it, and add it to <em>eval datasets</em>, not production prompts.</p>
+<div class="callout-pair">
+<div class="callout callout-retire" role="note">
+<p class="callout-label">Retire</p>
+<p>One more pattern to retire: feeding user ratings or corrections straight back into production prompts or memory. That invites memory poisoning and leaks data across tenants.</p>
+</div>
+<div class="callout callout-instead" role="note">
+<p class="callout-label">Do instead</p>
+<p>Curate feedback, scope it to a tenant, have a human review it, and add it to <em>eval datasets</em>, not production prompts.</p>
+</div>
+</div>
 <p><strong>The dashboard I insist on:</strong> task success and pass^k, escalation rate, tool-error rate, tokens per run, cost per successful outcome <a class="cite" href="#src-75" aria-label="Source 75">[75]</a>, time to first token, guardrail hits and cache hit rate, all broken down by agent version.</p>
 <hr>
 <h2 id="security-for-agents">7. Security for agents</h2>
 <p><strong>Threat model.</strong> Use the OWASP Top 10 for Agentic Applications (December 2025) as your agent threat checklist. It covers goal hijack, tool misuse, identity and privilege abuse, the agentic supply chain, unexpected code execution, memory and context poisoning, insecure inter-agent communication, cascading failures, exploitation of human trust in the agent, and rogue agents <a class="cite" href="#src-33" aria-label="Source 33">[33]</a>. Use the LLM Top 10 for model-level risks <a class="cite" href="#src-34" aria-label="Source 34">[34]</a>.</p>
-<p><strong>Prompt injection is a residual risk, not a bug you fix.</strong> The UK NCSC says LLMs have no boundary between instructions and data, so injection "may never be totally mitigated" the way SQL injection can <a class="cite" href="#src-35" aria-label="Source 35">[35]</a>. Adaptive attacks bypassed 12 published defences, with success rates above 90% against most of them <a class="cite" href="#src-36" aria-label="Source 36">[36]</a>. A NIST-run competition with more than 250,000 attack attempts found at least one successful hijack against every one of the 13 frontier models tested <a class="cite" href="#src-37" aria-label="Source 37">[37]</a>. Pattern-matching deny-lists on user input, the first-generation default, miss the main threat: indirect injection through tool output, documents, email and other agents. They also flag everyday words. Keep classifiers only as one layer that makes attacks harder.</p>
+<p><strong>Prompt injection is a residual risk, not a bug you fix.</strong> The UK NCSC says LLMs have no boundary between instructions and data, so injection "may never be totally mitigated" the way SQL injection can <a class="cite" href="#src-35" aria-label="Source 35">[35]</a>. Adaptive attacks bypassed 12 published defences, with success rates above 90% against most of them <a class="cite" href="#src-36" aria-label="Source 36">[36]</a>. A NIST-run competition with more than 250,000 attack attempts found at least one successful hijack against every one of the 13 frontier models tested <a class="cite" href="#src-37" aria-label="Source 37">[37]</a>.</p>
+<div class="callout-pair">
+<div class="callout callout-retire" role="note">
+<p class="callout-label">Retire</p>
+<p>Pattern-matching deny-lists on user input, the first-generation default, miss the main threat: indirect injection through tool output, documents, email and other agents. They also flag everyday words.</p>
+</div>
+<div class="callout callout-instead" role="note">
+<p class="callout-label">Do instead</p>
+<p>Keep classifiers only as one layer that makes attacks harder.</p>
+</div>
+</div>
 <p><strong>Contain the agent by architecture.</strong> Under the "Rule of Two", within one session an agent should have at most two of three things: untrusted input, access to sensitive data, and the ability to change state or communicate externally. If it needs all three, it needs human supervision <a class="cite" href="#src-38" aria-label="Source 38">[38]</a>. Published design patterns such as plan-then-execute, dual-LLM, action-selector and context minimisation keep untrusted data out of the control flow <a class="cite" href="#src-39" aria-label="Source 39">[39]</a>.</p>
 <p><strong>Contain first, approve second.</strong> One provider found users approved about 93% of permission prompts. A sandbox that denies network access by default cut prompts by 84% <a class="cite" href="#src-41" aria-label="Source 41">[41]</a>. Treat egress allowlists as capability grants: in one case, data was exfiltrated through an <em>approved</em> domain using an attacker's key. Run agent-generated code in a strongly isolated sandbox: never as root, no <code>eval</code>, isolated from the network, and with no direct path to production <a class="cite" href="#src-33" aria-label="Source 33">[33]</a>.</p>
 <p><strong>Close the remaining surfaces.</strong> Scan memory writes before committing them, and require provenance <a class="cite" href="#src-33" aria-label="Source 33">[33]</a>. Use zero trust between agents: mutual authentication, signed messages and replay protection. Use agent-aware detection, because host-level endpoint monitoring sees nothing wrong when trusted binaries run under valid credentials <a class="cite" href="#src-33" aria-label="Source 33">[33]</a>. Red-team continuously. In NIST tests, new attacks raised hijack success from 11% to 81%, and simply repeating attacks raised it from 57% to 80% <a class="cite" href="#src-61" aria-label="Source 61">[61]</a>.</p>
 <hr>
 <h2 id="governance-and-the-autonomy-ladder">8. Governance and the autonomy ladder</h2>
 <p><strong>Make autonomy an explicit design decision.</strong> Every agent should have a recorded, approved level of autonomy that is enforced by policy, not just implied by its code. The clearest public scale I know defines five levels by the role the user plays <a class="cite" href="#src-48" aria-label="Source 48">[48]</a>. The level names and descriptions below follow that paper. The controls column is my own mapping.</p>
+<figure class="pb-fig" aria-labelledby="fig-ladder-cap">
+<div class="al-wrap">
+<ol class="al" aria-label="Autonomy ladder, level 1 (operator) to level 5 (observer)">
+<li style="--lvl:1"><span class="al-bar"><span class="al-n">L1</span><span class="al-t">Operator</span></span><span class="al-d">The user directs; the agent acts on request</span></li>
+<li style="--lvl:2"><span class="al-bar"><span class="al-n">L2</span><span class="al-t">Collaborator</span></span><span class="al-d">User and agent plan and execute together</span></li>
+<li style="--lvl:3"><span class="al-bar"><span class="al-n">L3</span><span class="al-t">Consultant</span></span><span class="al-d">The agent leads and asks the user for expertise</span></li>
+<li style="--lvl:4"><span class="al-bar"><span class="al-n">L4</span><span class="al-t">Approver</span></span><span class="al-d">The agent acts; asks approval only for high-risk actions or when stuck</span></li>
+<li style="--lvl:5"><span class="al-bar"><span class="al-n">L5</span><span class="al-t">Observer</span></span><span class="al-d">The agent runs autonomously; the user monitors and can stop it</span></li>
+</ol>
+<p class="al-axis" aria-hidden="true"><span>L1 → L5: more autonomy</span><span>more controls and evidence needed</span></p>
+</div>
+<figcaption id="fig-ladder-cap">The five levels, named by the role the user plays <a class="cite" href="#src-48" aria-label="Source 48">[48]</a>. Raising an agent's level should need re-approval backed by eval evidence.</figcaption>
+</figure>
+
 <div class="table-wrap"><table>
 <thead>
 <tr>
@@ -711,6 +942,20 @@
 <hr>
 <h2 id="the-delivery-pipeline-commit-to-production">9. The delivery pipeline: commit to production</h2>
 <p>Good software delivery practice still applies to agents: separation of duties, review by the code owners for the area being changed, human release approval in proportion to risk, and building an immutable artefact once and promoting that same artefact through every environment, with a GitOps controller reconciling the declared state <a class="cite" href="#src-74" aria-label="Source 74">[74]</a><a class="cite" href="#src-69" aria-label="Source 69">[69]</a>. What's new is evals, the agent's wider supply chain, and the non-code artefacts.</p>
+<figure class="pb-fig" aria-labelledby="fig-pipe-cap">
+<ol class="pp" aria-label="Delivery pipeline stages, in order">
+<li class="pp-step"><span class="pp-n">1</span><span class="pp-t">Pre-commit</span><span class="pp-g">Lint, secret scan, unit tests</span></li>
+<li class="pp-step"><span class="pp-n">2</span><span class="pp-t">Pull request CI</span><span class="pp-g">Automated checks</span></li>
+<li class="pp-step"><span class="pp-n">3</span><span class="pp-t">Review</span><span class="pp-g">Code-owner approval</span></li>
+<li class="pp-step"><span class="pp-n">4</span><span class="pp-t">Build once</span><span class="pp-g">Signed artefact</span></li>
+<li class="pp-step"><span class="pp-n">5</span><span class="pp-t">Dev</span><span class="pp-g">Automatic deploy</span></li>
+<li class="pp-step is-gate"><span class="pp-n">6</span><span class="pp-t">Staging</span><span class="pp-g">Eval and security gate</span></li>
+<li class="pp-step"><span class="pp-n">7</span><span class="pp-t">Production</span><span class="pp-g">Risk-proportionate release approval</span></li>
+<li class="pp-step is-loop"><span class="pp-n">8</span><span class="pp-t">Operate</span><span class="pp-g">Continuous</span></li>
+</ol>
+<figcaption id="fig-pipe-cap">Each stage and its gate, from the table below. The artefact is built once and the same artefact is promoted through every environment.</figcaption>
+</figure>
+
 <div class="table-wrap"><table>
 <thead>
 <tr>
@@ -778,7 +1023,19 @@
 <p><strong>Scaling the organisation.</strong> A platform team owns the shell: gateways, control plane, golden-path templates (pre-approved starter projects with the controls already wired in) and pipelines. Product teams own the reasoning core: context, tools and evals. That split is what lets you go from three agents to thirty without thirty separate security reviews.</p>
 <hr>
 <h2 id="getting-started-crawl-walk-run">11. Getting started: crawl, walk, run</h2>
+<div class="callout callout-key" role="note">
+<p class="callout-label">Key takeaway</p>
 <p>You don't need the whole architecture before your first agent ships. You need the parts that are expensive to retrofit.</p>
+</div>
+<figure class="pb-fig" aria-labelledby="fig-cwr-cap">
+<ol class="cwr" aria-label="Crawl, walk, run">
+<li><span class="cwr-k">Crawl</span><span class="cwr-t">One agent, done properly</span><span class="cwr-lvl">Autonomy: operator or collaborator</span><ul class="cwr-d"><li>Model gateway from day one</li><li>Its own identity</li><li>Tenant from authenticated context</li><li>Token and cost budgets</li><li>OpenTelemetry GenAI traces</li><li>20–50 real eval tasks</li><li>Registered with a named owner</li></ul></li>
+<li><span class="cwr-k">Walk</span><span class="cwr-t">Let agents act, safely</span><span class="cwr-lvl">Autonomy: approver, for a narrow set of actions</span><ul class="cwr-d"><li>Policy-as-code on every tool call</li><li>Durable approvals bound to arguments</li><li>Curated tool registry behind a tool gateway</li><li>Eval gates in CI</li><li>PII protection on every context source</li></ul></li>
+<li><span class="cwr-k">Run</span><span class="cwr-t">Make it a platform</span><span class="cwr-lvl">Owner: a platform team, with golden paths</span><ul class="cwr-d"><li>Agent registry as the system of record</li><li>Continuous control monitoring</li><li>Online evals</li><li>Standing red team</li><li>Multi-agent and A2A only where justified</li><li>Per-tenant chargeback</li></ul></li>
+</ol>
+<figcaption id="fig-cwr-cap">The three stages described below, at a glance.</figcaption>
+</figure>
+
 <p><strong>Crawl: one agent, done properly.</strong> Pick one agent at the operator or collaborator level: read-only, or drafting for a human. Put it behind a model gateway from day one, with its own identity, the tenant taken from authenticated context, and token and cost budgets. Emit OpenTelemetry GenAI traces. Build an eval set of 20–50 real tasks before launch, and register the agent with a named owner, even if the registry is simple at first.</p>
 <p><strong>Walk: let agents act, safely.</strong> Add policy-as-code on every tool call, durable approvals bound to arguments, a curated tool registry behind a tool gateway, and eval gates in CI. Extend PII protection to every context source. Move your first agent to the approver level for a narrow set of actions, backed by eval evidence.</p>
 <p><strong>Run: make it a platform.</strong> Stand up a platform team, golden-path templates, an agent registry that is the system of record, continuous control monitoring, online evals and a standing red-team programme. Add multi-agent designs and A2A delegation only where the evidence justifies them. Bring in per-tenant chargeback.</p>
@@ -795,88 +1052,90 @@
 </ul>
 <hr>
 <h2 id="what-s-outdated-what-s-new">12. What's outdated, what's new</h2>
+<p class="chip-legend"><span><span class="chip chip-retire">retire</span> stop doing it</span> <span><span class="chip chip-update">update</span> keep the intent, change how it is done</span> <span><span class="chip chip-new">new</span> the current approach</span></p>
+
 <div class="table-wrap"><table>
 <thead>
 <tr>
 <th>First-generation pattern (2023–24)</th>
-<th>Current approach</th>
+<th>Current approach <span class="chip chip-new">new</span></th>
 </tr>
 </thead>
 <tbody>
 <tr>
-<td>Prompt engineering as the main quality lever</td>
+<td><span class="chip chip-update">update</span> Prompt engineering as the main quality lever</td>
 <td>Context engineering: rebuild a minimal, budgeted context on every call from durable state <a class="cite" href="#src-12" aria-label="Source 12">[12]</a><a class="cite" href="#src-14" aria-label="Source 14">[14]</a></td>
 </tr>
 <tr>
-<td>Guardrails as library code inside the agent process</td>
+<td><span class="chip chip-update">update</span> Guardrails as library code inside the agent process</td>
 <td>Explicit in-process hooks, with enforcement at gateways and policy decision points <a class="cite" href="#src-42" aria-label="Source 42">[42]</a><a class="cite" href="#src-44" aria-label="Source 44">[44]</a></td>
 </tr>
 <tr>
-<td>Pattern-matching deny-lists on user input as the injection defence</td>
+<td><span class="chip chip-retire">retire</span> Pattern-matching deny-lists on user input as the injection defence</td>
 <td>Architectural containment (Rule of Two, plan-then-execute); classifiers as one layer <a class="cite" href="#src-35" aria-label="Source 35">[35]</a><a class="cite" href="#src-38" aria-label="Source 38">[38]</a><a class="cite" href="#src-39" aria-label="Source 39">[39]</a></td>
 </tr>
 <tr>
-<td>Tenant or approver identity taken from tool arguments or chat text</td>
+<td><span class="chip chip-retire">retire</span> Tenant or approver identity taken from tool arguments or chat text</td>
 <td>Identity from authenticated context only, carried end to end <a class="cite" href="#src-30" aria-label="Source 30">[30]</a><a class="cite" href="#src-43" aria-label="Source 43">[43]</a></td>
 </tr>
 <tr>
-<td>Agents using a person's token or shared static keys</td>
+<td><span class="chip chip-retire">retire</span> Agents using a person's token or shared static keys</td>
 <td>A non-human identity per agent, with short-lived, delegated credentials <a class="cite" href="#src-52" aria-label="Source 52">[52]</a><a class="cite" href="#src-49" aria-label="Source 49">[49]</a></td>
 </tr>
 <tr>
-<td>Request-count rate limits and loop caps</td>
+<td><span class="chip chip-update">update</span> Request-count rate limits and loop caps</td>
 <td>Token and cost budgets per run and tenant at the gateway, plus operating envelopes <a class="cite" href="#src-46" aria-label="Source 46">[46]</a><a class="cite" href="#src-79" aria-label="Source 79">[79]</a></td>
 </tr>
 <tr>
-<td>Local log files, sometimes hash-chained, with no external anchor</td>
+<td><span class="chip chip-update">update</span> Local log files, sometimes hash-chained, with no external anchor</td>
 <td>Signed, externally anchored, central audit keyed to a workflow ID <a class="cite" href="#src-46" aria-label="Source 46">[46]</a><a class="cite" href="#src-65" aria-label="Source 65">[65]</a></td>
 </tr>
 <tr>
-<td>Approval as a notification or chat confirmation</td>
+<td><span class="chip chip-retire">retire</span> Approval as a notification or chat confirmation</td>
 <td>Durable, argument-bound, risk-tiered approval with an authenticated approver <a class="cite" href="#src-45" aria-label="Source 45">[45]</a></td>
 </tr>
 <tr>
-<td>A single on/off switch, not authenticated or audited</td>
+<td><span class="chip chip-update">update</span> A single on/off switch, not authenticated or audited</td>
 <td>Authenticated, audited suspension at fleet, tenant, agent and tool level that halts in a safe state <a class="cite" href="#src-46" aria-label="Source 46">[46]</a><a class="cite" href="#src-64" aria-label="Source 64">[64]</a></td>
 </tr>
 <tr>
-<td>Vendor-specific tracing SDKs</td>
+<td><span class="chip chip-update">update</span> Vendor-specific tracing SDKs</td>
 <td>OpenTelemetry GenAI conventions with opt-in content capture <a class="cite" href="#src-53" aria-label="Source 53">[53]</a></td>
 </tr>
 <tr>
-<td>Tests of how the agent is assembled; same-model self-critique</td>
+<td><span class="chip chip-update">update</span> Tests of how the agent is assembled; same-model self-critique</td>
 <td>End-state evals, pass^k, separate validated judges, transcript review <a class="cite" href="#src-54" aria-label="Source 54">[54]</a><a class="cite" href="#src-57" aria-label="Source 57">[57]</a></td>
 </tr>
 <tr>
-<td>User feedback written into production prompts</td>
+<td><span class="chip chip-retire">retire</span> User feedback written into production prompts</td>
 <td>Feedback curated into eval datasets, with a human gate <a class="cite" href="#src-33" aria-label="Source 33">[33]</a><a class="cite" href="#src-54" aria-label="Source 54">[54]</a></td>
 </tr>
 <tr>
-<td>Early MCP over HTTP+SSE with long-lived static tokens</td>
+<td><span class="chip chip-retire">retire</span> Early MCP over HTTP+SSE with long-lived static tokens</td>
 <td>Stateless MCP 2026-07-28, OAuth 2.1, enterprise-managed authorisation <a class="cite" href="#src-24" aria-label="Source 24">[24]</a><a class="cite" href="#src-26" aria-label="Source 26">[26]</a></td>
 </tr>
 <tr>
-<td>Multi-agent by default, passing plain text</td>
+<td><span class="chip chip-update">update</span> Multi-agent by default, passing plain text</td>
 <td>Single agent by default; A2A 1.0 with signed cards for cross-team delegation <a class="cite" href="#src-9" aria-label="Source 9">[9]</a><a class="cite" href="#src-30" aria-label="Source 30">[30]</a></td>
 </tr>
 <tr>
-<td>Floating "latest" labels for frameworks, models and prompts</td>
+<td><span class="chip chip-retire">retire</span> Floating "latest" labels for frameworks, models and prompts</td>
 <td>Pinned versions, a model-retirement calendar, eval-gated promotion <a class="cite" href="#src-80" aria-label="Source 80">[80]</a></td>
 </tr>
 <tr>
-<td>SBOM plus image signing</td>
+<td><span class="chip chip-update">update</span> SBOM plus image signing</td>
 <td>SLSA Build L3, AI-BOM, signed models; tool definitions pinned in your registry <a class="cite" href="#src-69" aria-label="Source 69">[69]</a><a class="cite" href="#src-71" aria-label="Source 71">[71]</a><a class="cite" href="#src-72" aria-label="Source 72">[72]</a></td>
 </tr>
 <tr>
-<td>Autoscaling on CPU</td>
+<td><span class="chip chip-retire">retire</span> Autoscaling on CPU</td>
 <td>Scaling on concurrency or queue depth; durable execution for long runs <a class="cite" href="#src-8" aria-label="Source 8">[8]</a><a class="cite" href="#src-82" aria-label="Source 82">[82]</a></td>
 </tr>
 <tr>
-<td>Waiting for AI Act standards</td>
+<td><span class="chip chip-retire">retire</span> Waiting for AI Act standards</td>
 <td>Building the AI management system on ISO/IEC 42001 plus EN 18286 now <a class="cite" href="#src-67" aria-label="Source 67">[67]</a></td>
 </tr>
 <tr>
-<td>Each team building its own stack, pilot by pilot</td>
+<td><span class="chip chip-update">update</span> Each team building its own stack, pilot by pilot</td>
 <td>A platform-owned shell, golden paths and a crawl-walk-run rollout</td>
 </tr>
 </tbody>
