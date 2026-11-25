@@ -79,8 +79,17 @@ class MobileLayout(unittest.TestCase):
         self.assertTrue(pg.evaluate("!!document.querySelector('.pin-spacer #turn-stage')"),
                         "desktop Act III should still be pinned by ScrollTrigger")
 
+    def test_playbook_has_no_horizontal_overflow(self):
+        for width in (360, 390, 768):
+            with self.subTest(width=width):
+                pg = self.page(width, path="/playbook.html")
+                self.assertFalse(pg.evaluate("document.documentElement.scrollWidth > innerWidth"))
+                missing = pg.evaluate("""() => [...document.querySelectorAll('a.cite')]
+                    .map(a => a.getAttribute('href').slice(1)).filter(id => !document.getElementById(id))""")
+                self.assertEqual(missing, [], "citation links without a matching source")
+
     def test_nav_fits_on_one_line_on_phones(self):
-        for path in ("/index.html", "/experience.html", "/newsletter.html"):
+        for path in ("/index.html", "/experience.html", "/newsletter.html", "/playbook.html"):
             for width in (360, 390):
                 with self.subTest(path=path, width=width):
                     pg = self.page(width, path=path)
