@@ -389,6 +389,11 @@
         @media (max-width: 900px) { #spark { display: none; } }
         @media (max-width: 600px) {
             .nav-links a:not(.nav-cta) { display: none; }
+            /* hidden links' empty <li>s + default list padding were squeezing the bar until the name and CTA wrapped */
+            .nav-links { padding: 0; margin: 0; }
+            .nav-links li:not(:has(.nav-cta)) { display: none; }
+            .nav-inner { padding: 0 1.25rem; }
+            .brand, .nav-cta { white-space: nowrap; }
             .page-hero { padding: 3.5rem 0 2.5rem; }
             .content-grid { padding: 2.8rem 1.2rem 3.5rem; }
             .scope-row { grid-template-columns: 1fr; }
