@@ -21,7 +21,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repo
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
 
       # firebase deploy loads the functions source to analyze it — deps must exist.
       # (package-lock.json is gitignored, so npm install rather than npm ci.)
