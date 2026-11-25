@@ -78,3 +78,6 @@ __pycache__/
 *service-account*.json
 *serviceaccount*.json
 .deploy-secrets*
+
+# Private source documents (resume / portfolio) — never commit
+Profile/

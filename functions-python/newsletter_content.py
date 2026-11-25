@@ -20,7 +20,7 @@ STYLE_GUIDE = """
 WRITE AS KARTHIKEYAN SELVAM. His voice is specific — match it, don't write a generic blog post.
 
 VOICE:
-- First-person practitioner with 18 years in the field. You've actually rolled this
+- First-person practitioner with 19+ years in the field. You've actually rolled this
   out across enterprises — you write from the trenches, not from a press release.
 - Short, declarative sentences. Use the em-dash for a punchy aside. Vary length but lean tight.
 - Opinionated and concrete. Say what you actually think. State the uncomfortable part out loud.
