@@ -1,74 +1,53 @@
-name: Daily Newsletter Update
+name: Weekly Newsletter Draft + Review
 
-
+# Drafts the weekly issue, has two independent search-grounded Gemini reviewers
+# check every claim, saves everything as pending_review, and emails the admin a
+# review digest. It NEVER publishes to the site or emails subscribers — that only
+# happens when the admin approves the issue on /admin/ (approveIssue function).
+#
+# 10:00 UTC Friday = 5am EST / 6am EDT, so the review email is in the inbox
+# before 7am ET even with GitHub's scheduling delays.
 on:
   schedule:
-    - cron: '0 6 * * 5'
+    - cron: '0 10 * * 5'
   workflow_dispatch:
     inputs:
-      review_mode:
-        description: 'Save articles as drafts for review (true) instead of auto-publishing (false)'
+      force:
+        description: "Regenerate today's issue if it already exists (only while it is still awaiting approval)"
         type: boolean
-        default: true
-
+        default: false
 
 permissions:
-  contents: write
+  contents: read
 
+concurrency:
+  group: newsletter-draft
+  cancel-in-progress: false
 
 jobs:
-  update-newsletter:
+  draft-and-review:
     runs-on: ubuntu-latest
+    timeout-minutes: 30
     steps:
       - name: Checkout repo
-        uses: actions/checkout@v3
-
+        uses: actions/checkout@v4
 
       - name: Set up Python
-        uses: actions/setup-python@v4
+        uses: actions/setup-python@v5
         with:
           python-version: '3.11'
-
 
       - name: Install dependencies
         run: pip install google-genai firebase-admin requests beautifulsoup4
 
-
-      - name: Generate newsletter articles
+      - name: Draft, review, and email the admin
         env:
           GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
           FIREBASE_SERVICE_ACCOUNT: ${{ secrets.FIREBASE_SERVICE_ACCOUNT }}
-          NEWSLETTER_REVIEW_MODE: ${{ github.event.inputs.review_mode }}
+          NEWSLETTER_SECRET: ${{ secrets.NEWSLETTER_SECRET }}
+          NEWSLETTER_FORCE: ${{ github.event.inputs.force }}
+          # Optional overrides (repo Settings → Variables) if a model is retired.
+          NEWSLETTER_WRITER_MODEL: ${{ vars.NEWSLETTER_WRITER_MODEL || 'models/gemini-2.5-flash' }}
+          NEWSLETTER_FACTCHECK_MODEL: ${{ vars.NEWSLETTER_FACTCHECK_MODEL || 'models/gemini-2.5-pro' }}
+          NEWSLETTER_EDITOR_MODEL: ${{ vars.NEWSLETTER_EDITOR_MODEL || 'models/gemini-2.5-flash' }}
         run: python scripts/generate_newsletter.py
-
-
-      - name: Commit updated newsletter.html
-        run: |
-          git config --global user.email "newsletter-bot@karthikeyanselvam.com"
-          git config --global user.name "Newsletter Bot"
-          git add public/newsletter.html
-          git commit -m "🗞️ Auto newsletter update - $(date +'%Y-%m-%d')" || echo "No changes"
-          git push https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/skarthik1710/karthik-website.git main
-
-
-      - name: Deploy to Firebase Hosting
-        uses: w9jds/firebase-action@master
-        with:
-          args: deploy --only hosting
-        env:
-          FIREBASE_TOKEN: ${{ secrets.FIREBASE_TOKEN }}
-
-
-      - name: Send Newsletter to Subscribers
-        if: github.event_name == 'schedule'
-        run: |
-          if [ ! -f newsletter_email.html ]; then
-            echo "No email body was generated (no articles?) — skipping send."
-            exit 0
-          fi
-          SUBJECT=$(cat newsletter_subject.txt 2>/dev/null || echo "AI Insights — $(date +'%B %d, %Y')")
-          jq -n --arg s "$SUBJECT" --rawfile b newsletter_email.html '{subject:$s, body:$b}' > payload.json
-          curl -X POST "https://us-central1-karthik-website-b5801.cloudfunctions.net/sendNewsletter" \
-            -H "Content-Type: application/json" \
-            -H "X-Newsletter-Secret: ${{ secrets.NEWSLETTER_SECRET }}" \
-            --data @payload.json
