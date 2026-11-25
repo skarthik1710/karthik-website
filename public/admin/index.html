@@ -198,6 +198,28 @@
         .result-line.live { color: var(--accent); }
         .result-line.gone { color: var(--red); }
 
+        /* ── ISSUE PANEL + REVIEWS ── */
+        .issue {
+            background: var(--surface); border: 1px solid var(--accent-dim); border-radius: 12px;
+            padding: 1.6rem 1.8rem; margin-bottom: 1.4rem;
+        }
+        .issue.highlight { box-shadow: 0 0 0 2px var(--accent); }
+        .issue h2 { font-family: var(--font-display); font-size: 1.25rem; margin-bottom: 0.4rem; }
+        .issue p { color: var(--muted); font-size: 0.88rem; margin-bottom: 1rem; }
+        .issue .stats { font-family: var(--font-mono); font-size: 0.74rem; color: var(--muted); margin-bottom: 1.1rem; }
+        .issue .stats b { color: var(--text); }
+        .reviews { display: grid; gap: 0.8rem; margin-bottom: 1.1rem; }
+        .review { background: var(--surface-2); border: 1px solid var(--line); border-radius: 8px; padding: 0.8rem 1rem; }
+        .review h4 { font-family: var(--font-mono); font-size: 0.66rem; letter-spacing: 0.12em; text-transform: uppercase; margin-bottom: 0.4rem; color: var(--muted); font-weight: 500; }
+        .review .v { font-weight: 600; margin-left: 0.4rem; }
+        .v-pass { color: var(--accent); } .v-revise { color: var(--amber); } .v-fail, .v-error { color: var(--red); }
+        .review .sum { color: var(--muted); font-size: 0.82rem; margin-bottom: 0.4rem; }
+        .claim { font-size: 0.8rem; color: var(--muted); border-left: 2px solid var(--line-strong); padding-left: 0.6rem; margin: 0.35rem 0; }
+        .claim b { text-transform: uppercase; font-size: 0.68rem; letter-spacing: 0.08em; }
+        .claim a { color: var(--accent); }
+        .claim.bad { border-left-color: var(--red); } .claim.warn { border-left-color: var(--amber); }
+        .decision { font-family: var(--font-mono); font-size: 0.7rem; margin-bottom: 0.8rem; }
+
         /* ── EMPTY / LOADING / TOAST ── */
         .empty { text-align: center; padding: 4rem 2rem; color: var(--dim); font-family: var(--font-mono); font-size: 0.85rem; }
         .toast {
@@ -290,7 +312,9 @@
     <div id="desk" style="display:none;">
         <div class="kicker">The review desk</div>
         <h1>Nothing publishes without <span class="accent">your approval</span>.</h1>
-        <p class="subtitle">AI-drafted articles land here first. Approve to put one live on the newsletter page; reject to bury it.</p>
+        <p class="subtitle">Each weekly issue is drafted, checked by two independent search-grounded reviewers, and waits here. Drop any item you don't want, then approve the issue to publish it and email subscribers — exactly once.</p>
+
+        <div id="issues-container"></div>
 
         <div class="desk-bar" id="desk-bar">
             <button class="count-chip active" data-filter="all" onclick="setFilter('all', this)">All · <b id="count-all">0</b></button>
@@ -312,6 +336,8 @@
         from "https://www.gstatic.com/firebasejs/10.7.0/firebase-firestore.js";
     import { getAuth, GoogleAuthProvider, signInWithPopup, signOut, onAuthStateChanged }
         from "https://www.gstatic.com/firebasejs/10.7.0/firebase-auth.js";
+    import { getFunctions, httpsCallable }
+        from "https://www.gstatic.com/firebasejs/10.7.0/firebase-functions.js";
 
     const firebaseConfig = {
         apiKey: "AIzaSyCTmJf_t33Fia2n06xDASC5W4vk7LbvMBc",
@@ -322,6 +348,9 @@
     const app  = initializeApp(firebaseConfig);
     const db   = getFirestore(app);
     const auth = getAuth(app);
+    const fns  = getFunctions(app, "us-central1");
+    let pendingIssueIds = new Set();   // issues still awaiting approval
+    let reviewerDropped = new Set();   // items both reviewers failed (not part of the email)
 
     window.signInAdmin = () => signInWithPopup(auth, new GoogleAuthProvider())
         .catch(e => showToast("Sign-in failed: " + e.message, true));
@@ -390,13 +419,112 @@
             document.getElementById("actions-" + docId).innerHTML = "<span class='result-line gone'>REJECTED — hidden from the website.</span>";
             refreshCounts();
             showToast("Article rejected.", true);
+            if (pendingIssueIds.size) await reload();
         } catch(e) {
             console.error(e);
             showToast("Error: " + e.message, true);
         }
     };
 
-    function esc(s) { const d = document.createElement("div"); d.textContent = s || ""; return d.innerHTML; }
+    // Attribute-safe: also escapes quotes (values land inside href="…").
+    const esc = s => String(s ?? "").replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;")
+                                    .replace(/"/g, "&quot;").replace(/'/g, "&#39;");
+    const safeUrl = u => /^https?:\/\//i.test(u || "") ? esc(u) : "#";
+
+    const REVIEWER_LABEL = { fact_checker: "Fact-checker", editor: "Editor" };
+    function renderReviews(d) {
+        if (!d.review) return "";
+        const dec = { clean: ["Both reviewers passed", "v-pass"], flag: ["Needs your attention", "v-revise"],
+                      drop: ["Dropped automatically — both reviewers failed it", "v-fail"] }[d.review_decision] || ["", ""];
+        let html = `<div class="decision ${dec[1]}">${esc(dec[0])}${d.review_reason ? " · " + esc(d.review_reason) : ""}</div><div class="reviews">`;
+        for (const [key, r] of Object.entries(d.review)) {
+            const claims = (r.claims || []).map(c => {
+                const cls = c.verdict === "supported" ? "" : (["outdated", "overstated"].includes(c.verdict) ? "warn" : "bad");
+                const src = c.source_url ? ` <a href="${safeUrl(c.source_url)}" target="_blank" rel="noopener">source</a>` : "";
+                return `<div class="claim ${cls}"><b>${esc(c.verdict)}</b> “${esc(c.claim)}”<br>${esc(c.evidence)}${src}</div>`;
+            }).join("");
+            html += `<div class="review"><h4>${esc(REVIEWER_LABEL[key] || key)}<span class="v v-${esc(r.verdict)}">${esc(r.verdict)}</span>
+                     <span style="text-transform:none;letter-spacing:0;"> · ${esc((r.model || "").replace("models/", ""))}</span></h4>
+                     ${r.error ? `<div class="sum">Reviewer error: ${esc(r.error)}</div>` : ""}
+                     ${r.summary ? `<div class="sum">${esc(r.summary)}</div>` : ""}${claims}</div>`;
+        }
+        return html + "</div>";
+    }
+
+    function bodyFor(d) {
+        if (d.type === "links") return (d.items || []).map(h => `${h.title} (${h.source})${h.take ? " — " + h.take : ""}`).join("\n\n");
+        if (d.type === "hype_check") return `CLAIM: ${d.claim || ""}\n\nREALITY: ${d.reality || ""}`;
+        return d.body || "No body content.";
+    }
+
+    // ── issues awaiting approval ──
+    async function loadIssues() {
+        const box = document.getElementById("issues-container");
+        const snap = await getDocs(query(collection(db, "newsletter_issues"),
+            where("status", "in", ["awaiting_approval", "send_incomplete", "publishing"])));
+        pendingIssueIds = new Set();
+        reviewerDropped = new Set();
+        const focus = new URLSearchParams(location.search).get("issue");
+        let html = "";
+        snap.forEach(s => {
+            const d = s.data();
+            if (d.status === "awaiting_approval") pendingIssueIds.add(s.id);
+            (d.dropped_ids || []).forEach(x => reviewerDropped.add(x));
+            const custom = d.kind === "custom";
+            const retry = d.status === "send_incomplete";
+            const busy = d.status === "publishing" && d.publishing_lease_until && d.publishing_lease_until.toMillis() > Date.now();
+            const stuck = d.status === "publishing" && !busy;
+            html += `<div class="issue ${s.id === focus ? "highlight" : ""}" id="issue-${esc(s.id)}">
+                <div class="kicker">${custom ? "Custom issue" : "Weekly issue"} · ${esc(s.id)}</div>
+                <h2>${esc(custom ? d.fallback_subject : ((d.subject_candidates || [])[0] || {}).title || d.fallback_subject)}</h2>
+                <div class="stats">${custom ? "Custom HTML email" : `<b>${(d.item_ids || []).length}</b> item(s) in issue · <b>${(d.dropped_ids || []).length}</b> dropped by reviewers`}
+                    · status <b>${esc(d.status)}</b>${d.sent_count ? ` · sent <b>${d.sent_count}</b>` : ""}</div>
+                <p>${busy ? "Publishing is in progress… refresh in a minute." : stuck
+                    ? "Publishing was interrupted. Resuming continues where it stopped; nobody is emailed twice."
+                    : retry
+                    ? "Sending stopped part-way. Approving again resumes it; nobody who already received it is emailed twice."
+                    : "Approving publishes every item below that you haven't dropped, then emails all subscribers once."}</p>
+                <div class="actions" id="issue-actions-${esc(s.id)}">${busy ? "" : `
+                    <button class="btn btn-solid" onclick="approveIssue('${esc(s.id)}')">${retry || stuck ? "Resume sending" : "Approve &amp; send to subscribers"}</button>
+                    ${retry || stuck ? "" : `<button class="btn btn-danger" onclick="rejectIssue('${esc(s.id)}')">Reject issue</button>`}`}
+                </div></div>`;
+        });
+        box.innerHTML = html;
+        if (focus) document.getElementById("issue-" + focus)?.scrollIntoView({ behavior: "smooth", block: "start" });
+    }
+
+    window.approveIssue = async function(id) {
+        if (!confirm("Publish this issue and email every subscriber now?")) return;
+        const actions = document.getElementById("issue-actions-" + id);
+        actions.innerHTML = "<span class='result-line live'>Publishing and sending…</span>";
+        try {
+            const r = (await httpsCallable(fns, "approveIssue", { timeout: 540000 })({ issueId: id })).data;
+            showToast(r.status === "sent" ? `Published. Sent to ${r.sent} subscriber(s).` : (r.message || `Status: ${r.status}`), r.status !== "sent");
+        } catch (e) { console.error(e); showToast("Error: " + e.message, true); }
+        await reload();
+    };
+
+    window.rejectIssue = async function(id) {
+        if (!confirm("Reject this issue? Nothing will be published or sent.")) return;
+        try {
+            await httpsCallable(fns, "rejectIssue")({ issueId: id });
+            showToast("Issue rejected. Nothing was published or sent.", true);
+        } catch (e) { console.error(e); showToast("Error: " + e.message, true); }
+        await reload();
+    };
+
+    window.restoreArticle = async function(docId) {
+        try {
+            await updateDoc(doc(db, "newsletter_articles", docId), { status: "pending_review" });
+            showToast("Back in the issue.");
+            await reload();
+        } catch (e) { console.error(e); showToast("Error: " + e.message, true); }
+    };
+
+    async function reload() {
+        try { await loadIssues(); } catch (e) { console.error(e); }
+        await loadArticles();
+    }
 
     async function loadArticles() {
         const container = document.getElementById("articles-container");
@@ -416,10 +544,21 @@
                 const statusClass = status === "approved" ? "status-approved" : status === "rejected" ? "status-rejected" : "status-pending";
                 const cardClass   = status === "approved" ? "approved" : status === "rejected" ? "rejected" : "";
                 const sources = (d.news_sources || []).map(s =>
-                    `<a href="${s.url}" target="_blank" rel="noopener">${esc(s.title)} — ${esc(s.source)}</a>`
+                    `<a href="${safeUrl(s.url)}" target="_blank" rel="noopener">${esc(s.title)} — ${esc(s.source)}</a>`
                 ).join("") || "<span class='none'>No sources recorded</span>";
 
-                const actions = status === "pending_review"
+                const inOpenIssue = d.issue_id && pendingIssueIds.has(d.issue_id);
+                const actions = inOpenIssue && status === "pending_review"
+                    ? `<button class="btn btn-danger" onclick="rejectArticle('${id}')">Drop from issue</button>
+                       <span class="result-line">Goes live when issue ${esc(d.issue_id)} is approved.</span>`
+                    : inOpenIssue && status === "rejected" && reviewerDropped.has(id)
+                    ? `<span class="result-line gone">Dropped by both reviewers — not part of this issue.</span>`
+                    : inOpenIssue && status === "rejected"
+                    ? `<button class="btn btn-ghost" onclick="restoreArticle('${id}')">Put back in issue</button>
+                       <span class="result-line gone">Dropped — won't be published or emailed.</span>`
+                    : d.issue_id && status === "pending_review"
+                    ? `<span class="result-line">Issue ${esc(d.issue_id)} is closed — this draft was never published.</span>`
+                    : status === "pending_review"
                     ? `<button class="btn btn-solid" onclick="approveArticle('${id}')">Approve &amp; publish</button>
                        <button class="btn btn-danger" onclick="rejectArticle('${id}')">Reject</button>`
                     : status === "approved"
@@ -430,16 +569,17 @@
                 <div class="article-review ${cardClass}" id="card-${id}" data-status="${status}">
                     <div class="meta">
                         <span class="cat">${esc(d.category || "AI")}</span>
-                        <span class="date">${esc(d.date || "")}</span>
+                        <span class="date">${esc(d.date || "")}${d.issue_id ? " · issue " + esc(d.issue_id) : ""}</span>
                         <span class="status-badge ${statusClass}" id="status-${id}">${statusLabel}</span>
                     </div>
-                    <h3>${esc(d.title || "Untitled")}</h3>
+                    <h3>${esc(d.title || (d.type === "hype_check" ? "Hype check" : "Untitled"))}</h3>
+                    ${renderReviews(d)}
                     <p class="excerpt">${esc(d.excerpt || "")}</p>
                     <div class="sources">
                         <h4>Sources used</h4>
                         ${sources}
                     </div>
-                    <div class="body-preview">${esc(d.body || "No body content.")}</div>
+                    <div class="body-preview">${esc(bodyFor(d))}</div>
                     <div class="actions" id="actions-${id}">${actions}</div>
                 </div>`;
             });
@@ -459,16 +599,6 @@
         }
     }
 
-    function runQuickAction() {
-        const params = new URLSearchParams(window.location.search);
-        if (params.get("id") && params.get("action")) {
-            const id     = params.get("id");
-            const action = params.get("action");
-            if (action === "approve") window.approveArticle(id);
-            if (action === "reject")  window.rejectArticle(id);
-        }
-    }
-
     onAuthStateChanged(auth, user => {
         if (user) {
             document.getElementById("who").textContent = user.email;
@@ -478,7 +608,7 @@
             show("desk", true);
             document.getElementById("articles-container").innerHTML =
                 '<div class="empty">Loading the queue…</div>';
-            loadArticles().then(runQuickAction);
+            reload();
         } else {
             document.getElementById("who").textContent = "";
             show("signout-btn", false);

@@ -11,6 +11,8 @@ import firebase_admin
 from firebase_admin import credentials, firestore
 from google import genai
 
+from newsletter_review import REVIEWERS, review_item, decide
+
 # --- Clients ---
 client = genai.Client(api_key=os.environ["GEMINI_API_KEY"])
 firebase_key = json.loads(os.environ["FIREBASE_SERVICE_ACCOUNT"])
@@ -21,20 +23,25 @@ db = firestore.client()
 ADMIN_EMAIL = os.environ.get("ADMIN_EMAIL", "skarthik1710@gmail.com")
 SITE_URL    = os.environ.get("SITE_URL", "https://karthikeyanselvam.com")
 
-# Auto-publish (Option B): generated articles go live immediately. The only
-# safeguards before subscribers see them are the grounded prompt + validate_article().
-# REVIEW_MODE flips a run to save drafts (pending_review) instead — for test runs you
-# eyeball at /admin/ (review desk) before anything is public.
-REVIEW_MODE    = os.environ.get("NEWSLETTER_REVIEW_MODE", "").strip().lower() in ("1", "true", "yes")
+# Human-in-the-loop (no auto-publish). Every run saves DRAFTS (pending_review) for
+# one issue, has two independent search-grounded reviewers check them, and emails
+# the admin a review digest. Nothing goes live on the site or to subscribers until
+# the admin approves the issue at /admin/ (approveIssue Cloud Function).
 RECENCY_DAYS   = 7      # only write about news from the last week
 MIN_BODY_WORDS = 350    # reject anything thinner than this
 NUM_ARTICLES   = 2      # fewer, deeper pieces per issue
 QUICK_HITS     = 3      # "links worth your time" — headline + one-line take
 
-# Files the GitHub workflow reads to send the email (subject names the lead story,
-# body carries the takeaways/links so the inbox is useful on its own).
-SUBJECT_FILE = "newsletter_subject.txt"
-EMAIL_FILE   = "newsletter_email.html"
+WRITER_MODEL   = os.environ.get("NEWSLETTER_WRITER_MODEL", "models/gemini-2.5-flash")
+REVIEW_MODELS  = {
+    "fact_checker": os.environ.get("NEWSLETTER_FACTCHECK_MODEL", "models/gemini-2.5-pro"),
+    "editor":       os.environ.get("NEWSLETTER_EDITOR_MODEL", "models/gemini-2.5-flash"),
+}
+REVIEW_EMAIL_URL = os.environ.get(
+    "REVIEW_EMAIL_URL",
+    "https://us-central1-karthik-website-b5801.cloudfunctions.net/sendReviewEmail")
+NEWSLETTER_SECRET = os.environ.get("NEWSLETTER_SECRET", "")
+FORCE_RERUN = os.environ.get("NEWSLETTER_FORCE", "").strip().lower() in ("1", "true", "yes")
 
 # --- Real News Sources (RSS feeds, no API key needed) ---
 RSS_FEEDS = [
@@ -264,7 +271,7 @@ def generate_article(topic, relevant_news, recent_titles, today):
     for attempt in range(3):
         try:
             response = client.models.generate_content(
-                model="models/gemini-2.5-flash",
+                model=WRITER_MODEL,
                 contents=prompt,
             )
             return response.text
@@ -296,7 +303,7 @@ def parse_article(raw):
     }
 
 
-# ── 7. VALIDATE (the only gate before auto-publish) ───────────────────────────
+# ── 7. VALIDATE (structural gate before review) ───────────────────────────
 def validate_article(p):
     body  = (p.get("body") or "").strip()
     words = len(body.split())
@@ -359,11 +366,9 @@ def check_grounding(text, news_sources):
     return True, "ok"
 
 
-# ── 8. SAVE TO FIRESTORE AS APPROVED (auto-publish) ───────────────────────────
-def save_to_firestore(parsed, date_str, news_sources):
-    status = "pending_review" if REVIEW_MODE else "approved"   # ← Option B default: auto-publish
-    doc_ref = db.collection("newsletter_articles").document()
-    record = {
+# ── 8. DRAFT RECORDS (saved after review — never auto-published) ─────────────
+def article_record(parsed, date_str, issue_id, news_sources):
+    return {
         "type":         "article",
         "title":        parsed["title"],
         "category":     parsed["category"],
@@ -375,14 +380,8 @@ def save_to_firestore(parsed, date_str, news_sources):
         "sources_used": parsed["sources_used"],
         "news_sources": [{"title": n["title"], "url": n["link"], "source": n["source"]} for n in news_sources],
         "date":         date_str,
-        "status":       status,
-        "auto_published": not REVIEW_MODE,
-        "created_at":   firestore.SERVER_TIMESTAMP,
+        "issue_id":     issue_id,
     }
-    if not REVIEW_MODE:
-        record["published_at"] = firestore.SERVER_TIMESTAMP
-    doc_ref.set(record)
-    return doc_ref.id
 
 
 # ── 9. QUICK HITS — "links worth your time" (headline + one-line take) ─────────
@@ -409,7 +408,7 @@ OUTPUT: one line per item, numbered to match, format exactly:
 (continue for all items)
 """
     try:
-        resp = client.models.generate_content(model="models/gemini-2.5-flash", contents=prompt)
+        resp = client.models.generate_content(model=WRITER_MODEL, contents=prompt)
         text = resp.text or ""
     except Exception as e:
         print(f"   ⚠️ Quick-hits generation failed: {e}")
@@ -455,7 +454,7 @@ REALITY: [your one or two sentence skeptical take — what's actually true / wha
 SOURCE: [the source domain of the item you picked]
 """
     try:
-        resp = client.models.generate_content(model="models/gemini-2.5-flash", contents=prompt)
+        resp = client.models.generate_content(model=WRITER_MODEL, contents=prompt)
         raw = resp.text or ""
     except Exception as e:
         print(f"   ⚠️ Hype-check generation failed: {e}")
@@ -476,81 +475,175 @@ SOURCE: [the source domain of the item you picked]
     return {"claim": claim, "reality": reality, "source": source}
 
 
-# ── 11. SAVE A PER-ISSUE EXTRA (links / hype_check) INTO newsletter_articles ───
-# Stored in the same collection (a `type` field tells them apart) so the existing
-# public read rule and queries cover them — no new collection/rules needed.
-def save_extra_to_firestore(doc_type, payload, date_str):
-    status = "pending_review" if REVIEW_MODE else "approved"
-    doc_ref = db.collection("newsletter_articles").document()
-    record = {
-        "type":          doc_type,
-        "date":          date_str,
-        "status":        status,
-        "auto_published": not REVIEW_MODE,
-        "created_at":    firestore.SERVER_TIMESTAMP,
-        **payload,
-    }
-    if not REVIEW_MODE:
-        record["published_at"] = firestore.SERVER_TIMESTAMP
-    doc_ref.set(record)
-    return doc_ref.id
+# ── 11. PER-ISSUE EXTRAS (links / hype_check) live in newsletter_articles ────
+# Same collection (a `type` field tells them apart) so the existing public read
+# rule (approved only) and the site's queries cover them.
+def extra_record(doc_type, payload, date_str, issue_id):
+    return {"type": doc_type, "date": date_str, "issue_id": issue_id, **payload}
 
 
-# ── 12. WRITE EMAIL SUBJECT + BODY FILES (consumed by the workflow) ────────────
+# ── 12. EMAILS ────────────────────────────────────────────────────────────────
 def _esc(s):
-    return (s or "").replace("&", "&amp;").replace("<", "&lt;").replace(">", "&gt;")
+    return (s or "").replace("&", "&amp;").replace("<", "&lt;").replace(">", "&gt;").replace('"', "&quot;")
 
-def write_email_files(articles, quick_hits, hype, date_str):
-    """Subject names the lead story; body carries takeaways, hype check, and links.
-    Writes nothing if there's no content — the workflow then skips the send."""
-    if not (articles or quick_hits or hype):
-        return None
-    lead = articles[0] if articles else None
-    subject = f"{lead['title']}" if lead else f"AI Insights — {date_str}"
-    with open(SUBJECT_FILE, "w", encoding="utf-8") as f:
-        f.write(subject)
+def _safe_url(u):
+    return u if re.match(r"^https?://", u or "") else "#"
 
-    teal = "#00C9A7"
-    parts = [f'<div style="font-family:Inter,Arial,sans-serif;color:#1a1a1a;max-width:640px;margin:0 auto;">']
-    parts.append(f'<p style="color:#666;font-size:13px;letter-spacing:1px;text-transform:uppercase;">AI &amp; Digital Workplace Insights — {_esc(date_str)}</p>')
+TEAL = "#00C9A7"
 
-    for a in articles:
+def subscriber_item_html(kind, d):
+    """One item's block for the SUBSCRIBER email. Each block is wrapped in
+    <!--item:ID--> markers by the caller so approveIssue can strip any item the
+    admin drops before approving."""
+    parts = []
+    if kind == "article":
         url = f"{SITE_URL}/newsletter.html"
-        parts.append(f'<h2 style="font-size:20px;margin:24px 0 6px;">{_esc(a["title"])}</h2>')
-        if a.get("takeaway"):
-            parts.append(f'<p style="font-size:15px;font-weight:600;color:#111;margin:0 0 8px;border-left:3px solid {teal};padding-left:10px;">{_esc(a["takeaway"])}</p>')
-        if a.get("excerpt"):
-            parts.append(f'<p style="font-size:14px;line-height:1.6;color:#444;margin:0 0 8px;">{_esc(a["excerpt"])}</p>')
-        if a.get("action"):
-            parts.append(f'<p style="font-size:14px;color:#111;margin:0 0 6px;"><strong>Your move this week:</strong> {_esc(a["action"])}</p>')
-        parts.append(f'<p style="margin:0 0 4px;"><a href="{url}" style="color:{teal};font-weight:600;text-decoration:none;">Read the full analysis →</a></p>')
-
-    if hype:
-        parts.append(f'<div style="margin:28px 0;padding:16px;background:#faf6e8;border-radius:8px;">')
-        parts.append(f'<p style="font-size:12px;letter-spacing:1px;text-transform:uppercase;color:#9a7d22;margin:0 0 6px;">Hype Check</p>')
-        parts.append(f'<p style="font-size:14px;color:#444;margin:0 0 4px;"><em>{_esc(hype["claim"])}</em></p>')
-        parts.append(f'<p style="font-size:14px;color:#111;margin:0;">{_esc(hype["reality"])}</p>')
+        parts.append(f'<h2 style="font-size:20px;margin:24px 0 6px;">{_esc(d["title"])}</h2>')
+        if d.get("takeaway"):
+            parts.append(f'<p style="font-size:15px;font-weight:600;color:#111;margin:0 0 8px;border-left:3px solid {TEAL};padding-left:10px;">{_esc(d["takeaway"])}</p>')
+        if d.get("excerpt"):
+            parts.append(f'<p style="font-size:14px;line-height:1.6;color:#444;margin:0 0 8px;">{_esc(d["excerpt"])}</p>')
+        if d.get("action"):
+            parts.append(f'<p style="font-size:14px;color:#111;margin:0 0 6px;"><strong>Your move this week:</strong> {_esc(d["action"])}</p>')
+        parts.append(f'<p style="margin:0 0 4px;"><a href="{url}" style="color:{TEAL};font-weight:600;text-decoration:none;">Read the full analysis →</a></p>')
+    elif kind == "hype_check":
+        parts.append('<div style="margin:28px 0;padding:16px;background:#faf6e8;border-radius:8px;">')
+        parts.append('<p style="font-size:12px;letter-spacing:1px;text-transform:uppercase;color:#9a7d22;margin:0 0 6px;">Hype Check</p>')
+        parts.append(f'<p style="font-size:14px;color:#444;margin:0 0 4px;"><em>{_esc(d["claim"])}</em></p>')
+        parts.append(f'<p style="font-size:14px;color:#111;margin:0;">{_esc(d["reality"])}</p>')
         parts.append('</div>')
-
-    if quick_hits:
-        parts.append(f'<h3 style="font-size:16px;margin:24px 0 8px;">Worth your time</h3>')
-        for h in quick_hits:
+    elif kind == "links":
+        parts.append('<h3 style="font-size:16px;margin:24px 0 8px;">Worth your time</h3>')
+        for h in d.get("items", []):
             take = f' — {_esc(h["take"])}' if h.get("take") else ""
-            parts.append(f'<p style="font-size:14px;line-height:1.5;margin:0 0 8px;"><a href="{_esc(h["url"])}" style="color:{teal};text-decoration:none;font-weight:600;">{_esc(h["title"])}</a><span style="color:#444;">{take}</span></p>')
+            parts.append(f'<p style="font-size:14px;line-height:1.5;margin:0 0 8px;"><a href="{_esc(_safe_url(h["url"]))}" style="color:{TEAL};text-decoration:none;font-weight:600;">{_esc(h["title"])}</a><span style="color:#444;">{take}</span></p>')
+    return "".join(parts)
 
-    parts.append(f'<hr style="border:none;border-top:1px solid #eee;margin:28px 0;">')
-    parts.append(f'<p style="font-size:13px;color:#888;">Written by Karthikeyan Selvam — Digital Workplace &amp; AI Consultant — <a href="{SITE_URL}" style="color:{teal};">karthikeyanselvam.com</a></p>')
+
+def build_subscriber_email(items, date_str):
+    """items: list of (doc_id, kind, record) in display order (articles, hype, links)."""
+    parts = ['<div style="font-family:Inter,Arial,sans-serif;color:#1a1a1a;max-width:640px;margin:0 auto;">']
+    parts.append(f'<p style="color:#666;font-size:13px;letter-spacing:1px;text-transform:uppercase;">AI &amp; Digital Workplace Insights — {_esc(date_str)}</p>')
+    for doc_id, kind, rec in items:
+        parts.append(f"<!--item:{doc_id}-->{subscriber_item_html(kind, rec)}<!--/item:{doc_id}-->")
+    parts.append('<hr style="border:none;border-top:1px solid #eee;margin:28px 0;">')
+    parts.append(f'<p style="font-size:13px;color:#888;">Written by Karthikeyan Selvam — Digital Workplace &amp; AI Consultant — <a href="{SITE_URL}" style="color:{TEAL};">karthikeyanselvam.com</a></p>')
     parts.append('</div>')
+    return "".join(parts)
 
-    with open(EMAIL_FILE, "w", encoding="utf-8") as f:
-        f.write("".join(parts))
-    return subject
+
+VERDICT_COLOURS = {"pass": "#1f8a4c", "revise": "#b7791f", "fail": "#c53030", "error": "#718096"}
+CLAIM_COLOURS = {"supported": "#1f8a4c", "outdated": "#b7791f", "overstated": "#b7791f",
+                 "unsupported": "#c53030", "contradicted": "#c53030", "confidential": "#c53030"}
+DECISION_LABEL = {"clean": ("✅ Both reviewers passed", "#1f8a4c"),
+                  "flag":  ("⚠️ Needs your attention", "#b7791f"),
+                  "drop":  ("⛔ Dropped automatically", "#c53030")}
+
+def _item_title(kind, rec):
+    if kind == "article":
+        return rec.get("title", "Untitled")
+    if kind == "hype_check":
+        return "Hype check: " + (rec.get("claim", "")[:90])
+    return "Worth your time (quick links)"
+
+
+def build_review_email(issue_id, date_str, reviewed):
+    """Digest for the ADMIN only. reviewed: list of dicts
+    {id, kind, record, reviews, decision, reason}."""
+    approve_url = f"{SITE_URL}/admin/?issue={issue_id}"
+    kept = [r for r in reviewed if r["decision"] != "drop"]
+    flagged = [r for r in reviewed if r["decision"] == "flag"]
+    dropped = [r for r in reviewed if r["decision"] == "drop"]
+
+    p = ['<div style="font-family:Inter,Arial,sans-serif;color:#1a1a1a;max-width:680px;margin:0 auto;">']
+    p.append(f'<p style="color:#666;font-size:13px;letter-spacing:1px;text-transform:uppercase;margin:0 0 6px;">Newsletter review — issue {issue_id}</p>')
+    p.append(f'<h1 style="font-size:22px;margin:0 0 10px;">{len(kept)} item(s) ready · {len(flagged)} flagged · {len(dropped)} dropped</h1>')
+    p.append('<p style="font-size:14px;color:#444;margin:0 0 16px;">Nothing has been published or sent. '
+             'Two independent reviewers checked every claim against current web sources. '
+             'Read below, then approve or reject on the review desk (Google sign-in required).</p>')
+    p.append(f'<p style="margin:0 0 28px;"><a href="{approve_url}" style="display:inline-block;background:#FF6B35;color:#210D02;'
+             f'font-weight:700;padding:12px 22px;border-radius:7px;text-decoration:none;">Review &amp; approve on the desk →</a></p>')
+
+    for r in reviewed:
+        label, colour = DECISION_LABEL[r["decision"]]
+        p.append(f'<div style="border:1px solid #e2e2e2;border-left:4px solid {colour};border-radius:8px;padding:16px 18px;margin:0 0 22px;">')
+        p.append(f'<p style="font-size:12px;font-weight:700;color:{colour};margin:0 0 4px;">{label} — {_esc(r["reason"])}</p>')
+        p.append(f'<h2 style="font-size:18px;margin:0 0 10px;">{_esc(_item_title(r["kind"], r["record"]))}</h2>')
+
+        for key, rev in r["reviews"].items():
+            v = rev.get("verdict", "error")
+            p.append(f'<p style="font-size:13px;margin:10px 0 4px;"><strong>{REVIEWERS[key]["label"]}</strong> '
+                     f'<span style="color:{VERDICT_COLOURS.get(v, "#718096")};font-weight:700;text-transform:uppercase;">{v}</span>'
+                     f'<span style="color:#888;"> · {_esc(rev.get("model", "").replace("models/", ""))}</span></p>')
+            if rev.get("error"):
+                p.append(f'<p style="font-size:13px;color:#718096;margin:0 0 4px;">Reviewer error: {_esc(rev["error"])}</p>')
+            if rev.get("summary"):
+                p.append(f'<p style="font-size:13px;color:#444;margin:0 0 6px;">{_esc(rev["summary"])}</p>')
+            issues = [c for c in rev.get("claims", []) if c["verdict"] != "supported"]
+            ok_count = len(rev.get("claims", [])) - len(issues)
+            for c in issues:
+                src = (f' <a href="{_esc(c["source_url"])}" style="color:{TEAL};">source</a>' if c.get("source_url") else "")
+                p.append(f'<p style="font-size:13px;margin:0 0 6px;padding-left:10px;border-left:2px solid {CLAIM_COLOURS[c["verdict"]]};">'
+                         f'<strong style="color:{CLAIM_COLOURS[c["verdict"]]};">{c["verdict"]}</strong>: “{_esc(c["claim"])}”'
+                         f'<br><span style="color:#555;">{_esc(c["evidence"])}</span>{src}</p>')
+            if ok_count:
+                p.append(f'<p style="font-size:12px;color:#1f8a4c;margin:0 0 4px;">{ok_count} claim(s) verified as supported.</p>')
+
+        rec = r["record"]
+        if r["kind"] == "article":
+            p.append('<details><summary style="font-size:13px;color:#555;cursor:pointer;margin-top:10px;">Full draft</summary>')
+            p.append(f'<p style="font-size:14px;font-weight:600;margin:10px 0 6px;">{_esc(rec.get("takeaway", ""))}</p>')
+            body_html = "".join(f'<p style="font-size:14px;line-height:1.6;color:#333;margin:0 0 10px;">{_esc(para)}</p>'
+                                for para in (rec.get("body") or "").split("\n") if para.strip())
+            p.append(body_html)
+            p.append('</details>')
+        else:
+            p.append(subscriber_item_html(r["kind"], rec))
+        p.append('</div>')
+
+    p.append(f'<p style="font-size:12px;color:#888;">If you do nothing, nothing publishes. Issue id: {issue_id}</p>')
+    p.append('</div>')
+    subject = f"[Review] Newsletter {issue_id}: {len(kept)} ready, {len(flagged)} flagged, {len(dropped)} dropped"
+    return subject, "".join(p)
+
+
+def send_review_email(subject, html):
+    """Admin-only digest via the sendReviewEmail function (recipient is fixed
+    server-side to the admin — this call cannot email anyone else)."""
+    if not NEWSLETTER_SECRET:
+        raise RuntimeError("NEWSLETTER_SECRET not set — cannot send the review email")
+    resp = requests.post(REVIEW_EMAIL_URL, json={"subject": subject, "html": html},
+                         headers={"X-Newsletter-Secret": NEWSLETTER_SECRET}, timeout=60)
+    if resp.status_code != 200:
+        raise RuntimeError(f"review email failed: HTTP {resp.status_code} {resp.text[:200]}")
 
 
 # ── MAIN ──────────────────────────────────────────────────────────────────────
 if __name__ == "__main__":
-    today    = datetime.now(timezone.utc).strftime("%b %d, %Y")
+    now      = datetime.now(timezone.utc)
+    today    = now.strftime("%b %d, %Y")
     date_str = today
+    issue_id = now.strftime("%Y-%m-%d")
+    issue_ref = db.collection("newsletter_issues").document(issue_id)
+
+    # Idempotency: a re-run (or a manual dispatch on the same day) must not create
+    # a second batch of drafts or a second review email for an issue that exists.
+    existing = issue_ref.get()
+    if existing.exists and not FORCE_RERUN:
+        print(f"Issue {issue_id} already exists (status: {existing.to_dict().get('status')}). "
+              f"Nothing to do. Set NEWSLETTER_FORCE=true to regenerate a non-approved issue.")
+        raise SystemExit(0)
+    if existing.exists and existing.to_dict().get("status") not in ("awaiting_approval", "rejected"):
+        print(f"Issue {issue_id} is {existing.to_dict().get('status')} — refusing to regenerate it.")
+        raise SystemExit(1)
+    if existing.exists:
+        # Forced regeneration: retire the previous drafts so the desk shows one batch.
+        old = db.collection("newsletter_articles").where("issue_id", "==", issue_id).stream()
+        retire = db.batch()
+        for d in old:
+            if (d.to_dict() or {}).get("status") == "pending_review":
+                retire.update(d.reference, {"status": "rejected", "review_reason": "superseded by a forced re-run"})
+        retire.commit()
 
     print("📰 Fetching real news...")
     all_news = fetch_real_news(max_items=30)
@@ -561,10 +654,10 @@ if __name__ == "__main__":
     print(f"   {len(recent_titles)} past titles, {len(used_urls)} source URLs already used")
 
     selected_topics = random.sample(TOPICS, len(TOPICS))   # shuffle; take the first that produce valid articles
-    published_articles = []   # parsed dicts of what actually went out, in order (first = lead)
+    drafts = []   # (kind, record) in display order — first article = lead
 
     for topic in selected_topics:
-        if len(published_articles) >= NUM_ARTICLES:
+        if sum(1 for k, _ in drafts if k == "article") >= NUM_ARTICLES:
             break
         print(f"\n✍️  Writing: {topic}")
         relevant = filter_news_for_topic(all_news, topic, used_urls)
@@ -590,47 +683,86 @@ if __name__ == "__main__":
             print(f"   ↻ Rejected ({reason}) — retrying...")
 
         if not ok:
-            print("   ⚠️ Could not produce a valid article, skipping (nothing published).")
+            print("   ⚠️ Could not produce a valid article, skipping.")
             continue
 
-        save_to_firestore(parsed, date_str, relevant)
+        drafts.append(("article", article_record(parsed, date_str, issue_id, relevant)))
         recent_titles.append(parsed["title"])  # avoid repeating within this same run
         for n in relevant:
             used_urls.add(n["link"])
-        published_articles.append(parsed)
-        verb = "SAVED AS DRAFT" if REVIEW_MODE else "PUBLISHED"
-        print(f"   ✅ {verb}: {parsed['title']}")
-        print(f"   📌 Sources: {parsed['sources_used']}")
+        print(f"   ✍️  Drafted: {parsed['title']}")
 
-    # ── Quick hits ("worth your time") from links we didn't write a full piece on ──
+    print("\n🧯 Building hype check...")
+    hype = generate_hype_check(all_news[:12], today)
+    if hype:
+        drafts.append(("hype_check", extra_record("hype_check", hype, date_str, issue_id)))
+
     leftover = [a for a in all_news if a["link"] not in used_urls][:QUICK_HITS]
-    quick_hits = []
     if leftover:
         print(f"\n🔗 Building {len(leftover)} quick hits...")
         quick_hits = generate_quick_hits(leftover, today)
         if quick_hits:
-            save_extra_to_firestore("links", {"items": quick_hits, "title": "Worth your time"}, date_str)
-            for h in quick_hits:
-                used_urls.add(h["url"])
-            print(f"   ✅ {len(quick_hits)} quick hits saved")
+            drafts.append(("links", extra_record("links", {"items": quick_hits, "title": "Worth your time"},
+                                                 date_str, issue_id)))
 
-    # ── Hype check — pick the most oversold claim of the week ──────────────────
-    print("\n🧯 Building hype check...")
-    hype = generate_hype_check(all_news[:12], today)
-    if hype:
-        save_extra_to_firestore("hype_check", hype, date_str)
-        print(f"   ✅ Hype check saved: {hype['claim'][:70]}...")
+    if not drafts:
+        print("\nNo drafts produced — no issue created, no email sent.")
+        raise SystemExit(0)
 
-    # ── Email subject + body (only sent on scheduled runs, by the workflow) ────
-    subject = write_email_files(published_articles, quick_hits, hype, date_str)
-    if subject:
-        print(f"\n✉️  Email subject: {subject}")
-    else:
-        print("\n✉️  No email written (no content) — workflow will skip the send.")
+    # ── Two independent, search-grounded reviews per draft ─────────────────────
+    print(f"\n🔎 Reviewing {len(drafts)} draft(s) with {', '.join(REVIEW_MODELS.values())}...")
+    reviewed = []
+    for kind, rec in drafts:
+        reviews = review_item(client, REVIEW_MODELS, rec, today)
+        decision, reason = decide(reviews)
+        ref = db.collection("newsletter_articles").document()
+        reviewed.append({"id": ref.id, "ref": ref, "kind": kind, "record": rec,
+                         "reviews": reviews, "decision": decision, "reason": reason})
+        print(f"   {decision.upper():5} {_item_title(kind, rec)[:70]} — {reason}")
 
-    if REVIEW_MODE:
-        print(f"\n🧐 Done. {len(published_articles)} draft article(s) saved for review at {SITE_URL}/admin/")
-    else:
-        print(f"\n🎉 Done. {len(published_articles)} article(s) auto-published and live:")
-    for a in published_articles:
-        print(f"   • {a['title']}")
+    # ── Persist drafts (pending_review, or rejected if both reviewers failed) ──
+    existed_at_start = existing.exists
+
+    @firestore.transactional
+    def commit_issue(tx, writes):
+        # Re-check: the issue may have been created/approved while we were drafting.
+        snap = issue_ref.get(transaction=tx)
+        if snap.exists and (not existed_at_start or snap.to_dict().get("status") not in ("awaiting_approval", "rejected")):
+            raise RuntimeError(f"Issue {issue_id} changed during generation "
+                               f"(now {snap.to_dict().get('status')}) — not overwriting it.")
+        for ref, data in writes:
+            tx.set(ref, data)
+
+    writes = []
+    for r in reviewed:
+        writes.append((r["ref"], {
+            **r["record"],
+            "status":        "rejected" if r["decision"] == "drop" else "pending_review",
+            "review":        r["reviews"],
+            "review_decision": r["decision"],
+            "review_reason": r["reason"],
+            "created_at":    firestore.SERVER_TIMESTAMP,
+        }))
+    kept = [r for r in reviewed if r["decision"] != "drop"]
+    subscriber_html = build_subscriber_email([(r["id"], r["kind"], r["record"]) for r in kept], date_str)
+    writes.append((issue_ref, {
+        "issue_id":   issue_id,
+        "date":       date_str,
+        "status":     "awaiting_approval" if kept else "rejected",
+        "item_ids":   [r["id"] for r in kept],
+        "dropped_ids": [r["id"] for r in reviewed if r["decision"] == "drop"],
+        # Subject = first APPROVED article's title at send time (lead may be dropped).
+        "subject_candidates": [{"id": r["id"], "title": r["record"]["title"]}
+                               for r in kept if r["kind"] == "article"],
+        "fallback_subject": f"AI Insights — {date_str}",
+        "email_html": subscriber_html,
+        "review_models": REVIEW_MODELS,
+        "created_at": firestore.SERVER_TIMESTAMP,
+    }))
+    commit_issue(db.transaction(), writes)
+    print(f"\n🗃️  Issue {issue_id} saved: {len(kept)} kept, {len(reviewed) - len(kept)} dropped")
+
+    subject, html = build_review_email(issue_id, date_str, reviewed)
+    send_review_email(subject, html)
+    print(f"✉️  Review email sent to the admin: {subject}")
+    print(f"   Approve at {SITE_URL}/admin/?issue={issue_id} — nothing is live until then.")

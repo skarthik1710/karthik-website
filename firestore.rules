@@ -20,6 +20,13 @@ service cloud.firestore {
       allow create, delete: if false;   // writes happen via the Admin SDK in CI
     }
 
+    // Weekly/custom issues awaiting approval. Admin reads them on the review desk;
+    // all writes (create, approve, reject, deliveries) go through Cloud Functions.
+    match /newsletter_issues/{issueId} {
+      allow read: if isAdmin();
+      allow write: if false;
+    }
+
     // Subscriber list. The public signup form (newsletter.html) creates docs
     // directly, so allow a tightly-shaped create only. Reading/editing the list
     // is never allowed from the client (the sender uses the Admin SDK).

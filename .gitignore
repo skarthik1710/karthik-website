@@ -61,3 +61,7 @@ firebase-debug.*.log
 #Firebase Functions
 functions/.env
 functions/.env.local
+
+# Python bytecode
+__pycache__/
+*.pyc
