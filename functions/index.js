@@ -304,8 +304,14 @@ exports.requestRevision = onCall(async (request) => {
             if (!(d.item_ids || []).includes(id)) delete itemNotes[id];
         }
         const version = (d.version || 1) + 1;
-        tx.update(issueRef, { status: "revising", revision_requested_at: FieldValue.serverTimestamp() });
-        tx.set(issueRef.collection("revisions").doc(String(version)), {
+        // Unique, never-reused id per request: a create always fires the trigger,
+        // and a late result from an older request can't commit (it no longer owns
+        // current_revision).
+        const seq = (d.revision_seq || 0) + 1;
+        const revId = `r${seq}`;
+        tx.update(issueRef, { status: "revising", revision_seq: seq, current_revision: revId,
+                              revision_requested_at: FieldValue.serverTimestamp() });
+        tx.create(issueRef.collection("revisions").doc(revId), {
             version, overall_note: overall, item_notes: itemNotes, status: "queued",
             requested_by: request.auth.token.email, requested_at: FieldValue.serverTimestamp(),
         });
@@ -324,7 +330,7 @@ exports.rejectIssue = onCall(async (request) => {
     const issue = await db.runTransaction(async (tx) => {
         const snap = await tx.get(issueRef);
         if (!snap.exists) throw new HttpsError("not-found", "No such issue.");
-        if (snap.data().status !== "awaiting_approval") {
+        if (!["awaiting_approval", "revising"].includes(snap.data().status)) {
             throw new HttpsError("failed-precondition", `Issue is already ${snap.data().status}.`);
         }
         tx.update(issueRef, { status: "rejected", rejected_at: FieldValue.serverTimestamp() });

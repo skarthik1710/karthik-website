@@ -485,18 +485,21 @@
             const busy = d.status === "publishing" && d.publishing_lease_until && d.publishing_lease_until.toMillis() > Date.now();
             const stuck = d.status === "publishing" && !busy;
             const revising = d.status === "revising";
-            const canRevise = d.status === "awaiting_approval" && !custom;
+            const revStuck = revising && d.revision_requested_at && d.revision_requested_at.toMillis() < Date.now() - 15 * 60 * 1000;
+            const canRevise = (d.status === "awaiting_approval" || revStuck) && !custom;
             html += `<div class="issue ${s.id === focus ? "highlight" : ""}" id="issue-${esc(s.id)}">
                 <div class="kicker">${custom ? "Custom issue" : "Weekly issue"} · ${esc(s.id)}${(d.version || 1) > 1 ? " · v" + esc(String(d.version)) : ""}</div>
                 <h2>${esc(custom ? d.fallback_subject : ((d.subject_candidates || [])[0] || {}).title || d.fallback_subject)}</h2>
                 <div class="stats">${custom ? "Custom HTML email" : `<b>${(d.item_ids || []).length}</b> item(s) in issue · <b>${(d.dropped_ids || []).length}</b> dropped by reviewers`}
                     · status <b>${esc(d.status)}</b>${d.sent_count ? ` · sent <b>${d.sent_count}</b>` : ""}</div>
-                <p>${revising ? "Revising per your notes — both reviewers re-check the rewrites. The next version arrives by email in a few minutes." : busy ? "Publishing is in progress… refresh in a minute." : stuck
+                <p>${revStuck ? "The revision seems stuck (15+ min). You can request it again or reject the issue." : revising ? "Revising per your notes — both reviewers re-check the rewrites. The next version arrives by email in a few minutes." : busy ? "Publishing is in progress… refresh in a minute." : stuck
                     ? "Publishing was interrupted. Resuming continues where it stopped; nobody is emailed twice."
                     : retry
                     ? "Sending stopped part-way. Approving again resumes it; nobody who already received it is emailed twice."
                     : "Approving publishes every item below that you haven't dropped, then emails all subscribers once."}</p>
-                <div class="actions" id="issue-actions-${esc(s.id)}">${busy || revising ? "" : `
+                <div class="actions" id="issue-actions-${esc(s.id)}">${revising ? `
+                    ${revStuck ? `<button class="btn btn-ghost" onclick="openChanges('${esc(s.id)}')">Request changes again</button>` : ""}
+                    <button class="btn btn-danger" onclick="rejectIssue('${esc(s.id)}')">Reject issue</button>` : busy ? "" : `
                     <button class="btn btn-solid" onclick="approveIssue('${esc(s.id)}')">${retry || stuck ? "Resume sending" : "Approve &amp; send to subscribers"}</button>
                     ${canRevise ? `<button class="btn btn-ghost" onclick="openChanges('${esc(s.id)}')">Request changes</button>` : ""}
                     ${retry || stuck ? "" : `<button class="btn btn-danger" onclick="rejectIssue('${esc(s.id)}')">Reject issue</button>`}`}

@@ -54,27 +54,70 @@ def reviseIssue(event: firestore_fn.Event[firestore_fn.DocumentSnapshot | None])
     req = claim(db.transaction())
     if req is None:
         return
+    rev_id = event.params["revId"]
+
+    @firestore.transactional
+    def hand_back(tx):
+        # Only reopen the issue if THIS revision still owns it (it may have been
+        # rejected, approved, or superseded by a newer request meanwhile).
+        snap = issue_ref.get(transaction=tx)
+        d = snap.to_dict() or {}
+        if d.get("status") == "revising" and d.get("current_revision") == rev_id:
+            tx.update(issue_ref, {"status": "awaiting_approval"})
+            return True
+        return False
 
     try:
-        _run(db, issue_ref, rev_ref, issue_id, req)
-    except Exception as e:  # noqa: BLE001 — always hand the issue back to the admin
+        result = _compute(db, issue_ref, issue_id, req)
+    except Exception as e:  # noqa: BLE001 — nothing has been written; hand back unchanged
         msg = str(e)[:400]
         print(f"reviseIssue failed for {issue_id}: {msg}")
         rev_ref.update({"status": "failed", "error": msg})
-        issue_ref.update({"status": "awaiting_approval"})
-        try:
-            send_review_email(
-                f"[Review] Revision failed for newsletter {issue_id}",
-                f"<p>The revision you requested could not be completed, so the issue is back to "
-                f"<strong>awaiting approval</strong> with the previous version unchanged.</p>"
-                f"<p>Error: {msg.replace('<', '&lt;')}</p>"
-                f'<p><a href="https://karthikeyanselvam.com/admin/?issue={issue_id}">Open the review desk</a></p>',
-                REVIEW_EMAIL_URL, NEWSLETTER_SECRET.value)
-        except Exception as e2:  # noqa: BLE001
-            print(f"could not send failure email: {e2}")
+        if hand_back(db.transaction()):
+            _notify(f"[Review] Revision failed for newsletter {issue_id}",
+                    f"<p>The revision you requested could not be completed. Nothing was changed: "
+                    f"the issue is back to <strong>awaiting approval</strong> exactly as before.</p>"
+                    f"<p>Error: {msg.replace('<', '&lt;')}</p>"
+                    f'<p><a href="https://karthikeyanselvam.com/admin/?issue={issue_id}">Open the review desk</a></p>')
+        return
+
+    # Phase 2: all-or-nothing commit, only if this revision still owns the issue.
+    @firestore.transactional
+    def commit(tx):
+        snap = issue_ref.get(transaction=tx)
+        d = snap.to_dict() or {}
+        if d.get("status") != "revising" or d.get("current_revision") != rev_id:
+            return False
+        for ref, update in result["article_updates"]:
+            tx.update(ref, update)
+        tx.update(issue_ref, result["issue_update"])
+        tx.update(rev_ref, {"status": "done", "finished_at": firestore.SERVER_TIMESTAMP,
+                            "revised": result["targets"], "dropped": result["dropped"]})
+        return True
+
+    if not commit(db.transaction()):
+        rev_ref.update({"status": "superseded"})
+        print(f"reviseIssue {issue_id}/{rev_id}: issue moved on before commit; discarded")
+        return
+
+    # Phase 3: email. A failure here must not roll anything back — the desk
+    # already shows the new version.
+    try:
+        send_review_email(result["subject"], result["html"], REVIEW_EMAIL_URL, NEWSLETTER_SECRET.value)
+    except Exception as e:  # noqa: BLE001
+        print(f"reviseIssue: committed v{req.get('version')} but review email failed: {e}")
+        rev_ref.update({"email_error": str(e)[:300]})
 
 
-def _run(db, issue_ref, rev_ref, issue_id, req):
+def _notify(subject, html):
+    try:
+        send_review_email(subject, html, REVIEW_EMAIL_URL, NEWSLETTER_SECRET.value)
+    except Exception as e:  # noqa: BLE001
+        print(f"could not send notification email: {e}")
+
+
+def _compute(db, issue_ref, issue_id, req):
+    """Phase 1: every Gemini call, NO writes. Returns what to commit."""
     issue = issue_ref.get().to_dict() or {}
     if issue.get("status") != "revising":
         raise RuntimeError(f"issue is {issue.get('status')}, not revising")
@@ -86,20 +129,23 @@ def _run(db, issue_ref, rev_ref, issue_id, req):
     today = datetime.now(timezone.utc).strftime("%b %d, %Y")
 
     docs = {s.id: s for s in db.get_all([db.collection("newsletter_articles").document(i) for i in item_ids]) if s.exists}
-    targets = [i for i in items_to_revise(item_ids, notes, overall)
-               if i in docs and docs[i].to_dict().get("status") != "rejected"]   # admin-dropped stays dropped
+    admin_dropped = {i for i, s in docs.items() if s.to_dict().get("status") == "rejected"}
+    targets = [i for i in items_to_revise(item_ids, notes, overall) if i in docs and i not in admin_dropped]
     if not targets:
         raise RuntimeError("nothing to revise (no notes on items still in the issue)")
 
     client = genai.Client(api_key=GEMINI_API_KEY.value)
     review_client = genai.Client(api_key=GEMINI_API_KEY.value, http_options={"api_version": "v1beta"})
 
-    rows, still_in, newly_dropped = [], [], []
+    rows, still_in, newly_dropped, article_updates = [], [], [], []
     for item_id in item_ids:
         if item_id not in docs:
             continue
         rec = docs[item_id].to_dict()
         kind = rec.get("type", "article")
+        if item_id in admin_dropped:          # stays in the issue (restorable), not shown/counted
+            still_in.append(item_id)
+            continue
         if item_id not in targets:
             rows.append({"id": item_id, "kind": kind, "record": rec, "reviews": {}, "decision": "kept", "reason": ""})
             still_in.append(item_id)
@@ -108,33 +154,37 @@ def _run(db, issue_ref, rev_ref, issue_id, req):
         merged, changes = revise_item(client, WRITER_MODEL, kind, rec, notes.get(item_id, ""), overall, today)
         reviews = review_item(review_client, REVIEW_MODELS, merged, today)
         decision, reason = decide(reviews)
-        prev_version = int(rec.get("revision_version", 1))
-        update = {k: v for k, v in merged.items() if k in ("title", "takeaway", "excerpt", "action", "body",
-                                                             "claim", "reality", "items")}
+        update = {k: v for k, v in merged.items()
+                  if k in ("title", "takeaway", "excerpt", "action", "body", "claim", "reality", "items")}
         update.update({
             "review": reviews, "review_decision": decision, "review_reason": reason,
             "revision_version": version, "last_changes": changes, "last_note": notes.get(item_id, "") or overall,
-            "versions": firestore.ArrayUnion([snapshot(kind, rec, prev_version)]),
+            "versions": firestore.ArrayUnion([snapshot(kind, rec, int(rec.get("revision_version", 1)))]),
             "status": "rejected" if decision == "drop" else rec.get("status", "pending_review"),
         })
-        docs[item_id].reference.update(update)
+        article_updates.append((docs[item_id].reference, update))
         rows.append({"id": item_id, "kind": kind, "record": {**rec, **merged}, "reviews": reviews,
                      "decision": decision, "reason": reason, "note": notes.get(item_id, ""), "changes": changes})
         (newly_dropped if decision == "drop" else still_in).append(item_id)
 
-    kept_rows = [r for r in rows if r["id"] in still_in]
-    issue_ref.update({
+    # Email blocks for every item still in the issue (admin-dropped included, so a
+    # restore still works; approveIssue strips non-approved blocks by marker).
+    block_rows = [r for r in rows if r["id"] in still_in] + [
+        {"id": i, "kind": docs[i].to_dict().get("type", "article"), "record": docs[i].to_dict()}
+        for i in still_in if i in admin_dropped]
+    order = {i: n for n, i in enumerate(item_ids)}
+    block_rows.sort(key=lambda r: order.get(r["id"], 0))
+    issue_update = {
         "status": "awaiting_approval",
         "version": version,
         "item_ids": still_in,
-        "dropped_ids": firestore.ArrayUnion(newly_dropped) if newly_dropped else issue.get("dropped_ids", []),
         "subject_candidates": [{"id": r["id"], "title": r["record"].get("title", "")}
-                               for r in kept_rows if r["kind"] == "article"],
-        "email_html": build_subscriber_email([(r["id"], r["kind"], r["record"]) for r in kept_rows],
+                               for r in block_rows if r["kind"] == "article" and r["id"] not in admin_dropped],
+        "email_html": build_subscriber_email([(r["id"], r["kind"], r["record"]) for r in block_rows],
                                              issue.get("date", issue_id)),
-    })
-    rev_ref.update({"status": "done", "finished_at": firestore.SERVER_TIMESTAMP,
-                    "revised": targets, "dropped": newly_dropped})
-
+    }
+    if newly_dropped:
+        issue_update["dropped_ids"] = firestore.ArrayUnion(newly_dropped)
     subject, html = build_review_email(issue_id, issue.get("date", issue_id), rows, version=version, overall_note=overall)
-    send_review_email(subject, html, REVIEW_EMAIL_URL, NEWSLETTER_SECRET.value)
+    return {"article_updates": article_updates, "issue_update": issue_update, "targets": targets,
+            "dropped": newly_dropped, "subject": subject, "html": html}
