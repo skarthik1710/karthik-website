@@ -807,6 +807,7 @@
             .viz-stats .stat .num { font-size: 2rem; }
         }
     </style>
+    <link rel="stylesheet" href="/chat.css?v=20261125"/>
 </head>
 <body>
 
@@ -1351,6 +1352,7 @@
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
+<script src="/chat.js?v=20261125"></script>
 <script>
     const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
     const gsapOK = typeof gsap !== 'undefined' && typeof ScrollTrigger !== 'undefined' && !reduceMotion;
@@ -1785,109 +1787,28 @@
         else if (e.key === 'ArrowLeft') goTo(currentIdx - 1);
     });
 
-    // ── ASK MY AI (Skipper) ──
-    const CHAT_ENDPOINT = 'https://us-central1-karthik-website-b5801.cloudfunctions.net/askKarthik';
-    const chatLog = document.getElementById('chat-log');
-    const chatForm = document.getElementById('chat-form');
-    const chatInput = document.getElementById('chat-input');
-    const chatSend = document.getElementById('chat-send');
-    const chatChips = document.getElementById('chat-chips');
-    let chatHistory = [], chatBusy = false;
-
-    // ── Launcher + popover ──
-    const chatPop = document.getElementById('chat-pop');
-    const chatFab = document.getElementById('chat-fab');
-    const fabCaption = document.getElementById('fab-caption');
+    // ── Skipper proactive nudge (chat widget itself lives in /chat.js) ──
     const fabNudge = document.getElementById('fab-nudge');
     function hideNudge() { if (fabNudge) { fabNudge.style.display = 'none'; try { sessionStorage.setItem('ksNudge', '1'); } catch (e) {} } }
-    function openPop() {
-        chatPop.classList.add('open'); chatFab.classList.add('open'); hideNudge();
-        if (fabCaption) fabCaption.classList.add('hide');
-        if (window.innerWidth > 600) chatInput.focus();
-    }
-    function closePop() {
-        chatPop.classList.remove('open'); chatFab.classList.remove('open');
-        if (fabCaption) fabCaption.classList.remove('hide');
-    }
-    chatFab.addEventListener('click', () => chatPop.classList.contains('open') ? closePop() : openPop());
-    document.querySelector('.chat-pop-close').addEventListener('click', closePop);
-    document.addEventListener('keydown', e => {
-        if (e.key === 'Escape' && chatPop.classList.contains('open') && !overlay.classList.contains('open')) closePop();
-    });
-    // proactive nudge — once per session, after dwell or 45% scroll
+    document.addEventListener('skipper:open', hideNudge);
     let nudgeArmed = true;
     try { nudgeArmed = !sessionStorage.getItem('ksNudge'); } catch (e) {}
-    if (fabNudge && nudgeArmed && !reduceMotion) {
+    if (fabNudge && window.Skipper && nudgeArmed && !reduceMotion) {
         let nudged = false;
         const showNudge = () => {
-            if (nudged || chatPop.classList.contains('open')) return;
+            if (nudged || window.Skipper.isOpen()) return;
             nudged = true; fabNudge.style.display = 'block';
-            setTimeout(hideNudge, 9000);
+            setTimeout(() => {
+                if (document.activeElement !== fabNudge) hideNudge();
+                else fabNudge.addEventListener('blur', hideNudge, { once: true });
+            }, 9000);
         };
         setTimeout(showNudge, 14000);
         window.addEventListener('scroll', () => {
             if (window.scrollY > document.documentElement.scrollHeight * 0.45) showNudge();
         }, { passive: true });
-        fabNudge.addEventListener('click', openPop);
-        fabNudge.addEventListener('keydown', e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); openPop(); } });
-    }
-
-    function addChatMsg(role, text, isError) {
-        const div = document.createElement('div');
-        div.className = 'chat-msg ' + (role === 'user' ? 'user' : 'bot') + (isError ? ' error' : '');
-        div.textContent = text;
-        chatLog.appendChild(div);
-        chatLog.scrollTop = chatLog.scrollHeight;
-        return div;
-    }
-
-    async function sendChat(text) {
-        text = (text || '').trim();
-        if (!text || chatBusy) return;
-        if (!chatPop.classList.contains('open')) openPop();
-        chatBusy = true;
-        chatSend.disabled = true;
-        chatInput.value = '';
-        if (chatChips) chatChips.style.display = 'none';
-        addChatMsg('user', text);
-        chatHistory.push({ role: 'user', content: text });
-
-        const typing = document.createElement('div');
-        typing.className = 'chat-typing';
-        typing.innerHTML = '<span></span><span></span><span></span>';
-        chatLog.appendChild(typing);
-        chatLog.scrollTop = chatLog.scrollHeight;
-
-        try {
-            const r = await fetch(CHAT_ENDPOINT, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ messages: chatHistory.slice(-12) })
-            });
-            const data = await r.json().catch(() => ({}));
-            typing.remove();
-            if (r.ok && data.reply) {
-                addChatMsg('bot', data.reply);
-                chatHistory.push({ role: 'assistant', content: data.reply });
-            } else {
-                addChatMsg('bot', data.error || 'Something went wrong — please try again, or email skarthik1710@gmail.com.', true);
-                chatHistory.pop(); // let the user retry the same question
-            }
-        } catch (err) {
-            typing.remove();
-            addChatMsg('bot', 'Connection problem — please try again, or email skarthik1710@gmail.com.', true);
-            chatHistory.pop();
-        }
-        chatBusy = false;
-        chatSend.disabled = false;
-        chatInput.focus();
-    }
-
-    if (chatForm) {
-        chatForm.addEventListener('submit', e => { e.preventDefault(); sendChat(chatInput.value); });
-        document.querySelectorAll('.chat-chip').forEach(chip => {
-            chip.addEventListener('click', () => sendChat(chip.textContent));
-        });
+        fabNudge.addEventListener('click', () => window.Skipper.open());
+        fabNudge.addEventListener('keydown', e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); window.Skipper.open(); } });
     }
 
     // Console note
