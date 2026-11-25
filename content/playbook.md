@@ -2,7 +2,7 @@
 
 *A practitioner's playbook for enterprise leaders and architects. November 2026.*
 
-For the last couple of years I have built agents that run inside real enterprises. Some read production systems. Some draft decisions for a human to sign off. A few act on their own, inside tight limits. The same thing happens every time. Getting an agent to work in a prototype takes days. Getting one that security, audit, finance and operations will all sign off for production takes months, and most teams never get there.
+For the last couple of years I have built agents that run inside real enterprises. Some read production systems. Some draft decisions for a human to sign off. The same thing happens every time. Getting an agent to work in a prototype takes days. Getting one that security, audit, finance and operations will all sign off for production takes months, and most teams never get there.
 
 This playbook is the framework I use to close that gap. It treats an agent as a small reasoning core wrapped in production controls, and it lays that out as a layered reference architecture. I have checked each part against what changed in standards, research and platforms over the past eighteen months. Throughout, I compare it with the **first-generation (2023–24) agent patterns** that many teams across the industry still run. Where one of those patterns should be retired, I say so.
 
