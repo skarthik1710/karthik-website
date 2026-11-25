@@ -394,6 +394,12 @@
         }
         .story-cue { color: var(--accent); font-weight: 500; white-space: nowrap; transition: transform 0.15s; display: inline-block; }
         .work-card:hover .story-cue { transform: translateX(3px); }
+        .card-cues { display: flex; flex-direction: column; align-items: flex-end; gap: 0.35rem; flex-shrink: 0; }
+        button.story-cue { background: none; border: 0; padding: 0; font: inherit; color: inherit; cursor: pointer; }
+        button.story-cue:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; border-radius: 3px; }
+        .arch-link { color: var(--muted); font-weight: 500; white-space: nowrap; text-decoration: none; border-bottom: 1px solid var(--line-strong); transition: color 0.15s, border-color 0.15s; }
+        .arch-link:hover, .arch-link:focus-visible { color: var(--accent); border-color: var(--accent); }
+        .arch-link:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
         /* mobile / no-anim fallback: native horizontal scroll */
         @media (max-width: 899px) {
             .ship-track { overflow-x: auto; width: auto; scroll-snap-type: x mandatory; padding: 0 2rem 1rem; -webkit-overflow-scrolling: touch; }
@@ -801,6 +807,15 @@
             .principle:nth-child(even) { padding-left: 0; }
             #spark { display: none; }
         }
+        /* tablets: five nav links + CTA no longer fit beside the name, so tighten, then fall back to the phone bar */
+        @media (max-width: 900px) {
+            .nav-links { gap: 1.15rem; }
+            .brand, .nav-cta { white-space: nowrap; }
+        }
+        @media (max-width: 800px) {
+            .nav-links { padding: 0; margin: 0; }
+            .nav-links li:not(:has(.nav-cta)) { display: none; }
+        }
         @media (max-width: 600px) {
             .nav-links { gap: 1.1rem; }
             .nav-links a:not(.nav-cta) { display: none; }
@@ -833,6 +848,7 @@
             <li><a href="#work">Work</a></li>
             <li><a href="/experience.html">Experience</a></li>
             <li><a href="/newsletter.html">Newsletter</a></li>
+            <li><a href="/projects.html">Projects</a></li>
             <li><a href="/playbook.html">Playbook</a></li>
             <li><a class="nav-cta" href="#contact">Get in touch</a></li>
         </ul>
@@ -1022,7 +1038,7 @@
                 <span>Platform architecture — as built</span>
                 <span class="arch-live-stack">google cloud · serverless · regional-only</span>
             </div>
-            <svg viewBox="0 0 860 410" role="img" aria-label="Multi-agent AI platform architecture: browser and Firebase proxy reach a private FastAPI backend on Cloud Run hosting one router per agent, backed by Vertex AI Gemini and Firestore, deployed from a regional Artifact Registry">
+            <svg viewBox="0 0 860 410" role="img" aria-label="Multi-agent AI platform architecture: browser and Firebase proxy reach a FastAPI backend on Cloud Run hosting one router per agent, backed by Vertex AI Gemini and Firestore, deployed from a regional Artifact Registry">
                 <rect class="arch-region" x="248" y="14" width="596" height="382" rx="14"/>
                 <text class="arch-region-label" x="260" y="34">us-central1</text>
                 <g class="arch-badge"><rect x="688" y="26" width="140" height="22" rx="11"/><text x="758" y="37.5" text-anchor="middle" dominant-baseline="middle">REGIONAL ONLY</text></g>
@@ -1076,7 +1092,7 @@
                     <text class="nsub" x="441" y="338" text-anchor="middle" dominant-baseline="middle">regional build + deploy</text>
                 </g>
             </svg>
-            <div class="arch-caption"><b>governance built in:</b> auth-gated · 0 exposed endpoints · 100% audit-traceable outputs · scale-to-zero · automated model-lifecycle steward · 1-command idempotent deploy</div>
+            <div class="arch-caption"><b>governance built in:</b> auth-gated · no hard-coded backend URL · audit-logged actions · scale-to-zero · automated model-lifecycle steward · 1-command idempotent deploy</div>
         </div>
     </div>
 </section>
@@ -1126,41 +1142,41 @@
     </div>
     <div class="ship-viewport">
         <div class="ship-track">
-            <div class="work-card" data-story="platform" role="button" tabindex="0" aria-label="Open the story: Multi-Agent AI Platform">
+            <div class="work-card" data-story="platform" data-label="Open the story: Multi-Agent AI Platform">
                 <div class="work-top"><span class="card-idx">01 / 06</span><span class="status">Platform</span></div>
                 <h3>Multi-Agent AI Platform</h3>
                 <p>An enterprise AI platform built to turn consulting workflows into governed AI services — specialized agents on a serverless GCP stack, hardened against strict org policies, with governance and cost engineering built in.</p>
-                <div class="stack"><span>FastAPI · Cloud Run · Vertex AI · Firestore</span><span class="story-cue">View story →</span></div>
+                <div class="stack"><span>FastAPI · Cloud Run · Vertex AI · Firestore</span><span class="card-cues"><a class="arch-link" href="/projects.html#platform" aria-label="Architecture in detail: Multi-Agent AI Platform">Architecture →</a><button type="button" class="story-cue" aria-label="Open the story: Multi-Agent AI Platform">View story →</button></span></div>
             </div>
-            <div class="work-card" data-story="ocm" role="button" tabindex="0" aria-label="Open the story: Change Management Agent">
+            <div class="work-card" data-story="ocm" data-label="Open the story: Change Management Agent">
                 <div class="work-top"><span class="card-idx">02 / 06</span><span class="status">Change Mgmt</span></div>
                 <h3>Change Management Agent</h3>
-                <p>Helps organizations run change programs consistently: generates a complete OCM deliverable set — 4 phases, 18 deliverables — from a formal methodology, with version-tagged, audit-traceable outputs and branded PDF export.</p>
-                <div class="stack"><span>Python · Vertex AI · Versioned skill engine</span><span class="story-cue">View story →</span></div>
+                <p>Helps organizations run change programs consistently: generates a complete OCM deliverable set — 4 phases, 18 deliverables — from a formal methodology, each deliverable stamped with the methodology version that produced it, plus branded PDF export.</p>
+                <div class="stack"><span>Python · Vertex AI · Versioned skill engine</span><span class="card-cues"><a class="arch-link" href="/projects.html#change-management" aria-label="Architecture in detail: Change Management Agent">Architecture →</a><button type="button" class="story-cue" aria-label="Open the story: Change Management Agent">View story →</button></span></div>
             </div>
-            <div class="work-card" data-story="gws" role="button" tabindex="0" aria-label="Open the story: Workspace License Right-Sizing">
+            <div class="work-card" data-story="gws" data-label="Open the story: Workspace License Right-Sizing">
                 <div class="work-top"><span class="card-idx">03 / 06</span><span class="status">Licensing</span></div>
                 <h3>License Right-Sizing Agent</h3>
-                <p>Helps organizations stop paying for licenses they don't use: reads real Google Workspace usage and surfaces defensible savings — with a zero-usage guard so quiet-but-active users are never wrongly downgraded.</p>
-                <div class="stack"><span>Admin SDK · Reports API · Cloud Run Jobs</span><span class="story-cue">View story →</span></div>
+                <p>Helps organizations stop paying for licenses they don't use: reads real Google Workspace usage and builds a per-user right-sizing case traceable to that usage — with a zero-usage guard so quiet-but-active users are never wrongly downgraded.</p>
+                <div class="stack"><span>Admin SDK · Reports API · Cloud Run Jobs</span><span class="card-cues"><a class="arch-link" href="/projects.html#license-right-sizing" aria-label="Architecture in detail: License Right-Sizing Agent">Architecture →</a><button type="button" class="story-cue" aria-label="Open the story: Workspace License Right-Sizing">View story →</button></span></div>
             </div>
-            <div class="work-card" data-story="hci" role="button" tabindex="0" aria-label="Open the story: Infrastructure Health Check Agent">
+            <div class="work-card" data-story="hci" data-label="Open the story: Infrastructure Health Check Agent">
                 <div class="work-top"><span class="card-idx">04 / 06</span><span class="status">Infrastructure</span></div>
                 <h3>Infra Health Check Agent</h3>
-                <p>Automated infrastructure health checks that produce shippable PDF reports and email them out — built to replace manual review cycles with a repeatable pipeline.</p>
-                <div class="stack"><span>Python · Analysis pipeline · Email automation</span><span class="story-cue">View story →</span></div>
+                <p>Turns raw infrastructure health-check exports into severity-labeled findings, issues tracked across runs, and share-ready PDF and Word reports — built to replace manual write-ups.</p>
+                <div class="stack"><span>Python · Gemini · PDF/Word reports</span><span class="card-cues"><a class="arch-link" href="/projects.html#infra-health-check" aria-label="Architecture in detail: Infra Health Check Agent">Architecture →</a><button type="button" class="story-cue" aria-label="Open the story: Infrastructure Health Check Agent">View story →</button></span></div>
             </div>
-            <div class="work-card" data-story="revokai" role="button" tabindex="0" aria-label="Open the story: RevokAI governed access revocation">
+            <div class="work-card" data-story="revokai" data-label="Open the story: RevokAI governed access revocation">
                 <div class="work-top"><span class="card-idx">05 / 06</span><span class="status">Compliance</span></div>
                 <h3>RevokAI — Governed Access Control</h3>
                 <p>An AI compliance control for access revocation that I co-built: AI correlates the hard identity matches a report can't, deterministic rules plus mandatory human approval decide, and every action lands in an exportable audit trail.</p>
-                <div class="stack"><span>Copilot Studio · Power Automate · Office Scripts</span><span class="story-cue">View story →</span></div>
+                <div class="stack"><span>Copilot Studio · Power Automate · Office Scripts</span><span class="card-cues"><a class="arch-link" href="/projects.html#revokai" aria-label="Architecture in detail: RevokAI">Architecture →</a><button type="button" class="story-cue" aria-label="Open the story: RevokAI governed access revocation">View story →</button></span></div>
             </div>
-            <div class="work-card" data-story="outreach" role="button" tabindex="0" aria-label="Open the story: AI Customer Outreach Agent">
+            <div class="work-card" data-story="outreach" data-label="Open the story: AI Customer Outreach Agent">
                 <div class="work-top"><span class="card-idx">06 / 06</span><span class="status">Sales</span></div>
                 <h3>Customer Outreach Agent</h3>
                 <p>Researches a customer's strategic priorities using real-time web search, scores alignment against a service portfolio, and drafts personalized outreach for mandatory human review — only opportunities that clear a strict 80/100 evidence threshold are ever actioned.</p>
-                <div class="stack"><span>Vertex AI (Gemini) · Real-time research · Scoring engine</span><span class="story-cue">View story →</span></div>
+                <div class="stack"><span>Vertex AI (Gemini) · Real-time research · Scoring engine</span><span class="card-cues"><a class="arch-link" href="/projects.html#customer-outreach" aria-label="Architecture in detail: Customer Outreach Agent">Architecture →</a><button type="button" class="story-cue" aria-label="Open the story: AI Customer Outreach Agent">View story →</button></span></div>
             </div>
         </div>
     </div>
@@ -1186,7 +1202,7 @@
                 <span class="p-idx">/02</span>
                 <div>
                     <h3>Governance is a feature</h3>
-                    <p>Role-based access, audit-traceable outputs, and an automated model-lifecycle steward that migrates agents off retired LLMs — compliance without manual toil.</p>
+                    <p>Role-based access, audit-logged actions, and an automated model-lifecycle steward that migrates agents off retired LLMs — compliance without manual toil.</p>
                 </div>
             </div>
             <div class="principle reveal">
@@ -1516,7 +1532,7 @@
             { kind: 'claim', eyebrow: 'The Wedge', title: 'Most advise on enterprise AI. I architect and ship it.',
               body: 'An AI leader who designed and built an enterprise multi-agent AI platform — end to end. The rare overlap of domain authority and hands-on engineering.' },
             { kind: 'arch', eyebrow: 'The Architecture', title: 'What I designed and built',
-              body: 'A private FastAPI backend on Cloud Run hosts every agent as its own router; the browser hits it through a Firebase rewrite proxy — no CORS, no exposed URL. Gemini and Firestore sit behind it.',
+              body: 'A FastAPI backend on Cloud Run hosts every agent as its own router; the browser reaches it through a Firebase rewrite proxy, so no page holds a backend URL. Gemini and Firestore sit behind it.',
               vb: [0, 0, 640, 340],
               region: { x: 210, y: 18, w: 410, h: 304, label: 'us-central1' },
               badge: { x: 466, y: 26, w: 138, h: 22, text: 'REGIONAL ONLY' },
@@ -1540,13 +1556,13 @@
               before: { big: '7 failures', small: 'multi-region blocked' }, after: { big: '1 command', small: 'idempotent deploy' } },
             { kind: 'stat', eyebrow: 'By Design', title: 'Governed, efficient, built to scale',
               body: 'Auth-gated by design and built to encode real consulting workflows — governance and cost discipline engineered in from the first line, not bolted on later.',
-              stats: [ { num: 0, lbl: 'exposed endpoints' }, { num: 100, suffix: '%', lbl: 'audit-traceable', gold: true }, { num: 1, lbl: 'command to deploy' } ] }
+              stats: [ { num: 0, lbl: 'hard-coded backend URLs' }, { num: 100, suffix: '%', lbl: 'regional builds', gold: true }, { num: 1, lbl: 'command to deploy' } ] }
         ],
         ocm: [
             { kind: 'claim', eyebrow: 'The Wedge', title: 'I turn consulting methodology into auditable software.',
               body: 'Not a chatbot that "does change management" — a system that encodes a formal OCM methodology and proves which version produced every deliverable.' },
             { kind: 'arch', eyebrow: 'The Architecture', title: 'A versioned methodology engine',
-              body: 'The methodology lives as a "skill" document loaded by content hash at runtime, so every output is stamped with the exact version it came from — fully audit-traceable.',
+              body: 'The methodology lives as a "skill" document loaded by content hash at runtime, so each deliverable is stamped with the exact methodology version that produced it.',
               vb: [0, 0, 640, 280],
               nodes: [
                 { id: 'brief', x: 20, y: 112, w: 96, h: 54, label: 'Brief', accent: 'muted' },
@@ -1566,11 +1582,11 @@
               phases: 4, total: 18 },
             { kind: 'stat', eyebrow: 'The Value', title: 'Weeks of work, on demand',
               body: 'A senior consultant’s multi-week deliverable process, compressed into consistent, branded, traceable output.',
-              stats: [ { num: 4, lbl: 'phases' }, { num: 18, lbl: 'deliverables', gold: true }, { num: 100, suffix: '%', lbl: 'version-tagged' } ] }
+              stats: [ { num: 4, lbl: 'phases' }, { num: 18, lbl: 'deliverables', gold: true }, { num: 0, lbl: 'code changes to update the method' } ] }
         ],
         gws: [
             { kind: 'claim', eyebrow: 'The Wedge', title: 'I don’t guess at licensing. I prove it from real usage.',
-              body: 'Most "cost optimization" is a spreadsheet and a hunch. This reads an organization’s actual usage and produces a recommendation a CFO can sign off on.' },
+              body: 'Most "cost optimization" is a spreadsheet and a hunch. This reads an organization’s actual usage and produces a per-user recommendation traceable to the usage behind it.' },
             { kind: 'arch', eyebrow: 'The Architecture', title: 'From real usage to a defensible call',
               body: 'A Domain-Wide-Delegation service account reads true usage via the Reports API, matched against a verified SKU catalog. A zero-usage guard protects active-but-quiet seats; heavy runs scale out on Cloud Run Jobs.',
               vb: [0, 0, 640, 290],
@@ -1591,29 +1607,29 @@
               body: 'The accuracy guard means an active-but-quiet user is never wrongly downgraded — which is exactly what keeps the recommendations trustworthy.',
               before: { big: 'Naive', small: 'low usage → downgrade' }, after: { big: 'Guarded', small: 'active seats protected' } },
             { kind: 'stat', eyebrow: 'The Value', title: 'A defensible right-sizing case',
-              body: 'Built to surface over-licensing across hundreds of seats — every recommendation traceable to the usage data behind it, so finance can sign off with confidence.',
+              body: 'Built to surface over-licensing across hundreds of seats — every recommendation traceable to the usage data behind it, and thin evidence reported as "insufficient data" rather than guessed.',
               stats: [ { num: 100, suffix: 's', lbl: 'of seats in scope' }, { num: 0, lbl: 'active seats downgraded, by design', gold: true } ] }
         ],
         hci: [
-            { kind: 'claim', eyebrow: 'The Wedge', title: 'Manual reviews don’t scale. I made them ship themselves.',
-              body: 'A repeatable infrastructure health pipeline that turns raw signals into a report and delivers it — no analyst in the loop.' },
-            { kind: 'arch', eyebrow: 'The Architecture', title: 'A self-shipping report pipeline',
-              body: 'A multi-stage analysis pipeline, wrapped in its own security layer and input-size guards, produces a shippable PDF and emails it out automatically.',
+            { kind: 'claim', eyebrow: 'The Wedge', title: 'Manual write-ups don’t scale. I made the analysis repeatable.',
+              body: 'Engineers drop in health-check exports; the agent returns the same structured findings every run, tracks recurring issues, and drafts the report. People triage and own every fix.' },
+            { kind: 'arch', eyebrow: 'The Architecture', title: 'From raw exports to tracked issues',
+              body: 'Exports pass an input-safety layer (size caps, secret redaction, injection flags), then a large-context Gemini analysis in a background job produces findings, tracked issues and PDF/Word reports.',
               vb: [0, 0, 640, 270],
               nodes: [
                 { id: 'in', x: 20, y: 104, w: 96, h: 56, label: 'Inputs', accent: 'muted' },
-                { id: 'pipe', x: 156, y: 70, w: 206, h: 124, label: 'Analysis Pipeline', sub: 'security layer + guards', accent: 'teal', chips: ['collect', 'analyze', 'score'] },
-                { id: 'pdf', x: 420, y: 70, w: 180, h: 52, label: 'PDF Report', accent: 'teal' },
-                { id: 'mail', x: 420, y: 150, w: 180, h: 52, label: 'Email Delivery', accent: 'gold' }
+                { id: 'pipe', x: 156, y: 70, w: 206, h: 124, label: 'Analysis Pipeline', sub: 'security layer + guards', accent: 'teal', chips: ['screen', 'analyze', 'track'] },
+                { id: 'pdf', x: 420, y: 70, w: 180, h: 52, label: 'PDF / Word Reports', accent: 'teal' },
+                { id: 'mail', x: 420, y: 150, w: 180, h: 52, label: 'Tracked Issues', accent: 'gold' }
               ],
               edges: [
                 { from: 'in', to: 'pipe' },
                 { from: 'pipe', to: 'pdf' },
-                { from: 'pdf', to: 'mail', fromSide: 'b', toSide: 't', packet: false }
+                { from: 'pipe', to: 'mail' }
               ] },
-            { kind: 'stat', eyebrow: 'The Value', title: 'Reports that ship themselves',
-              body: 'Repeatable, shippable health reports generated and delivered automatically — built to retire manual review cycles.',
-              stats: [ { num: 1, lbl: 'pipeline' }, { num: 0, lbl: 'manual steps', gold: true }, { num: 100, suffix: '%', lbl: 'auto-emailed' } ] }
+            { kind: 'stat', eyebrow: 'The Value', title: 'Same structure, every run',
+              body: 'Findings with recommended fixes in one structure every time, recurring problems that build history instead of looking new, and reports ready to share — built to retire manual write-ups.',
+              stats: [ { num: 0, lbl: 'manual write-ups', gold: true }, { num: 0, lbl: 'changes made to infrastructure' } ] }
         ],
         revokai: [
             { kind: 'claim', eyebrow: 'The Wedge', title: 'Compliance controls don’t need more effort. They need a governed engine.',
@@ -1783,10 +1799,9 @@
     }
 
     document.querySelectorAll('.work-card[data-story]').forEach(card => {
-        card.addEventListener('click', () => openStory(card.dataset.story, card));
-        card.addEventListener('keydown', e => {
-            if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); openStory(card.dataset.story, card); }
-        });
+        // The "Architecture →" link inside each card navigates normally instead of opening the story.
+        // Keyboard users reach the real <button class="story-cue">; mouse clicks anywhere else on the card open it too.
+        card.addEventListener('click', e => { if (!e.target.closest('a')) openStory(card.dataset.story, card.querySelector('.story-cue') || card); });
     });
     prevBtn.addEventListener('click', () => goTo(currentIdx - 1));
     nextBtn.addEventListener('click', () => goTo(currentIdx + 1));

@@ -51,11 +51,15 @@ def main():
 
     # Title + italic byline live in the page hero, not the article body.
     md_text = re.sub(r"\A#\s+[^\n]+\n+\*[^\n]+\*\n+", "", md_text)
-    words = len(re.sub(r"## 15\. Sources.*", "", md_text, flags=re.S).split())
+    # Reading time counts prose only: figure labels (diagram text) and HTML tags are excluded.
+    prose = re.sub(r"<figure\b.*?</figure>", " ", md_text, flags=re.S)
+    prose = re.sub(r"<span class=\"chip[^\"]*\">[^<]*</span>|<p class=\"(?:callout-label|chip-legend)\">.*?</p>", " ", prose)
+    prose = re.sub(r"<[^>]+>", " ", prose)
+    words = len(re.sub(r"## 15\. Sources.*", "", prose, flags=re.S).split())
     minutes = int(math.ceil(words / 230.0))
     n_sources = len(re.findall(r"^\d+\.\s", md_text.split("## 15. Sources")[-1], flags=re.M))
 
-    body = markdown.markdown(md_text, extensions=["tables", "sane_lists"], output_format="html5")
+    body = markdown.markdown(md_text, extensions=["tables", "sane_lists", "md_in_html"], output_format="html5")
 
     # H2 ids + TOC
     toc = []
@@ -167,6 +171,129 @@ def main():
         .prose ol.sources li:target {{ background: var(--accent-faint); outline: 1px solid var(--accent-dim); border-radius: 4px; }}
         .pb-cta {{ margin-top: 3rem; padding: 1.6rem 1.8rem; border: 1px solid var(--line); border-radius: 12px; background: var(--surface); }}
         .pb-cta h2 {{ border: none; padding: 0; margin: 0 0 0.5rem; font-size: 1.2rem; }}
+
+        /* ── VISUAL CUES: figures, callouts, chips ── */
+        .prose .pb-fig {{ margin: 1.7em 0; }}
+        .pb-fig figcaption {{ margin-top: 0.7rem; font-size: 0.8rem; line-height: 1.55; color: var(--muted); }}
+        .pb-fig ol {{ list-style: none; padding-left: 0; }}
+        .pb-fig ol > li {{ margin-top: 0; }}
+        .pb-fig-frame {{ border: 1px solid var(--line); border-radius: 12px; background: var(--surface); padding: 1rem; }}
+        .cs-grid a:focus-visible {{ outline: 2px solid var(--accent); outline-offset: 2px; }}
+        /* Reference architecture (same visual language as the homepage diagram) */
+        .pb-arch {{ display: block; width: 100%; height: auto; }}
+        .pb-arch-tall {{ display: none; max-width: 460px; margin: 0 auto; }}  /* portrait variant for phones */
+        .pb-arch .arch-node rect {{ fill: var(--surface-2); stroke: var(--line-strong); stroke-width: 1.2; }}
+        .pb-arch .nlabel {{ fill: var(--text); font-family: var(--font-display); font-size: 14px; font-weight: 600; }}
+        .pb-arch .nsub {{ fill: var(--muted); font-size: 11px; }}
+        .pb-arch .arch-num {{ fill: var(--accent); font-family: var(--font-mono); font-size: 13px; font-weight: 600; }}
+        .pb-arch .arch-plane rect {{ fill: rgba(255, 107, 53, 0.045); stroke: var(--accent); stroke-width: 1.1; stroke-dasharray: 7 5; }}
+        .pb-arch .arch-plane-label {{ fill: var(--accent); font-family: var(--font-mono); font-size: 11.5px; font-weight: 600;
+            letter-spacing: 1px; text-transform: uppercase; }}
+        .pb-arch .arch-plane-sub {{ fill: var(--muted); font-family: var(--font-mono); font-size: 10.5px; }}
+        .pb-arch .arch-edge {{ stroke: var(--line-strong); stroke-width: 1.5; fill: none; stroke-dasharray: 5 4; }}
+        /* Production control stack */
+        .cs-grid {{ display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 0.6rem; }}
+        .cs-grid a {{ display: flex; flex-direction: column; gap: 0.2rem; height: 100%; padding: 0.85rem 0.95rem;
+            border: 1px solid var(--line); border-radius: 10px; background: var(--surface); text-decoration: none;
+            transition: border-color 0.15s, background 0.15s; }}
+        .cs-grid a:hover {{ border-color: var(--accent-dim); background: var(--surface-2); }}
+        .cs-n {{ font-family: var(--font-mono); font-size: 0.7rem; color: var(--accent); letter-spacing: 0.04em; }}
+        .cs-t {{ font-family: var(--font-display); font-size: 0.95rem; font-weight: 600; color: var(--text); line-height: 1.3; }}
+        .cs-d {{ font-size: 0.8rem; line-height: 1.45; color: var(--muted); }}
+        /* Autonomy ladder */
+        .al-wrap {{ border: 1px solid var(--line); border-radius: 12px; background: var(--surface); padding: 1.2rem 1.2rem 1rem; }}
+        .al {{ display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); grid-template-rows: auto auto; gap: 0.5rem 0.55rem; }}
+        .al > li {{ display: grid; grid-row: span 2; grid-template-rows: subgrid; gap: 0.5rem; }}
+        .al-bar {{ align-self: end; display: flex; flex-direction: column; justify-content: flex-end; gap: 0.1rem;
+            height: calc(3.4rem + var(--lvl) * 1.4rem); padding: 0.55rem 0.65rem; border-radius: 8px 8px 4px 4px;
+            border: 1px solid var(--accent-dim); background: rgba(255, 107, 53, calc(0.04 + var(--lvl) * 0.045)); }}
+        .al-n {{ font-family: var(--font-mono); font-size: 0.7rem; font-weight: 600; color: #FFB08F; }}
+        .al-t {{ font-family: var(--font-display); font-size: 0.92rem; font-weight: 600; color: var(--text); line-height: 1.2; }}
+        .al-d {{ font-size: 0.76rem; line-height: 1.45; color: var(--muted); }}
+        .al-axis {{ display: flex; justify-content: space-between; gap: 1rem; margin-top: 0.9rem; padding-top: 0.55rem;
+            border-top: 2px solid; border-image: linear-gradient(90deg, var(--line-strong), var(--accent)) 1;
+            font-family: var(--font-mono); font-size: 0.68rem; letter-spacing: 0.04em; color: var(--muted); }}
+        /* Delivery pipeline */
+        .pp {{ display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 0.7rem 1.4rem; }}
+        .pp-step {{ position: relative; display: flex; flex-direction: column; gap: 0.15rem; padding: 0.75rem 0.85rem;
+            border: 1px solid var(--line); border-radius: 10px; background: var(--surface); }}
+        .pp-step:not(:nth-child(4n)):not(:last-child)::after {{ content: "→" / ""; position: absolute; right: -1.15rem; top: 50%;
+            transform: translateY(-50%); color: var(--accent); font-size: 0.95rem; line-height: 1; }}
+        .pp-n {{ font-family: var(--font-mono); font-size: 0.68rem; color: var(--muted); }}
+        .pp-t {{ font-family: var(--font-display); font-size: 0.93rem; font-weight: 600; color: var(--text); line-height: 1.3; }}
+        .pp-g {{ font-size: 0.78rem; line-height: 1.45; color: var(--muted); }}
+        .pp-step.is-gate {{ border-color: var(--accent); background: var(--accent-faint); }}
+        .pp-step.is-gate .pp-g {{ color: var(--text); font-weight: 600; }}
+        .pp-step.is-loop {{ border-style: dashed; border-color: var(--line-strong); }}
+        /* Crawl / walk / run */
+        .cwr {{ display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 1.4rem; counter-reset: cwr; }}
+        .cwr > li {{ position: relative; display: flex; flex-direction: column; gap: 0.4rem; padding: 1rem 1.05rem 1.1rem;
+            border: 1px solid var(--line); border-top: 3px solid var(--accent-dim); border-radius: 10px; background: var(--surface);
+            counter-increment: cwr; }}
+        .cwr > li:last-child {{ border-top-color: var(--accent); }}
+        .cwr > li:not(:last-child)::after {{ content: "→" / ""; position: absolute; right: -1.15rem; top: 1.25rem;
+            color: var(--accent); font-size: 0.95rem; line-height: 1; }}
+        .cwr-k {{ font-family: var(--font-mono); font-size: 0.7rem; font-weight: 600; letter-spacing: 0.14em; text-transform: uppercase; color: var(--accent); }}
+        .cwr-k::before {{ content: "0" counter(cwr) " · "; color: var(--muted); font-weight: 500; }}
+        .cwr-t {{ font-family: var(--font-display); font-size: 1.02rem; font-weight: 600; color: var(--text); line-height: 1.3; }}
+        .cwr-lvl {{ align-self: flex-start; font-family: var(--font-mono); font-size: 0.68rem; line-height: 1.4; color: var(--text);
+            background: var(--surface-2); border: 1px solid var(--line-strong); border-radius: 6px; padding: 0.2rem 0.45rem; }}
+        .cwr-d {{ list-style: none; padding-left: 0 !important; font-size: 0.8rem; line-height: 1.5; color: var(--muted); }}
+        .cwr-d li {{ position: relative; padding-left: 0.9rem; }}
+        .prose .cwr-d li + li {{ margin-top: 0.25rem; }}
+        .cwr-d li::before {{ content: "" / ""; position: absolute; left: 0; top: 0.62em; width: 4px; height: 4px; border-radius: 50%; background: var(--accent-dim); }}
+        /* Callouts */
+        .callout {{ border: 1px solid var(--line); border-left: 3px solid var(--accent); border-radius: 10px;
+            background: var(--surface); padding: 0.95rem 1.15rem 1rem; }}
+        .callout > * + * {{ margin-top: 0.55em; }}
+        .prose .callout-label {{ display: flex; align-items: center; gap: 0.45rem; font-family: var(--font-mono); font-size: 0.68rem;
+            font-weight: 600; letter-spacing: 0.12em; text-transform: uppercase; color: var(--accent); line-height: 1.4; }}
+        .callout-label::before {{ content: "★" / ""; font-size: 0.8rem; letter-spacing: 0; }}
+        .callout-retire {{ border-left-color: #F2837B; }}
+        .callout-retire .callout-label {{ color: #F2837B; }}
+        .callout-retire .callout-label::before {{ content: "✕" / ""; }}
+        .callout-instead {{ border-left-color: #6CCF9C; }}
+        .callout-instead .callout-label {{ color: #6CCF9C; }}
+        .callout-instead .callout-label::before {{ content: "→" / ""; }}
+        .callout-pair {{ display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 0.7rem; }}
+        .callout-pair > .callout {{ margin: 0; }}
+        /* Status chips (What's outdated, what's new) */
+        .chip {{ display: inline-block; font-family: var(--font-mono); font-size: 0.64rem; font-weight: 600; letter-spacing: 0.08em;
+            text-transform: uppercase; line-height: 1.5; padding: 0.05em 0.55em; border: 1px solid; border-radius: 999px; white-space: nowrap; }}
+        .chip-retire {{ color: #F2837B; background: rgba(242, 131, 123, 0.1); border-color: rgba(242, 131, 123, 0.4); }}
+        .chip-update {{ color: #EDC06D; background: rgba(237, 192, 109, 0.1); border-color: rgba(237, 192, 109, 0.4); }}
+        .chip-new {{ color: #6CCF9C; background: rgba(108, 207, 156, 0.1); border-color: rgba(108, 207, 156, 0.4); }}
+        .prose td .chip {{ display: block; width: max-content; margin-bottom: 0.35rem; }}
+        .prose th .chip {{ margin-left: 0.4rem; vertical-align: 0.12em; }}
+        .prose .chip-legend {{ display: flex; flex-wrap: wrap; gap: 0.45rem 1.2rem; font-size: 0.8rem; color: var(--muted); }}
+        .chip-legend .chip {{ margin-right: 0.3rem; }}
+        @media (prefers-reduced-motion: reduce) {{
+            .cs-grid a {{ transition: none; }}
+        }}
+        @media (max-width: 760px) {{
+            .cwr {{ grid-template-columns: minmax(0, 1fr); gap: 1.3rem; }}
+            .cwr > li:not(:last-child)::after {{ content: "↓" / ""; right: auto; left: 1.2rem; top: auto; bottom: -1.2rem; }}
+            .callout-pair {{ grid-template-columns: minmax(0, 1fr); }}
+        }}
+        @media (max-width: 640px) {{
+            .pb-arch-wide {{ display: none; }}
+            .pb-arch-tall {{ display: block; }}
+            .pb-fig-frame {{ padding: 0.6rem; }}
+            .cs-grid {{ grid-template-columns: repeat(2, minmax(0, 1fr)); }}
+            .pp {{ grid-template-columns: repeat(2, minmax(0, 1fr)); }}
+            .pp .pp-step:nth-child(even)::after {{ content: none; }}  /* arrows only between the two columns */
+            .al-axis {{ flex-direction: column; gap: 0.15rem; }}
+            .al-wrap {{ padding: 1rem; }}
+            .al {{ grid-template-columns: minmax(0, 1fr); grid-template-rows: none; gap: 0.7rem; }}
+            .al > li {{ display: flex; flex-direction: column; grid-row: auto; gap: 0.25rem; }}
+            .al-bar {{ align-self: flex-start; flex-direction: row; align-items: baseline; justify-content: flex-start; gap: 0.55rem; height: auto;
+                width: calc(40% + var(--lvl) * 12%); border-radius: 4px 8px 8px 4px; }}
+        }}
+        @media (max-width: 420px) {{
+            .cs-grid {{ grid-template-columns: minmax(0, 1fr); gap: 0.45rem; }}
+            .cs-grid a {{ display: grid; grid-template-columns: 2.1rem minmax(0, 1fr); align-items: baseline; row-gap: 0.15rem; padding: 0.65rem 0.85rem; }}
+            .cs-d {{ grid-column: 2; }}
+        }}
         @media (max-width: 960px) {{
             .pb-layout {{ grid-template-columns: minmax(0, 1fr); gap: 1.6rem; padding: 2rem 1.25rem 4rem; }}
             .pb-toc {{ position: static; max-height: none; border-left: none; padding-left: 0;

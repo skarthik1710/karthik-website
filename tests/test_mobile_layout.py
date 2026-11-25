@@ -9,6 +9,7 @@ dependent assertions are skipped rather than silently passing.
 import functools
 import http.server
 import os
+import re
 import threading
 import unittest
 
@@ -88,8 +89,25 @@ class MobileLayout(unittest.TestCase):
                     .map(a => a.getAttribute('href').slice(1)).filter(id => !document.getElementById(id))""")
                 self.assertEqual(missing, [], "citation links without a matching source")
 
+    def test_projects_has_no_horizontal_overflow_and_playbook_links_resolve(self):
+        with open(os.path.join(PUBLIC, "playbook.html"), encoding="utf-8") as f:
+            playbook_ids = set(re.findall(r'id="([^"]+)"', f.read()))
+        for width in (360, 390, 768):
+            with self.subTest(width=width):
+                pg = self.page(width, path="/projects.html")
+                self.assertFalse(pg.evaluate("document.documentElement.scrollWidth > innerWidth"),
+                                 "projects.html scrolls sideways (wide diagrams must scroll inside their own frame)")
+                anchors = pg.evaluate("""() => [...document.querySelectorAll('a[href^="/playbook.html#"]')]
+                    .map(a => a.getAttribute('href').split('#')[1])""")
+                self.assertGreater(len(anchors), 0, "no 'How this is built' links to the playbook")
+                missing = sorted({a for a in anchors if a not in playbook_ids})
+                self.assertEqual(missing, [], "playbook links without a matching id in playbook.html")
+                local = pg.evaluate("""() => [...document.querySelectorAll('a[href^="#"]')]
+                    .map(a => a.getAttribute('href').slice(1)).filter(id => id && !document.getElementById(id))""")
+                self.assertEqual(local, [], "in-page links without a matching section")
+
     def test_nav_fits_on_one_line_on_phones(self):
-        for path in ("/index.html", "/experience.html", "/newsletter.html", "/playbook.html"):
+        for path in ("/index.html", "/experience.html", "/newsletter.html", "/playbook.html", "/projects.html"):
             for width in (360, 390):
                 with self.subTest(path=path, width=width):
                     pg = self.page(width, path=path)

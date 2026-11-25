@@ -361,7 +361,7 @@ class ChatWidget(unittest.TestCase):
         self.assertEqual(page.evaluate("document.activeElement.id"), "chat-fab")
 
     def test_all_three_pages_load_widget(self):
-        for path in ["/index.html", "/experience.html", "/newsletter.html", "/playbook.html"]:
+        for path in ["/index.html", "/experience.html", "/newsletter.html", "/playbook.html", "/projects.html"]:
             with self.subTest(path=path):
                 page = self.new_page([(200, {"reply": "Answer for " + path + ".", "followups": FOLLOWUPS})])
                 self.open_chat(page, path)
