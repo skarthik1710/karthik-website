@@ -16,12 +16,12 @@
   "summary": "AI and automation practice leader, 19+ years in enterprise IT (11+ at Atos, a global systems integrator). Leads the North America AI and automation practice and its engineering team, supplies the AI business case in enterprise bids, and turns agentic use-case demand into pilot plans, roadmaps and offerings. Led Atos's pre-launch evaluation of Microsoft Copilot for Entra; led programs end to end and was a major contributor to deal wins from $200K to $20M.",
   "scope": [
     {
-      "group": "Teams",
-      "items": "Lead an engineering team of application developers, software engineers, cloud and design talent building governed AI agents; earlier led onshore/offshore automation teams."
+      "group": "Workforce AI enablement",
+      "items": "Helped define the organization's Microsoft Copilot training: authored a 12-week Copilot Enablement Program (build, action, sustain) and proposed a four-layer AI training model (foundation, micro-labs, role bootcamps, governed sandbox) which a VP sponsored into a role-based bootcamp proposal and a learn-build-deploy-scale capability model."
     },
     {
-      "group": "Budgets",
-      "items": "Led programs from $200K upward, owning plans, budgets, vendors and stakeholder communications end to end; major revenue contributor on a $20M program."
+      "group": "AI portfolio",
+      "items": "Consolidated 150+ North America and Global AI use-case submissions into 20 agent families, exposing teams building the same agents independently and setting a feasible first wave."
     },
     {
       "group": "Clients",
@@ -50,8 +50,8 @@
       "bullets": [
         "Reporting to the VP, Head of Technology, North America, lead the North America AI and automation practice: set priorities, delivery plans and the governed build framework (patterns, standards, skills); own budget, resourcing, hiring input and performance management.",
         "Supply the AI side of multiple proposals and bids, including the agentic AI use cases and potential-savings analysis that contributed to a deal win; AI business cases with costed investment options, executive proposals for governed agentic pilots, SOW reviews, architecture at client security reviews, and a co-designed agentic architecture on AWS Bedrock AgentCore.",
-        "Run agentic use-case analysis with customers and internal teams, consolidating 150+ AI use-case submissions into 20 agent families and separating real agent candidates from simple workflows to shape pilots, platform choice and roadmaps.",
-        "Originated the role-based AI bootcamp proposal and a learn-build-deploy-scale capability model, taken forward with VP sponsorship; recommended go-to-market packaging of the Workspace agents; authored a 12-week Copilot Enablement Playbook built on peer champions, leaders modeling usage and measured adoption.",
+        "Run agentic use-case analysis with customers and internal teams, separating real agent candidates from simple workflows to shape pilot plans, platform choice and roadmaps.",
+        "Recommended go-to-market packaging of the Workspace agents as client services, combining capabilities into offerings rather than selling single agents.",
         "Still hands-on: built a multi-agent AI platform on Google Cloud whose agents are read-only, human-approved or bound to low-risk rules, with role-based access, audit logs, automated migration off retired models and cost controls; proposed an accuracy-gated autonomy ladder for agents."
       ]
     },
