@@ -1,10 +1,8 @@
 """Mobile layout regressions for the public pages.
 
 Run:  python3 -m unittest tests.test_mobile_layout -v
-Needs Playwright + Chromium (skips otherwise). GSAP is allowed from cdnjs so
-the homepage behaves like a real phone (the Act III bug only shows when GSAP
-loads but its >=900px animation is off); if cdnjs is unreachable the GSAP-
-dependent assertions are skipped rather than silently passing.
+Needs Playwright + Chromium (skips otherwise). Only same-origin requests and
+cdnjs are allowed, so pages are tested without third-party fonts or analytics.
 """
 import functools
 import http.server
@@ -55,30 +53,40 @@ class MobileLayout(unittest.TestCase):
         pg.wait_for_timeout(500)
         return pg
 
-    def beats(self, pg):
-        return pg.evaluate("""() => [...document.querySelectorAll('#turn-stage .beat')].map(b => {
-            const r = b.getBoundingClientRect();
-            return { top: r.top + scrollY, bottom: r.bottom + scrollY, pos: getComputedStyle(b).position }; })""")
-
-    def test_act3_beats_do_not_overlap_below_900px(self):
-        for width in (360, 390, 820, 899):
+    def test_home_has_no_horizontal_overflow(self):
+        for width in (360, 390, 820, 1280):
             with self.subTest(width=width):
                 pg = self.page(width)
-                if not pg.evaluate("typeof gsap !== 'undefined'"):
-                    self.skipTest("GSAP (cdnjs) unreachable — cannot reproduce the real-phone state")
-                bs = self.beats(pg)
-                self.assertEqual(len(bs), 4)
-                for a, b in zip(bs, bs[1:]):
-                    self.assertLessEqual(a["bottom"], b["top"] + 0.5, "Act III beats overlap")
+                over = pg.evaluate("document.documentElement.scrollWidth - document.documentElement.clientWidth")
+                self.assertLessEqual(over, 0, "homepage scrolls sideways at %dpx" % width)
 
-    def test_act3_desktop_animation_unchanged(self):
+    def test_home_chapter_rail_switches_panels(self):
+        for width in (390, 1280):
+            with self.subTest(width=width):
+                pg = self.page(width, 900)
+                visible = lambda: pg.evaluate("[...document.querySelectorAll('.chapter')].filter(c => !c.hidden).map(c => c.id)")
+                self.assertEqual(visible(), ["p-2007"])
+                pg.click("#t-2024")
+                self.assertEqual(visible(), ["p-2024"])
+                self.assertEqual(pg.get_attribute("#t-2024", "aria-selected"), "true")
+                pg.keyboard.press("ArrowRight")
+                self.assertEqual(visible(), ["p-2025"])
+                pg.keyboard.press("End")
+                self.assertEqual(visible(), ["p-now"])
+
+    def test_home_tiles_expand_and_video_modal_opens(self):
         pg = self.page(1280, 900)
-        if not pg.evaluate("typeof gsap !== 'undefined'"):
-            self.skipTest("GSAP (cdnjs) unreachable")
-        self.assertTrue(all(b["pos"] == "absolute" for b in self.beats(pg)),
-                        "desktop beats should stay absolutely positioned for the pinned animation")
-        self.assertTrue(pg.evaluate("!!document.querySelector('.pin-spacer #turn-stage')"),
-                        "desktop Act III should still be pinned by ScrollTrigger")
+        head = pg.locator(".tile-head").first
+        self.assertEqual(head.get_attribute("aria-expanded"), "false")
+        head.click()
+        self.assertEqual(head.get_attribute("aria-expanded"), "true")
+        pg.wait_for_timeout(600)
+        self.assertGreater(pg.locator("#lead-1").bounding_box()["height"], 40, "tile body should open")
+        pg.click(".btn-play")
+        self.assertTrue(pg.evaluate("document.querySelector('.fx-modal').classList.contains('fx-open')"))
+        self.assertEqual(pg.get_attribute(".fx-modal video", "src"), "/media/story.mp4")
+        pg.keyboard.press("Escape")
+        self.assertFalse(pg.evaluate("document.querySelector('.fx-modal').classList.contains('fx-open')"))
 
     def test_playbook_has_no_horizontal_overflow(self):
         for width in (360, 390, 768):

@@ -1,0 +1,42 @@
+{
+  "_comment": "Voice-over for video/story.html. 'start' = seconds into the video. Each line must fit before the next scene. Facts must match the site; don't add new claims.",
+  "voice": "Charon",
+  "style": "Read this like a confident documentary narrator: warm, clear and low, at a steady natural pace with only brief pauses between sentences.",
+  "lines": [
+    {
+      "id": "01",
+      "start": 0.5,
+      "text": "Two thousand seven. An AS/400, millions moving overnight, and books that had to balance by morning."
+    },
+    {
+      "id": "02",
+      "start": 8.8,
+      "text": "Lesson one: trust is earned in production."
+    },
+    {
+      "id": "03",
+      "start": 13.6,
+      "text": "Then fourteen years of shipping things that had to work. Fifty-plus automations. AIOps across forty thousand devices. Then grading Microsoft's Copilot for Entra before the world used it."
+    },
+    {
+      "id": "04",
+      "start": 30.6,
+      "text": "Then the industry turned. Enterprises stopped asking whether AI works, and started asking who can make it work."
+    },
+    {
+      "id": "05",
+      "start": 40.4,
+      "text": "Today I lead the practice: the AI side of the bid, a hundred and fifty use cases shaped into twenty agent families, and a team building on one governed framework."
+    },
+    {
+      "id": "06",
+      "start": 53.0,
+      "text": "Every agent runs on a layered architecture, with a control plane across all of it. Read-only, or human-approved. Every time."
+    },
+    {
+      "id": "07",
+      "start": 66.2,
+      "text": "From slideware to shipped. I'm Karthikeyan Selvam."
+    }
+  ]
+}

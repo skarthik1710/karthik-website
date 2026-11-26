@@ -16,6 +16,9 @@
     <link rel="preconnect" href="https://fonts.googleapis.com"/>
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
     <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet"/>
+    <script>if ('showModal' in document.createElement('dialog')) document.documentElement.classList.add('js');</script>
+    <link rel="stylesheet" href="/fx.css"/>
+    <script src="/fx.js" defer></script>
     <style>
         /* ── DESIGN TOKENS (Ember) ── */
         :root {
@@ -416,20 +419,6 @@
         .read-card li { font-size: 0.84rem; color: var(--muted); line-height: 1.6; padding-left: 1rem; position: relative; }
         .read-card li::before { content: ''; position: absolute; left: 0; top: 0.62em; width: 5px; height: 5px; border-radius: 1.5px; background: var(--accent); }
 
-        /* sticky project index */
-        .proj-index { position: sticky; top: 64px; z-index: 95; background: rgba(20, 17, 16, 0.92);
-            backdrop-filter: blur(14px); border-bottom: 1px solid var(--line); }
-        .pi-inner { max-width: var(--w); margin: 0 auto; padding: 0 2rem; display: flex; align-items: center; gap: 1.1rem; min-width: 0; }
-        .pi-k { font-family: var(--font-mono); font-size: 0.68rem; letter-spacing: 0.12em; text-transform: uppercase; color: var(--dim); flex-shrink: 0; }
-        .proj-index ol { position: relative; list-style: none; display: flex; gap: 0.4rem; overflow-x: auto; padding: 0.6rem 0; scrollbar-width: none; min-width: 0; }
-        .proj-index ol::-webkit-scrollbar { display: none; }
-        .proj-index a { display: inline-flex; align-items: center; gap: 0.45rem; white-space: nowrap; text-decoration: none;
-            font-size: 0.8rem; color: var(--muted); padding: 0.34rem 0.75rem; border-radius: 999px; border: 1px solid transparent;
-            transition: color 0.15s, border-color 0.15s, background 0.15s; }
-        .proj-index a:hover { color: var(--text); border-color: var(--line-strong); }
-        .proj-index a.on { color: var(--text); border-color: var(--accent-dim); background: var(--accent-faint); }
-        .pi-n { font-family: var(--font-mono); font-size: 0.68rem; color: var(--accent); }
-
         /* project sections */
         .proj-main { padding-top: 1rem; padding-bottom: 4rem; }
         .proj { padding: 4.2rem 0 3rem; border-bottom: 1px solid var(--line); scroll-margin-top: 112px; }
@@ -578,8 +567,6 @@
             border-radius: 999px; padding: 0.24rem 0.7rem; transition: all 0.15s; }
         .pb-chip b { font-family: var(--font-mono); color: var(--accent); font-weight: 500; font-size: 0.7rem; }
         .pb-chip:hover, .pb-chip:focus-visible { border-color: var(--accent); color: var(--text); background: var(--accent-faint); }
-        .to-index { display: inline-block; margin-top: 2rem; font-family: var(--font-mono); font-size: 0.72rem; color: var(--muted); text-decoration: none; }
-        .to-index:hover { color: var(--accent); }
         .pb-cta { margin-top: 3rem; padding: 1.6rem 1.8rem; border: 1px solid var(--line); border-radius: 12px; background: var(--surface); }
         .pb-cta h2 { font-family: var(--font-display); font-size: 1.2rem; margin-bottom: 0.5rem; }
         .pb-cta p { color: var(--muted); font-size: 0.95rem; line-height: 1.7; }
@@ -614,13 +601,193 @@
         }
         @media (max-width: 600px) {
             .wrap { padding: 0 1.25rem; }
-            .pi-inner { padding: 0 1.25rem; gap: 0.6rem; }
-            .pi-k { display: none; }
-            .proj-index ol { -webkit-mask-image: linear-gradient(90deg, #000 85%, transparent); mask-image: linear-gradient(90deg, #000 85%, transparent); }
             .proj { padding: 3rem 0 2.4rem; }
             .arch-stack { display: none; }
             .comp-grid { grid-template-columns: minmax(0, 1fr); }
             .pwv-card, .hitl, .built-on { padding: 1.1rem 1.15rem; }
+        }
+
+        /* ══ PROGRESSIVE DISCLOSURE: hero, card grid, project dialog ══ */
+        .page-hero { position: relative; overflow: hidden; isolation: isolate; }
+        .page-hero > .wrap { position: relative; z-index: 1; }
+        canvas.fx-embers { position: absolute; inset: 0; width: 100%; height: 100%; z-index: 0; pointer-events: none; }
+        .page-hero::after { content: ''; position: absolute; inset: auto 0 0 0; height: 1px; z-index: 1;
+            background: linear-gradient(90deg, transparent, rgba(255,107,53,0.55), transparent); }
+        .ph-side { display: grid; gap: 1rem; }
+        .ph-stats { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 0.7rem; }
+        .ph-stat { background: rgba(26, 22, 20, 0.72); backdrop-filter: blur(6px); border: 1px solid var(--line); border-radius: 12px; padding: 1rem 1rem 0.9rem; }
+        .ph-stat b { display: block; font-family: var(--font-display); font-size: 2rem; font-weight: 700; letter-spacing: -0.03em; line-height: 1.05;
+            background: linear-gradient(180deg, #FFF3EA, var(--accent)); -webkit-background-clip: text; background-clip: text; color: transparent; }
+        .ph-stat span { display: block; margin-top: 0.35rem; line-height: 1.45; font-family: var(--font-mono); font-size: 0.64rem; letter-spacing: 0.1em; text-transform: uppercase; color: var(--dim); }
+        details.read-card { background: rgba(26, 22, 20, 0.72); backdrop-filter: blur(6px); }
+        details.read-card summary { list-style: none; cursor: pointer; display: flex; align-items: center; justify-content: space-between; gap: 1rem; }
+        details.read-card summary::-webkit-details-marker { display: none; }
+        details.read-card summary::after { content: '+'; font-family: var(--font-mono); color: var(--accent); font-size: 1.05rem; line-height: 1; transition: transform 0.2s; }
+        details.read-card[open] summary::after { transform: rotate(45deg); }
+        details.read-card summary h2 { margin-bottom: 0; }
+        details.read-card[open] summary { margin-bottom: 0.9rem; }
+        details.read-card summary:focus-visible { outline: 2px solid var(--accent); outline-offset: 4px; border-radius: 4px; }
+
+        .proj-main { padding-top: 3.4rem; }
+        .pgrid-head { margin-bottom: 1.6rem; }
+        .pgrid-head h2 { font-family: var(--font-display); font-size: clamp(1.35rem, 2.4vw, 1.75rem); font-weight: 600; letter-spacing: -0.02em; }
+        .pgrid { list-style: none; display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 320px), 1fr)); gap: 1rem; }
+        .pgrid > li { display: flex; min-width: 0; }
+        .pcard { position: relative; flex: 1; display: flex; flex-direction: column; min-width: 0; text-decoration: none; color: var(--text);
+            border: 1px solid var(--line); border-radius: 14px; padding: 1.25rem 1.3rem 1.1rem; overflow: hidden;
+            background: radial-gradient(380px circle at var(--mx, -500px) var(--my, -500px), rgba(255,107,53,0.10), transparent 45%), var(--surface);
+            transition: border-color 0.25s, transform 0.25s cubic-bezier(.2,.8,.2,1), box-shadow 0.25s; }
+        .pcard::before { content: ''; position: absolute; inset: 0 0 auto 0; height: 1px;
+            background: linear-gradient(90deg, transparent, rgba(255,107,53,0.7), transparent); opacity: 0; transition: opacity 0.25s; }
+        .pcard:hover, .pcard:focus-visible { border-color: var(--accent-dim); transform: translateY(-3px); outline: none;
+            box-shadow: 0 0 0 1px rgba(255,107,53,0.12), 0 22px 50px -24px rgba(255,107,53,0.45); }
+        .pcard:hover::before, .pcard:focus-visible::before { opacity: 1; }
+        .pcard:focus-visible { border-color: var(--accent); }
+        .pc-top { display: flex; align-items: center; flex-wrap: wrap; gap: 0.45rem; margin-bottom: 0.85rem; }
+        .pc-n { font-family: var(--font-mono); font-size: 0.78rem; color: var(--accent); margin-right: 0.25rem; }
+        .pc-chips { display: contents; }
+        .pc-chips .proj-chip { font-size: 0.58rem; padding: 0.18rem 0.45rem; }
+        .pc-name { font-family: var(--font-display); font-size: 1.16rem; font-weight: 600; letter-spacing: -0.015em; line-height: 1.3; margin-bottom: 0.45rem; }
+        .pc-tag { display: block; color: var(--muted); font-size: 0.86rem; line-height: 1.6; margin-bottom: 1.1rem; }
+        .pc-glyph { display: grid; gap: 4px; margin: auto 0 1rem; padding-top: 0.9rem; border-top: 1px dashed var(--line-strong); }
+        .pc-glyph > span { display: grid; grid-template-columns: 42% minmax(0, 1fr); align-items: center; gap: 0.6rem; height: 13px; }
+        .pc-glyph i { display: block; height: 6px; width: var(--w); border-radius: 3px; transform-origin: left center;
+            background: linear-gradient(90deg, rgba(255,107,53,0.75), rgba(255,107,53,0.14)); transition: transform 0.4s cubic-bezier(.2,.8,.2,1), box-shadow 0.3s; }
+        .pc-glyph em { font-style: normal; font-family: var(--font-mono); font-size: 0.56rem; letter-spacing: 0.1em; text-transform: uppercase;
+            color: var(--dim); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; transition: color 0.25s; }
+        .pcard:hover .pc-glyph i, .pcard:focus-visible .pc-glyph i { box-shadow: 0 0 10px rgba(255,107,53,0.45); animation: glyphPulse 0.6s cubic-bezier(.2,.8,.2,1) both; }
+        .pcard:hover .pc-glyph em, .pcard:focus-visible .pc-glyph em { color: var(--muted); }
+        .pc-glyph > span:nth-child(2) i { animation-delay: 0.04s !important; } .pc-glyph > span:nth-child(3) i { animation-delay: 0.08s !important; }
+        .pc-glyph > span:nth-child(4) i { animation-delay: 0.12s !important; } .pc-glyph > span:nth-child(5) i { animation-delay: 0.16s !important; }
+        .pc-glyph > span:nth-child(6) i { animation-delay: 0.2s !important; } .pc-glyph > span:nth-child(n+7) i { animation-delay: 0.24s !important; }
+        @keyframes glyphPulse { from { transform: scaleX(0.35); } to { transform: scaleX(1); } }
+        .pc-foot { display: flex; justify-content: space-between; align-items: center; gap: 1rem; font-family: var(--font-mono); font-size: 0.66rem; color: var(--dim); letter-spacing: 0.04em; }
+        .pc-go { color: var(--accent); white-space: nowrap; transition: transform 0.25s; }
+        .pcard:hover .pc-go, .pcard:focus-visible .pc-go { transform: translateX(3px); }
+
+        /* dialog (a right-side drawer on desktop, full screen on phones) */
+        html.dlg-open { overflow: hidden; }
+        .pdlg { padding: 0; border: 0; margin: 0 0 0 auto; width: min(1100px, 100vw); max-width: 100vw; height: 100vh; height: 100dvh; max-height: none;
+            background: var(--bg); color: var(--text); border-left: 1px solid var(--line-strong); box-shadow: -40px 0 90px rgba(0,0,0,0.6); overflow: hidden; }
+        .pdlg[open] { animation: dlgIn 0.42s cubic-bezier(.2,.8,.2,1); }
+        .pdlg.closing { animation: dlgOut 0.24s ease-in forwards; }
+        .pdlg::backdrop { background: rgba(10, 8, 7, 0.62); backdrop-filter: blur(6px); }
+        .pdlg[open]::backdrop { animation: fadeIn 0.3s ease; }
+        @keyframes dlgIn { from { transform: translateX(40px); opacity: 0; } to { transform: none; opacity: 1; } }
+        @keyframes dlgOut { to { transform: translateX(40px); opacity: 0; } }
+        @keyframes fadeIn { from { opacity: 0; } }
+        .pdlg-inner { height: 100%; display: flex; flex-direction: column; }
+        .pdlg-bar { position: relative; flex: none; display: flex; align-items: center; gap: 0.5rem; padding: 0.7rem 1.4rem; border-bottom: 1px solid var(--line); background: rgba(26, 22, 20, 0.9); }
+        .pdlg-bar::after { content: ''; position: absolute; left: 0; right: 0; bottom: -1px; height: 1px;
+            background: linear-gradient(90deg, transparent, var(--accent), transparent); background-size: 50% 100%; background-repeat: no-repeat;
+            animation: scan 3.2s linear infinite; }
+        @keyframes scan { from { background-position: -50% 0; } to { background-position: 150% 0; } }
+        .pdlg-nav, .pdlg-close { font-family: var(--font-mono); font-size: 0.78rem; color: var(--muted); background: transparent; border: 1px solid var(--line-strong);
+            border-radius: 8px; height: 34px; min-width: 34px; padding: 0 0.7rem; cursor: pointer; transition: color 0.15s, border-color 0.15s, background 0.15s; }
+        .pdlg-nav:hover:not(:disabled), .pdlg-close:hover, .pdlg-nav:focus-visible, .pdlg-close:focus-visible { color: var(--text); border-color: var(--accent); background: var(--accent-faint); outline: none; }
+        .pdlg-nav:disabled { opacity: 0.35; cursor: default; }
+        .pdlg-pos { font-family: var(--font-mono); font-size: 0.74rem; color: var(--accent); min-width: 4.4em; text-align: center; }
+        .pdlg-title { flex: 1; min-width: 0; font-family: var(--font-display); font-size: 0.9rem; font-weight: 600; color: var(--muted);
+            white-space: nowrap; overflow: hidden; text-overflow: ellipsis; padding-left: 0.4rem; }
+        .pdlg-close { margin-left: auto; }
+        .pdlg-body { flex: 1; overflow-y: auto; overscroll-behavior: contain; padding: 0 2.4rem 3rem; }
+        .pdlg .proj { padding: 2.2rem 0 1rem; border-bottom: 0; }
+        .pdlg .proj-title:focus { outline: none; }
+        .pdlg .pwv { margin: 1.6rem 0 1.6rem; }
+        .pdlg .proj-head + .built-on { margin-top: 1.6rem; }
+        .comp-card .pb-link { display: grid; grid-template-columns: auto 1fr; justify-items: start; column-gap: 0.35rem; }
+        .comp-card .pb-link .pb-sec { grid-column: 1 / -1; }
+        .pdlg .arch { margin-bottom: 2rem; }
+
+        /* architecture at a glance */
+        .hl-arch { position: relative; border: 1px solid var(--line); border-radius: 14px; padding: 1.1rem 1.2rem 1.3rem; margin-bottom: 1.8rem;
+            background: linear-gradient(180deg, rgba(255,107,53,0.045), transparent 140px), var(--surface); overflow: hidden; }
+        .hl-head { display: flex; align-items: center; flex-wrap: wrap; gap: 0.6rem; font-family: var(--font-mono); font-size: 0.7rem;
+            letter-spacing: 0.12em; text-transform: uppercase; color: var(--accent); }
+        .hl-stack { color: var(--dim); letter-spacing: 0.04em; text-transform: none; }
+        .hl-all { margin-left: auto; font-family: var(--font-mono); font-size: 0.68rem; letter-spacing: 0.04em; color: var(--muted); background: transparent;
+            border: 1px solid var(--line-strong); border-radius: 999px; padding: 0.35rem 0.8rem; cursor: pointer; transition: all 0.15s; }
+        .hl-all:hover, .hl-all:focus-visible { color: var(--text); border-color: var(--accent); outline: none; }
+        .hl-hint { font-size: 0.84rem; color: var(--dim); margin: 0.45rem 0 1rem; }
+        html:not(.js) .hl-all, html:not(.js) .hl-hint, html:not(.js) .dx, html:not(.js) .band-chev { display: none; }
+        .bands { list-style: none; display: grid; gap: 12px; }
+        .band { position: relative; }
+        .band + .band::before { content: ''; position: absolute; left: 1.95rem; top: -12px; width: 1px; height: 12px;
+            background: linear-gradient(var(--accent), rgba(255,107,53,0.15)); }
+        .band-btn { width: 100%; display: grid; grid-template-columns: 2rem minmax(0, 13rem) minmax(0, 1fr) auto 14px; align-items: center; gap: 0.9rem;
+            text-align: left; font: inherit; color: var(--text); cursor: pointer; background: var(--surface-2); border: 1px solid var(--line-strong);
+            border-radius: 10px; padding: 0.78rem 1rem; position: relative; overflow: hidden;
+            transition: border-color 0.2s, box-shadow 0.2s, background 0.2s, border-radius 0.2s; }
+        .band-btn::after { content: ''; position: absolute; inset: 0; pointer-events: none; transform: translateX(-100%);
+            background: linear-gradient(100deg, transparent 30%, rgba(255,107,53,0.10) 50%, transparent 70%); }
+        .band-btn:hover::after, .band-btn:focus-visible::after { transform: translateX(100%); transition: transform 0.8s ease; }
+        .band-btn:hover, .band-btn:focus-visible { border-color: var(--accent-dim); outline: none;
+            box-shadow: 0 0 0 1px rgba(255,107,53,0.16), 0 0 26px -8px rgba(255,107,53,0.55); }
+        .band-btn:focus-visible { border-color: var(--accent); }
+        .band.open .band-btn { border-color: var(--accent); background: #241D19; border-radius: 10px 10px 0 0; }
+        .band-n { font-family: var(--font-mono); font-size: 0.74rem; color: var(--accent); }
+        .band-name { font-family: var(--font-display); font-weight: 600; font-size: 0.95rem; letter-spacing: -0.005em; line-height: 1.35; }
+        .band-name .cl-sub { display: block; font-family: var(--font-body); font-weight: 400; font-size: 0.74rem; color: var(--dim); }
+        .band-comps { font-size: 0.8rem; color: var(--muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .band-count { font-family: var(--font-mono); font-size: 0.68rem; color: var(--text); border: 1px solid var(--accent-dim); background: var(--accent-faint);
+            border-radius: 999px; min-width: 1.8rem; height: 1.45rem; display: inline-flex; align-items: center; justify-content: center; padding: 0 0.45rem; }
+        .band-chev { width: 8px; height: 8px; border-right: 1.6px solid var(--muted); border-bottom: 1.6px solid var(--muted); transform: rotate(45deg) translate(-2px, -2px); transition: transform 0.25s; }
+        .band.open .band-chev { transform: rotate(-135deg) translate(-2px, -2px); border-color: var(--accent); }
+        .band-body { border: 1px solid var(--accent); border-top: 0; border-radius: 0 0 10px 10px; padding: 1rem; background: rgba(255,107,53,0.025); }
+        html:not(.js) .band-body { border-color: var(--line-strong); }
+        .band-body:not([hidden]) { animation: bodyIn 0.35s cubic-bezier(.2,.8,.2,1); }
+        .band-body .comp-card { animation: compIn 0.4s cubic-bezier(.2,.8,.2,1) both; }
+        .band-body .comp-card:nth-child(2) { animation-delay: 0.05s; } .band-body .comp-card:nth-child(3) { animation-delay: 0.1s; }
+        .band-body .comp-card:nth-child(4) { animation-delay: 0.15s; } .band-body .comp-card:nth-child(n+5) { animation-delay: 0.2s; }
+        @keyframes bodyIn { from { opacity: 0; transform: translateY(-6px); } }
+        @keyframes compIn { from { opacity: 0; transform: translateY(8px); } }
+        article.enter .band { animation: bandIn 0.55s cubic-bezier(.2,.8,.2,1) both; animation-delay: calc(var(--i) * 70ms + 140ms); }
+        @keyframes bandIn { from { opacity: 0; transform: translateY(12px) scale(0.985); filter: blur(4px); } to { opacity: 1; transform: none; filter: none; } }
+
+        /* go deeper */
+        .dx { margin-bottom: 1.4rem; }
+        .dx-k { font-family: var(--font-mono); font-size: 0.68rem; letter-spacing: 0.12em; text-transform: uppercase; color: var(--dim); margin-bottom: 0.6rem; }
+        .dx-btns { display: flex; flex-wrap: wrap; gap: 0.5rem; }
+        .dx-btn { font-family: var(--font-mono); font-size: 0.76rem; letter-spacing: 0.02em; color: var(--muted); background: transparent; cursor: pointer;
+            border: 1px solid var(--line-strong); border-radius: 999px; padding: 0.55rem 1.05rem; transition: all 0.2s; }
+        .dx-btn::after { content: ' +'; color: var(--accent); }
+        .dx-btn:hover, .dx-btn:focus-visible { color: var(--text); border-color: var(--accent); outline: none; box-shadow: 0 0 18px -6px rgba(255,107,53,0.6); }
+        .dx-btn[aria-expanded="true"] { background: var(--accent); border-color: var(--accent); color: #210D02; box-shadow: 0 0 24px -4px rgba(255,107,53,0.65); }
+        .dx-btn[aria-expanded="true"]::after { content: ' −'; color: #210D02; }
+        .dx-panel { margin-bottom: 1.6rem; }
+        .dx-panel:not([hidden]) { animation: bodyIn 0.4s cubic-bezier(.2,.8,.2,1); }
+        .dx-panel > .block:last-child, .dx-panel > .hitl { margin-bottom: 0; }
+        .dx-panel .block-title { margin-top: 0; }
+
+        /* no <dialog> / no JS: show every project inline, as before */
+        html:not(.js) .pdlg { display: block; position: static; width: auto; height: auto; max-width: var(--w); margin: 0 auto; border: 0; box-shadow: none; padding: 0 2rem; }
+        html:not(.js) .pdlg-bar { display: none; }
+        html:not(.js) .pdlg-body { overflow: visible; padding: 0; }
+        html:not(.js) .pdlg .proj { border-top: 1px solid var(--line); padding: 3.2rem 0 2rem; }
+
+        @media (max-width: 960px) { .ph-side { max-width: 560px; } }
+        @media (max-width: 720px) {
+            .band-btn { grid-template-columns: 1.7rem minmax(0, 1fr) auto 14px; gap: 0.25rem 0.7rem; padding: 0.75rem 0.85rem; }
+            .band-comps { grid-column: 2 / -1; grid-row: 2; white-space: normal; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; }
+            .band + .band::before { left: 1.7rem; }
+            .pdlg-body { padding: 0 1.25rem 2.4rem; }
+            .pdlg-bar { padding: 0.6rem 0.9rem; }
+            .pdlg-title { display: none; }
+            .pdlg { border-left: 0; }
+            .hl-arch { padding: 1rem 0.85rem 1.1rem; }
+            .hl-all { margin-left: 0; }
+            .band-body { padding: 0.8rem 0.7rem; }
+            .ph-stat b { font-size: 1.6rem; }
+            .ph-stat { padding: 0.8rem 0.75rem; }
+        }
+        @media (prefers-reduced-motion: reduce) {
+            .pcard, .pc-glyph i, .pc-go, .band-btn, .band-chev { transition: none; }
+            .pcard:hover, .pcard:focus-visible { transform: none; }
+            .pcard:hover .pc-glyph i, .pcard:focus-visible .pc-glyph i { animation: none; }
+            .pdlg[open], .pdlg.closing, .pdlg[open]::backdrop, article.enter .band, .band-body:not([hidden]), .band-body .comp-card,
+            .dx-panel:not([hidden]) { animation: none; }
+            .pdlg-bar::after { animation: none; background-position: 50% 0; }
+            .band-btn::after { display: none; }
         }
 
     </style>
@@ -644,18 +811,21 @@
 
 <!-- ── PAGE HERO ── -->
 <header class="page-hero">
+    <canvas class="fx-embers" aria-hidden="true"></canvas>
     <div class="wrap hero-split">
         <div>
             <div class="kicker">Projects · Architecture in detail</div>
             <h1>How my AI projects are <span class="accent">built</span>, layer by layer</h1>
-            <p>The AI projects I've built, co-built or led onto a governed platform, strongest first: governed agent platforms, the agents that run on them, and how earlier work was moved onto them. For each one: my role, the problem it solves, a layered architecture
-            diagram, the numbered flow through it, every component and control, and where people stay in charge.</p>
-            <p>Each part that follows a pattern from my <a class="inline-link" href="/playbook.html">Enterprise Agent Playbook</a>
-            has a <b>How to build this →</b> link to the section that explains it.</p>
+            <p>The AI projects I've built, co-built or led onto a governed platform, strongest first: governed agent platforms, the agents that run on them,
+            and how earlier work was moved onto them. Open any project to go from the problem it solves
+            to its layers, components, numbered flow and controls; each part that follows a pattern from my
+            <a class="inline-link" href="/playbook.html">Enterprise Agent Playbook</a> has a <b>How to build this →</b> link to the section that explains it.</p>
         </div>
-        <aside class="read-card" aria-labelledby="read-title">
-            <h2 id="read-title">How to read the diagrams</h2>
-            <svg class="legend-svg" viewBox="0 0 420 150" role="img" aria-label="Legend: a layer band holds component boxes; an orange-outlined box links to its playbook section; a numbered arrow is a step in the flow.">
+        <aside class="ph-side">
+            <div class="ph-stats"><!--PROJECT_STATS--></div>
+            <details class="read-card">
+                <summary><h2 id="read-title">How to read the diagrams</h2></summary>
+                <svg class="legend-svg" viewBox="0 0 420 150" role="img" aria-label="Legend: a layer band holds component boxes; an orange-outlined box links to its playbook section; a numbered arrow is a step in the flow.">
 <rect class="dg-band" x="6" y="6" width="408" height="138" rx="12"/>
 <text class="dg-layer" x="20" y="27"><tspan class="dg-layer-n">02</tspan>  LAYER</text>
 <path class="dg-edge" d="M 170 88 L 238 88" marker-end="url(#lg-arr)"/>
@@ -669,23 +839,42 @@
                 <li>Boxes are components. Orange-outlined boxes open their playbook section.</li>
                 <li>Numbered arrows trace the key flow; the numbers match the list under each diagram. Hover or focus a step to highlight it.</li>
             </ul>
+            </details>
         </aside>
     </div>
 </header>
 
-<!-- ── PROJECT INDEX ── -->
-<nav class="proj-index" id="project-index" aria-label="Projects on this page">
-    <div class="pi-inner"><span class="pi-k">Projects</span><!--PROJECT_INDEX--></div>
-</nav>
-
+<!-- ── PROJECT GRID ── -->
 <main class="wrap proj-main">
-<!--PROJECT_SECTIONS-->
-<div class="pb-cta">
+<section class="pgrid-wrap" id="project-index" aria-labelledby="grid-title">
+    <div class="pgrid-head">
+        <div class="kicker"><!--PROJECT_COUNT--> projects · strongest first</div>
+        <h2 id="grid-title">Pick a project. Every click goes one layer deeper.</h2>
+    </div>
+<!--PROJECT_CARDS-->
+</section>
+<div class="pb-cta" data-reveal>
     <h2>Want the patterns behind these builds?</h2>
     <p>The <a class="inline-link" href="/playbook.html">Enterprise Agent Playbook</a> sets out the reference architecture, the control
     stack and the delivery pipeline these projects use, in a vendor-neutral form you can apply to your own agents.</p>
 </div>
 </main>
+
+<!-- ── PROJECT DETAIL (dialog; shown inline when JavaScript or <dialog> is unavailable) ── -->
+<dialog id="proj-dialog" class="pdlg" aria-labelledby="grid-title">
+    <div class="pdlg-inner">
+        <div class="pdlg-bar">
+            <button type="button" class="pdlg-nav" data-dir="-1" aria-label="Previous project"><span aria-hidden="true">←</span></button>
+            <span class="pdlg-pos" aria-live="polite"></span>
+            <button type="button" class="pdlg-nav" data-dir="1" aria-label="Next project"><span aria-hidden="true">→</span></button>
+            <span class="pdlg-title" aria-hidden="true"></span>
+            <button type="button" class="pdlg-close" aria-label="Close project">Close <span aria-hidden="true">✕</span></button>
+        </div>
+        <div class="pdlg-body">
+<!--PROJECT_DETAILS-->
+        </div>
+    </div>
+</dialog>
 
 <!-- ── CHAT LAUNCHER + POPOVER ── -->
 <div id="chat-pop" role="dialog" aria-label="Skipper chat">
@@ -760,27 +949,126 @@
             });
         });
 
-        // Mark the project currently in view in the sticky index.
-        var links = document.querySelectorAll('.proj-index a');
-        if (!('IntersectionObserver' in window) || !links.length) return;
-        var map = {};
-        links.forEach(function (a) { map[a.getAttribute('href').slice(1)] = a; });
-        var io = new IntersectionObserver(function (entries) {
-            entries.forEach(function (en) {
-                if (en.isIntersecting && map[en.target.id]) {
-                    links.forEach(function (a) { a.classList.remove('on'); a.removeAttribute('aria-current'); });
-                    var a = map[en.target.id];
-                    a.classList.add('on'); a.setAttribute('aria-current', 'true');
-                    if (a.scrollIntoView && window.innerWidth < 900) {
-                        var ol = a.parentNode.parentNode;
-                        ol.scrollTo({ left: a.offsetLeft - 16, behavior: reduce ? 'auto' : 'smooth' });
-                    }
+        // Everything below is progressive disclosure. Without <dialog> support the page stays fully expanded.
+        var dlg = document.getElementById('proj-dialog');
+        if (!document.documentElement.classList.contains('js') || !dlg) return;
+
+        function panelOf(btn) { return document.getElementById(btn.getAttribute('aria-controls')); }
+
+        // Layer bands: collapsed by default; each opens its components.
+        function setBand(btn, open) {
+            btn.setAttribute('aria-expanded', open ? 'true' : 'false');
+            panelOf(btn).hidden = !open;
+            btn.parentNode.classList.toggle('open', open);
+        }
+        function syncAll(art) {
+            var all = art.querySelector('.hl-all'); if (!all) return;
+            var bs = art.querySelectorAll('.band-btn');
+            var allOpen = [].every.call(bs, function (b) { return b.getAttribute('aria-expanded') === 'true'; });
+            all.textContent = allOpen ? 'Collapse all layers' : 'Expand all layers';
+            all.setAttribute('aria-pressed', allOpen ? 'true' : 'false');
+        }
+        document.querySelectorAll('.band-btn').forEach(function (btn) {
+            setBand(btn, false);
+            btn.addEventListener('click', function () {
+                setBand(btn, btn.getAttribute('aria-expanded') !== 'true');
+                syncAll(btn.closest('article'));
+            });
+        });
+        document.querySelectorAll('.hl-all').forEach(function (all) {
+            all.addEventListener('click', function () {
+                var art = all.closest('article'), open = all.getAttribute('aria-pressed') !== 'true';
+                art.querySelectorAll('.band-btn').forEach(function (b) { setBand(b, open); });
+                syncAll(art);
+            });
+        });
+
+        // "Go deeper" toggles: one panel open at a time; clicking the open one closes it.
+        document.querySelectorAll('.dx-btn').forEach(function (btn) {
+            btn.setAttribute('aria-expanded', 'false'); panelOf(btn).hidden = true;
+            btn.addEventListener('click', function () {
+                var open = btn.getAttribute('aria-expanded') !== 'true';
+                btn.closest('article').querySelectorAll('.dx-btn').forEach(function (o) {
+                    o.setAttribute('aria-expanded', 'false'); panelOf(o).hidden = true;
+                });
+                if (open) {
+                    btn.setAttribute('aria-expanded', 'true'); panelOf(btn).hidden = false;
+                    var top = panelOf(btn).getBoundingClientRect().top;
+                    if (top > window.innerHeight * 0.7) btn.scrollIntoView({ block: 'start', behavior: reduce ? 'auto' : 'smooth' });
                 }
             });
-        }, { rootMargin: '-120px 0px -60% 0px' });
-        document.querySelectorAll('section.proj').forEach(function (s) { io.observe(s); });
-    })();
+        });
 
+        // The project dialog. Hash = open project, so every project stays deep-linkable.
+        var arts = [].slice.call(dlg.querySelectorAll('article.proj'));
+        var ids = arts.map(function (a) { return a.id; });
+        var body = dlg.querySelector('.pdlg-body'), pos = dlg.querySelector('.pdlg-pos');
+        var barTitle = dlg.querySelector('.pdlg-title'), navs = dlg.querySelectorAll('.pdlg-nav');
+        var cur = null, opener = null, closing = false;
+        arts.forEach(function (a) { a.hidden = true; });
+        function pad(n) { return (n < 10 ? '0' : '') + n; }
+
+        function show(id, how) {
+            var i = ids.indexOf(id); if (i < 0) return;
+            arts.forEach(function (a) { a.hidden = a.id !== id; a.classList.remove('enter'); });
+            var art = arts[i]; void art.offsetWidth; art.classList.add('enter');
+            dlg.setAttribute('aria-labelledby', id + '-title');
+            pos.textContent = pad(i + 1) + ' / ' + pad(ids.length);
+            barTitle.textContent = (document.getElementById(id + '-title') || {}).textContent || '';
+            navs[0].disabled = i === 0; navs[1].disabled = i === ids.length - 1;
+            if (!dlg.open) { dlg.showModal(); document.documentElement.classList.add('dlg-open'); }
+            body.scrollTop = 0;
+            var h = document.getElementById(id + '-title');
+            if (h) { h.setAttribute('tabindex', '-1'); h.focus({ preventScroll: true }); }
+            cur = id;
+            if (how === 'push' && location.hash !== '#' + id) history.pushState(null, '', '#' + id);
+            else if (how === 'replace') history.replaceState(null, '', '#' + id);
+        }
+        function hide() {
+            if (!dlg.open || closing) return;
+            if (reduce) { dlg.close(); return; }
+            closing = true; dlg.classList.add('closing');
+            setTimeout(function () { dlg.classList.remove('closing'); closing = false; dlg.close(); }, 240);
+        }
+        dlg.addEventListener('cancel', function (e) { e.preventDefault(); hide(); });   // Esc
+        dlg.addEventListener('close', function () {
+            document.documentElement.classList.remove('dlg-open');
+            var id = cur; cur = null;
+            if (ids.indexOf(decodeURIComponent(location.hash.slice(1))) >= 0) history.replaceState(null, '', location.pathname + location.search);
+            var back = document.querySelector('.pcard[href="#' + id + '"]') || opener;
+            opener = null;
+            if (back) back.focus();
+        });
+        dlg.addEventListener('click', function (e) { if (e.target === dlg) hide(); });   // backdrop
+        dlg.querySelector('.pdlg-close').addEventListener('click', hide);
+        navs.forEach(function (n) {
+            n.addEventListener('click', function () {
+                var i = ids.indexOf(cur) + parseInt(n.getAttribute('data-dir'), 10);
+                if (i >= 0 && i < ids.length) show(ids[i], 'replace');
+            });
+        });
+        // In-dialog links to another project switch to it; links back to the index close the dialog.
+        body.addEventListener('click', function (e) {
+            var a = e.target.closest('a[href^="#"]'); if (!a) return;
+            var id = a.getAttribute('href').slice(1);
+            if (ids.indexOf(id) >= 0) { e.preventDefault(); show(id, 'push'); }
+            else if (id === 'project-index') { e.preventDefault(); hide(); }
+        });
+        document.querySelectorAll('.pcard').forEach(function (c) {
+            c.addEventListener('click', function (e) {
+                if (e.metaKey || e.ctrlKey || e.shiftKey || e.altKey || e.button) return;
+                e.preventDefault(); opener = c; show(c.getAttribute('href').slice(1), 'push');
+            });
+        });
+        function sync() {
+            var id = decodeURIComponent(location.hash.slice(1));
+            if (ids.indexOf(id) >= 0) { if (cur !== id) show(id, 'none'); }
+            else if (dlg.open) hide();
+        }
+        window.addEventListener('popstate', sync);
+        window.addEventListener('hashchange', sync);
+        sync();
+    })();
 </script>
 <script src="/chat.js?v=20261125"></script>
 </body>
