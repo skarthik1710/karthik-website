@@ -1,6 +1,7 @@
 {
   "name": "Karthikeyan Selvam",
   "headline": "AI & Automation Practice Leader · 19+ years in enterprise IT",
+  "location": "Delaware, USA",
   "email": "skarthik1710@gmail.com",
   "links": [
     {
@@ -30,7 +31,7 @@
   "skills": [
     {
       "group": "Leadership",
-      "items": "AI strategy and roadmaps · AI transformation · AI practice leadership · AI pre-sales, proposals and business cases · agentic use-case analysis · AI governance and responsible AI · Copilot enablement, change management and adoption · people, stakeholder and vendor management"
+      "items": "AI strategy and roadmaps · AI transformation · AI pre-sales, proposals and business cases · agentic use-case analysis · AI governance and responsible AI · Copilot enablement, change management and adoption · people, stakeholder and vendor management"
     },
     {
       "group": "AI platforms",
@@ -43,7 +44,7 @@
   ],
   "experience": [
     {
-      "title": "Business Manager — AI & Automation Practice",
+      "title": "Practice Head, AI & Automation (Business Manager)",
       "org": "Atos, North America — Cloud & Modern Infrastructure",
       "period": "Oct 2025 – Present",
       "bullets": [
@@ -56,7 +57,7 @@
     },
     {
       "title": "Digital Workplace Consultant — Windows 11 Migration",
-      "org": "Atos — client: a large US healthcare provider",
+      "org": "Atos (interim assignment) — client: a large US healthcare provider",
       "period": "Apr 2025 – Sep 2025",
       "bullets": [
         "Ran delivery of a 12,000-device Windows 11 migration ahead of Windows 10 end of support, using AI-assisted analytics for hardware compatibility and application readiness.",
@@ -102,7 +103,7 @@
       "org": "Atos, Chennai, India — Group Finance shared services",
       "period": "Mar 2015 – Dec 2017",
       "bullets": [
-        "FP&A, month-end close, provisions and WIP, and key-account reporting for UK financial-services accounts."
+        "Mainly supported finance automation initiatives alongside FP&A and month-end reporting; led to a move into the Automation CoE."
       ]
     },
     {
@@ -110,7 +111,7 @@
       "org": "Hewlett-Packard, Chennai",
       "period": "Dec 2011 – Mar 2015",
       "bullets": [
-        "P&L and data-warehouse reporting; functional designs, test plans and change controls."
+        "Mainly supported automation initiatives in Corporate Finance, alongside P&L and data-warehouse reporting and functional design."
       ]
     },
     {
@@ -133,7 +134,7 @@
     },
     {
       "name": "Operations agents",
-      "line": "a directory group membership agent (rules or a named approver decide; the Entra ID change is verified before the ticket closes) and an outage response agent (rules triage Azure and AWS alerts; the on-duty engineer approves any restart)."
+      "line": "a directory group membership agent (rules or a named approver decide; the Entra ID change is verified before the ticket closes) and an outage response agent (rules triage Azure and AWS alerts; the on-duty engineer approves restarts)."
     },
     {
       "name": "Workspace and delivery agents",

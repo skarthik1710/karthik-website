@@ -78,13 +78,14 @@ FONT_LINK = '<link rel="stylesheet" href="https://fonts.googleapis.com/css2?fami
 
 
 def contacts(d, phone=None):
-    """[(text, url)] in display order; phone only when given (private build)."""
-    out = [(d["email"], "mailto:" + d["email"])]
+    """Two rows of (text, url); url None = plain text. Row 1: location, email, phone
+    (phone only in the private build). Row 2: website and LinkedIn."""
+    row1 = [(d["location"], None)] if d.get("location") else []
+    row1.append((d["email"], "mailto:" + d["email"]))
     if phone:
-        out.append((phone, "tel:" + re.sub(r"[^+\d]", "", phone)))
-    for c in d.get("links", []):
-        out.append((c["text"], c["url"]))
-    return out
+        row1.append((phone, "tel:" + re.sub(r"[^+\d]", "", phone)))
+    row2 = [(c["text"], c["url"]) for c in d.get("links", [])]
+    return [r for r in (row1, row2) if r]
 
 
 def cert_groups(d):
@@ -236,12 +237,17 @@ def build_docx(d, path, phone=None, brand_img=None):
     p = doc.add_paragraph()
     _spacing(p, after=1)
     _run(p, d["headline"], bold=True, size=11, color=ACCENT)
-    p = doc.add_paragraph()
-    _spacing(p, after=2)
-    for i, (text, url) in enumerate(contacts(d, phone)):
-        if i:
-            _run(p, "  ·  ", color=MUTED)
-        _hyperlink(p, url, text)
+    rows = contacts(d, phone)
+    for ri, row in enumerate(rows):
+        p = doc.add_paragraph()
+        _spacing(p, after=2 if ri == len(rows) - 1 else 0)
+        for i, (text, url) in enumerate(row):
+            if i:
+                _run(p, "  ·  ", color=MUTED)
+            if url:
+                _hyperlink(p, url, text)
+            else:
+                _run(p, text, color=INK)
     if brand_img:
         img, width_in = brand_img
         p = doc.add_paragraph()
@@ -311,7 +317,9 @@ def build_html(d, phone=None, brand=None):
     scope = labelled((s["group"], s["items"]) for s in d.get("scope", []))
     skills = labelled((s["group"], s["items"]) for s in d["skills"])
     certs = labelled((label, " · ".join(items)) for label, items in cert_groups(d))
-    contact = '<span class="sep">·</span>'.join(f'<a href="{_e(u)}">{_e(t)}</a>' for t, u in contacts(d, phone))
+    contact = "<br>".join('<span class="sep">·</span>'.join(
+        f'<a href="{_e(u)}">{_e(t)}</a>' if u else f'<span class="loc">{_e(t)}</span>' for t, u in row)
+        for row in contacts(d, phone))
     exp = "".join(
         f'<div class="job"><div class="jh"><b>{_e(e["title"])}</b><span>{_e(e["period"])}</span></div>'
         f'<div class="org">{_e(e["org"])}</div><ul>{"".join(f"<li>{_e(b)}</li>" for b in e["bullets"])}</ul></div>'
@@ -328,6 +336,7 @@ h1 {{ font-size: 20pt; margin: 0; line-height: 1.15; }}
 .hl {{ color: #B43A0E; font-weight: 700; font-size: 11pt; margin: 0 0 1pt; }}
 .ct a {{ color: #B43A0E; text-decoration: none; }}
 .ct .sep {{ color: #5A524C; padding: 0 6pt; }}
+.ct .loc {{ color: #1F1B18; }}
 .ct {{ margin: 0 0 3pt; }}
 h2 {{ color: #B43A0E; font-size: 10.5pt; text-transform: uppercase; margin: 7pt 0 3pt; padding-bottom: 1pt; border-bottom: 0.75pt solid #B43A0E; break-after: avoid; }}
 p {{ margin: 0 0 1pt; line-height: 1.22; }}
