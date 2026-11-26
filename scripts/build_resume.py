@@ -386,7 +386,10 @@ def build_pdf(d, path, phone=None, brand=None):
 
 
 def main():
-    d = json.loads(SRC.read_text())
+    src = SRC
+    if "--src" in sys.argv:  # render a candidate JSON (e.g. for layout experiments)
+        src = pathlib.Path(sys.argv[sys.argv.index("--src") + 1]).expanduser()
+    d = json.loads(src.read_text())
     out, phone = OUT, None
     if "--private" in sys.argv:
         i = sys.argv.index("--private")
