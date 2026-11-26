@@ -26,7 +26,7 @@
     var MAX_SUGGESTIONS = 3;
     // Curated fallback follow-ups — every one is answerable from the assistant's facts.
     var POOL = [
-        'Tell me about his AI platform',
+        'What AI projects has he built?',
         'How does he approach AI governance?',
         'What did he do for Microsoft?',
         'What is RevokAI?',
