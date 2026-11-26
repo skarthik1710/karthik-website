@@ -282,13 +282,15 @@ class ChatWidget(unittest.TestCase):
             b = page.locator("#chat-chips .chat-chip").nth(i).bounding_box()
             self.assertLessEqual(b["y"] + b["height"], page.locator(".chat-input-row").bounding_box()["y"] + 0.5)
 
-    def test_escape_respects_story_overlay(self):
+    def test_escape_respects_page_modal(self):
         page = self.new_page([(200, {"reply": "ok.", "followups": []})])
         self.open_chat(page)
-        page.evaluate("document.getElementById('story-overlay').classList.add('open')")
+        # Any open page-level modal (e.g. a newsletter article) gets Escape before the chat does.
+        page.evaluate("""(() => { const m = document.createElement('div'); m.id = 'test-modal';
+            m.setAttribute('aria-modal', 'true'); m.className = 'open'; document.body.appendChild(m); })()""")
         page.keyboard.press("Escape")
         self.assertTrue(page.is_visible("#chat-pop.open"))
-        page.evaluate("document.getElementById('story-overlay').classList.remove('open')")
+        page.evaluate("document.getElementById('test-modal').classList.remove('open')")
         page.keyboard.press("Escape")
         self.assertFalse(page.is_visible("#chat-pop"))
         self.assertEqual(page.evaluate("document.activeElement.id"), "chat-fab", "focus returns to the launcher")

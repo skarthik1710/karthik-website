@@ -1,0 +1,97 @@
+<section class="proj" id="revokai" aria-labelledby="revokai-title">
+<div class="proj-head">
+<div class="proj-meta"><span class="sec-idx">05 / 06</span>
+<span class="proj-chip">Co-built</span>
+<span class="proj-chip">Microsoft stack</span>
+</div>
+<h2 class="proj-title" id="revokai-title">RevokAI — Governed Access Control</h2>
+<p class="proj-tagline">A governed AI compliance control for access revocation: AI correlates, rules and a human decide, and every action is evidenced.</p></div>
+<div class="pwv">
+<div class="pwv-card problem"><h3>Problem</h3><p>Access-revocation compliance controls rely on manual analysis. The hardest step is matching people who have left to the accounts they still hold, because the identifiers often sit in metadata and free text where a standard report can&#x27;t join them. That matching is slow human work, and the control costs roughly 25 hours a week to run manually.</p></div>
+<div class="pwv-card what-it-does"><h3>What it does</h3><p>RevokAI turns the manual control into a closed loop with five stages: detect, validate, approve, remediate, prove. An AI agent matches leavers to accounts even where the match is buried in metadata or free text. Fixed rules apply the revocation deadline (SLA), and each exception ends up in a named outcome. A human approves every remediation action. Every action is ticketed and timestamped, and each run produces an audit trail that can be exported. I co-built RevokAI in a sponsored squad, contributing the agent workflow and its run outputs.</p></div>
+<div class="pwv-card value"><h3>Value</h3><p>It moves an access-revocation control from a weekly manual grind to an on-demand run that takes minutes and produces its own audit trail. It targets the roughly 25 hours a week (about 1,300 hours a year) that the control costs to run manually today. That figure is the current manual cost, not a measured saving. The same pattern (AI reasons, fixed rules decide, humans approve the action) carries over to other controls such as access recertification.</p></div>
+</div>
+<figure class="arch">
+<div class="arch-head"><span class="arch-dot" aria-hidden="true"></span><span>Architecture — layered view</span><span class="arch-stack">5 layers · 7 components</span><span class="arch-swipe" aria-hidden="true">swipe →</span></div>
+<div class="dg-scroll" tabindex="0" role="region" aria-label="RevokAI — Governed Access Control architecture diagram (scrolls sideways on small screens)">
+<svg class="dg" viewBox="0 0 1000 506" role="group" aria-labelledby="revokai-dg-title revokai-dg-desc">
+<title id="revokai-dg-title">RevokAI — Governed Access Control: layered architecture</title>
+<desc id="revokai-dg-desc">Layers from top to bottom: Inputs, Reasoning, Deciding, Orchestration, Action and evidence. Numbered arrows follow the key flow listed below the diagram. Components outlined in orange link to the playbook section on how that part is built.</desc>
+<defs><marker id="revokai-arr" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 1 L9 5 L0 9 z" class="dg-arrow"/></marker></defs>
+<rect class="dg-band" x="18.0" y="14.0" width="228.0" height="126.0" rx="12"/>
+<rect class="dg-band" x="270.0" y="14.0" width="228.0" height="126.0" rx="12"/>
+<rect class="dg-band" x="522.0" y="14.0" width="460.0" height="126.0" rx="12"/>
+<rect class="dg-band" x="386.0" y="190.0" width="228.0" height="126.0" rx="12"/>
+<rect class="dg-band" x="270.0" y="366.0" width="460.0" height="126.0" rx="12"/>
+<path class="dg-edge" data-step="2" d="M 232.0 86.0 L 284.0 86.0" marker-end="url(#revokai-arr)"/>
+<path class="dg-edge" data-step="3" d="M 484.0 86.0 L 536.0 86.0" marker-end="url(#revokai-arr)"/>
+<path class="dg-edge" data-step="5" d="M 736.0 86.0 L 768.0 86.0" marker-end="url(#revokai-arr)"/>
+<path class="dg-edge" data-step="6" d="M 868.0 124.0 L 868.0 158.0 Q 868.0 165.0 861.0 165.0 L 391.0 165.0 Q 384.0 165.0 384.0 172.0 L 384.0 334.0 Q 384.0 341.0 384.0 348.0 L 384.0 400.0" marker-end="url(#revokai-arr)"/>
+<path class="dg-edge" data-step="7" d="M 484.0 438.0 L 516.0 438.0" marker-end="url(#revokai-arr)"/>
+<circle class="dg-packet" r="3.2" opacity="0"><set attributeName="opacity" to="1" begin="0.95s"/><animateMotion dur="2.6s" begin="0.95s" repeatCount="indefinite" path="M 232.0 86.0 L 284.0 86.0"/></circle>
+<circle class="dg-packet" r="3.2" opacity="0"><set attributeName="opacity" to="1" begin="1.50s"/><animateMotion dur="2.6s" begin="1.50s" repeatCount="indefinite" path="M 484.0 86.0 L 536.0 86.0"/></circle>
+<circle class="dg-packet" r="3.2" opacity="0"><set attributeName="opacity" to="1" begin="2.60s"/><animateMotion dur="2.6s" begin="2.60s" repeatCount="indefinite" path="M 736.0 86.0 L 768.0 86.0"/></circle>
+<circle class="dg-packet" r="3.2" opacity="0"><set attributeName="opacity" to="1" begin="3.15s"/><animateMotion dur="2.6s" begin="3.15s" repeatCount="indefinite" path="M 868.0 124.0 L 868.0 158.0 Q 868.0 165.0 861.0 165.0 L 391.0 165.0 Q 384.0 165.0 384.0 172.0 L 384.0 334.0 Q 384.0 341.0 384.0 348.0 L 384.0 400.0"/></circle>
+<circle class="dg-packet" r="3.2" opacity="0"><set attributeName="opacity" to="1" begin="3.70s"/><animateMotion dur="2.6s" begin="3.70s" repeatCount="indefinite" path="M 484.0 438.0 L 516.0 438.0"/></circle>
+<g class="dg-node"><title>Leaver and account records</title><rect x="32.0" y="48.0" width="200.0" height="76.0" rx="9"/><text class="dg-name" x="44.0" y="73.0">Leaver and account</text><text class="dg-name" x="44.0" y="89.0">records</text><text class="dg-tech" x="44.0" y="107.0">Source records</text></g>
+<a class="dg-node pb" href="/playbook.html#the-reference-architecture-layers-of-an-enterprise-agent" aria-label="Identity-matching agent — how to build this: playbook section 2, Reference architecture"><title>Identity-matching agent — how to build this (Playbook §2 Reference architecture)</title><rect x="284.0" y="48.0" width="200.0" height="76.0" rx="9"/><text class="dg-name" x="296.0" y="73.0">Identity-matching agent</text><text class="dg-tech" x="296.0" y="91.0">Microsoft Copilot Studio</text><text class="dg-pb" x="296.0" y="113.0">↗ Playbook §2</text></a>
+<a class="dg-node pb" href="/playbook.html#build-principles" aria-label="Fixed SLA rules — how to build this: playbook section 3, Build principles"><title>Fixed SLA rules — how to build this (Playbook §3 Build principles)</title><rect x="536.0" y="48.0" width="200.0" height="76.0" rx="9"/><text class="dg-name" x="548.0" y="73.0">Fixed SLA rules</text><text class="dg-tech" x="548.0" y="91.0">Deterministic rules</text><text class="dg-pb" x="548.0" y="113.0">↗ Playbook §3</text></a>
+<a class="dg-node pb" href="/playbook.html#governance-and-the-autonomy-ladder" aria-label="Human approval gate — how to build this: playbook section 8, Autonomy ladder"><title>Human approval gate — how to build this (Playbook §8 Autonomy ladder)</title><rect x="768.0" y="48.0" width="200.0" height="76.0" rx="9"/><text class="dg-name" x="780.0" y="73.0">Human approval gate</text><text class="dg-tech" x="780.0" y="91.0">Approval step in the workflow</text><text class="dg-pb" x="780.0" y="113.0">↗ Playbook §8</text></a>
+<a class="dg-node pb" href="/playbook.html#the-reference-architecture-layers-of-an-enterprise-agent" aria-label="Workflow automation — how to build this: playbook section 2, Reference architecture"><title>Workflow automation — how to build this (Playbook §2 Reference architecture)</title><rect x="400.0" y="224.0" width="200.0" height="76.0" rx="9"/><text class="dg-name" x="412.0" y="249.0">Workflow automation</text><text class="dg-tech" x="412.0" y="267.0">Power Automate · Office Scripts</text><text class="dg-pb" x="412.0" y="289.0">↗ Playbook §2</text></a>
+<g class="dg-node"><title>Remediation tickets</title><rect x="284.0" y="400.0" width="200.0" height="76.0" rx="9"/><text class="dg-name" x="296.0" y="425.0">Remediation tickets</text><text class="dg-tech" x="296.0" y="443.0">Ticket generation</text></g>
+<a class="dg-node pb" href="/playbook.html#audit" aria-label="Exportable audit trail — how to build this: playbook section 4.3, Audit"><title>Exportable audit trail — how to build this (Playbook §4.3 Audit)</title><rect x="516.0" y="400.0" width="200.0" height="76.0" rx="9"/><text class="dg-name" x="528.0" y="425.0">Exportable audit trail</text><text class="dg-tech" x="528.0" y="443.0">Audit evidence output</text><text class="dg-pb" x="528.0" y="465.0">↗ Playbook §4.3</text></a>
+<text class="dg-layer" x="32.0" y="35.0"><tspan class="dg-layer-n">01</tspan>  INPUTS</text>
+<text class="dg-layer" x="284.0" y="35.0"><tspan class="dg-layer-n">02</tspan>  REASONING</text>
+<text class="dg-layer" x="536.0" y="35.0"><tspan class="dg-layer-n">03</tspan>  DECIDING</text>
+<text class="dg-layer" x="400.0" y="211.0"><tspan class="dg-layer-n">04</tspan>  ORCHESTRATION</text>
+<text class="dg-layer" x="284.0" y="387.0"><tspan class="dg-layer-n">05</tspan>  ACTION AND EVIDENCE</text>
+<g class="dg-badge" data-step="2"><circle cx="256.5" cy="86.0" r="10"/><text x="256.5" y="86.5">2</text></g>
+<g class="dg-badge" data-step="3"><circle cx="508.5" cy="86.0" r="10"/><text x="508.5" y="86.5">3</text></g>
+<g class="dg-badge" data-step="5"><circle cx="752.0" cy="86.0" r="10"/><text x="752.0" y="86.5">5</text></g>
+<g class="dg-badge" data-step="6"><circle cx="681.6" cy="165.0" r="10"/><text x="681.6" y="165.5">6</text></g>
+<g class="dg-badge" data-step="7"><circle cx="500.0" cy="438.0" r="10"/><text x="500.0" y="438.5">7</text></g>
+<g class="dg-badge node" data-step="1"><circle cx="228.0" cy="46.0" r="10"/><text x="228.0" y="46.5">1</text></g>
+<g class="dg-badge node" data-step="4"><circle cx="732.0" cy="46.0" r="10"/><text x="732.0" y="46.5">4</text></g>
+</svg>
+</div>
+<figcaption class="arch-legend"><span><i class="lg-badge" aria-hidden="true">1</i> numbered arrow = flow step</span><span><i class="lg-node pb" aria-hidden="true"></i> orange outline = opens its playbook section</span><span><i class="lg-dash" aria-hidden="true"></i> dashed = deploy or check path</span></figcaption>
+</figure>
+<div class="block"><h3 class="block-title"><span class="bt-k">Flow</span>How a request moves through it</h3>
+<ol class="flow" data-proj="revokai">
+<li class="flow-step" data-step="1" tabindex="0"><span class="flow-n" aria-hidden="true">1</span><span class="flow-txt"><span class="sr-only">Step 1: </span>Detect: the loop takes in leaver records and the account data to check them against.</span></li>
+<li class="flow-step" data-step="2" tabindex="0"><span class="flow-n" aria-hidden="true">2</span><span class="flow-txt"><span class="sr-only">Step 2: </span>Validate (AI): the matching agent links leavers to accounts where identifiers are buried in metadata or free text.</span></li>
+<li class="flow-step" data-step="3" tabindex="0"><span class="flow-n" aria-hidden="true">3</span><span class="flow-txt"><span class="sr-only">Step 3: </span>Validate (rules): fixed rules apply the revocation deadline.</span></li>
+<li class="flow-step" data-step="4" tabindex="0"><span class="flow-n" aria-hidden="true">4</span><span class="flow-txt"><span class="sr-only">Step 4: </span>Validate (outcome): each exception lands in a named outcome: breach, within SLA, compliant, or for review.</span></li>
+<li class="flow-step" data-step="5" tabindex="0"><span class="flow-n" aria-hidden="true">5</span><span class="flow-txt"><span class="sr-only">Step 5: </span>Approve: a human reviews each proposed remediation. Nothing goes ahead without approval.</span></li>
+<li class="flow-step" data-step="6" tabindex="0"><span class="flow-n" aria-hidden="true">6</span><span class="flow-txt"><span class="sr-only">Step 6: </span>Remediate: each approved action is raised as a remediation ticket.</span></li>
+<li class="flow-step" data-step="7" tabindex="0"><span class="flow-n" aria-hidden="true">7</span><span class="flow-txt"><span class="sr-only">Step 7: </span>Prove: every action is ticketed and timestamped, and the run is compiled into an audit trail that can be exported as control evidence.</span></li>
+</ol></div>
+<div class="block"><h3 class="block-title"><span class="bt-k">Components</span>What each part does</h3>
+<div class="comp-layer"><div class="comp-layer-name"><span class="cl-n">01</span> Inputs</div><div class="comp-grid">
+<div class="comp-card"><h4>Leaver and account records</h4><p>The control&#x27;s source data: people who have left and the accounts that may still be active. The identifiers are often held in metadata and free-text fields rather than clean keys.</p><div class="comp-tech">Source records</div></div>
+</div></div>
+<div class="comp-layer"><div class="comp-layer-name"><span class="cl-n">02</span> Reasoning</div><div class="comp-grid">
+<div class="comp-card pb"><h4>Identity-matching agent</h4><p>Uses AI to match leavers to accounts where no clean join exists. This is the step a standard report can&#x27;t do.</p><div class="comp-tech">Microsoft Copilot Studio</div><a class="pb-link" href="/playbook.html#the-reference-architecture-layers-of-an-enterprise-agent">How to build this <span aria-hidden="true">→</span><span class="pb-sec">Playbook §2 · Reference architecture</span></a></div>
+</div></div>
+<div class="comp-layer"><div class="comp-layer-name"><span class="cl-n">03</span> Deciding</div><div class="comp-grid">
+<div class="comp-card pb"><h4>Fixed SLA rules</h4><p>Apply the revocation deadline with fixed rules, so the compliance decision doesn&#x27;t depend on what the model generates.</p><div class="comp-tech">Deterministic rules</div><a class="pb-link" href="/playbook.html#build-principles">How to build this <span aria-hidden="true">→</span><span class="pb-sec">Playbook §3 · Build principles</span></a></div>
+<div class="comp-card pb"><h4>Human approval gate</h4><p>A person must approve every remediation action before it goes ahead. This was built in from day one.</p><div class="comp-tech">Approval step in the workflow</div><a class="pb-link" href="/playbook.html#governance-and-the-autonomy-ladder">How to build this <span aria-hidden="true">→</span><span class="pb-sec">Playbook §8 · Autonomy ladder</span></a></div>
+</div></div>
+<div class="comp-layer"><div class="comp-layer-name"><span class="cl-n">04</span> Orchestration</div><div class="comp-grid">
+<div class="comp-card pb"><h4>Workflow automation</h4><p>Runs the closed loop from detection through to evidence.</p><div class="comp-tech">Power Automate · Office Scripts</div><a class="pb-link" href="/playbook.html#the-reference-architecture-layers-of-an-enterprise-agent">How to build this <span aria-hidden="true">→</span><span class="pb-sec">Playbook §2 · Reference architecture</span></a></div>
+</div></div>
+<div class="comp-layer"><div class="comp-layer-name"><span class="cl-n">05</span> Action and evidence</div><div class="comp-grid">
+<div class="comp-card"><h4>Remediation tickets</h4><p>Each approved action is raised as a remediation ticket, which is how it is tracked through to closure.</p><div class="comp-tech">Ticket generation</div></div>
+<div class="comp-card pb"><h4>Exportable audit trail</h4><p>Every action is timestamped and assembled into audit evidence that the control owner and auditors can export.</p><div class="comp-tech">Audit evidence output</div><a class="pb-link" href="/playbook.html#audit">How to build this <span aria-hidden="true">→</span><span class="pb-sec">Playbook §4.3 · Audit</span></a></div>
+</div></div>
+</div>
+<div class="block"><h3 class="block-title"><span class="bt-k">Controls</span>Guardrails built in</h3><div class="scope controls">
+<div class="scope-row"><div class="scope-key">AI reasons; rules and humans decide</div><div class="scope-val">AI handles the hard identity matching. Fixed rules apply the deadline and a human approves the action, so the outcome isn&#x27;t left to the model.<a class="pb-link" href="/playbook.html#build-principles">How to build this <span aria-hidden="true">→</span><span class="pb-sec">Playbook §3 · Build principles</span></a></div></div>
+<div class="scope-row"><div class="scope-key">Mandatory human approval</div><div class="scope-val">Every remediation action needs a person&#x27;s approval. No action is autonomous.<a class="pb-link" href="/playbook.html#governance-and-the-autonomy-ladder">How to build this <span aria-hidden="true">→</span><span class="pb-sec">Playbook §8 · Autonomy ladder</span></a></div></div>
+<div class="scope-row"><div class="scope-key">Exportable audit evidence</div><div class="scope-val">Every action is ticketed and timestamped, and the run produces an audit trail that can be exported.<a class="pb-link" href="/playbook.html#audit">How to build this <span aria-hidden="true">→</span><span class="pb-sec">Playbook §4.3 · Audit</span></a></div></div>
+</div></div>
+<div class="hitl"><div class="hitl-k"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="8" r="3.6"/><path d="M4.5 20c.8-4 3.8-6 7.5-6s6.7 2 7.5 6"/></svg>Human in the loop</div><p>Every remediation action is approved by a human. Approval was built into the loop from day one, so no remediation runs without a person signing it off.</p></div>
+<div class="foot-grid"><div><div class="mini-k">Stack</div><div class="timeline-tags"><span class="timeline-tag">Microsoft Copilot Studio</span><span class="timeline-tag">Power Automate</span><span class="timeline-tag">Office Scripts</span></div></div>
+<div><div class="mini-k">Playbook sections this build uses</div><div class="pb-chips"><a class="pb-chip" href="/playbook.html#the-reference-architecture-layers-of-an-enterprise-agent"><b>§2</b> Reference architecture</a><a class="pb-chip" href="/playbook.html#build-principles"><b>§3</b> Build principles</a><a class="pb-chip" href="/playbook.html#audit"><b>§4.3</b> Audit</a><a class="pb-chip" href="/playbook.html#governance-and-the-autonomy-ladder"><b>§8</b> Autonomy ladder</a></div></div></div>
+<a class="to-index" href="#project-index">↑ Back to project index</a>
+</section>

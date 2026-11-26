@@ -4,10 +4,10 @@
     <meta charset="UTF-8"/>
     <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
     <title>Karthikeyan Selvam — AI Product & Enablement Leader</title>
-    <meta name="description" content="Karthikeyan Selvam — AI Product & Enablement Leader. 19+ years in enterprise IT; builder of an enterprise multi-agent AI platform. Microsoft Copilot evaluation, RPA at scale, AIOps, and AI governance."/>
+    <meta name="description" content="Karthikeyan Selvam — AI Product & Enablement Leader. 19+ years in enterprise IT; builder of governed enterprise AI agents. Microsoft Copilot evaluation, RPA at scale, AIOps, and AI governance."/>
     <meta name="keywords" content="AI Leader, AI Product Manager, AI Enablement, AI Deployment, Microsoft Copilot, RPA, AIOps, Karthikeyan Selvam"/>
     <meta property="og:title" content="Karthikeyan Selvam — AI Product & Enablement Leader"/>
-    <meta property="og:description" content="19+ years in enterprise IT. Builder of an enterprise multi-agent AI platform. AI from slideware to shipped."/>
+    <meta property="og:description" content="19+ years in enterprise IT. Builder of governed enterprise AI agents. AI from slideware to shipped."/>
     <meta property="og:image" content="https://karthikeyanselvam.com/og-image.png"/>
     <meta property="og:url" content="https://karthikeyanselvam.com/"/>
     <meta property="og:type" content="website"/>
@@ -845,8 +845,7 @@
     <div class="nav-inner">
         <a class="brand" href="/">Karthikeyan Selvam<b>.</b></a>
         <ul class="nav-links">
-            <li><a href="#work">Work</a></li>
-            <li><a href="/experience.html">Experience</a></li>
+                        <li><a href="/experience.html">Experience</a></li>
             <li><a href="/newsletter.html">Newsletter</a></li>
             <li><a href="/projects.html">Projects</a></li>
             <li><a href="/playbook.html">Playbook</a></li>
@@ -862,13 +861,13 @@
             <div class="kicker" data-spark>Prologue · AI Product &amp; Enablement Leader</div>
             <h1>I take enterprise AI from slideware to <span class="accent">shipped</span>.</h1>
             <p class="hero-sub">
-                19+ years in enterprise IT — ending up, for now, as the builder of an
-                <strong>enterprise multi-agent AI platform</strong>.
+                19+ years in enterprise IT — ending up, for now, building
+                <strong>governed enterprise AI agents</strong>.
                 This page tells that story the way I ship: start to finish, with evidence.
             </p>
             <div class="hero-actions">
                 <a href="#origin" class="btn btn-solid">Read the story</a>
-                <a href="#work" class="btn btn-ghost">Skip to the work</a>
+                <a href="/projects.html" class="btn btn-ghost">See the projects</a>
             </div>
         </div>
         <div class="hero-side">
@@ -1027,73 +1026,12 @@
     </div>
     <div class="wrap" style="padding-bottom:4rem;">
         <div class="act-kicker" data-spark>Act III — The Turn · What I built</div>
-        <h2 class="act-title">Not a case study. A system I <span class="accent">designed and built</span>, end to end.</h2>
+        <h2 class="act-title">The work has its own page.</h2>
         <p class="act-desc">
-            An enterprise multi-agent AI platform on Google Cloud, powered by Vertex AI / Gemini —
-            built to turn real consulting workflows into governed, repeatable AI services, with cost discipline engineered in.
+            Every AI project I've built — governed agent platforms, the agents that run on them, and the patterns behind
+            them — is on the <a href="/projects.html">Projects</a> page, with each architecture laid out layer by layer.
         </p>
-        <div class="arch-live reveal">
-            <div class="arch-live-head">
-                <span class="live-dot"></span>
-                <span>Platform architecture — as built</span>
-                <span class="arch-live-stack">google cloud · serverless · regional-only</span>
-            </div>
-            <svg viewBox="0 0 860 410" role="img" aria-label="Multi-agent AI platform architecture: browser and Firebase proxy reach a FastAPI backend on Cloud Run hosting one router per agent, backed by Vertex AI Gemini and Firestore, deployed from a regional Artifact Registry">
-                <rect class="arch-region" x="248" y="14" width="596" height="382" rx="14"/>
-                <text class="arch-region-label" x="260" y="34">us-central1</text>
-                <g class="arch-badge"><rect x="688" y="26" width="140" height="22" rx="11"/><text x="758" y="37.5" text-anchor="middle" dominant-baseline="middle">REGIONAL ONLY</text></g>
-
-                <path class="arch-edge" d="M 156 116 L 318 155" style="animation-delay:0.05s"/>
-                <text class="arch-edge-label" x="235" y="124" text-anchor="middle">/api</text>
-                <path class="arch-edge" d="M 156 267 L 318 202" style="animation-delay:0.12s"/>
-                <text class="arch-edge-label" x="235" y="226" text-anchor="middle">proxy</text>
-                <path class="arch-edge" d="M 564 145 L 648 115" style="animation-delay:0.19s"/>
-                <path class="arch-edge" d="M 564 200 L 648 227" style="animation-delay:0.26s"/>
-                <path class="arch-edge dashed" d="M 441 300 L 441 236" style="animation-delay:0.33s"/>
-                <text class="arch-edge-label" x="470" y="272" text-anchor="middle">deploy</text>
-
-                <circle class="arch-packet" r="3.5"><animateMotion dur="2.4s" begin="1s" repeatCount="indefinite" path="M 156 116 L 318 155"/></circle>
-                <circle class="arch-packet" r="3.5"><animateMotion dur="2.4s" begin="1.5s" repeatCount="indefinite" path="M 156 267 L 318 202"/></circle>
-                <circle class="arch-packet" r="3.5"><animateMotion dur="2.4s" begin="2s" repeatCount="indefinite" path="M 564 145 L 648 115"/></circle>
-                <circle class="arch-packet" r="3.5"><animateMotion dur="2.4s" begin="2.5s" repeatCount="indefinite" path="M 564 200 L 648 227"/></circle>
-
-                <g class="arch-node muted" style="animation-delay:0.1s">
-                    <rect x="20" y="88" width="136" height="56" rx="9"/>
-                    <text class="nlabel" x="88" y="109" text-anchor="middle" dominant-baseline="middle">Browser</text>
-                    <text class="nsub" x="88" y="127" text-anchor="middle" dominant-baseline="middle">consultant · admin</text>
-                </g>
-                <g class="arch-node teal" style="animation-delay:0.18s">
-                    <rect x="20" y="238" width="136" height="58" rx="9"/>
-                    <text class="nlabel" x="88" y="260" text-anchor="middle" dominant-baseline="middle">Firebase</text>
-                    <text class="nsub" x="88" y="278" text-anchor="middle" dominant-baseline="middle">Hosting + CDN proxy</text>
-                </g>
-                <g class="arch-node teal" style="animation-delay:0.26s">
-                    <rect x="318" y="110" width="246" height="126" rx="9"/>
-                    <text class="nlabel" x="441" y="140" text-anchor="middle" dominant-baseline="middle">Cloud Run · FastAPI</text>
-                    <text class="nsub" x="441" y="158" text-anchor="middle" dominant-baseline="middle">one private router per agent</text>
-                    <rect class="arch-chip" x="328" y="196" width="49" height="20" rx="5"/><text class="arch-chip-text" x="352.5" y="206" text-anchor="middle" dominant-baseline="middle">OCM</text>
-                    <rect class="arch-chip" x="387" y="196" width="49" height="20" rx="5"/><text class="arch-chip-text" x="411.5" y="206" text-anchor="middle" dominant-baseline="middle">GWS</text>
-                    <rect class="arch-chip" x="446" y="196" width="49" height="20" rx="5"/><text class="arch-chip-text" x="470.5" y="206" text-anchor="middle" dominant-baseline="middle">Infra</text>
-                    <rect class="arch-chip" x="505" y="196" width="49" height="20" rx="5"/><text class="arch-chip-text" x="529.5" y="206" text-anchor="middle" dominant-baseline="middle">+</text>
-                </g>
-                <g class="arch-node gold" style="animation-delay:0.34s">
-                    <rect x="648" y="84" width="168" height="62" rx="9"/>
-                    <text class="nlabel" x="732" y="108" text-anchor="middle" dominant-baseline="middle">Vertex AI</text>
-                    <text class="nsub" x="732" y="126" text-anchor="middle" dominant-baseline="middle">Gemini</text>
-                </g>
-                <g class="arch-node teal" style="animation-delay:0.42s">
-                    <rect x="648" y="196" width="168" height="62" rx="9"/>
-                    <text class="nlabel" x="732" y="220" text-anchor="middle" dominant-baseline="middle">Firestore</text>
-                    <text class="nsub" x="732" y="238" text-anchor="middle" dominant-baseline="middle">state · logs · rate limits</text>
-                </g>
-                <g class="arch-node muted" style="animation-delay:0.5s">
-                    <rect x="318" y="300" width="246" height="56" rx="9"/>
-                    <text class="nlabel" x="441" y="320" text-anchor="middle" dominant-baseline="middle">Artifact Registry</text>
-                    <text class="nsub" x="441" y="338" text-anchor="middle" dominant-baseline="middle">regional build + deploy</text>
-                </g>
-            </svg>
-            <div class="arch-caption"><b>governance built in:</b> auth-gated · no hard-coded backend URL · audit-logged actions · scale-to-zero · automated model-lifecycle steward · 1-command idempotent deploy</div>
-        </div>
+        <p><a href="/projects.html" class="btn btn-solid">See the projects →</a></p>
     </div>
 </section>
 
@@ -1110,7 +1048,7 @@
                 <svg class="pillar-icon" viewBox="0 0 24 24"><path d="M12 2l3 5.5 6 .9-4.4 4.3 1 6.1L12 16l-5.6 2.8 1-6.1L3 8.4l6-.9L12 2z" stroke-linejoin="round"/></svg>
                 <h3>AI Product &amp; Platforms</h3>
                 <p>Building and governing AI products — roadmap to release — while growing into leading an engineering team. Multi-agent systems, LLM evaluation programs, governed compliance agents, and the deploy pipelines behind them.</p>
-                <div class="pillar-where"><b>Where:</b> Multi-agent AI platform · Copilot for Entra · RevokAI</div>
+                <div class="pillar-where"><b>Where:</b> Copilot for Entra · governed AI agents (see <a href="/projects.html">Projects</a>)</div>
             </div>
             <div class="pillar">
                 <svg class="pillar-icon" viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2M9 11a4 4 0 1 0 0-8 4 4 0 0 0 0 8zM23 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75" stroke-linecap="round" stroke-linejoin="round"/></svg>
@@ -1128,64 +1066,10 @@
     </div>
 </section>
 
-<!-- ── ACT IV · SHIPPED (horizontal strip) ── -->
-<section id="work">
-    <div class="wrap ship-head">
-        <div class="act-kicker" data-spark>Act IV — Shipped</div>
-        <h2 class="act-title">Proof, not promises.</h2>
-        <p class="act-desc">
-            AI projects I've built — from an enterprise multi-agent platform on GCP to a governed
-            compliance control I co-built on the Microsoft stack. Each one starts from a real business
-            problem; each card opens an interactive story with the decisions behind it.
-        </p>
-        <div class="drag-cue">keep scrolling — the shelf slides<span class="sweep">→</span></div>
-    </div>
-    <div class="ship-viewport">
-        <div class="ship-track">
-            <div class="work-card" data-story="platform" data-label="Open the story: Multi-Agent AI Platform">
-                <div class="work-top"><span class="card-idx">01 / 06</span><span class="status">Platform</span></div>
-                <h3>Multi-Agent AI Platform</h3>
-                <p>An enterprise AI platform built to turn consulting workflows into governed AI services — specialized agents on a serverless GCP stack, hardened against strict org policies, with governance and cost engineering built in.</p>
-                <div class="stack"><span>FastAPI · Cloud Run · Vertex AI · Firestore</span><span class="card-cues"><a class="arch-link" href="/projects.html#platform" aria-label="Architecture in detail: Multi-Agent AI Platform">Architecture →</a><button type="button" class="story-cue" aria-label="Open the story: Multi-Agent AI Platform">View story →</button></span></div>
-            </div>
-            <div class="work-card" data-story="ocm" data-label="Open the story: Change Management Agent">
-                <div class="work-top"><span class="card-idx">02 / 06</span><span class="status">Change Mgmt</span></div>
-                <h3>Change Management Agent</h3>
-                <p>Helps organizations run change programs consistently: generates a complete OCM deliverable set — 4 phases, 18 deliverables — from a formal methodology, each deliverable stamped with the methodology version that produced it, plus branded PDF export.</p>
-                <div class="stack"><span>Python · Vertex AI · Versioned skill engine</span><span class="card-cues"><a class="arch-link" href="/projects.html#change-management" aria-label="Architecture in detail: Change Management Agent">Architecture →</a><button type="button" class="story-cue" aria-label="Open the story: Change Management Agent">View story →</button></span></div>
-            </div>
-            <div class="work-card" data-story="gws" data-label="Open the story: Workspace License Right-Sizing">
-                <div class="work-top"><span class="card-idx">03 / 06</span><span class="status">Licensing</span></div>
-                <h3>License Right-Sizing Agent</h3>
-                <p>Helps organizations stop paying for licenses they don't use: reads real Google Workspace usage and builds a per-user right-sizing case traceable to that usage — with a zero-usage guard so quiet-but-active users are never wrongly downgraded.</p>
-                <div class="stack"><span>Admin SDK · Reports API · Cloud Run Jobs</span><span class="card-cues"><a class="arch-link" href="/projects.html#license-right-sizing" aria-label="Architecture in detail: License Right-Sizing Agent">Architecture →</a><button type="button" class="story-cue" aria-label="Open the story: Workspace License Right-Sizing">View story →</button></span></div>
-            </div>
-            <div class="work-card" data-story="hci" data-label="Open the story: Infrastructure Health Check Agent">
-                <div class="work-top"><span class="card-idx">04 / 06</span><span class="status">Infrastructure</span></div>
-                <h3>Infra Health Check Agent</h3>
-                <p>Turns raw infrastructure health-check exports into severity-labeled findings, issues tracked across runs, and share-ready PDF and Word reports — built to replace manual write-ups.</p>
-                <div class="stack"><span>Python · Gemini · PDF/Word reports</span><span class="card-cues"><a class="arch-link" href="/projects.html#infra-health-check" aria-label="Architecture in detail: Infra Health Check Agent">Architecture →</a><button type="button" class="story-cue" aria-label="Open the story: Infrastructure Health Check Agent">View story →</button></span></div>
-            </div>
-            <div class="work-card" data-story="revokai" data-label="Open the story: RevokAI governed access revocation">
-                <div class="work-top"><span class="card-idx">05 / 06</span><span class="status">Compliance</span></div>
-                <h3>RevokAI — Governed Access Control</h3>
-                <p>An AI compliance control for access revocation that I co-built: AI correlates the hard identity matches a report can't, deterministic rules plus mandatory human approval decide, and every action lands in an exportable audit trail.</p>
-                <div class="stack"><span>Copilot Studio · Power Automate · Office Scripts</span><span class="card-cues"><a class="arch-link" href="/projects.html#revokai" aria-label="Architecture in detail: RevokAI">Architecture →</a><button type="button" class="story-cue" aria-label="Open the story: RevokAI governed access revocation">View story →</button></span></div>
-            </div>
-            <div class="work-card" data-story="outreach" data-label="Open the story: AI Customer Outreach Agent">
-                <div class="work-top"><span class="card-idx">06 / 06</span><span class="status">Sales</span></div>
-                <h3>Customer Outreach Agent</h3>
-                <p>Researches a customer's strategic priorities using real-time web search, scores alignment against a service portfolio, and drafts personalized outreach for mandatory human review — only opportunities that clear a strict 80/100 evidence threshold are ever actioned.</p>
-                <div class="stack"><span>Vertex AI (Gemini) · Real-time research · Scoring engine</span><span class="card-cues"><a class="arch-link" href="/projects.html#customer-outreach" aria-label="Architecture in detail: Customer Outreach Agent">Architecture →</a><button type="button" class="story-cue" aria-label="Open the story: AI Customer Outreach Agent">View story →</button></span></div>
-            </div>
-        </div>
-    </div>
-</section>
-
-<!-- ── ACT V · HOW I OPERATE ── -->
+<!-- ── ACT IV · HOW I OPERATE ── -->
 <section id="playbook">
     <div class="wrap act">
-        <div class="act-kicker" data-spark>Act V — How I operate</div>
+        <div class="act-kicker" data-spark>Act IV — How I operate</div>
         <h2 class="act-title">The operating system behind every engagement.</h2>
         <p class="act-desc">
             Pilot to production without the stall.
@@ -1314,7 +1198,7 @@
         </div>
         <div class="chat-chips" id="chat-chips">
             <button class="chat-chip" type="button">Why hire him as an AI leader?</button>
-            <button class="chat-chip" type="button">Tell me about his AI platform</button>
+            <button class="chat-chip" type="button">What AI projects has he built?</button>
             <button class="chat-chip" type="button">How does he approach AI governance?</button>
             <button class="chat-chip" type="button">What did he do for Microsoft?</button>
         </div>
@@ -1350,20 +1234,6 @@
     </button>
 </div>
 <div id="fab-nudge" role="button" tabindex="0">You've read the story — now <b>interrogate it</b>. Skipper has the full briefing.</div>
-
-<!-- ── STORY OVERLAY ── -->
-<div id="story-overlay" role="dialog" aria-modal="true" aria-label="Project story">
-    <div class="story-modal">
-        <button class="story-close" aria-label="Close story">&times;</button>
-        <div class="story-progress" id="story-progress"></div>
-        <div class="story-stage" id="story-stage"></div>
-        <div class="story-nav">
-            <button class="story-prev" id="story-prev">&#8592; Prev</button>
-            <span class="story-counter" id="story-counter"></span>
-            <button class="story-next" id="story-next">Next &#8594;</button>
-        </div>
-    </div>
-</div>
 
 <!-- ── FOOTER ── -->
 <footer>
@@ -1466,18 +1336,6 @@
                 else tl.to(b, { autoAlpha: 1, duration: 0.6 }); // last beat holds
             });
 
-            // Act IV — horizontal shelf
-            const track = document.querySelector('.ship-track');
-            const getScroll = () => Math.max(0, track.scrollWidth - window.innerWidth);
-            const shipTween = gsap.to(track, {
-                x: () => -getScroll(),
-                ease: 'none',
-                scrollTrigger: {
-                    trigger: '.ship-viewport', start: 'top 55%', end: () => '+=' + (getScroll() + 200),
-                    pin: '#work', scrub: 0.5, invalidateOnRefresh: true
-                }
-            });
-
             return () => { /* matchMedia cleanup handled by GSAP */ };
         });
 
@@ -1525,294 +1383,6 @@
         }
         requestAnimationFrame(frame);
     })();
-
-    // ── PROJECT STORY PRESENTATIONS ──
-    const STORIES = {
-        platform: [
-            { kind: 'claim', eyebrow: 'The Wedge', title: 'Most advise on enterprise AI. I architect and ship it.',
-              body: 'An AI leader who designed and built an enterprise multi-agent AI platform — end to end. The rare overlap of domain authority and hands-on engineering.' },
-            { kind: 'arch', eyebrow: 'The Architecture', title: 'What I designed and built',
-              body: 'A FastAPI backend on Cloud Run hosts every agent as its own router; the browser reaches it through a Firebase rewrite proxy, so no page holds a backend URL. Gemini and Firestore sit behind it.',
-              vb: [0, 0, 640, 340],
-              region: { x: 210, y: 18, w: 410, h: 304, label: 'us-central1' },
-              badge: { x: 466, y: 26, w: 138, h: 22, text: 'REGIONAL ONLY' },
-              nodes: [
-                { id: 'browser', x: 22, y: 70, w: 96, h: 46, label: 'Browser', accent: 'muted' },
-                { id: 'fb', x: 22, y: 190, w: 96, h: 50, label: 'Firebase', sub: 'Hosting + CDN', accent: 'teal' },
-                { id: 'cr', x: 250, y: 108, w: 210, h: 96, label: 'Cloud Run · FastAPI', accent: 'teal', chips: ['OCM', 'Infra', 'GWS', '+'] },
-                { id: 'vx', x: 500, y: 70, w: 110, h: 52, label: 'Vertex AI', sub: 'Gemini', accent: 'gold' },
-                { id: 'fs', x: 500, y: 162, w: 110, h: 52, label: 'Firestore', accent: 'teal' },
-                { id: 'ar', x: 250, y: 244, w: 210, h: 50, label: 'Artifact Registry', sub: 'regional build + deploy', accent: 'muted' }
-              ],
-              edges: [
-                { from: 'browser', to: 'cr', label: '/api' },
-                { from: 'fb', to: 'cr', label: 'proxy' },
-                { from: 'cr', to: 'vx' },
-                { from: 'cr', to: 'fs' },
-                { from: 'ar', to: 'cr', fromSide: 't', toSide: 'b', dashed: true, packet: false }
-              ] },
-            { kind: 'contrast', eyebrow: 'The Hard Part', title: 'Built under a strict org policy',
-              body: 'A multi-region ban broke the default container registry and build staging. I re-architected the pipeline fully regional and codified ~7 distinct failure fixes into a single, idempotent deploy command.',
-              before: { big: '7 failures', small: 'multi-region blocked' }, after: { big: '1 command', small: 'idempotent deploy' } },
-            { kind: 'stat', eyebrow: 'By Design', title: 'Governed, efficient, built to scale',
-              body: 'Auth-gated by design and built to encode real consulting workflows — governance and cost discipline engineered in from the first line, not bolted on later.',
-              stats: [ { num: 0, lbl: 'hard-coded backend URLs' }, { num: 100, suffix: '%', lbl: 'regional builds', gold: true }, { num: 1, lbl: 'command to deploy' } ] }
-        ],
-        ocm: [
-            { kind: 'claim', eyebrow: 'The Wedge', title: 'I turn consulting methodology into auditable software.',
-              body: 'Not a chatbot that "does change management" — a system that encodes a formal OCM methodology and proves which version produced every deliverable.' },
-            { kind: 'arch', eyebrow: 'The Architecture', title: 'A versioned methodology engine',
-              body: 'The methodology lives as a "skill" document loaded by content hash at runtime, so each deliverable is stamped with the exact methodology version that produced it.',
-              vb: [0, 0, 640, 280],
-              nodes: [
-                { id: 'brief', x: 20, y: 112, w: 96, h: 54, label: 'Brief', accent: 'muted' },
-                { id: 'skill', x: 156, y: 100, w: 140, h: 78, label: 'Skill Engine', sub: 'content-hash · vN', accent: 'gold' },
-                { id: 'gem', x: 336, y: 112, w: 96, h: 54, label: 'Gemini', accent: 'teal' },
-                { id: 'deliv', x: 470, y: 60, w: 150, h: 56, label: 'Deliverables', sub: 'version-tagged', accent: 'teal' },
-                { id: 'pdf', x: 470, y: 160, w: 150, h: 56, label: 'Branded PDF', accent: 'gold' }
-              ],
-              edges: [
-                { from: 'brief', to: 'skill' },
-                { from: 'skill', to: 'gem' },
-                { from: 'gem', to: 'deliv' },
-                { from: 'deliv', to: 'pdf', fromSide: 'b', toSide: 't', packet: false }
-              ] },
-            { kind: 'phases', eyebrow: 'The Scope', title: '4 phases, 18 deliverables',
-              body: 'A complete, consistent change-management set — the same rigorous playbook every single run.',
-              phases: 4, total: 18 },
-            { kind: 'stat', eyebrow: 'The Value', title: 'Weeks of work, on demand',
-              body: 'A senior consultant’s multi-week deliverable process, compressed into consistent, branded, traceable output.',
-              stats: [ { num: 4, lbl: 'phases' }, { num: 18, lbl: 'deliverables', gold: true }, { num: 0, lbl: 'code changes to update the method' } ] }
-        ],
-        gws: [
-            { kind: 'claim', eyebrow: 'The Wedge', title: 'I don’t guess at licensing. I prove it from real usage.',
-              body: 'Most "cost optimization" is a spreadsheet and a hunch. This reads an organization’s actual usage and produces a per-user recommendation traceable to the usage behind it.' },
-            { kind: 'arch', eyebrow: 'The Architecture', title: 'From real usage to a defensible call',
-              body: 'A Domain-Wide-Delegation service account reads true usage via the Reports API, matched against a verified SKU catalog. A zero-usage guard protects active-but-quiet seats; heavy runs scale out on Cloud Run Jobs.',
-              vb: [0, 0, 640, 290],
-              nodes: [
-                { id: 'sa', x: 20, y: 116, w: 104, h: 56, label: 'DWD Service', sub: 'account', accent: 'gold' },
-                { id: 'admin', x: 150, y: 116, w: 110, h: 56, label: 'Admin Console', accent: 'muted' },
-                { id: 'rep', x: 286, y: 116, w: 112, h: 56, label: 'Reports API', sub: 'real usage', accent: 'teal' },
-                { id: 'an', x: 424, y: 100, w: 150, h: 82, label: 'Analyzer', sub: 'SKU catalog + zero-usage guard', accent: 'teal' },
-                { id: 'jobs', x: 424, y: 212, w: 150, h: 48, label: 'Cloud Run Jobs', accent: 'gold' }
-              ],
-              edges: [
-                { from: 'sa', to: 'admin' },
-                { from: 'admin', to: 'rep' },
-                { from: 'rep', to: 'an' },
-                { from: 'an', to: 'jobs', fromSide: 'b', toSide: 't', dashed: true, label: 'scale out', packet: false }
-              ] },
-            { kind: 'contrast', eyebrow: 'The Safeguard', title: 'Quiet ≠ inactive',
-              body: 'The accuracy guard means an active-but-quiet user is never wrongly downgraded — which is exactly what keeps the recommendations trustworthy.',
-              before: { big: 'Naive', small: 'low usage → downgrade' }, after: { big: 'Guarded', small: 'active seats protected' } },
-            { kind: 'stat', eyebrow: 'The Value', title: 'A defensible right-sizing case',
-              body: 'Built to surface over-licensing across hundreds of seats — every recommendation traceable to the usage data behind it, and thin evidence reported as "insufficient data" rather than guessed.',
-              stats: [ { num: 100, suffix: 's', lbl: 'of seats in scope' }, { num: 0, lbl: 'active seats downgraded, by design', gold: true } ] }
-        ],
-        hci: [
-            { kind: 'claim', eyebrow: 'The Wedge', title: 'Manual write-ups don’t scale. I made the analysis repeatable.',
-              body: 'Engineers drop in health-check exports; the agent returns the same structured findings every run, tracks recurring issues, and drafts the report. People triage and own every fix.' },
-            { kind: 'arch', eyebrow: 'The Architecture', title: 'From raw exports to tracked issues',
-              body: 'Exports pass an input-safety layer (size caps, secret redaction, injection flags), then a large-context Gemini analysis in a background job produces findings, tracked issues and PDF/Word reports.',
-              vb: [0, 0, 640, 270],
-              nodes: [
-                { id: 'in', x: 20, y: 104, w: 96, h: 56, label: 'Inputs', accent: 'muted' },
-                { id: 'pipe', x: 156, y: 70, w: 206, h: 124, label: 'Analysis Pipeline', sub: 'security layer + guards', accent: 'teal', chips: ['screen', 'analyze', 'track'] },
-                { id: 'pdf', x: 420, y: 70, w: 180, h: 52, label: 'PDF / Word Reports', accent: 'teal' },
-                { id: 'mail', x: 420, y: 150, w: 180, h: 52, label: 'Tracked Issues', accent: 'gold' }
-              ],
-              edges: [
-                { from: 'in', to: 'pipe' },
-                { from: 'pipe', to: 'pdf' },
-                { from: 'pipe', to: 'mail' }
-              ] },
-            { kind: 'stat', eyebrow: 'The Value', title: 'Same structure, every run',
-              body: 'Findings with recommended fixes in one structure every time, recurring problems that build history instead of looking new, and reports ready to share — built to retire manual write-ups.',
-              stats: [ { num: 0, lbl: 'manual write-ups', gold: true }, { num: 0, lbl: 'changes made to infrastructure' } ] }
-        ],
-        revokai: [
-            { kind: 'claim', eyebrow: 'The Wedge', title: 'Compliance controls don’t need more effort. They need a governed engine.',
-              body: 'RevokAI, co-built in a sponsored squad, turns a manual access-revocation control into a closed loop — detect, validate, approve, remediate, prove. The AI does the reasoning; deterministic rules and a human do the deciding.' },
-            { kind: 'contrast', eyebrow: 'The Shift', title: 'From weekly grind to on-demand control',
-              body: 'The hard identity matches — buried in metadata and free text — are human work today. RevokAI has AI correlate them, and every action is ticketed, timestamped, and exportable as audit evidence.',
-              before: { big: '25 hrs/wk', small: 'manual analysis and correlation' }, after: { big: 'Minutes', small: 'on demand, audit trail included' } },
-            { kind: 'stat', eyebrow: 'By Design', title: 'Governed, not just automated',
-              body: 'Mandatory human approval on every action, built in from day one, and a reusable pattern that extends to recertification and other controls.',
-              stats: [ { num: 100, suffix: '%', lbl: 'human-approved actions' }, { num: 1300, lbl: 'manual hours/yr targeted', gold: true }, { num: 5, lbl: 'stage closed loop' } ] }
-        ],
-        outreach: [
-            { kind: 'claim', eyebrow: 'The Wedge', title: 'Outreach at scale usually means spam. This one earns the right to send.',
-              body: 'An agent that researches each customer’s strategic priorities using real-time web search, maps them to a service portfolio, and scores the alignment — before a single word of outreach is drafted.' },
-            { kind: 'contrast', eyebrow: 'The Shift', title: 'Research-grade outreach, one command',
-              body: 'What took hours of manual account research per customer runs end to end from a single command — research, scoring, and a personalized draft grounded in that customer’s actual goals.',
-              before: { big: 'Hours', small: 'manual research per account' }, after: { big: '1 command', small: 'research → score → draft' } },
-            { kind: 'stat', eyebrow: 'The Guardrail', title: 'Only evidence gets actioned',
-              body: 'A strict 80/100 alignment threshold gates every send, and a human reviews every draft — if the research doesn’t support the opportunity, no email exists.',
-              stats: [ { num: 80, suffix: '+', lbl: 'score required to action' }, { num: 100, suffix: '%', lbl: 'grounded in real-time research', gold: true } ] }
-        ]
-    };
-
-    const overlay = document.getElementById('story-overlay');
-    const stageEl = document.getElementById('story-stage');
-    const progressEl = document.getElementById('story-progress');
-    const counterEl = document.getElementById('story-counter');
-    const prevBtn = document.getElementById('story-prev');
-    const nextBtn = document.getElementById('story-next');
-    const closeBtn = document.querySelector('.story-close');
-    let currentStory = [], currentIdx = 0, lastFocused = null;
-
-    function esc(s) { const d = document.createElement('div'); d.textContent = s; return d.innerHTML; }
-
-    function anchor(n, side) {
-        if (side === 'l') return [n.x, n.y + n.h / 2];
-        if (side === 'r') return [n.x + n.w, n.y + n.h / 2];
-        if (side === 't') return [n.x + n.w / 2, n.y];
-        if (side === 'b') return [n.x + n.w / 2, n.y + n.h];
-        return [n.x + n.w / 2, n.y + n.h / 2];
-    }
-
-    function renderArch(scene) {
-        const vb = scene.vb || [0, 0, 640, 340];
-        const byId = {}; scene.nodes.forEach(n => byId[n.id] = n);
-        let s = `<div class="viz-arch anim"><svg viewBox="${vb.join(' ')}" role="img" aria-label="${esc(scene.title)} architecture diagram">`;
-        if (scene.region) {
-            const r = scene.region;
-            s += `<rect class="arch-region" x="${r.x}" y="${r.y}" width="${r.w}" height="${r.h}" rx="14"/>`;
-            s += `<text class="arch-region-label" x="${r.x + 12}" y="${r.y + 18}">${esc(r.label)}</text>`;
-        }
-        const paths = [];
-        scene.edges.forEach((e, i) => {
-            const a = anchor(byId[e.from], e.fromSide || 'r');
-            const b = anchor(byId[e.to], e.toSide || 'l');
-            const d = `M ${a[0]} ${a[1]} L ${b[0]} ${b[1]}`;
-            paths.push({ d: d, packet: e.packet !== false });
-            s += `<path class="arch-edge${e.dashed ? ' dashed' : ''}" d="${d}" style="animation-delay:${i * 0.06}s"/>`;
-            if (e.label) { const mx = (a[0] + b[0]) / 2, my = (a[1] + b[1]) / 2 - 5; s += `<text class="arch-edge-label" x="${mx}" y="${my}" text-anchor="middle">${esc(e.label)}</text>`; }
-        });
-        if (!reduceMotion) {
-            paths.forEach((p, i) => { if (!p.packet) return; s += `<circle class="arch-packet" r="3.5"><animateMotion dur="2.4s" begin="${0.6 + i * 0.5}s" repeatCount="indefinite" path="${p.d}"/></circle>`; });
-        }
-        scene.nodes.forEach((n, i) => {
-            s += `<g class="arch-node ${n.accent || 'muted'}" style="animation-delay:${0.12 + i * 0.08}s">`;
-            s += `<rect x="${n.x}" y="${n.y}" width="${n.w}" height="${n.h}" rx="9"/>`;
-            const cy = n.sub ? n.y + (n.chips ? n.h * 0.30 : n.h * 0.40) : n.y + n.h / 2;
-            s += `<text class="nlabel" x="${n.x + n.w / 2}" y="${cy}" text-anchor="middle" dominant-baseline="middle">${esc(n.label)}</text>`;
-            if (n.sub) s += `<text class="nsub" x="${n.x + n.w / 2}" y="${cy + 15}" text-anchor="middle" dominant-baseline="middle">${esc(n.sub)}</text>`;
-            if (n.chips) {
-                const pad = 8, m = n.chips.length, cw = (n.w - pad * (m + 1)) / m, ch = 18, cyy = n.y + n.h - ch - 8;
-                n.chips.forEach((c, ci) => {
-                    const cx = n.x + pad + ci * (cw + pad);
-                    s += `<rect class="arch-chip" x="${cx}" y="${cyy}" width="${cw}" height="${ch}" rx="5"/>`;
-                    s += `<text class="arch-chip-text" x="${cx + cw / 2}" y="${cyy + ch / 2}" text-anchor="middle" dominant-baseline="middle">${esc(c)}</text>`;
-                });
-            }
-            s += `</g>`;
-        });
-        if (scene.badge) {
-            const b = scene.badge;
-            s += `<g class="arch-badge"><rect x="${b.x}" y="${b.y}" width="${b.w}" height="${b.h}" rx="11"/><text x="${b.x + b.w / 2}" y="${b.y + b.h / 2 + 0.5}" text-anchor="middle" dominant-baseline="middle">${esc(b.text)}</text></g>`;
-        }
-        return s + `</svg></div>`;
-    }
-
-    function sceneHTML(scene) {
-        if (scene.kind === 'claim') {
-            return `<div class="story-scene"><div class="story-eyebrow anim">${esc(scene.eyebrow)}</div>`
-                + `<h2 class="story-title story-claim anim">${esc(scene.title)}</h2>`
-                + `<div class="claim-underline anim"></div>`
-                + `<p class="story-body anim">${esc(scene.body)}</p></div>`;
-        }
-        let viz = '';
-        if (scene.kind === 'arch') {
-            viz = renderArch(scene);
-        } else if (scene.kind === 'stat') {
-            viz = '<div class="viz-stats anim">' + scene.stats.map(s =>
-                `<div class="stat"><div class="num${s.gold ? ' gold' : ''}" data-count="${s.num}" data-prefix="${s.prefix||''}" data-suffix="${s.suffix||''}">${s.prefix||''}0${s.suffix||''}</div><div class="lbl">${esc(s.lbl)}</div></div>`
-            ).join('') + '</div>';
-        } else if (scene.kind === 'contrast') {
-            viz = `<div class="viz-contrast anim"><div class="side before"><div class="big">${esc(scene.before.big)}</div><div class="small">${esc(scene.before.small)}</div></div><div class="vs">→</div><div class="side after"><div class="big">${esc(scene.after.big)}</div><div class="small">${esc(scene.after.small)}</div></div></div>`;
-        } else if (scene.kind === 'phases') {
-            let cells = '';
-            for (let i = 1; i <= scene.total; i++) {
-                const isPhase = i <= scene.phases;
-                cells += `<div class="cell${isPhase ? ' phase' : ''}" style="animation-delay:${i * 0.05}s">${isPhase ? 'P' + i : ''}</div>`;
-            }
-            viz = '<div class="viz-phases anim">' + cells + '</div>';
-        }
-        return `<div class="story-scene"><div class="story-eyebrow anim">${esc(scene.eyebrow)}</div>`
-            + `<h2 class="story-title anim">${esc(scene.title)}</h2>`
-            + `<p class="story-body anim">${esc(scene.body)}</p>${viz}</div>`;
-    }
-
-    function animateScene() {
-        const scene = currentStory[currentIdx];
-        if (scene.kind === 'stat') {
-            stageEl.querySelectorAll('[data-count]').forEach(el => {
-                const target = parseFloat(el.dataset.count), pre = el.dataset.prefix, suf = el.dataset.suffix;
-                if (reduceMotion || target === 0) { el.textContent = pre + target + suf; return; }
-                const dur = 900, t0 = performance.now();
-                (function tick(now) {
-                    const p = Math.min((now - t0) / dur, 1);
-                    el.textContent = pre + Math.round(target * (1 - Math.pow(1 - p, 3))) + suf;
-                    if (p < 1) requestAnimationFrame(tick);
-                })(t0);
-            });
-        }
-    }
-
-    function render() {
-        stageEl.innerHTML = sceneHTML(currentStory[currentIdx]);
-        void stageEl.offsetWidth;
-        stageEl.firstChild.classList.add('active');
-        progressEl.querySelectorAll('.dot').forEach((d, i) => {
-            d.classList.toggle('active', i === currentIdx);
-            d.classList.toggle('done', i < currentIdx);
-        });
-        counterEl.textContent = (currentIdx + 1) + ' / ' + currentStory.length;
-        prevBtn.disabled = currentIdx === 0;
-        nextBtn.textContent = currentIdx === currentStory.length - 1 ? 'Done ✓' : 'Next →';
-        animateScene();
-    }
-
-    function goTo(i) {
-        if (i < 0) return;
-        if (i >= currentStory.length) { closeStory(); return; }
-        currentIdx = i; render();
-    }
-
-    function openStory(key, trigger) {
-        if (!STORIES[key]) return;
-        currentStory = STORIES[key]; currentIdx = 0; lastFocused = trigger || null;
-        progressEl.innerHTML = currentStory.map(() => '<span class="dot"></span>').join('');
-        progressEl.querySelectorAll('.dot').forEach((d, i) => d.addEventListener('click', () => goTo(i)));
-        overlay.classList.add('open');
-        document.body.style.overflow = 'hidden';
-        render();
-        closeBtn.focus();
-    }
-
-    function closeStory() {
-        overlay.classList.remove('open');
-        document.body.style.overflow = '';
-        if (lastFocused) lastFocused.focus();
-    }
-
-    document.querySelectorAll('.work-card[data-story]').forEach(card => {
-        // The "Architecture →" link inside each card navigates normally instead of opening the story.
-        // Keyboard users reach the real <button class="story-cue">; mouse clicks anywhere else on the card open it too.
-        card.addEventListener('click', e => { if (!e.target.closest('a')) openStory(card.dataset.story, card.querySelector('.story-cue') || card); });
-    });
-    prevBtn.addEventListener('click', () => goTo(currentIdx - 1));
-    nextBtn.addEventListener('click', () => goTo(currentIdx + 1));
-    closeBtn.addEventListener('click', closeStory);
-    overlay.addEventListener('click', e => { if (e.target === overlay) closeStory(); });
-    document.addEventListener('keydown', e => {
-        if (!overlay.classList.contains('open')) return;
-        if (e.key === 'Escape') closeStory();
-        else if (e.key === 'ArrowRight') goTo(currentIdx + 1);
-        else if (e.key === 'ArrowLeft') goTo(currentIdx - 1);
-    });
 
     // ── Skipper proactive nudge (chat widget itself lives in /chat.js) ──
     const fabNudge = document.getElementById('fab-nudge');

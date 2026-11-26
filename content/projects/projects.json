@@ -1,0 +1,564 @@
+{
+  "order": [
+    "gws-agent-platform", "agent-platform-foundation", "directory-group-agent", "outage-response-agent",
+    "licence-fit-analyzer", "security-evaluator", "account-monitoring", "proposal-completeness",
+    "reseller-assistant", "ticket-enrichment", "revokai", "customer-outreach",
+    "platform-migration", "platform", "change-management", "infra-health-check"
+  ],
+  "index_labels": {
+    "gws-agent-platform": "Workspace agent platform",
+    "agent-platform-foundation": "Agent platform foundation",
+    "directory-group-agent": "Directory group agent",
+    "outage-response-agent": "Outage response",
+    "licence-fit-analyzer": "Licence-fit analyzer",
+    "security-evaluator": "Security evaluator",
+    "account-monitoring": "Account monitoring",
+    "proposal-completeness": "Proposal completeness",
+    "reseller-assistant": "Reseller assistant",
+    "ticket-enrichment": "Ticket enrichment",
+    "revokai": "RevokAI",
+    "customer-outreach": "Customer outreach",
+    "platform-migration": "Platform migration",
+    "platform": "First-generation platform",
+    "change-management": "Change management",
+    "infra-health-check": "Infra health check"
+  },
+  "projects": [
+    {
+      "id": "gws-agent-platform",
+      "name": "Google Workspace agent platform",
+      "chips": ["Built", "Google Cloud"],
+      "tagline": "A governed platform for AI agents that work on Google Workspace data, where agents never hold the credentials and never see real identities.",
+      "role": "Built it end to end: portal, tool servers, policies, release tooling and security checks.",
+      "problem": "AI agents that analyse an organisation's Google Workspace (licences, security settings, reseller subscriptions, support tickets) need very powerful admin-level read access. Giving that access to each agent, with weak sign-in and no audit trail, is a risk no security team accepts.",
+      "what": "A shared platform that the agents run on. Users sign in through one portal; an access list decides who may use each agent and who may see real data. All Workspace access goes through a single read-only tool server that holds the only credential, checks a policy before every read, and replaces people's identities with keyed pseudonyms before any agent or model sees the data. A second tool gives read-only ticket access, and a third chooses and automatically re-qualifies the Gemini model each agent uses. Changes reach the release environment only through one scripted promotion that reuses the exact tested images and runs a security check suite before and after.",
+      "value": "The powerful credential lives in one small, auditable place. Agents can be added without widening access. Every read is logged in a tamper-evident trail. Releases are repeatable and reversible.",
+      "layers": [
+        {"name": "Experience", "components": [
+          {"id": "portal", "name": "Portal and agent pages", "role": "One sign-in portal that launches each agent's page.", "tech": "React · Firebase Hosting", "pb": "the-reference-architecture-layers-of-an-enterprise-agent"}]},
+        {"name": "Identity", "components": [
+          {"id": "signin", "name": "Verified sign-in", "role": "Google sign-in with tokens verified on every request.", "tech": "Identity Platform", "pb": "secrets-and-identity"},
+          {"id": "access", "name": "Access list and data tiers", "role": "Roles and per-agent membership; two data tiers, real data or synthetic data.", "tech": "Roles · per-agent membership", "pb": "multi-tenancy"}]},
+        {"name": "Agents", "components": [
+          {"id": "agents", "name": "Agent services and jobs", "role": "Each agent runs as its own containerised service, with background jobs for long runs.", "tech": "Cloud Run", "pb": "the-reference-architecture-layers-of-an-enterprise-agent"},
+          {"id": "opa", "name": "Policy sidecar", "role": "An Open Policy Agent sidecar beside every service decides each request and tool call.", "tech": "Open Policy Agent (Rego)", "pb": "policy"}]},
+        {"name": "AI", "components": [
+          {"id": "model", "name": "Gemini models", "role": "The model each agent uses, chosen through the model registry.", "tech": "Vertex AI"},
+          {"id": "screen", "name": "Prompt and answer screening", "role": "Screens every prompt and every answer before it is used.", "tech": "Model Armor · Sensitive Data Protection", "pb": "security-for-agents"}]},
+        {"name": "Tools (MCP servers)", "components": [
+          {"id": "ws", "name": "Workspace reader", "role": "Holds the only Workspace credential; reads read-only and replaces identities with keyed pseudonyms.", "tech": "FastMCP · read-only, keyless delegation", "pb": "mcp-what-s-current"},
+          {"id": "tix", "name": "Ticket reader", "role": "Read-only access to support tickets.", "tech": "FastMCP", "pb": "tool-design"},
+          {"id": "reg", "name": "Model registry", "role": "Chooses the Gemini model for each agent and automatically re-qualifies it.", "tech": "FastMCP", "pb": "gateway-and-registry"}]},
+        {"name": "Data", "components": [
+          {"id": "sql", "name": "Relational store", "role": "One schema per component.", "tech": "Cloud SQL (PostgreSQL)"},
+          {"id": "redis", "name": "Rate limits and kill switch", "role": "Shared counters and a switch that stops the agents.", "tech": "Memorystore Redis", "pb": "kill-switch-preflight-and-dry-run"},
+          {"id": "audit", "name": "Create-only audit store", "role": "Hash-chained audit entries that can be added but not changed.", "tech": "Create-only storage", "pb": "audit"},
+          {"id": "secrets", "name": "Secrets", "role": "Runtime secrets, never in source.", "tech": "Secret Manager", "pb": "secrets-and-identity"}]},
+        {"name": "Delivery", "components": [
+          {"id": "ci", "name": "Checks and builds", "role": "Checks on every change; images built only from committed code.", "tech": "GitHub Actions · Cloud Build · Artifact Registry", "pb": "the-delivery-pipeline-commit-to-production"},
+          {"id": "promo", "name": "Digest-based promotion", "role": "Staging first, then one scripted promotion of the exact tested images, with a lock and a security check suite before and after.", "tech": "Scripted promotion", "pb": "the-delivery-pipeline-commit-to-production"}]}
+      ],
+      "flows": [{"title": "How a request moves through it", "steps": [
+        {"text": "The user signs in; the service verifies the token and looks up the access list.", "nodes": ["signin", "access"]},
+        {"text": "The agent asks the Workspace tool for data, proving its own service identity.", "nodes": ["agents", "ws"]},
+        {"text": "The tool checks policy (is this caller allowed this tool; is this tenant cleared here), writes an audit entry, then reads Workspace with a read-only, keyless delegated credential.", "nodes": ["ws", "opa", "audit"]},
+        {"text": "Identities are split off and replaced with keyed pseudonyms; the agent receives only an id.", "nodes": ["ws"]},
+        {"text": "The agent reads the pseudonymised snapshot, gets its model from the registry, has the prompt and the answer screened, and stores its result.", "nodes": ["agents", "reg", "screen", "model", "sql"]},
+        {"text": "A reviewer who needs a real name asks the tool, and that lookup is audited too.", "nodes": ["ws", "audit"]}
+      ]}],
+      "controls": [
+        {"name": "Verified sign-in on every request", "how": "Tokens are verified server-side; access comes from roles and per-agent membership.", "pb": "secrets-and-identity"},
+        {"name": "Fail-closed policy checks", "how": "Policy is checked before every read; if the check can't run, the read doesn't happen.", "pb": "policy"},
+        {"name": "Read-only by construction", "how": "Read-only scopes plus a transport that only allows GET requests.", "pb": "tool-design"},
+        {"name": "Keyed pseudonymisation", "how": "People's identities are replaced before any agent or model sees the data.", "pb": "pii-and-dlp"},
+        {"name": "Prompt and response screening", "how": "Every prompt and answer is screened before use.", "pb": "security-for-agents"},
+        {"name": "Tamper-evident audit", "how": "A hash-chained, create-only audit trail, plus a 90-day retention job with least privilege.", "pb": "audit"},
+        {"name": "Repeatable, reversible releases", "how": "Images built only from committed code; digest-based promotion with a lock; an automated security check suite; alerts on out-of-process changes; pinned dependencies and scanned images.", "pb": "the-delivery-pipeline-commit-to-production"}
+      ],
+      "hitl": "Administrators manage access. Clearing a new tenant or ticket project for real data is a named sign-off recorded with the policy. A named releaser confirms each promotion.",
+      "stack": ["Python", "FastAPI", "Model Context Protocol (FastMCP)", "Open Policy Agent (Rego)", "Google Cloud Run", "Cloud SQL (PostgreSQL)", "Memorystore Redis", "Secret Manager", "Vertex AI (Gemini)", "Model Armor", "Sensitive Data Protection", "Firebase Hosting", "Identity Platform", "Keycloak (OIDC)", "Cloud Build", "Artifact Registry", "GitHub Actions", "pytest"]
+    },
+    {
+      "id": "agent-platform-foundation",
+      "name": "Agent platform foundation",
+      "chips": ["Led and built", "Kubernetes"],
+      "tagline": "A secure-by-default foundation for shipping governed AI agents on enterprise Kubernetes.",
+      "role": "Led and built it; the platform operators added image signing on top.",
+      "problem": "Teams that want to put AI agents on a shared enterprise Kubernetes platform face the same hurdles each time: proving who is calling an agent, deciding what each agent and each tool is allowed to do, keeping secrets and unpinned dependencies out of the build, and meeting the platform's rules for images and deployment. Solved one agent at a time, these controls drift, and a single gap at the trust boundary can let a caller claim permissions they do not have.",
+      "what": "A reusable foundation that every agent starts from. It contains a small reference agent that exercises the whole path end to end, a shared identity module that verifies each caller's signed token, a policy layout in which Open Policy Agent decides on every request and every tool call, and a suite of automated \"contract\" tests that hold every project to the same rules. A delivery pipeline tests, scans and builds container images, and a read-only health check tells a developer whether the platform's model gateway, tracing and tool gateway are reachable and whether their keys work. New agents are created by copying the reference agent and renaming it.",
+      "value": "New agents inherit identity, authorisation, secret handling and supply-chain controls instead of re-implementing them. Rules are enforced by tests in the pipeline, not by convention. Each agent stays independent (own policy, prompt, tests, image), so teams can change and release them separately. Framework upgrades arrive as a tested, reviewable change.",
+      "layers": [
+        {"name": "Developer experience", "components": [
+          {"id": "devc", "name": "Dev container and setup", "role": "One setup script verifies the framework package by checksum and installs a checksum-pinned policy engine.", "tech": "Dev Containers", "pb": "the-delivery-pipeline-commit-to-production"},
+          {"id": "local", "name": "Local checks", "role": "One script runs every check locally before a change is pushed.", "tech": "pytest · policy tests"},
+          {"id": "health", "name": "Read-only health check", "role": "Tells a developer whether the model gateway, tracing and tool gateway are reachable and whether their keys work.", "tech": "Read-only probe", "pb": "health-and-telemetry"}]},
+        {"name": "Edge and identity", "components": [
+          {"id": "a2a", "name": "Agent-to-agent endpoint", "role": "The agent's JSON-RPC entry point.", "tech": "A2A protocol", "pb": "a2a-for-agent-to-agent-delegation"},
+          {"id": "jwt", "name": "Token verifier", "role": "Checks signature, issuer, audience and required claims; ignores any identity claimed in the request body.", "tech": "Keycloak (OIDC / JWT)", "pb": "secrets-and-identity"}]},
+        {"name": "Policy", "components": [
+          {"id": "opa", "name": "Per-agent policy sidecar", "role": "Deny by default, with role and tenant checks and an explicit allow-list of tools; reachable only inside the pod.", "tech": "Open Policy Agent (Rego)", "pb": "policy"}]},
+        {"name": "Orchestration", "components": [
+          {"id": "agent", "name": "Reference agent", "role": "A small agent that exercises the whole path end to end; new agents start as a copy.", "tech": "LangGraph on an enterprise agent framework", "pb": "the-reference-architecture-layers-of-an-enterprise-agent"}]},
+        {"name": "Model and observability", "components": [
+          {"id": "gw", "name": "LLM gateway", "role": "Fronts the hosted models.", "tech": "LiteLLM", "pb": "gateway-and-registry"},
+          {"id": "lf", "name": "Tracing and prompt registry", "role": "Traces every run; versioned prompts kept in sync with the code.", "tech": "Langfuse", "pb": "quality-evals-and-observability"}]},
+        {"name": "Delivery", "components": [
+          {"id": "ci", "name": "Contract and policy tests", "role": "Contract, unit and policy tests plus secret scanning on every change.", "tech": "GitHub Actions · gitleaks", "pb": "the-delivery-pipeline-commit-to-production"},
+          {"id": "img", "name": "Pinned, scanned images", "role": "Base images pinned by digest; vulnerability gate before deployment.", "tech": "Docker · Trivy", "pb": "the-delivery-pipeline-commit-to-production"},
+          {"id": "gitops", "name": "GitOps deployment", "role": "Deployment to Kubernetes with secrets injected from a vault.", "tech": "ArgoCD · Kyverno · External Secrets · Azure Key Vault", "pb": "the-delivery-pipeline-commit-to-production"}]}
+      ],
+      "flows": [{"title": "How a request moves through it", "steps": [
+        {"text": "A caller sends a request with a signed identity token.", "nodes": ["a2a"]},
+        {"text": "The agent verifies the token against the identity provider's published keys and ignores any identity claimed in the request body.", "nodes": ["jwt"]},
+        {"text": "The policy engine checks whether this caller, in this tenant, may start the agent.", "nodes": ["opa"]},
+        {"text": "The agent loads its system prompt from the prompt registry and calls the model through the gateway.", "nodes": ["agent", "lf", "gw"]},
+        {"text": "Before each tool runs, the policy engine is asked again; a tool not on the allow-list never runs.", "nodes": ["opa", "agent"]},
+        {"text": "The answer is returned and the run is traced.", "nodes": ["agent", "lf"]}
+      ]}],
+      "controls": [
+        {"name": "Verified caller identity", "how": "Identity is taken only from a cryptographically verified token; it fails closed when verification is not configured.", "pb": "secrets-and-identity"},
+        {"name": "Deny-by-default authorisation", "how": "Role and tenant checks on every request and every tool call; the policy engine is isolated inside the pod and set to fail closed.", "pb": "policy"},
+        {"name": "No secrets in source", "how": "Ignored local files, empty-value templates, secret scanning on every change, runtime secrets from a vault.", "pb": "secrets-and-identity"},
+        {"name": "Pinned supply chain", "how": "Framework package by checksum, base images by digest, CI actions by commit, build tools by checksum; a vulnerability gate on images before deployment.", "pb": "the-delivery-pipeline-commit-to-production"},
+        {"name": "Hardened containers", "how": "Non-root, read-only filesystem, no added capabilities.", "pb": "security-for-agents"},
+        {"name": "Contract tests", "how": "Automated contract tests block any change that breaks the rules above.", "pb": "the-delivery-pipeline-commit-to-production"}
+      ],
+      "hitl": "Every change needs approval from a designated code owner before it merges, deployment changes are reviewed by the platform's operators, and a framework upgrade is proposed automatically but merged only after a person has read the release notes. The reference agent itself is read-only and takes no actions that need approval.",
+      "stack": ["Python", "LangGraph", "Open Policy Agent (Rego)", "Keycloak (OIDC / JWT)", "LiteLLM", "Langfuse", "Kubernetes", "Docker", "GitHub Actions", "Trivy", "gitleaks", "ArgoCD", "Kyverno", "External Secrets", "Azure Key Vault", "A2A protocol", "pytest", "Dev Containers"]
+    },
+    {
+      "id": "directory-group-agent",
+      "name": "Directory group membership agent",
+      "chips": ["Built", "Microsoft Entra ID · ServiceNow"],
+      "tagline": "An access-request agent that reads a ServiceNow ticket, lets rules or a named approver decide, changes the directory group through Microsoft Graph and proves the change before closing the ticket.",
+      "role": "Built it: design, workflow engine, integrations, approval rules, chat and request pages, tests.",
+      "problem": "Requests to add or remove someone from a directory security group arrive as free text and are worked by hand. Automating them is risky if an AI is allowed to decide who gets access.",
+      "what": "Requests come from a chat page or a ServiceNow catalog item. A language model only turns the text into a structured request. Code checks the requester, the group and the user against an allowlist of directory object IDs, then approval rules decide: approve automatically, route to a named approver in ServiceNow, or decline. After approval the request is checked again, the membership is changed through Microsoft Graph, read back from Microsoft Entra ID to confirm, recorded in an audit log, and the ticket is closed with notes at every step.",
+      "value": "Shows how routine access tickets can be completed end to end while the approval decision stays with written rules or a person, with a full record of who asked, who or what approved, and what actually changed.",
+      "layers": [
+        {"name": "Experience", "components": [
+          {"id": "chat", "name": "Chat page and request form", "role": "Describe the request; confirm a preview before a ticket is raised.", "tech": "Web pages"},
+          {"id": "snowui", "name": "ServiceNow catalog and approvals", "role": "Raise requests and approve them where people already work.", "tech": "ServiceNow"}]},
+        {"name": "API and worker", "components": [
+          {"id": "api", "name": "API service", "role": "Chat preview and confirm endpoints.", "tech": "FastAPI"},
+          {"id": "worker", "name": "Polling worker", "role": "Picks up tickets and checks the requester.", "tech": "Python"}]},
+        {"name": "Workflow", "components": [
+          {"id": "engine", "name": "State-machine engine", "role": "Moves each request through fixed states, with no duplicate writes.", "tech": "Python", "pb": "the-reference-architecture-layers-of-an-enterprise-agent"}]},
+        {"name": "AI interpretation", "components": [
+          {"id": "llm", "name": "LLM interpreter", "role": "Extracts action, user, group and reason in a strict schema; flags unclear or manipulative text.", "tech": "Azure AI Foundry · JSON-schema structured output", "pb": "security-for-agents"}]},
+        {"name": "Rules", "components": [
+          {"id": "allow", "name": "Object-ID allowlist", "role": "Only listed directory objects can ever be touched.", "tech": "Allowlist", "pb": "policy"},
+          {"id": "rules", "name": "Approval rules", "role": "Approve automatically, route to a named approver, or decline; the default cannot auto-approve.", "tech": "Rules file in version control", "pb": "governance-and-the-autonomy-ladder"}]},
+        {"name": "Integrations", "components": [
+          {"id": "snow", "name": "ServiceNow client", "role": "Tickets, work notes and approvals.", "tech": "Table API · Service Catalog API", "pb": "tool-design"},
+          {"id": "graph", "name": "Microsoft Graph client", "role": "Lookup, membership check, add and remove; reads back to verify.", "tech": "Microsoft Graph · Entra ID", "pb": "tool-design"}]},
+        {"name": "State and audit", "components": [
+          {"id": "db", "name": "Request state", "role": "Where each request is in its workflow.", "tech": "SQLite"},
+          {"id": "audit", "name": "Append-only audit log", "role": "Who asked, who or what approved, and what changed.", "tech": "Append-only log", "pb": "audit"}]}
+      ],
+      "flows": [{"title": "How a request moves through it", "steps": [
+        {"text": "A user describes the request in chat (and confirms a preview) or raises a ServiceNow ticket.", "nodes": ["chat", "snowui", "api"]},
+        {"text": "The worker picks up the ticket and checks the requester.", "nodes": ["worker", "snow"]},
+        {"text": "The model extracts action, user, group and reason; it flags unclear or manipulative text.", "nodes": ["llm"]},
+        {"text": "Code resolves names to directory objects and checks them against the allowlist.", "nodes": ["graph", "allow"]},
+        {"text": "Approval rules approve automatically, route to the named approver, or decline.", "nodes": ["rules", "snowui"]},
+        {"text": "The request is re-checked against the approval, the allowlist and current membership.", "nodes": ["engine", "allow"]},
+        {"text": "The change is made through Microsoft Graph and read back from the directory.", "nodes": ["graph"]},
+        {"text": "The audit record is written and the ticket is closed with the outcome.", "nodes": ["audit", "snow", "db"]}
+      ]}],
+      "controls": [
+        {"name": "AI interprets only", "how": "The model never approves and never supplies object IDs; suspected prompt injection is always declined.", "pb": "build-principles"},
+        {"name": "Allowlist by object ID", "how": "Requester, group and user must all be on the allowlist.", "pb": "policy"},
+        {"name": "Rules in version control", "how": "With a default that cannot auto-approve; only the named approver's decision counts.", "pb": "governance-and-the-autonomy-ladder"},
+        {"name": "Approval bound to the request", "how": "An approval covers the exact request and is invalidated if the ticket is edited.", "pb": "governance-and-the-autonomy-ladder"},
+        {"name": "Kill switch", "how": "Pauses all directory changes.", "pb": "kill-switch-preflight-and-dry-run"},
+        {"name": "Verified completion", "how": "A request completes only after read-back verification, with no duplicate writes.", "pb": "resilience"},
+        {"name": "Append-only audit trail", "how": "Plus automated tests for every control path.", "pb": "audit"}
+      ],
+      "hitl": "The requester confirms before a ticket is raised from chat. Any request not covered by an explicit low-risk rule waits for a named approver in ServiceNow. A change that cannot be verified is marked failed for a person to review.",
+      "stack": ["Python", "FastAPI", "ServiceNow (Table API, Service Catalog API)", "Microsoft Graph", "Microsoft Entra ID", "Azure AI Foundry", "Structured outputs (JSON schema)", "SQLite", "pytest"]
+    },
+    {
+      "id": "outage-response-agent",
+      "name": "Outage response agent",
+      "chips": ["Built", "Azure · AWS"],
+      "tagline": "An operations agent that works an outage from both ends: it responds when a server goes down, and it is designed to flag trouble before the server becomes unavailable.",
+      "role": "Built it: agent, rules, roster and notification tools, cloud trigger and restart path.",
+      "problem": "\"Server unreachable\" tickets arrive around the clock. Some are false alarms, yet each can pull an on-call engineer out of bed, and a real outage is only noticed after the service is already down. Operations teams need false alarms filtered out, real outages handled fast, and early warning before a failure.",
+      "what": "The agent has two modes that share the same rules, policy checks, duty roster and notification tools. Reactive: when a server stops, a ticket is raised in ServiceNow and the agent picks it up, validates the server, and fixed rules sort the result into false alarm or outage. For an outage it looks up who is on duty and phones that engineer, escalating to the next person if nobody responds. On the call the engineer can press a key to restart the server; the agent then restarts it, re-checks it, resolves the ticket and calls back to confirm. Proactive: the agent is designed to watch the server's health signals, identify a potential issue and flag it to the on-duty engineer before the server becomes unavailable, using the same roster, call and ticket path.",
+      "value": "Designed to cut unnecessary after-hours callouts, shorten the time from failure to restart, and move the first warning ahead of the outage. Every default leans towards calling a person when in doubt.",
+      "layers": [
+        {"name": "Signals", "components": [
+          {"id": "inc", "name": "ServiceNow incidents", "role": "Tickets raised when a server stops.", "tech": "ServiceNow"},
+          {"id": "cloud", "name": "Stopped-server events", "role": "Cloud events that raise the ticket for the reactive path.", "tech": "Amazon EventBridge · AWS Lambda"},
+          {"id": "health", "name": "Server health signals", "role": "Watched in proactive mode for early warning.", "tech": "Health signals", "pb": "health-and-telemetry"}]},
+        {"name": "Trigger", "components": [
+          {"id": "push", "name": "Ticket push", "role": "ServiceNow pushes the ticket number to the agent.", "tech": "ServiceNow"},
+          {"id": "poll", "name": "Scheduled poll and follow-up", "role": "Catches anything missed and follows up.", "tech": "n8n", "pb": "resilience"}]},
+        {"name": "Identity and policy", "components": [
+          {"id": "kc", "name": "Token verification", "role": "Tokens verified on the agent and on each tool.", "tech": "Keycloak", "pb": "secrets-and-identity"},
+          {"id": "opa", "name": "Policy checks", "role": "Deny by default, checked before every tool call.", "tech": "Open Policy Agent (Rego)", "pb": "policy"}]},
+        {"name": "Agent and decision", "components": [
+          {"id": "agent", "name": "Outage agent", "role": "Respond, poll and follow-up commands over an agent-to-agent API.", "tech": "Python · LangChain-based framework", "pb": "a2a-for-agent-to-agent-delegation"},
+          {"id": "rules", "name": "Deterministic rules", "role": "Classify operational, outage or inconclusive; unclear means outage.", "tech": "Rules", "pb": "build-principles"},
+          {"id": "summ", "name": "Ticket-note summary", "role": "A language model writes only the summary line of the note.", "tech": "LiteLLM gateway"}]},
+        {"name": "Tools (MCP servers)", "components": [
+          {"id": "roster", "name": "Duty roster", "role": "Who is on duty, with all-or-nothing imports and a staleness flag.", "tech": "FastMCP · PostgreSQL", "pb": "mcp-what-s-current"},
+          {"id": "notify", "name": "Notifications", "role": "SMS, voice calls and keypress responses, with escalation.", "tech": "Azure Communication Services · Amazon Connect", "pb": "tool-design"},
+          {"id": "server", "name": "Server status and restart", "role": "Status checks and restart for tagged servers, one attempt per incident.", "tech": "Amazon EC2", "pb": "tool-design"}]},
+        {"name": "Hosting and operations", "components": [
+          {"id": "aca", "name": "Container hosting", "role": "Agent and tools in containers with a policy sidecar.", "tech": "Azure Container Apps · Docker"},
+          {"id": "lf", "name": "Tracing", "role": "Traces every run.", "tech": "Langfuse", "pb": "quality-evals-and-observability"},
+          {"id": "ci", "name": "CI", "role": "Tests and builds on every change.", "tech": "GitHub Actions", "pb": "the-delivery-pipeline-commit-to-production"}]}
+      ],
+      "flows": [
+        {"title": "Reactive: when a server goes down", "steps": [
+          {"text": "A server stops and a ticket is raised in ServiceNow.", "nodes": ["cloud", "inc"]},
+          {"text": "The agent receives the ticket and validates the server.", "nodes": ["push", "agent", "server"]},
+          {"text": "Rules classify the result; anything unclear is treated as an outage.", "nodes": ["rules"]},
+          {"text": "False alarm: note added, priority lowered, routed for daytime review; nobody is called.", "nodes": ["summ", "inc"]},
+          {"text": "Outage: the roster returns who is on duty; the agent sends an SMS and places a call.", "nodes": ["roster", "notify"]},
+          {"text": "No response within the time limit: the next person, then a fallback group.", "nodes": ["notify", "poll"]},
+          {"text": "On the call the engineer presses a key to restart; the agent starts the server, waits for health checks, resolves the ticket and confirms by phone.", "nodes": ["notify", "server", "inc"]}
+        ]},
+        {"title": "Proactive: before the server is unavailable", "prefix": "P", "steps": [
+          {"text": "The agent monitors the server's health signals.", "nodes": ["health", "agent"]},
+          {"text": "It identifies a potential issue before the server is unavailable.", "nodes": ["rules"]},
+          {"text": "It flags the issue to the on-duty engineer and records it in ServiceNow, so action can be taken ahead of an outage.", "nodes": ["roster", "notify", "inc"]}
+        ]}
+      ],
+      "controls": [
+        {"name": "Rules decide, the model only writes", "how": "Classification is deterministic; the model writes the summary line.", "pb": "build-principles"},
+        {"name": "Policy on every tool call", "how": "Every tool call is authorised by policy, with verified caller identity.", "pb": "policy"},
+        {"name": "Bounded ticket and restart actions", "how": "The agent can never close or cancel a ticket and can resolve one only after an approved, verified restart; restart is limited to tagged servers, one attempt per incident.", "pb": "governance-and-the-autonomy-ladder"},
+        {"name": "Kill switch", "how": "Stops the agent's actions.", "pb": "kill-switch-preflight-and-dry-run"},
+        {"name": "Call limits", "how": "Duplicate-call protection, hourly send limits and number allow-listing.", "pb": "limits-and-budgets"},
+        {"name": "Contact details protected", "how": "Stripped from model output and masked in notes.", "pb": "pii-and-dlp"},
+        {"name": "Step-by-step audit", "how": "In the ticket and in structured logs.", "pb": "audit"}
+      ],
+      "hitl": "A restart happens only when the on-duty engineer presses the key on the call. Whenever the agent cannot reach anyone it reports \"page by hand\".",
+      "stack": ["Python", "LangChain-based agent framework", "Model Context Protocol (FastMCP)", "Open Policy Agent (Rego)", "Keycloak", "Langfuse", "LiteLLM", "ServiceNow", "Azure Communication Services", "Amazon Connect", "AWS Lambda", "Amazon EventBridge", "Amazon EC2", "Azure Container Apps", "PostgreSQL", "FastAPI", "n8n", "GitHub Actions", "Docker"]
+    },
+    {
+      "id": "licence-fit-analyzer",
+      "name": "Workspace usage and licence-fit analyzer",
+      "chips": ["Built", "Google Cloud"],
+      "tagline": "Licence right-sizing for Google Workspace, with rules that decide and an AI that advises, under risk-based human approval.",
+      "role": "Built it.",
+      "problem": "Organisations pay per seat for collaboration licences, but unused, suspended and lightly used accounts quietly hold premium tiers. Reviewing thousands of accounts by hand is impractical, and a single bulk \"approve\" hides the risky cases.",
+      "what": "Reads users, usage and licence data through a read-only tool that replaces identities with pseudonyms. Deterministic rules classify every account; for active accounts a Gemini model suggests which tier fits, in a validated structure, with a rules fallback. Results are split into no-action, individually reviewed and batch-approved groups. It never changes a licence itself.",
+      "value": "Reviewer attention goes to admins, low-confidence and disagreeing cases; every recommendation is explainable, exportable and auditable.",
+      "related": {"text": "This is the governed rebuild of the license right-sizing agent from the first-generation platform.", "href": "#platform-migration", "label": "How it was moved"},
+      "layers": [
+        {"name": "Experience", "components": [
+          {"id": "ui", "name": "Web review UI", "role": "Reviewers approve individually or by sampled batch and export reports.", "tech": "React · Firebase Auth"}]},
+        {"name": "API and jobs", "components": [
+          {"id": "api", "name": "Authenticated API", "role": "Every call verified.", "tech": "FastAPI", "pb": "secrets-and-identity"},
+          {"id": "job", "name": "Background job", "role": "Runs snapshots and scoring outside the request.", "tech": "Cloud Run"}]},
+        {"name": "Tools", "components": [
+          {"id": "ws", "name": "Read-only Workspace tool", "role": "Reads users, usage and licences; pseudonymises with a field allowlist.", "tech": "MCP", "pb": "pii-and-dlp"}]},
+        {"name": "Decision", "components": [
+          {"id": "rules", "name": "Rules engine", "role": "Classifies every account.", "tech": "Deterministic rules", "pb": "build-principles"},
+          {"id": "ai", "name": "AI advisory step", "role": "Policy check, content screening, then Gemini suggests a tier in a validated structure, with a rules fallback.", "tech": "Vertex AI Gemini · Model Armor", "pb": "security-for-agents"},
+          {"id": "plan", "name": "Review planner", "role": "Splits results into no-action, individual review and sampled batch.", "tech": "Python", "pb": "governance-and-the-autonomy-ladder"}]},
+        {"name": "Data and audit", "components": [
+          {"id": "sql", "name": "Relational store", "role": "Snapshots, recommendations and review state.", "tech": "Cloud SQL (PostgreSQL)"},
+          {"id": "redis", "name": "Kill switch and rate limits", "role": "Shared counters and a stop switch.", "tech": "Redis", "pb": "kill-switch-preflight-and-dry-run"},
+          {"id": "audit", "name": "Tamper-evident audit store", "role": "Hash-chained, create-only.", "tech": "Cloud Storage", "pb": "audit"}]}
+      ],
+      "flows": [{"title": "How a request moves through it", "steps": [
+        {"text": "An admin requests a data snapshot.", "nodes": ["ui", "api", "job"]},
+        {"text": "The tool reads Workspace read-only and pseudonymises.", "nodes": ["ws"]},
+        {"text": "Rules score every user.", "nodes": ["rules"]},
+        {"text": "The model advises on tier fit per active user.", "nodes": ["ai"]},
+        {"text": "Outputs are validated; disagreements are flagged.", "nodes": ["ai", "plan"]},
+        {"text": "Reviewers approve individually or by sampled batch.", "nodes": ["plan", "ui"]},
+        {"text": "Approved rows can be marked applied; reports are exported.", "nodes": ["ui", "sql", "audit"]}
+      ]}],
+      "controls": [
+        {"name": "Policy-as-code per tenant", "how": "Open Policy Agent decides which tenants are cleared.", "pb": "policy"},
+        {"name": "Pseudonymised inputs", "how": "With a field allowlist before anything reaches the model.", "pb": "pii-and-dlp"},
+        {"name": "Screening fails closed", "how": "Prompt and response screening; if it can't run, the model isn't called.", "pb": "security-for-agents"},
+        {"name": "Kill switch and rate limits", "how": "Shared across instances.", "pb": "kill-switch-preflight-and-dry-run"},
+        {"name": "Tamper-evident audit", "how": "Hash-chained, create-only audit trail and a data retention job.", "pb": "audit"},
+        {"name": "Output contract checks", "how": "Model output must match the validated structure, or the rules fallback applies.", "pb": "quality-evals-and-observability"}
+      ],
+      "hitl": "Every change needs a named approver. Batch approval is allowed only after a recorded random sample is opened and run warnings are acknowledged.",
+      "stack": ["Python", "FastAPI", "React", "Vertex AI Gemini", "LangGraph-based agent framework", "MCP", "Open Policy Agent", "Model Armor", "Cloud Run", "Cloud SQL (PostgreSQL)", "Redis", "Cloud Storage", "Firebase Auth"]
+    },
+    {
+      "id": "security-evaluator",
+      "name": "Workspace security evaluator",
+      "chips": ["Built", "Google Cloud"],
+      "tagline": "Automated Google Workspace security audit where rules give the verdicts and AI writes the remediation notes.",
+      "role": "Built the agent; the security baseline it checks against was written by domain specialists.",
+      "problem": "Checking a collaboration tenant against a security baseline means reading dozens of admin settings per organisational unit plus email-authentication DNS records, then writing up fixes — slow and inconsistent by hand.",
+      "what": "A read-only tool collects settings, device and account posture and DNS records and removes identities. Deterministic rules compare each setting with a recommended baseline (and an optional client-specific target) and compute a compliance score. A Gemini model then explains how to fix failing settings and proposes verdicts for settings the rules could not decide; proposals are labelled, sent to human review and never change the score.",
+      "value": "Repeatable audits with an auditable baseline, prioritised remediation text, and exportable reports.",
+      "layers": [
+        {"name": "Experience", "components": [
+          {"id": "ui", "name": "Web UI", "role": "Start audits, review suggestions, export reports.", "tech": "React"}]},
+        {"name": "API and jobs", "components": [
+          {"id": "api", "name": "Authenticated API", "role": "Every call verified.", "tech": "FastAPI", "pb": "secrets-and-identity"},
+          {"id": "job", "name": "Background job", "role": "Runs the audit outside the request.", "tech": "Cloud Run"}]},
+        {"name": "Tools", "components": [
+          {"id": "ws", "name": "Read-only Workspace tool", "role": "Collects settings, device and account posture and DNS records; removes identities.", "tech": "MCP", "pb": "mcp-what-s-current"}]},
+        {"name": "Rules engine", "components": [
+          {"id": "base", "name": "Baseline catalogue and readers", "role": "Compare each setting with the recommended baseline and an optional client-specific target.", "tech": "Deterministic rules", "pb": "build-principles"},
+          {"id": "dns", "name": "DNS checks", "role": "Email-authentication records.", "tech": "DNS"},
+          {"id": "score", "name": "Compliance scoring", "role": "The score comes from rules only.", "tech": "Python"}]},
+        {"name": "AI notes", "components": [
+          {"id": "ai", "name": "Remediation notes step", "role": "Policy check, content screening, then Gemini explains fixes and proposes verdicts for undecided settings.", "tech": "Vertex AI Gemini · Model Armor", "pb": "security-for-agents"},
+          {"id": "val", "name": "Validator", "role": "Confirms verdicts and score are untouched by the model.", "tech": "Output checks", "pb": "quality-evals-and-observability"}]},
+        {"name": "Data, audit and reports", "components": [
+          {"id": "sql", "name": "Relational store", "role": "Audits and results.", "tech": "Cloud SQL (PostgreSQL)"},
+          {"id": "audit", "name": "Tamper-evident audit store", "role": "Content-free, hash-chained, with the baseline version hash on each audit.", "tech": "Cloud Storage", "pb": "audit"},
+          {"id": "export", "name": "Report export", "role": "PDF, Word and CSV.", "tech": "PDF · DOCX · CSV"}]}
+      ],
+      "flows": [{"title": "How an audit moves through it", "steps": [
+        {"text": "An auditor starts an audit.", "nodes": ["ui", "api", "job"]},
+        {"text": "The tool reads the tenant read-only.", "nodes": ["ws"]},
+        {"text": "Rules give verdicts and the score.", "nodes": ["base", "dns", "score"]},
+        {"text": "The model adds notes for failing and undecided settings.", "nodes": ["ai"]},
+        {"text": "The validator confirms verdicts and score are untouched.", "nodes": ["val"]},
+        {"text": "The auditor reviews suggestions and exports the report.", "nodes": ["ui", "export", "audit"]}
+      ]}],
+      "controls": [
+        {"name": "Read-only, pseudonymised snapshots", "how": "Read-only scopes; identities removed before analysis.", "pb": "tool-design"},
+        {"name": "Masking before the model", "how": "Field allowlist and email masking.", "pb": "pii-and-dlp"},
+        {"name": "Screening fails closed", "how": "Prompt and response screening.", "pb": "security-for-agents"},
+        {"name": "Kill switch and rate limits", "how": "Shared across instances.", "pb": "kill-switch-preflight-and-dry-run"},
+        {"name": "Policy-as-code per tenant", "how": "Open Policy Agent decides which tenants are cleared.", "pb": "policy"},
+        {"name": "Versioned baseline", "how": "Each audit records the hash of the baseline it used, in a content-free, hash-chained audit trail.", "pb": "audit"}
+      ],
+      "hitl": "Every AI verdict suggestion is flagged for human review. An administrator makes all changes; the agent changes nothing.",
+      "stack": ["Python", "FastAPI", "React", "Vertex AI Gemini", "MCP", "Open Policy Agent", "Model Armor", "Cloud Run", "Cloud SQL (PostgreSQL)", "Redis", "Cloud Storage"]
+    },
+    {
+      "id": "account-monitoring",
+      "name": "Account monitoring agent",
+      "chips": ["Extended and hardened", "Azure · Kubernetes"],
+      "tagline": "An agent that watches account financials, flags unusual movements, explains them, and answers questions about the data in plain language.",
+      "role": "Originally built by colleagues in another team. I led its move onto a governed agent platform, hardened it (policy, identity, supply chain), and added the rules-before-model step and the layer that keeps free text and names away from the model.",
+      "problem": "Finance and operations teams received account data as many separate files and had to find and explain unusual cost and revenue movements by hand.",
+      "what": "The agent loads finance and operations data into one store, runs checks that flag anomalies, and explains what it can with fixed rules. Only what the rules cannot explain goes to a language model, which proposes an explanation. The result is a short brief per account with actions and questions for the account team, plus a chat where managers ask questions over the same data. Checks, rules and views are refined as the team works with it.",
+      "value": "Account teams get anomalies found and explained in one place, with the model reserved for the cases that need it. Chat answers come from a path that can only read.",
+      "layers": [
+        {"name": "Experience", "components": [
+          {"id": "web", "name": "Web app", "role": "Account briefs and the chat.", "tech": "React · TypeScript"}]},
+        {"name": "API", "components": [
+          {"id": "api", "name": "API with sign-in", "role": "Token verification on every route.", "tech": "FastAPI · Keycloak", "pb": "secrets-and-identity"}]},
+        {"name": "Pipeline and agents", "components": [
+          {"id": "pipe", "name": "Data pipeline", "role": "Loads the latest finance and operations data.", "tech": "Python"},
+          {"id": "mon", "name": "Monitoring agent", "role": "Writes a brief per account.", "tech": "LangGraph", "pb": "multi-agent-used-deliberately"},
+          {"id": "chat", "name": "Chat agent", "role": "Answers questions over the data through a read-only path.", "tech": "LangGraph", "pb": "multi-agent-used-deliberately"}]},
+        {"name": "Rules and model", "components": [
+          {"id": "checks", "name": "Anomaly checks and rules", "role": "Flag anomalies and explain what they can before any model call.", "tech": "Deterministic rules", "pb": "build-principles"},
+          {"id": "model", "name": "Model explanations", "role": "Proposes explanations only for what rules can't explain.", "tech": "LiteLLM gateway", "pb": "gateway-and-registry"}]},
+        {"name": "Safeguards", "components": [
+          {"id": "parse", "name": "Query parser", "role": "First check on every model-written query.", "tech": "SQL parser"},
+          {"id": "opa", "name": "Per-agent policies", "role": "Every tool call decided by policy.", "tech": "Open Policy Agent", "pb": "policy"},
+          {"id": "shield", "name": "Free-text and name shield", "role": "Free text and names are unreadable by the chat path.", "tech": "Database permissions", "pb": "pii-and-dlp"}]},
+        {"name": "Data and delivery", "components": [
+          {"id": "pg", "name": "Data store", "role": "One store for finance and operations data, with a read-only role for chat.", "tech": "PostgreSQL", "pb": "security-for-agents"},
+          {"id": "lf", "name": "Tracing", "role": "Traces every run.", "tech": "Langfuse", "pb": "quality-evals-and-observability"},
+          {"id": "ci", "name": "Scanned, signed images", "role": "Built and checked in the pipeline, deployed to Kubernetes.", "tech": "GitHub Actions · Kubernetes", "pb": "the-delivery-pipeline-commit-to-production"}]}
+      ],
+      "flows": [{"title": "How a run moves through it", "steps": [
+        {"text": "A run loads the latest finance and operations data.", "nodes": ["pipe", "pg"]},
+        {"text": "Checks flag anomalies; rules explain what they can.", "nodes": ["checks"]},
+        {"text": "A model proposes explanations for the rest.", "nodes": ["model"]},
+        {"text": "The monitoring agent writes a brief per account.", "nodes": ["mon", "web"]},
+        {"text": "Managers ask follow-up questions in chat; every query is checked and read-only.", "nodes": ["chat", "parse", "opa", "pg"]},
+        {"text": "Feedback from use drives the next round of rule and feature changes.", "nodes": ["checks"]}
+      ]}],
+      "controls": [
+        {"name": "Three safeguards on model-written queries", "how": "A query parser, a policy decision and a read-only database role, each independent.", "pb": "security-for-agents"},
+        {"name": "Per-agent policies", "how": "Open Policy Agent decides every tool call.", "pb": "policy"},
+        {"name": "Verified tokens", "how": "Token verification on every route.", "pb": "secrets-and-identity"},
+        {"name": "Names and free text kept from the model", "how": "The chat path cannot read them.", "pb": "pii-and-dlp"},
+        {"name": "Proposals, not changes", "how": "Explanations are stored as proposals and never applied automatically.", "pb": "governance-and-the-autonomy-ladder"},
+        {"name": "Supply chain", "how": "Scanned and signed container images.", "pb": "the-delivery-pipeline-commit-to-production"}
+      ],
+      "hitl": "A person starts each run. Findings and explanations are proposals for the account team. The agent changes no financial record.",
+      "stack": ["Python", "FastAPI", "LangGraph", "React", "TypeScript", "PostgreSQL", "Azure", "Kubernetes", "Open Policy Agent", "Keycloak", "LiteLLM", "Langfuse", "GitHub Actions"]
+    },
+    {
+      "id": "proposal-completeness",
+      "name": "Proposal completeness agent",
+      "chips": ["Co-built", "Kubernetes"],
+      "tagline": "Checks a draft proposal against the client's request document and shows which requirements are covered, partly covered or missing.",
+      "role": "Co-built with my team. I shaped the design and worked through the build problems the team ran into, moved it onto a governed engineering setup (pinned builds, policy tests, image scanning), and added the calibration harness used to tune it.",
+      "problem": "When a services proposal is written against a long request for proposal, individual requirements can be missed or answered only vaguely, and that is usually found late. Checking every requirement against every commitment by hand is slow and inconsistent.",
+      "what": "A user uploads the client's request and the draft proposal. The agent pulls out what the client asks for and what the proposal commits to, matches the two, and judges each requirement as covered, partly covered or missing, with a short reason. It returns a coverage report with the gaps and with commitments nobody asked for. Extraction, matching and scoring are tuned as real documents show where it falls short.",
+      "value": "A consistent first-pass completeness check, so reviewers spend their time on the gaps.",
+      "layers": [
+        {"name": "Experience", "components": [
+          {"id": "web", "name": "Web app", "role": "Upload documents and read the coverage report.", "tech": "React · TypeScript"}]},
+        {"name": "API", "components": [
+          {"id": "up", "name": "Upload API with background jobs", "role": "Type allowlist; uploads held only for the duration of a run.", "tech": "FastAPI", "pb": "security-for-agents"}]},
+        {"name": "Validation pipeline (fixed order)", "components": [
+          {"id": "parse", "name": "Document parser", "role": "Splits both documents into sections.", "tech": "Python"},
+          {"id": "extract", "name": "Extraction", "role": "A model pulls out requirements and commitments.", "tech": "LangGraph", "pb": "build-principles"},
+          {"id": "match", "name": "Similarity matching", "role": "Pairs each requirement with likely commitments.", "tech": "Text embeddings · FAISS"},
+          {"id": "judge", "name": "Pair judge", "role": "A model judges each pair and explains its verdict; output validated against allowed values.", "tech": "LangGraph", "pb": "quality-evals-and-observability"}]},
+        {"name": "Models and report", "components": [
+          {"id": "gw", "name": "Private model gateway", "role": "All model calls go through it.", "tech": "LiteLLM", "pb": "gateway-and-registry"},
+          {"id": "report", "name": "Coverage report", "role": "Code builds covered, partial, missing and unrequested commitments.", "tech": "Python"}]},
+        {"name": "Operations", "components": [
+          {"id": "lf", "name": "Tracing", "role": "Every stage traced.", "tech": "Langfuse", "pb": "quality-evals-and-observability"},
+          {"id": "calib", "name": "Calibration harness", "role": "Tunes extraction, matching and scoring against real documents.", "tech": "Python", "pb": "quality-evals-and-observability"},
+          {"id": "deliv", "name": "Governed build", "role": "Pinned builds, policy tests and image scanning.", "tech": "Docker · Kubernetes · GitHub Actions · Open Policy Agent", "pb": "the-delivery-pipeline-commit-to-production"}]}
+      ],
+      "flows": [{"title": "How a check moves through it", "steps": [
+        {"text": "Upload the request document and the draft proposal.", "nodes": ["web", "up"]},
+        {"text": "The documents are parsed into sections.", "nodes": ["parse"]},
+        {"text": "A model extracts requirements and commitments.", "nodes": ["extract", "gw"]},
+        {"text": "Similarity search pairs each requirement with likely commitments.", "nodes": ["match"]},
+        {"text": "A model judges each pair and explains its verdict.", "nodes": ["judge", "gw"]},
+        {"text": "Code builds the coverage report: covered, partial, missing, and unrequested commitments.", "nodes": ["report"]},
+        {"text": "Results from use feed the next round of tuning.", "nodes": ["calib"]}
+      ]}],
+      "controls": [
+        {"name": "Fixed step order", "how": "The model cannot skip or reorder steps.", "pb": "build-principles"},
+        {"name": "Validated model output", "how": "Verdicts must be one of the allowed values; scoring and classification are done by code.", "pb": "quality-evals-and-observability"},
+        {"name": "Private gateway", "how": "All model calls go through a private gateway.", "pb": "gateway-and-registry"},
+        {"name": "Upload hygiene", "how": "Upload type allowlist; uploads held only for the duration of a run.", "pb": "security-for-agents"},
+        {"name": "Tracing", "how": "Every stage is traced.", "pb": "quality-evals-and-observability"}
+      ],
+      "hitl": "The agent recommends only. It never marks a proposal as ready; a reviewer reads the findings and decides what to change.",
+      "stack": ["Python", "FastAPI", "React", "TypeScript", "LangGraph", "LiteLLM", "Text embeddings", "FAISS", "Langfuse", "Open Policy Agent", "Docker", "Kubernetes", "GitHub Actions"]
+    },
+    {
+      "id": "reseller-assistant",
+      "name": "Reseller client-book assistant",
+      "chips": ["Built", "Google Cloud"],
+      "tagline": "Ask-the-book assistant for a Google Workspace reseller: the model picks the filters, code computes every number.",
+      "role": "Built it.",
+      "problem": "Partner teams need quick answers on renewals, seats and subscription status across a whole client portfolio, but the underlying platform holds active paid subscriptions, so nothing may ever be changed and numbers must be exact.",
+      "what": "A read-only tool collects the subscription book. Rules normalise it and break down purchased, assigned and unassigned seats. For a natural-language question, a Gemini model first returns only structured query filters; a deterministic engine filters, counts and totals; the model then words a short answer over a capped result in which client names are replaced by tokens. The on-screen table comes from the computed result.",
+      "value": "Fast portfolio answers with no arithmetic by the model, no client names sent to the model, and no write path to the reseller platform.",
+      "layers": [
+        {"name": "Experience", "components": [
+          {"id": "ui", "name": "Web UI", "role": "Ask questions; see the applied filters and the computed table.", "tech": "React"}]},
+        {"name": "API", "components": [
+          {"id": "api", "name": "Authenticated API", "role": "Every call verified.", "tech": "FastAPI", "pb": "secrets-and-identity"}]},
+        {"name": "Collection", "components": [
+          {"id": "tool", "name": "Read-only collection tool", "role": "Collects the subscription book with a GET-only transport.", "tech": "MCP · Reseller API (read-only)", "pb": "tool-design"},
+          {"id": "snap", "name": "Snapshots", "role": "Normalised book, with retention and confirmed purge.", "tech": "Cloud SQL (PostgreSQL)"}]},
+        {"name": "Question answering", "components": [
+          {"id": "tok", "name": "Client-name tokeniser", "role": "Replaces client names with tokens before the model.", "tech": "Python", "pb": "pii-and-dlp"},
+          {"id": "plan", "name": "Planning step", "role": "Gemini returns only structured query filters.", "tech": "Vertex AI Gemini · structured output", "pb": "build-principles"},
+          {"id": "engine", "name": "Deterministic query engine", "role": "Filters, counts and totals; the model does no arithmetic.", "tech": "Python"},
+          {"id": "narr", "name": "Narration step", "role": "Gemini words a short answer over a capped, tokenised sample.", "tech": "Vertex AI Gemini"}]},
+        {"name": "Governance", "components": [
+          {"id": "screen", "name": "Screening", "role": "Prompt, payload and answer screening, failing closed.", "tech": "Model Armor", "pb": "security-for-agents"},
+          {"id": "limits", "name": "Rate limits and kill switch", "role": "Per-user limits and a stop switch.", "tech": "Redis", "pb": "limits-and-budgets"},
+          {"id": "audit", "name": "Audit trail", "role": "Hash-chained, with hashed content.", "tech": "Create-only storage", "pb": "audit"}]}
+      ],
+      "flows": [{"title": "How a question moves through it", "steps": [
+        {"text": "Staff refresh the book (read-only).", "nodes": ["tool", "snap"]},
+        {"text": "Staff ask a question.", "nodes": ["ui", "api"]},
+        {"text": "Client names are tokenised.", "nodes": ["tok"]},
+        {"text": "The model proposes filters.", "nodes": ["plan", "screen"]},
+        {"text": "Code computes the result.", "nodes": ["engine", "snap"]},
+        {"text": "The model narrates; names are restored in the browser.", "nodes": ["narr", "ui"]},
+        {"text": "Every read and question is audited.", "nodes": ["audit"]}
+      ]}],
+      "controls": [
+        {"name": "No write path", "how": "Read-only scope and a GET-only transport, with an automated test that forbids any write scope.", "pb": "tool-design"},
+        {"name": "Policy-as-code clearance", "how": "Per environment, with Open Policy Agent.", "pb": "policy"},
+        {"name": "Screening fails closed", "how": "Prompt, payload and answer screening.", "pb": "security-for-agents"},
+        {"name": "Rate limits and kill switch", "how": "Per-user limits.", "pb": "limits-and-budgets"},
+        {"name": "Hash-chained audit", "how": "With hashed content; snapshot retention and confirmed purge.", "pb": "audit"}
+      ],
+      "hitl": "The assistant informs only. The applied filters are shown so staff can verify how the question was interpreted.",
+      "stack": ["Python", "FastAPI", "React", "Vertex AI Gemini", "Structured output", "MCP", "Google Workspace Reseller API (read-only)", "Open Policy Agent", "Model Armor", "Cloud Run", "Cloud SQL (PostgreSQL)", "Redis"]
+    },
+    {
+      "id": "ticket-enrichment",
+      "name": "Support-ticket enrichment",
+      "chips": ["Built", "Google Cloud"],
+      "tagline": "AI triage drafts for a Google Workspace support desk — summary, problem statement and ranked next steps, always reviewed by an engineer.",
+      "role": "Built it.",
+      "problem": "Engineers lose time reading long ticket histories before they can act, and customer tickets contain personal details that should not be sent to a model or posted back unreviewed.",
+      "what": "Reads each ticket through a read-only tool, replaces names, email addresses and phone numbers with placeholders, and asks a Gemini model for a summary, a one-sentence problem statement and two to four ranked candidate fixes with confidence and rationale. Placeholders are restored for the reviewer. Each draft enters a review queue where an engineer approves (optionally editing) or rejects it. A background job enriches new open tickets and produces a digest.",
+      "value": "Faster first read of a ticket, consistent triage notes, and personal data kept away from the model.",
+      "layers": [
+        {"name": "Experience", "components": [
+          {"id": "ui", "name": "Review queue UI", "role": "Engineers approve, edit or reject each draft.", "tech": "React"}]},
+        {"name": "API and tools", "components": [
+          {"id": "api", "name": "Authenticated API", "role": "Every call verified.", "tech": "FastAPI", "pb": "secrets-and-identity"},
+          {"id": "jira", "name": "Read-only ticket tool", "role": "Fetches tickets; posting disabled by default.", "tech": "MCP · Jira (read-only)", "pb": "tool-design"}]},
+        {"name": "Privacy and screening", "components": [
+          {"id": "dlp", "name": "Identity placeholders", "role": "Names, emails and phone numbers replaced before the model; fails closed.", "tech": "Sensitive Data Protection (DLP)", "pb": "pii-and-dlp"},
+          {"id": "screen", "name": "Prompt and answer screening", "role": "Screens both directions.", "tech": "Model Armor", "pb": "security-for-agents"}]},
+        {"name": "Model", "components": [
+          {"id": "model", "name": "Structured enrichment", "role": "Summary, problem statement and two to four ranked fixes with confidence.", "tech": "Vertex AI Gemini · structured output"},
+          {"id": "restore", "name": "Placeholder restore", "role": "Puts identities back for the reviewer only.", "tech": "Python"}]},
+        {"name": "Data", "components": [
+          {"id": "queue", "name": "Review queue", "role": "Every enrichment is a draft until a named reviewer acts.", "tech": "Cloud SQL (PostgreSQL)", "pb": "governance-and-the-autonomy-ladder"},
+          {"id": "digest", "name": "Background digest", "role": "Enriches new open tickets and produces a digest.", "tech": "Cloud Run job"},
+          {"id": "audit", "name": "Audit trail", "role": "Without ticket content, plus a retention job.", "tech": "Create-only storage", "pb": "audit"}]}
+      ],
+      "flows": [{"title": "How a ticket moves through it", "steps": [
+        {"text": "The ticket is fetched read-only.", "nodes": ["jira"]},
+        {"text": "Identities are replaced.", "nodes": ["dlp"]},
+        {"text": "The prompt is screened.", "nodes": ["screen"]},
+        {"text": "The model drafts the enrichment.", "nodes": ["model"]},
+        {"text": "The answer is validated and screened.", "nodes": ["screen", "restore"]},
+        {"text": "The draft is queued for review.", "nodes": ["queue"]},
+        {"text": "An engineer approves, edits or rejects it.", "nodes": ["ui", "audit"]}
+      ]}],
+      "controls": [
+        {"name": "Read-only ticket access", "how": "Posting disabled by default.", "pb": "tool-design"},
+        {"name": "Pseudonymisation fails closed", "how": "If identities can't all be replaced, the ticket isn't sent.", "pb": "pii-and-dlp"},
+        {"name": "Prompt and response screening", "how": "Both directions.", "pb": "security-for-agents"},
+        {"name": "Policy-as-code clearance per desk", "how": "Open Policy Agent decides which desks are cleared.", "pb": "policy"},
+        {"name": "Kill switch and rate limits", "how": "Shared across instances.", "pb": "kill-switch-preflight-and-dry-run"},
+        {"name": "Content-free audit", "how": "Audit trail without ticket content, plus a retention job.", "pb": "audit"}
+      ],
+      "hitl": "Every enrichment is a draft. A named reviewer approves or rejects it, and only approved text could ever be posted.",
+      "stack": ["Python", "FastAPI", "React", "Vertex AI Gemini", "Sensitive Data Protection (DLP)", "Model Armor", "MCP", "Jira (read-only)", "Open Policy Agent", "Cloud Run", "Cloud SQL (PostgreSQL)", "Redis"]
+    },
+    {
+      "id": "platform-migration",
+      "name": "Case study: moving earlier agents onto the governed platform",
+      "chips": ["Led and built", "Case study"],
+      "tagline": "Moving working AI agents onto a governed platform without losing a single business rule.",
+      "role": "Led and built the migration and its fidelity contract.",
+      "problem": "A set of AI agents had proven their value in an early single-service implementation, with rules written by domain specialists. Rebuilding them on a governed platform (new framework, new database, new identity model) risked quietly dropping or weakening those rules.",
+      "what": "Each agent was rebuilt as a self-contained service with its rule code carried over unchanged and only its inputs and outputs replaced. An automated \"fidelity contract\" compares the new code with a frozen copy of the original: methodology files must match byte for byte, rule code must match at syntax-tree level except for an explicit list of declared swaps, and user pages may differ only by declared edits. Privacy improvements added on top (pseudonymisation) are proven not to change any result. The contract runs on every change.",
+      "value": "The specialists' rules stay the single audited baseline; every deviation is visible and reviewed; the original implementation could be switched off with confidence.",
+      "related": {"text": "The original single-service implementation is described further down this page.", "href": "#platform", "label": "First-generation platform"},
+      "layers": [
+        {"name": "Source of truth", "components": [
+          {"id": "frozen", "name": "Frozen reference copy", "role": "The original rule files and pages the checks need.", "tech": "Version control"}]},
+        {"name": "Rebuilt agents", "components": [
+          {"id": "agents", "name": "Self-contained agent projects", "role": "Rule code copied verbatim; only data access replaced.", "tech": "Agent framework with policy enforcement", "pb": "policy"}]},
+        {"name": "Contracts", "components": [
+          {"id": "fid", "name": "Fidelity contract", "role": "Byte comparison, syntax-tree comparison and declared-swap lists.", "tech": "Python AST · pytest", "pb": "the-delivery-pipeline-commit-to-production"},
+          {"id": "equiv", "name": "Equivalence contract", "role": "Same scores on raw and pseudonymised data.", "tech": "pytest", "pb": "quality-evals-and-observability"},
+          {"id": "nowrite", "name": "No-write test", "role": "Write paths not carried over, banned by a repository-wide test.", "tech": "pytest", "pb": "security-for-agents"}]},
+        {"name": "CI", "components": [
+          {"id": "ci", "name": "Required check", "role": "The contract must pass before merge.", "tech": "GitHub Actions", "pb": "the-delivery-pipeline-commit-to-production"}]}
+      ],
+      "flows": [{"title": "How the migration worked", "steps": [
+        {"text": "Freeze the original files the checks need.", "nodes": ["frozen"]},
+        {"text": "Copy rule code verbatim into the new project; replace only data access.", "nodes": ["agents"]},
+        {"text": "Declare each replacement by name in the contract.", "nodes": ["fid"]},
+        {"text": "Run byte and syntax-tree comparisons on every change.", "nodes": ["fid", "ci"]},
+        {"text": "Prove that added privacy steps leave results identical.", "nodes": ["equiv"]},
+        {"text": "Switch users to the new platform, then remove the original.", "nodes": ["agents", "nowrite"]}
+      ]}],
+      "controls": [
+        {"name": "Required fidelity check", "how": "Against a frozen reference, on every change.", "pb": "the-delivery-pipeline-commit-to-production"},
+        {"name": "Explicit deviation lists", "how": "Every intended difference is declared and reviewable.", "pb": "governance-and-the-autonomy-ladder"},
+        {"name": "Result-equivalence test", "how": "Privacy steps proven not to change any score.", "pb": "quality-evals-and-observability"},
+        {"name": "No write paths", "how": "Write paths not carried over and banned by a repository-wide test.", "pb": "security-for-agents"}
+      ],
+      "hitl": "Any intended change from the original behaviour is an owner decision, recorded and declared in the contract before it can pass.",
+      "stack": ["Python", "Abstract syntax tree comparison", "pytest", "GitHub Actions", "Open Policy Agent", "Google Cloud Run", "Cloud SQL (PostgreSQL)", "Vertex AI", "OpenBao", "LiteLLM", "Langfuse"]
+    }
+  ]
+}

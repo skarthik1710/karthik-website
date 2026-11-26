@@ -1,0 +1,99 @@
+<section class="proj" id="customer-outreach" aria-labelledby="customer-outreach-title">
+<div class="proj-head">
+<div class="proj-meta"><span class="sec-idx">06 / 06</span>
+<span class="proj-chip">Vertex AI</span>
+</div>
+<h2 class="proj-title" id="customer-outreach-title">Customer Outreach Agent</h2>
+<p class="proj-tagline">Evidence-gated customer outreach: research, score, then draft, with a human reviewing every message.</p></div>
+<div class="pwv">
+<div class="pwv-card problem"><h3>Problem</h3><p>Researching an account properly before reaching out takes hours per customer. You have to work out its current strategic priorities and which services actually fit them. Without that research, outreach at scale turns into generic, low-relevance messages.</p></div>
+<div class="pwv-card what-it-does"><h3>What it does</h3><p>For each target account, the agent researches the customer&#x27;s current strategic priorities using real-time web search, maps them to a service portfolio, and scores the fit out of 100. Only opportunities scoring 80 or above go on to drafting. For those, the agent writes personalized outreach grounded in the customer&#x27;s actual goals, and a human reviews every draft before anything reaches a customer. Research, scoring and drafting run end to end from a single command. I designed and built it.</p></div>
+<div class="pwv-card value"><h3>Value</h3><p>It replaces hours of manual research per account with one command. Each message rests on current research into that customer rather than a template. Because of the 80/100 evidence gate, no draft is written unless the research supports the opportunity.</p></div>
+</div>
+<figure class="arch">
+<div class="arch-head"><span class="arch-dot" aria-hidden="true"></span><span>Architecture — layered view</span><span class="arch-stack">5 layers · 7 components</span><span class="arch-swipe" aria-hidden="true">swipe →</span></div>
+<div class="dg-scroll" tabindex="0" role="region" aria-label="Customer Outreach Agent architecture diagram (scrolls sideways on small screens)">
+<svg class="dg" viewBox="0 0 1000 506" role="group" aria-labelledby="customer-outreach-dg-title customer-outreach-dg-desc">
+<title id="customer-outreach-dg-title">Customer Outreach Agent: layered architecture</title>
+<desc id="customer-outreach-dg-desc">Layers from top to bottom: Trigger, Research, Reasoning and scoring, Generation, Human review. Numbered arrows follow the key flow listed below the diagram. Components outlined in orange link to the playbook section on how that part is built.</desc>
+<defs><marker id="customer-outreach-arr" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 1 L9 5 L0 9 z" class="dg-arrow"/></marker></defs>
+<rect class="dg-band" x="260.0" y="14.0" width="228.0" height="126.0" rx="12"/>
+<rect class="dg-band" x="512.0" y="14.0" width="228.0" height="126.0" rx="12"/>
+<rect class="dg-band" x="154.0" y="190.0" width="692.0" height="126.0" rx="12"/>
+<rect class="dg-band" x="260.0" y="366.0" width="228.0" height="126.0" rx="12"/>
+<rect class="dg-band" x="512.0" y="366.0" width="228.0" height="126.0" rx="12"/>
+<path class="dg-edge" data-step="2" d="M 474.0 86.0 L 526.0 86.0" marker-end="url(#customer-outreach-arr)"/>
+<path class="dg-edge" data-step="3" d="M 626.0 124.0 L 626.0 158.0 Q 626.0 165.0 619.0 165.0 L 275.0 165.0 Q 268.0 165.0 268.0 172.0 L 268.0 224.0" marker-end="url(#customer-outreach-arr)"/>
+<path class="dg-edge" data-step="4" d="M 368.0 262.0 L 400.0 262.0" marker-end="url(#customer-outreach-arr)"/>
+<path class="dg-edge" data-step="5" d="M 600.0 262.0 L 632.0 262.0" marker-end="url(#customer-outreach-arr)"/>
+<path class="dg-edge" data-step="6" d="M 732.0 300.0 L 732.0 334.0 Q 732.0 341.0 725.0 341.0 L 381.0 341.0 Q 374.0 341.0 374.0 348.0 L 374.0 400.0" marker-end="url(#customer-outreach-arr)"/>
+<path class="dg-edge" data-step="7" d="M 474.0 438.0 L 526.0 438.0" marker-end="url(#customer-outreach-arr)"/>
+<circle class="dg-packet" r="3.2" opacity="0"><set attributeName="opacity" to="1" begin="0.95s"/><animateMotion dur="2.6s" begin="0.95s" repeatCount="indefinite" path="M 474.0 86.0 L 526.0 86.0"/></circle>
+<circle class="dg-packet" r="3.2" opacity="0"><set attributeName="opacity" to="1" begin="1.50s"/><animateMotion dur="2.6s" begin="1.50s" repeatCount="indefinite" path="M 626.0 124.0 L 626.0 158.0 Q 626.0 165.0 619.0 165.0 L 275.0 165.0 Q 268.0 165.0 268.0 172.0 L 268.0 224.0"/></circle>
+<circle class="dg-packet" r="3.2" opacity="0"><set attributeName="opacity" to="1" begin="2.05s"/><animateMotion dur="2.6s" begin="2.05s" repeatCount="indefinite" path="M 368.0 262.0 L 400.0 262.0"/></circle>
+<circle class="dg-packet" r="3.2" opacity="0"><set attributeName="opacity" to="1" begin="2.60s"/><animateMotion dur="2.6s" begin="2.60s" repeatCount="indefinite" path="M 600.0 262.0 L 632.0 262.0"/></circle>
+<circle class="dg-packet" r="3.2" opacity="0"><set attributeName="opacity" to="1" begin="3.15s"/><animateMotion dur="2.6s" begin="3.15s" repeatCount="indefinite" path="M 732.0 300.0 L 732.0 334.0 Q 732.0 341.0 725.0 341.0 L 381.0 341.0 Q 374.0 341.0 374.0 348.0 L 374.0 400.0"/></circle>
+<circle class="dg-packet" r="3.2" opacity="0"><set attributeName="opacity" to="1" begin="3.70s"/><animateMotion dur="2.6s" begin="3.70s" repeatCount="indefinite" path="M 474.0 438.0 L 526.0 438.0"/></circle>
+<g class="dg-node"><title>Single-command run</title><rect x="274.0" y="48.0" width="200.0" height="76.0" rx="9"/><text class="dg-name" x="286.0" y="73.0">Single-command run</text><text class="dg-tech" x="286.0" y="91.0">One-command trigger</text></g>
+<a class="dg-node pb" href="/playbook.html#tool-design" aria-label="Real-time research step — how to build this: playbook section 5.1, Tool design"><title>Real-time research step — how to build this (Playbook §5.1 Tool design)</title><rect x="526.0" y="48.0" width="200.0" height="76.0" rx="9"/><text class="dg-name" x="538.0" y="73.0">Real-time research step</text><text class="dg-tech" x="538.0" y="91.0">Real-time web search</text><text class="dg-pb" x="538.0" y="113.0">↗ Playbook §5.1</text></a>
+<a class="dg-node pb" href="/playbook.html#the-reference-architecture-layers-of-an-enterprise-agent" aria-label="Portfolio mapping — how to build this: playbook section 2, Reference architecture"><title>Portfolio mapping — how to build this (Playbook §2 Reference architecture)</title><rect x="168.0" y="224.0" width="200.0" height="76.0" rx="9"/><text class="dg-name" x="180.0" y="249.0">Portfolio mapping</text><text class="dg-tech" x="180.0" y="267.0">Vertex AI (Gemini)</text><text class="dg-pb" x="180.0" y="289.0">↗ Playbook §2</text></a>
+<g class="dg-node"><title>Alignment scoring</title><rect x="400.0" y="224.0" width="200.0" height="76.0" rx="9"/><text class="dg-name" x="412.0" y="249.0">Alignment scoring</text><text class="dg-tech" x="412.0" y="267.0">Scoring engine</text></g>
+<a class="dg-node pb" href="/playbook.html#policy" aria-label="80/100 evidence gate — how to build this: playbook section 4.4, Policy"><title>80/100 evidence gate — how to build this (Playbook §4.4 Policy)</title><rect x="632.0" y="224.0" width="200.0" height="76.0" rx="9"/><text class="dg-name" x="644.0" y="249.0">80/100 evidence gate</text><text class="dg-tech" x="644.0" y="267.0">Threshold rule</text><text class="dg-pb" x="644.0" y="289.0">↗ Playbook §4.4</text></a>
+<g class="dg-node"><title>Personalized draft generator</title><rect x="274.0" y="400.0" width="200.0" height="76.0" rx="9"/><text class="dg-name" x="286.0" y="425.0">Personalized draft</text><text class="dg-name" x="286.0" y="441.0">generator</text><text class="dg-tech" x="286.0" y="459.0">Vertex AI (Gemini)</text></g>
+<a class="dg-node pb" href="/playbook.html#governance-and-the-autonomy-ladder" aria-label="Mandatory draft review — how to build this: playbook section 8, Autonomy ladder"><title>Mandatory draft review — how to build this (Playbook §8 Autonomy ladder)</title><rect x="526.0" y="400.0" width="200.0" height="76.0" rx="9"/><text class="dg-name" x="538.0" y="425.0">Mandatory draft review</text><text class="dg-tech" x="538.0" y="443.0">Human review step</text><text class="dg-pb" x="538.0" y="465.0">↗ Playbook §8</text></a>
+<text class="dg-layer" x="274.0" y="35.0"><tspan class="dg-layer-n">01</tspan>  TRIGGER</text>
+<text class="dg-layer" x="526.0" y="35.0"><tspan class="dg-layer-n">02</tspan>  RESEARCH</text>
+<text class="dg-layer" x="168.0" y="211.0"><tspan class="dg-layer-n">03</tspan>  REASONING AND SCORING</text>
+<text class="dg-layer" x="274.0" y="387.0"><tspan class="dg-layer-n">04</tspan>  GENERATION</text>
+<text class="dg-layer" x="526.0" y="387.0"><tspan class="dg-layer-n">05</tspan>  HUMAN REVIEW</text>
+<g class="dg-badge" data-step="2"><circle cx="498.5" cy="86.0" r="10"/><text x="498.5" y="86.5">2</text></g>
+<g class="dg-badge" data-step="3"><circle cx="529.7" cy="165.0" r="10"/><text x="529.7" y="165.5">3</text></g>
+<g class="dg-badge" data-step="4"><circle cx="384.0" cy="262.0" r="10"/><text x="384.0" y="262.5">4</text></g>
+<g class="dg-badge" data-step="5"><circle cx="616.0" cy="262.0" r="10"/><text x="616.0" y="262.5">5</text></g>
+<g class="dg-badge" data-step="6"><circle cx="635.7" cy="341.0" r="10"/><text x="635.7" y="341.5">6</text></g>
+<text class="dg-elabel" x="650.7" y="345.0">≥ 80</text>
+<g class="dg-badge" data-step="7"><circle cx="498.5" cy="438.0" r="10"/><text x="498.5" y="438.5">7</text></g>
+<g class="dg-badge node" data-step="1"><circle cx="470.0" cy="46.0" r="10"/><text x="470.0" y="46.5">1</text></g>
+</svg>
+</div>
+<figcaption class="arch-legend"><span><i class="lg-badge" aria-hidden="true">1</i> numbered arrow = flow step</span><span><i class="lg-node pb" aria-hidden="true"></i> orange outline = opens its playbook section</span><span><i class="lg-dash" aria-hidden="true"></i> dashed = deploy or check path</span></figcaption>
+</figure>
+<div class="block"><h3 class="block-title"><span class="bt-k">Flow</span>How a request moves through it</h3>
+<ol class="flow" data-proj="customer-outreach">
+<li class="flow-step" data-step="1" tabindex="0"><span class="flow-n" aria-hidden="true">1</span><span class="flow-txt"><span class="sr-only">Step 1: </span>A single command starts a run over the target accounts.</span></li>
+<li class="flow-step" data-step="2" tabindex="0"><span class="flow-n" aria-hidden="true">2</span><span class="flow-txt"><span class="sr-only">Step 2: </span>For each account, the agent researches the customer&#x27;s current strategic priorities using real-time web search.</span></li>
+<li class="flow-step" data-step="3" tabindex="0"><span class="flow-n" aria-hidden="true">3</span><span class="flow-txt"><span class="sr-only">Step 3: </span>It maps those priorities to the service portfolio.</span></li>
+<li class="flow-step" data-step="4" tabindex="0"><span class="flow-n" aria-hidden="true">4</span><span class="flow-txt"><span class="sr-only">Step 4: </span>It scores the fit out of 100.</span></li>
+<li class="flow-step" data-step="5" tabindex="0"><span class="flow-n" aria-hidden="true">5</span><span class="flow-txt"><span class="sr-only">Step 5: </span>Gate: below 80, the opportunity stops and no draft is created. At 80 or above, it moves on.</span></li>
+<li class="flow-step" data-step="6" tabindex="0"><span class="flow-n" aria-hidden="true">6</span><span class="flow-txt"><span class="sr-only">Step 6: </span>The agent drafts personalized outreach grounded in the researched priorities.</span></li>
+<li class="flow-step" data-step="7" tabindex="0"><span class="flow-n" aria-hidden="true">7</span><span class="flow-txt"><span class="sr-only">Step 7: </span>A human reviews every draft before any outreach reaches the customer.</span></li>
+</ol></div>
+<div class="block"><h3 class="block-title"><span class="bt-k">Components</span>What each part does</h3>
+<div class="comp-layer"><div class="comp-layer-name"><span class="cl-n">01</span> Trigger</div><div class="comp-grid">
+<div class="comp-card"><h4>Single-command run</h4><p>Starts the full research, score and draft sequence for the target accounts.</p><div class="comp-tech">One-command trigger</div></div>
+</div></div>
+<div class="comp-layer"><div class="comp-layer-name"><span class="cl-n">02</span> Research</div><div class="comp-grid">
+<div class="comp-card pb"><h4>Real-time research step</h4><p>Researches each customer&#x27;s current strategic priorities using real-time web search, so the analysis draws on current public information.</p><div class="comp-tech">Real-time web search</div><a class="pb-link" href="/playbook.html#tool-design">How to build this <span aria-hidden="true">→</span><span class="pb-sec">Playbook §5.1 · Tool design</span></a></div>
+</div></div>
+<div class="comp-layer"><div class="comp-layer-name"><span class="cl-n">03</span> Reasoning and scoring</div><div class="comp-grid">
+<div class="comp-card pb"><h4>Portfolio mapping</h4><p>Maps the priorities it found to the offerings in a service portfolio.</p><div class="comp-tech">Vertex AI (Gemini)</div><a class="pb-link" href="/playbook.html#the-reference-architecture-layers-of-an-enterprise-agent">How to build this <span aria-hidden="true">→</span><span class="pb-sec">Playbook §2 · Reference architecture</span></a></div>
+<div class="comp-card"><h4>Alignment scoring</h4><p>Scores how well the customer&#x27;s priorities fit the portfolio, on a scale of 0 to 100.</p><div class="comp-tech">Scoring engine</div></div>
+<div class="comp-card pb"><h4>80/100 evidence gate</h4><p>Only opportunities scoring 80 or above go forward. Anything below produces no draft.</p><div class="comp-tech">Threshold rule</div><a class="pb-link" href="/playbook.html#policy">How to build this <span aria-hidden="true">→</span><span class="pb-sec">Playbook §4.4 · Policy</span></a></div>
+</div></div>
+<div class="comp-layer"><div class="comp-layer-name"><span class="cl-n">04</span> Generation</div><div class="comp-grid">
+<div class="comp-card"><h4>Personalized draft generator</h4><p>Writes outreach grounded in that customer&#x27;s researched goals, only for opportunities that pass the gate.</p><div class="comp-tech">Vertex AI (Gemini)</div></div>
+</div></div>
+<div class="comp-layer"><div class="comp-layer-name"><span class="cl-n">05</span> Human review</div><div class="comp-grid">
+<div class="comp-card pb"><h4>Mandatory draft review</h4><p>A person reviews every draft, and nothing reaches a customer without that review.</p><div class="comp-tech">Human review step</div><a class="pb-link" href="/playbook.html#governance-and-the-autonomy-ladder">How to build this <span aria-hidden="true">→</span><span class="pb-sec">Playbook §8 · Autonomy ladder</span></a></div>
+</div></div>
+</div>
+<div class="block"><h3 class="block-title"><span class="bt-k">Controls</span>Guardrails built in</h3><div class="scope controls">
+<div class="scope-row"><div class="scope-key">80/100 evidence threshold</div><div class="scope-val">A strict fit score gates every opportunity. If the research doesn&#x27;t support it, no email is ever drafted.<a class="pb-link" href="/playbook.html#policy">How to build this <span aria-hidden="true">→</span><span class="pb-sec">Playbook §4.4 · Policy</span></a></div></div>
+<div class="scope-row"><div class="scope-key">Mandatory human review</div><div class="scope-val">A person reviews every draft before anything reaches a customer. The agent drafts, and a human decides what gets sent.<a class="pb-link" href="/playbook.html#governance-and-the-autonomy-ladder">How to build this <span aria-hidden="true">→</span><span class="pb-sec">Playbook §8 · Autonomy ladder</span></a></div></div>
+<div class="scope-row"><div class="scope-key">Research-first sequencing</div><div class="scope-val">Research and scoring happen in a fixed order before any text is written, so drafts are generated only for opportunities backed by current research into that customer&#x27;s goals.<a class="pb-link" href="/playbook.html#build-principles">How to build this <span aria-hidden="true">→</span><span class="pb-sec">Playbook §3 · Build principles</span></a></div></div>
+</div></div>
+<div class="hitl"><div class="hitl-k"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="8" r="3.6"/><path d="M4.5 20c.8-4 3.8-6 7.5-6s6.7 2 7.5 6"/></svg>Human in the loop</div><p>A human reviews every outreach draft, and nothing reaches a customer without that review. The 80/100 gate also stops weakly supported opportunities before a draft exists, so reviewers only see opportunities the research supports.</p></div>
+<div class="foot-grid"><div><div class="mini-k">Stack</div><div class="timeline-tags"><span class="timeline-tag">Google Cloud Vertex AI</span><span class="timeline-tag">Gemini</span><span class="timeline-tag">Real-time web search</span></div></div>
+<div><div class="mini-k">Playbook sections this build uses</div><div class="pb-chips"><a class="pb-chip" href="/playbook.html#the-reference-architecture-layers-of-an-enterprise-agent"><b>§2</b> Reference architecture</a><a class="pb-chip" href="/playbook.html#build-principles"><b>§3</b> Build principles</a><a class="pb-chip" href="/playbook.html#policy"><b>§4.4</b> Policy</a><a class="pb-chip" href="/playbook.html#tool-design"><b>§5.1</b> Tool design</a><a class="pb-chip" href="/playbook.html#governance-and-the-autonomy-ladder"><b>§8</b> Autonomy ladder</a></div></div></div>
+<a class="to-index" href="#project-index">↑ Back to project index</a>
+</section>
