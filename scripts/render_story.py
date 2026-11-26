@@ -5,8 +5,8 @@ captures exact frames rather than screen-recording, then muxes the synthesized s
 (video/make_soundtrack.py) and, if present, voice-over lines from video/narration/
 (generate them with video/tts_narration.py), each placed at its cue with the music ducked.
 
-Optional AI b-roll: drop Veo/Flow clips at public/media/clips/{intro,turn,finale}.mp4 and
-re-run; story.html picks them up automatically.
+Optional AI b-roll: Veo clips in video/clips/{intro,turn,finale}.mp4 (video/veo_clips.py);
+story.html picks them up automatically.
 
 Needs: playwright + chromium, numpy/scipy, and an ffmpeg with libx264
 (pip install --target /tmp/pylib imageio-ffmpeg; this script finds it automatically).
@@ -29,22 +29,39 @@ REPO = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 MEDIA = os.path.join(REPO, 'public', 'media')
 
 
-def narration_lines():
-    """(start, wav) for each voice-over line in video/narration/ (see video/tts_narration.py)."""
-    import json
+def _speech_secs(path):
+    """Seconds from first to last audible sample (ignores TTS padding)."""
     import wave
+    import numpy as np
+    with wave.open(path) as w:
+        x = np.frombuffer(w.readframes(w.getnframes()), '<i2').astype(float) / 32768
+        sr = w.getframerate()
+    fr = int(sr * 0.02)
+    e = np.sqrt(np.convolve(x ** 2, np.ones(fr) / fr, 'same'))
+    act = np.where(e > 0.01)[0]
+    return (act[-1] - act[0]) / sr if len(act) else 0.0
+
+
+def narration_lines():
+    """(start, wav, tempo) per voice-over line in video/narration/ (see video/tts_narration.py).
+
+    A line that runs slightly past its cue window is sped up (max 1.12x, inaudible);
+    anything longer than that needs a shorter text or a new take.
+    """
+    import json
     spec = json.load(open(os.path.join(REPO, 'video', 'narration.json')))
     found = []
     for i, line in enumerate(spec['lines']):
         path = os.path.join(REPO, 'video', 'narration', line['id'] + '.wav')
         if not os.path.exists(path):
             continue
-        with wave.open(path) as w:
-            secs = w.getnframes() / w.getframerate()
-        nxt = spec['lines'][i + 1]['start'] if i + 1 < len(spec['lines']) else 76
-        if line['start'] + secs > nxt:
-            print(f"warning: narration {line['id']} runs {line['start'] + secs - nxt:.1f}s past the next cue")
-        found.append((line['start'], path))
+        secs = _speech_secs(path)
+        nxt = spec['lines'][i + 1]['start'] if i + 1 < len(spec['lines']) else 75.0
+        window = nxt - line['start'] - 0.3
+        tempo = min(1.12, max(1.0, secs / window))
+        if secs / tempo > window:
+            print(f"warning: narration {line['id']} ({secs:.1f}s) overruns its {window:.1f}s window even at {tempo:.2f}x")
+        found.append((line['start'], path, tempo))
     if found:
         print(f'mixing {len(found)} narration line(s)')
     return found
@@ -62,8 +79,48 @@ def ffmpeg_exe():
 
 
 class Handler(http.server.SimpleHTTPRequestHandler):
+    """Static server with HTTP Range support; without it Chromium can't seek the b-roll clips
+    and every clip renders frozen on its first frame."""
+
     def log_message(self, *a):
         pass
+
+    def handle(self):
+        try:
+            super().handle()
+        except (ConnectionResetError, BrokenPipeError):
+            pass  # the browser abandons media streams mid-transfer; harmless
+
+    def send_head(self):
+        rng = self.headers.get('Range')
+        path = self.translate_path(self.path)
+        if not rng or not os.path.isfile(path):
+            return super().send_head()
+        size = os.path.getsize(path)
+        start_s, _, end_s = rng.replace('bytes=', '').partition('-')
+        start = int(start_s) if start_s else 0
+        end = min(int(end_s) if end_s else size - 1, size - 1)
+        f = open(path, 'rb')
+        f.seek(start)
+        self.send_response(206)
+        self.send_header('Content-Type', self.guess_type(path))
+        self.send_header('Accept-Ranges', 'bytes')
+        self.send_header('Content-Range', f'bytes {start}-{end}/{size}')
+        self.send_header('Content-Length', str(end - start + 1))
+        self.end_headers()
+        self._remaining = end - start + 1
+        return f
+
+    def copyfile(self, source, outputfile):
+        n = getattr(self, '_remaining', None)
+        if n is None:
+            return super().copyfile(source, outputfile)
+        while n > 0:
+            chunk = source.read(min(65536, n))
+            if not chunk:
+                break
+            outputfile.write(chunk)
+            n -= len(chunk)
 
     def translate_path(self, path):
         path = path.split('?')[0].split('#')[0]
@@ -95,18 +152,19 @@ def main():
            '-i', tmp_audio]
     if lines:
         parts = []
-        for k, (start, path) in enumerate(lines):
+        for k, (start, path, tempo) in enumerate(lines):
             cmd += ['-i', path]
             ms = int(start * 1000)
-            parts.append(f'[{k + 2}:a]aresample=48000,aformat=channel_layouts=stereo,adelay={ms}|{ms}[v{k}]')
+            parts.append(f'[{k + 2}:a]silenceremove=start_periods=1:start_threshold=-45dB,atempo={tempo:.3f},'
+                         f'aresample=48000,aformat=channel_layouts=stereo,adelay={ms}|{ms}[v{k}]')
         vox = ''.join(f'[v{k}]' for k in range(len(lines)))
-        parts.append(f'{vox}amix=inputs={len(lines)}:duration=longest:normalize=0,volume=1.4,asplit[vx1][vx2]')
+        parts.append(f'{vox}amix=inputs={len(lines)}:duration=longest:normalize=0,volume=1.4,apad=whole_dur=76,asplit[vx1][vx2]')
         parts.append('[1:a][vx1]sidechaincompress=threshold=0.02:ratio=5:attack=30:release=500[duck]')
         parts.append('[duck][vx2]amix=inputs=2:duration=first:normalize=0[a]')
         cmd += ['-filter_complex', ';'.join(parts), '-map', '0:v', '-map', '[a]']
     else:
         cmd += ['-map', '0:v', '-map', '1:a']
-    cmd += ['-c:v', 'libx264', '-preset', 'medium', '-crf', '21', '-pix_fmt', 'yuv420p',
+    cmd += ['-c:v', 'libx264', '-preset', 'medium', '-crf', '24', '-pix_fmt', 'yuv420p',
             '-vf', f'scale={int(1920 * scale)}:{int(1080 * scale)}:out_range=tv,format=yuv420p', '-color_range', 'tv',
             '-c:a', 'aac', '-b:a', '160k', '-movflags', '+faststart', '-shortest', out]
     enc = subprocess.Popen(cmd, stdin=subprocess.PIPE)

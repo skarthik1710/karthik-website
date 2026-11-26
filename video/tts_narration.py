@@ -3,11 +3,13 @@
 Writes video/narration/<id>.wav (24 kHz mono). scripts/render_story.py then places each
 line at its 'start' time and ducks the music under it.
 
-Gemini TTS works on the free API tier. Use a personal key from https://aistudio.google.com/apikey
-(not the work account). The key is read from the environment and never written to disk:
+Two ways to authenticate (needs google-genai, e.g. /tmp/genai-venv/bin/python):
+  - Vertex AI (default when GOOGLE_CLOUD_PROJECT is set and no API key is given): uses
+    Application Default Credentials; Cloud Shell works as-is.
+  - Gemini API key (free tier works): GEMINI_API_KEY=... ; read from the environment, never saved.
 
-  GEMINI_API_KEY=... python3 video/tts_narration.py            # all lines
-  GEMINI_API_KEY=... python3 video/tts_narration.py 03 05      # just these ids
+  python3 video/tts_narration.py            # all lines
+  python3 video/tts_narration.py 03 05      # just these ids
 
 No key? In Google AI Studio choose "Generate speech", paste each line with the same
 voice/style, download the WAVs, and save them as video/narration/01.wav ... 07.wav.
@@ -21,17 +23,18 @@ from google import genai
 from google.genai import types
 
 HERE = os.path.dirname(os.path.abspath(__file__))
-MODEL = os.environ.get('TTS_MODEL', 'gemini-2.5-flash-preview-tts')
+MODEL = os.environ.get('TTS_MODEL', 'gemini-2.5-pro-tts')
 
 
 def main():
     key = os.environ.get('GEMINI_API_KEY')
-    if not key:
-        sys.exit('Set GEMINI_API_KEY (personal AI Studio key).')
+    project = os.environ.get('GOOGLE_CLOUD_PROJECT')
+    if not key and not project:
+        sys.exit('Set GEMINI_API_KEY, or GOOGLE_CLOUD_PROJECT for Vertex AI.')
     spec = json.load(open(os.path.join(HERE, 'narration.json')))
     only = set(sys.argv[1:])
     os.makedirs(os.path.join(HERE, 'narration'), exist_ok=True)
-    client = genai.Client(api_key=key)
+    client = genai.Client(api_key=key) if key else genai.Client(vertexai=True, project=project, location='us-central1')
     for line in spec['lines']:
         if only and line['id'] not in only:
             continue

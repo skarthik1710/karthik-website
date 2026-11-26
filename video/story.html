@@ -4,7 +4,7 @@
   Every pixel is a pure function of time: window.render(t) draws frame t (seconds).
   - Open with ?play to watch it live in a browser (1920x1080 stage, scaled to fit).
   - scripts/render_story.py captures it frame by frame into public/media/story.mp4.
-  - Optional AI b-roll: drop Veo/Flow clips at public/media/clips/{intro,turn,finale}.mp4;
+  - Optional AI b-roll: Veo clips at video/clips/{intro,turn,finale}.mp4 (video/veo_clips.py);
     they're picked up automatically as low-opacity backgrounds for those scenes.
   Facts used here must match the site (index.html / experience.html). Don't add new claims.
 -->
@@ -120,9 +120,9 @@
 </head>
 <body>
 <div id="stage">
-    <video class="clip" id="clip-intro" muted playsinline preload="auto" data-src="/media/clips/intro.mp4" data-start="0"></video>
-    <video class="clip" id="clip-turn" muted playsinline preload="auto" data-src="/media/clips/turn.mp4" data-start="30"></video>
-    <video class="clip" id="clip-finale" muted playsinline preload="auto" data-src="/media/clips/finale.mp4" data-start="64"></video>
+    <video class="clip" id="clip-intro" muted playsinline preload="auto" data-src="/video/clips/intro.mp4" data-start="0"></video>
+    <video class="clip" id="clip-turn" muted playsinline preload="auto" data-src="/video/clips/turn.mp4" data-start="30"></video>
+    <video class="clip" id="clip-finale" muted playsinline preload="auto" data-src="/video/clips/finale.mp4" data-start="64"></video>
     <div class="floor" id="floor"></div>
     <canvas id="fx" width="1920" height="1080"></canvas>
 
@@ -311,7 +311,8 @@
 
     /* ---------- AI b-roll clips (optional) ---------- */
     var clips = Array.prototype.slice.call(document.querySelectorAll('video.clip'));
-    var clipWin = { 'clip-intro': [0, 13, .32], 'clip-turn': [30, 40, .38], 'clip-finale': [64, 76, .3] };
+    // [start, end, opacity, clip offset (s), playback rate]; finale is aligned so its burst lands on the 65.6 s flash
+    var clipWin = { 'clip-intro': [0, 13, .3, 0, .6], 'clip-turn': [30, 40, .3, 0, .78], 'clip-finale': [64, 76, .34, 1.72, .55] };
     function loadClips() {
         return Promise.all(clips.map(function (v) {
             return fetch(v.dataset.src, { method: 'HEAD' }).then(function (r) {
@@ -328,7 +329,7 @@
             var o = env(t, w[0], w[0] + 1.2, w[1] - 1.2, w[1]) * w[2];
             v.style.opacity = o.toFixed(3);
             if (o > 0) {
-                var lt = Math.min(Math.max(0, t - w[0]), Math.max(0, (v.duration || 8) - .05));
+                var lt = Math.min(Math.max(0, w[3] + (t - w[0]) * w[4]), Math.max(0, (v.duration || 8) - .05));
                 if (Math.abs(v.currentTime - lt) > .001) waits.push(new Promise(function (res) { v.onseeked = res; v.currentTime = lt; }));
             }
         });
