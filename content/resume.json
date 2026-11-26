@@ -1,0 +1,205 @@
+{
+  "name": "Karthikeyan Selvam",
+  "headline": "AI & Automation Practice Leader · 19+ years in enterprise IT",
+  "email": "skarthik1710@gmail.com",
+  "summary": "AI and automation practice leader with 19+ years in enterprise IT, 11+ of them at Atos. I supply the AI side of proposals, bids and architecture reviews, turn agentic use-case analysis into pilot plans and roadmaps, and lead an engineering team that builds governed AI agents, while staying hands-on as a builder.",
+  "scope": [
+    {
+      "group": "Teams",
+      "items": "Lead an engineering team of application developers, software engineers, cloud and design talent that builds agents on a common, governed framework, owning its budget, resourcing and performance management; have led cross-functional onshore/offshore teams of automation consultants, business analysts and developers."
+    },
+    {
+      "group": "Budgets",
+      "items": "Programs from $200K to $20M: plans, budgets, vendors and stakeholder communications owned end to end."
+    },
+    {
+      "group": "Clients",
+      "items": "Microsoft (Copilot for Entra) · a major energy utility (AIOps, backup) · a large US healthcare provider (Windows 11) · enterprise clients in financial services, insurance and life sciences (proposals, bids, architecture reviews) · Atos internal functions."
+    }
+  ],
+  "skills": [
+    {
+      "group": "Leadership",
+      "items": "AI practice leadership · AI pre-sales and proposals · agentic use-case analysis · AI governance · Copilot enablement, change management and adoption · people, stakeholder and vendor management"
+    },
+    {
+      "group": "AI platforms",
+      "items": "Google Cloud (Vertex AI, Gemini) · Azure AI Foundry · AWS Bedrock AgentCore · Microsoft Copilot and Copilot Studio · Claude · multi-agent systems · LLM evaluation"
+    },
+    {
+      "group": "Delivery and automation",
+      "items": "Program management · Agile, Scrum, PRINCE2 · process excellence (Six Sigma) · AI product management · RPA (UiPath, Power Automate) · ServiceNow · AIOps (Nexthink) · Power BI"
+    }
+  ],
+  "experience": [
+    {
+      "title": "Business Manager — AI & Automation Practice",
+      "org": "Atos IT Solutions & Services, North America — Cloud & Modern Infrastructure",
+      "period": "Oct 2025 – Present",
+      "bullets": [
+        "Lead the AI and automation practice across North America: set priorities, delivery plans and the governed build framework (patterns, standards, skills) the engineering team works to; own budget, resourcing and performance management, with monthly 1:1s and objectives coaching.",
+        "Supply the AI side of large deals across multiple proposals and bids: AI savings cases and costed investment options, executive proposals for governed agentic pilots, statement-of-work reviews, architecture in solution and client security reviews, and a co-designed agentic architecture on AWS Bedrock AgentCore.",
+        "Run agentic use-case analysis with customers and internal teams, separating good agent candidates from simple workflows, then shape the pilot plan, platform recommendation and roadmap.",
+        "Proposed role-based AI bootcamps and a learn-build-deploy-scale capability model to leadership; authored a 12-week Copilot Enablement Playbook (build, action, sustain) built on peer champions, leaders modeling usage and measured adoption.",
+        "Still hands-on: built an enterprise multi-agent AI platform and governed agents, each read-only, human-approved or limited to explicit low-risk rules, with role-based access, audit logs, an automated model-lifecycle steward and cost engineering."
+      ]
+    },
+    {
+      "title": "Digital Workplace Consultant — Windows 11 Migration",
+      "org": "Atos · a large US healthcare provider",
+      "period": "Apr 2025 – Sep 2025",
+      "bullets": [
+        "Ran delivery of a 12,000-device Windows 11 migration ahead of Windows 10 end of support, using AI-assisted analytics for hardware compatibility and application readiness.",
+        "Designed rollout approaches with senior leadership (refresh, White Glove provisioning, LTSC fallback); ran daily leadership calls and weekly executive summaries, and owned baseline-reset and burn-down reporting."
+      ]
+    },
+    {
+      "title": "Technical Service Delivery Manager & Solution Architect — Microsoft Copilot for Entra",
+      "org": "Atos · Microsoft engagement (Entra skills in Microsoft Security Copilot)",
+      "period": "Jul 2024 – Mar 2025",
+      "bullets": [
+        "Led the Atos evaluation team grading Copilot for Entra; authored the delivery plan and rubric (language accuracy, technical correctness, user satisfaction) and ran calibration and grading.",
+        "The team logged 83 bugs with Microsoft Engineering, 19 resolved (6 critical) before general availability, and helped lift response satisfaction from about 42% to 57%; packaged the work into a reusable Copilot quality-analysis offering."
+      ]
+    },
+    {
+      "title": "Technical Product Manager — Digital Experience Management & AIOps",
+      "org": "Atos · a major energy utility (UK & US operations)",
+      "period": "Apr 2023 – Jun 2024",
+      "bullets": [
+        "Owned the roadmap for a proactive digital-experience capability with Nexthink and ServiceNow AIOps across a 40,000-device estate, building on an AIOps proof of concept delivered on time and on budget (customer: \"lead from the front brilliantly\").",
+        "Delivered a Quest enterprise backup and recovery program: plans, budgets, vendor management, restoration drills and failover validation."
+      ]
+    },
+    {
+      "title": "Senior Automation Consultant — North America",
+      "org": "Atos, North America",
+      "period": "Apr 2022 – Apr 2023",
+      "bullets": [
+        "Led an onshore/offshore squad building ServiceNow workflow automation (employee onboarding from account creation to access and equipment) and shaped automation roadmaps and proposals for enterprise clients."
+      ]
+    },
+    {
+      "title": "RPA Lead — Robotics & Automation Centre of Excellence",
+      "org": "Atos, Chennai · Business Analyst to Senior Manager",
+      "period": "Dec 2017 – Mar 2022",
+      "bullets": [
+        "Led automation consultants, business analysts and developers; the team delivered 50+ RPA automations across HR, Finance and Procurement, and I ran a Group automation portfolio of 140+ automations across 16 business units."
+      ]
+    },
+    {
+      "title": "Finance Analyst",
+      "org": "Atos, Chennai · Group Finance shared services",
+      "period": "Mar 2015 – Dec 2017",
+      "bullets": [
+        "FP&A, month-end close, provisions and WIP, and key-account reporting for UK financial-services accounts."
+      ]
+    },
+    {
+      "title": "Financial Analyst / Assistant Manager — Corporate Finance",
+      "org": "Hewlett-Packard, Chennai",
+      "period": "Dec 2011 – Mar 2015",
+      "bullets": [
+        "P&L and data-warehouse reporting; functional designs, test plans and change controls."
+      ]
+    },
+    {
+      "title": "Senior Process Associate — Sales Audit",
+      "org": "Tata Consultancy Services, Chennai",
+      "period": "May 2007 – Dec 2011",
+      "bullets": [
+        "Reconciled retail sales data on IBM AS/400 before posting to Oracle; handled exceptions, root-cause analysis and CMMi audits."
+      ]
+    }
+  ],
+  "projects": [
+    {
+      "name": "Workspace agent platform",
+      "line": "a governed Google Cloud platform where agents work on Workspace data without holding credentials or seeing real identities; led the move of earlier agents onto it with an automated fidelity contract."
+    },
+    {
+      "name": "Agent platform foundation",
+      "line": "a secure-by-default foundation for shipping governed AI agents on enterprise Kubernetes."
+    },
+    {
+      "name": "Operations agents",
+      "line": "a directory group membership agent (rules or a named approver decide; the Entra ID change is verified before the ticket closes) and an outage response agent (rules triage Azure and AWS alerts; the on-duty engineer approves any restart)."
+    },
+    {
+      "name": "Workspace and delivery agents",
+      "line": "licence right-sizing, security-settings review, support-ticket enrichment and change-management deliverables: rules give the verdicts, AI advises, and people approve every change."
+    },
+    {
+      "name": "Team and partner builds",
+      "line": "co-built a proposal completeness agent with my team and RevokAI, a governed access-revocation control on Copilot Studio; led another team's account monitoring agent onto a governed platform."
+    }
+  ],
+  "certifications": [
+    {
+      "name": "Generative AI Leader",
+      "issuer": "Google Cloud",
+      "year": "2025"
+    },
+    {
+      "name": "AI Transformation Leader",
+      "issuer": "Microsoft",
+      "year": "2026"
+    },
+    {
+      "name": "Azure AI Fundamentals (AI-900)",
+      "issuer": "Microsoft",
+      "year": "2026"
+    },
+    {
+      "name": "Azure Fundamentals (AZ-900)",
+      "issuer": "Microsoft",
+      "year": "2025"
+    },
+    {
+      "name": "Microsoft PowerUp Program",
+      "issuer": "Microsoft (Copilot Studio)",
+      "year": ""
+    },
+    {
+      "name": "Power Platform",
+      "issuer": "Microsoft",
+      "year": ""
+    },
+    {
+      "name": "RPA Developer Foundation",
+      "issuer": "UiPath",
+      "year": "2018"
+    },
+    {
+      "name": "RPA Developer — SAP Automation",
+      "issuer": "UiPath",
+      "year": "2018"
+    },
+    {
+      "name": "Business Analyst",
+      "issuer": "UiPath",
+      "year": "2018"
+    },
+    {
+      "name": "PRINCE2 Foundation",
+      "issuer": "Axelos",
+      "year": "2021"
+    },
+    {
+      "name": "Professional Scrum Master I",
+      "issuer": "Scrum.org",
+      "year": "2021"
+    },
+    {
+      "name": "Introduction to Atos Lean",
+      "issuer": "Atos",
+      "year": "2018"
+    }
+  ],
+  "awards": [
+    "Winner, Most Impactful Business Solution — Atos North America AI challenge (2025), built on Microsoft Copilot Studio",
+    "Bronze — Atos Copilot challenge (2024, team award)",
+    "Silver accolade (2021) — chatbot delivered in 24 hours"
+  ],
+  "education": "B.Sc. Computer Science, University of Madras (2007)"
+}

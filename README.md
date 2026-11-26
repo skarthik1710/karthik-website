@@ -1,6 +1,6 @@
 # Karthik Website - Professional Portfolio
 
-Personal portfolio website for Karthikeyan Selvam - AI Transformation & Enablement Leader
+Personal portfolio website for Karthikeyan Selvam - AI & Automation Practice Leader
 
 🌐 **Live Site**: [https://karthikeyanselvam.com](https://karthikeyanselvam.com)
 
