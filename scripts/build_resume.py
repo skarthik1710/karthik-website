@@ -1,26 +1,34 @@
 #!/usr/bin/env python3
-"""Build the downloadable resume (Word + PDF) from content/resume.json.
+"""Build the resume (Word + PDF) from content/resume.json.
 
-    pip install --target /tmp/pylib python-docx   # if not installed
-    python3 scripts/build_resume.py               # writes public/resume/*.docx and *.pdf
+    python3 scripts/build_resume.py                       # public: public/resume/*.docx|pdf
+    RESUME_PHONE="+1 ..." python3 scripts/build_resume.py --private ~/resume-private
+                                                          # private copy with phone, outside the repo
+
+The public site download carries email, website and LinkedIn. The phone number is
+never stored in the repo: it is passed via RESUME_PHONE only for the private build.
+
+Screener (ATS) friendly by construction: no tables, text boxes or headers/footers;
+contact details are plain body text; standard section names; logos are a decorative
+image with all certifications also listed as text.
 
 The PDF is rendered from an HTML twin of the same content with headless Chromium
-(Playwright), using Carlito, which is metric-compatible with Calibri (the Word font),
-and Word-like line spacing, so the two lay out closely. Only the PDF page count is
-checked automatically (no LibreOffice here); open the .docx once to confirm 2 pages.
-Pass --no-pdf to build only the Word file.
+(Playwright), using Carlito (metric-compatible with Calibri, the Word font) and
+Word-like line spacing, so the two lay out closely. Only the PDF page count is
+checked automatically; open the .docx once to confirm 2 pages. --no-pdf skips the PDF.
 """
+import base64
 import datetime
 import html
 import json
-import shutil
-import tempfile
+import os
 import pathlib
 import re
+import shutil
 import sys
+import tempfile
 
 from docx import Document
-from docx.enum.table import WD_TABLE_ALIGNMENT
 from docx.enum.text import WD_TAB_ALIGNMENT
 from docx.oxml import OxmlElement
 from docx.oxml.ns import qn
@@ -38,14 +46,9 @@ MARGIN_IN = 0.55
 PAGE_W_IN = 8.5
 BODY_PT = 10
 
-
-def _cert_meta(c):
-    return f'{c["issuer"]}, {c["year"]}' if c.get("year") else c["issuer"]
-
-
-# Certification brand marks, mirroring the "Certified across" block on the home page
-# (real Microsoft / Google marks; coloured monograms for the rest). Counts are derived
-# from the certification list so the resume and the list can't disagree.
+# Certification groups (label, issuer prefix) and brand marks, mirroring the
+# "Certified across" block on the home page: real Microsoft / Google marks, coloured
+# monograms for the rest. Counts are derived from the certification list.
 MS_SVG = ('<svg viewBox="0 0 21 21"><rect x="0" y="0" width="10" height="10" fill="#F25022"/>'
           '<rect x="11" y="0" width="10" height="10" fill="#7FBA00"/><rect x="0" y="11" width="10" height="10" fill="#00A4EF"/>'
           '<rect x="11" y="11" width="10" height="10" fill="#FFB900"/></svg>')
@@ -61,34 +64,62 @@ BRANDS = [  # (label, issuer prefix used to count, mark html)
     ("Scrum.org", "Scrum.org", '<span class="mm" style="background:#1F6F43">SM</span>'),
     ("Atos Lean", "Atos", '<span class="mm" style="background:#0073C6">At</span>'),
 ]
-BRAND_W_IN = 3.15
+CERT_GROUPS = [("Google Cloud", "Google Cloud"), ("Microsoft", "Microsoft"), ("UiPath", "UiPath"),
+               ("Delivery and methodology", "")]  # "" = everything else
 BRAND_CSS = """
-.brands { width: %(w)sin; }
-.brands .bl { font-size: 7.5pt; font-weight: 700; letter-spacing: 0.08em; color: #B43A0E; margin: 1pt 0 3pt; }
-.brands .bg { display: grid; grid-template-columns: 1.25fr 1.1fr 1fr; gap: 3.5pt 8pt; }
-.brands .bi { display: flex; align-items: center; gap: 4pt; font-size: 9pt; color: #1F1B18; white-space: nowrap; line-height: 1; }
+.brands { display: inline-flex; align-items: center; gap: 11pt; white-space: nowrap; }
+.brands .bl { font-size: 7.5pt; font-weight: 700; letter-spacing: 0.08em; color: #B43A0E; }
+.brands .bi { display: inline-flex; align-items: center; gap: 3.5pt; font-size: 9pt; color: #1F1B18; line-height: 1; }
 .brands svg, .brands .mm { width: 11pt; height: 11pt; flex-shrink: 0; display: block; }
 .brands .mm { border-radius: 2pt; color: #fff; font-size: 6pt; font-weight: 700; display: flex; align-items: center; justify-content: center; }
 .brands .bi b { color: #5A524C; font-weight: 400; font-size: 8pt; margin-left: 1pt; }
-""" % {"w": BRAND_W_IN}
+"""
+FONT_LINK = '<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Carlito:ital,wght@0,400;0,700;1,400&display=block">'
+
+
+def contacts(d, phone=None):
+    """[(text, url)] in display order; phone only when given (private build)."""
+    out = [(d["email"], "mailto:" + d["email"])]
+    if phone:
+        out.append((phone, "tel:" + re.sub(r"[^+\d]", "", phone)))
+    for c in d.get("links", []):
+        out.append((c["text"], c["url"]))
+    return out
+
+
+def cert_groups(d):
+    """[(label, [item text])] — every certification exactly once, as plain text."""
+    rest = list(d["certifications"])
+    groups = []
+    for label, prefix in CERT_GROUPS:
+        take = [c for c in rest if (c["issuer"].startswith(prefix) if prefix else True)]
+        rest = [c for c in rest if c not in take]
+        items = []
+        for c in take:
+            extra = c["issuer"][len(prefix):].strip(" ()") if prefix else c["issuer"]
+            meta = ", ".join(x for x in (extra, c.get("year", "")) if x)
+            name = c["name"]
+            if meta and name.endswith(")"):  # "Azure Fundamentals (AZ-900)" -> "(AZ-900, 2025)"
+                items.append(f"{name[:-1]}, {meta})")
+            else:
+                items.append(name + (f" ({meta})" if meta else ""))
+        if items:
+            groups.append((label, items))
+    return groups
 
 
 def brand_html(d):
     items = []
     for label, prefix, mark in BRANDS:
         n = sum(1 for c in d["certifications"] if c["issuer"].startswith(prefix))
-        if not n:
-            continue
-        count = f"<b>×{n}</b>" if n > 1 else ""
-        items.append(f'<div class="bi">{mark}<span>{label}{count}</span></div>')
-    return f'<div class="brands"><div class="bl">CERTIFIED ACROSS</div><div class="bg">{"".join(items)}</div></div>'
-
-
-FONT_LINK = '<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Carlito:ital,wght@0,400;0,700;1,400&display=block">'
+        if n:
+            count = f"<b>×{n}</b>" if n > 1 else ""
+            items.append(f'<span class="bi">{mark}<span>{label}{count}</span></span>')
+    return f'<div class="brands"><span class="bl">CERTIFIED ACROSS</span>{"".join(items)}</div>'
 
 
 def brand_png(d, path):
-    """Rasterise the brand block (4x) for the Word file, which can't embed SVG."""
+    """Rasterise the brand strip (4x) for the Word file, which can't embed SVG. Returns width in inches."""
     from playwright.sync_api import sync_playwright
     page = (f'<!doctype html><html><head><meta charset="utf-8">{FONT_LINK}<style>body{{margin:0;'
             f'font-family:Carlito,Calibri,sans-serif;background:#fff}}{BRAND_CSS}</style></head>'
@@ -98,8 +129,11 @@ def brand_png(d, path):
         pg = b.new_page(device_scale_factor=4)
         pg.set_content(page, wait_until="networkidle")
         pg.evaluate("document.fonts.ready")
-        pg.locator(".brands").screenshot(path=str(path), omit_background=False)
+        el = pg.locator(".brands")
+        width_px = el.bounding_box()["width"]
+        el.screenshot(path=str(path))
         b.close()
+    return width_px / 96.0
 
 
 # ── Word ──────────────────────────────────────────────────────────────
@@ -142,6 +176,7 @@ def _hyperlink(p, url, text, color="B43A0E"):
     r.append(rpr)
     t = OxmlElement("w:t")
     t.text = text
+    t.set(qn("xml:space"), "preserve")
     r.append(t)
     h.append(r)
     p._p.append(h)
@@ -169,7 +204,15 @@ def _bullet(doc, text, label=None):
     return p
 
 
-def build_docx(d, path, brand_img=None):
+def _labelled(doc, label, text, size=None):
+    p = doc.add_paragraph()
+    _spacing(p, after=1, line=1.0)
+    _run(p, label + ": ", bold=True, size=size)
+    _run(p, text, size=size)
+    return p
+
+
+def build_docx(d, path, phone=None, brand_img=None):
     doc = Document()
     sec = doc.sections[0]
     sec.page_width, sec.page_height = Inches(PAGE_W_IN), Inches(11)
@@ -187,33 +230,23 @@ def build_docx(d, path, brand_img=None):
     core.created = core.modified = datetime.datetime.now(datetime.timezone.utc).replace(microsecond=0)
     core.revision = 1
 
-    text_in = PAGE_W_IN - 2 * MARGIN_IN
-    hdr = doc.add_table(rows=1, cols=2)
-    hdr.autofit = False
-    left, right = hdr.cell(0, 0), hdr.cell(0, 1)
-    left.width, right.width = Inches(text_in - BRAND_W_IN - 0.05), Inches(BRAND_W_IN + 0.05)
-    for cell in (left, right):
-        tcPr = cell._tc.get_or_add_tcPr()
-        mar = OxmlElement("w:tcMar")
-        for side in ("left", "right", "top", "bottom"):
-            el = OxmlElement(f"w:{side}")
-            el.set(qn("w:w"), "0")
-            el.set(qn("w:type"), "dxa")
-            mar.append(el)
-        tcPr.append(mar)
-    p = left.paragraphs[0]
+    p = doc.add_paragraph()
     _spacing(p, after=0)
     _run(p, d["name"], bold=True, size=20, color=INK)
-    p = left.add_paragraph()
+    p = doc.add_paragraph()
     _spacing(p, after=1)
     _run(p, d["headline"], bold=True, size=11, color=ACCENT)
-    p = left.add_paragraph()
+    p = doc.add_paragraph()
     _spacing(p, after=2)
-    _hyperlink(p, "mailto:" + d["email"], d["email"])
+    for i, (text, url) in enumerate(contacts(d, phone)):
+        if i:
+            _run(p, "  ·  ", color=MUTED)
+        _hyperlink(p, url, text)
     if brand_img:
-        p = right.paragraphs[0]
-        _spacing(p, before=2, after=0)
-        p.add_run().add_picture(str(brand_img), width=Inches(BRAND_W_IN))
+        img, width_in = brand_img
+        p = doc.add_paragraph()
+        _spacing(p, before=1, after=0)
+        p.add_run().add_picture(str(img), width=Inches(width_in))
 
     _heading(doc, "Summary")
     p = doc.add_paragraph()
@@ -223,17 +256,11 @@ def build_docx(d, path, brand_img=None):
     if d.get("scope"):
         _heading(doc, "Scope of leadership")
         for s in d["scope"]:
-            p = doc.add_paragraph()
-            _spacing(p, after=1, line=1.0)
-            _run(p, s["group"] + ": ", bold=True)
-            _run(p, s["items"])
+            _labelled(doc, s["group"], s["items"])
 
-    _heading(doc, "Core skills")
+    _heading(doc, "Skills")
     for s in d["skills"]:
-        p = doc.add_paragraph()
-        _spacing(p, after=1, line=1.0)
-        _run(p, s["group"] + ": ", bold=True)
-        _run(p, s["items"])
+        _labelled(doc, s["group"], s["items"])
 
     _heading(doc, "Experience")
     text_w = Inches(PAGE_W_IN - 2 * MARGIN_IN)
@@ -252,27 +279,16 @@ def build_docx(d, path, brand_img=None):
             _bullet(doc, b)
 
     if d.get("projects"):
-        _heading(doc, "Selected AI work")
+        _heading(doc, "Projects")
         for pr in d["projects"]:
             _bullet(doc, pr["line"], label=pr["name"])
 
     _heading(doc, "Certifications")
-    certs = d["certifications"]
-    half = (len(certs) + 1) // 2
-    t = doc.add_table(rows=half, cols=2)
-    t.alignment = WD_TABLE_ALIGNMENT.LEFT
-    t.autofit = False
-    for ci, col in enumerate((certs[:half], certs[half:])):
-        for ri, c in enumerate(col):
-            cell = t.cell(ri, ci)
-            cell.width = Inches((PAGE_W_IN - 2 * MARGIN_IN) / 2)
-            cp = cell.paragraphs[0]
-            _spacing(cp, after=1)
-            _run(cp, c["name"], bold=True, size=9.5)
-            _run(cp, " — " + _cert_meta(c), size=9.5, color=MUTED)
+    for label, items in cert_groups(d):
+        _labelled(doc, label, " · ".join(items))
 
     if d.get("awards"):
-        _heading(doc, "Recognition")
+        _heading(doc, "Awards and recognition")
         for a in d["awards"]:
             _bullet(doc, a)
 
@@ -289,15 +305,18 @@ def _e(s):
     return html.escape(s, quote=True)
 
 
-def build_html(d):
-    scope = "".join(f'<p class="sk"><b>{_e(s["group"])}:</b> {_e(s["items"])}</p>' for s in d.get("scope", []))
-    skills = "".join(f'<p class="sk"><b>{_e(s["group"])}:</b> {_e(s["items"])}</p>' for s in d["skills"])
+def build_html(d, phone=None, brand=None):
+    def labelled(rows):
+        return "".join(f'<p class="sk"><b>{_e(a)}:</b> {_e(b)}</p>' for a, b in rows)
+    scope = labelled((s["group"], s["items"]) for s in d.get("scope", []))
+    skills = labelled((s["group"], s["items"]) for s in d["skills"])
+    certs = labelled((label, " · ".join(items)) for label, items in cert_groups(d))
+    contact = '<span class="sep">·</span>'.join(f'<a href="{_e(u)}">{_e(t)}</a>' for t, u in contacts(d, phone))
     exp = "".join(
         f'<div class="job"><div class="jh"><b>{_e(e["title"])}</b><span>{_e(e["period"])}</span></div>'
         f'<div class="org">{_e(e["org"])}</div><ul>{"".join(f"<li>{_e(b)}</li>" for b in e["bullets"])}</ul></div>'
         for e in d["experience"])
     proj = "".join(f'<li><b>{_e(p["name"])}</b> — {_e(p["line"])}</li>' for p in d.get("projects", []))
-    certs = "".join(f'<li><b>{_e(c["name"])}</b> <span>— {_e(_cert_meta(c))}</span></li>' for c in d["certifications"])
     awards = "".join(f"<li>{_e(a)}</li>" for a in d.get("awards", []))
     return f"""<!doctype html><html><head><meta charset="utf-8"><title>{_e(d['name'])} — Resume</title>
 {FONT_LINK}
@@ -308,7 +327,8 @@ body {{ margin: 0; font-family: Carlito, Calibri, sans-serif; font-size: {BODY_P
 h1 {{ font-size: 20pt; margin: 0; line-height: 1.15; }}
 .hl {{ color: #B43A0E; font-weight: 700; font-size: 11pt; margin: 0 0 1pt; }}
 .ct a {{ color: #B43A0E; text-decoration: none; }}
-.ct {{ margin: 0 0 2pt; }}
+.ct .sep {{ color: #5A524C; padding: 0 6pt; }}
+.ct {{ margin: 0 0 3pt; }}
 h2 {{ color: #B43A0E; font-size: 10.5pt; text-transform: uppercase; margin: 7pt 0 3pt; padding-bottom: 1pt; border-bottom: 0.75pt solid #B43A0E; break-after: avoid; }}
 p {{ margin: 0 0 1pt; line-height: 1.22; }}
 ul {{ margin: 0; padding-left: 0.18in; }}
@@ -316,34 +336,40 @@ li {{ margin: 0 0 1pt; line-height: 1.22; }}
 .job {{ margin-top: 4pt; }}
 .job:first-of-type {{ margin-top: 1pt; }}
 .jh {{ display: flex; justify-content: space-between; break-after: avoid; }}
-.jh span, .org, .certs span {{ color: #5A524C; }}
+.jh span, .org {{ color: #5A524C; }}
 .jh span {{ font-size: 9.5pt; }}
 .org {{ font-style: italic; margin-bottom: 1pt; break-after: avoid; }}
-.certs {{ columns: 2; column-gap: 0.2in; list-style: none; padding: 0; font-size: 9.5pt; }}
-.certs li {{ break-inside: avoid; }}
-.hdr {{ display: flex; justify-content: space-between; align-items: flex-start; }}
-.hdr .brands {{ margin-top: 2pt; }}
 {BRAND_CSS}
 </style></head><body>
-<div class="hdr"><div><h1>{_e(d['name'])}</h1><p class="hl">{_e(d['headline'])}</p>
-<p class="ct"><a href="mailto:{_e(d['email'])}">{_e(d['email'])}</a></p></div>{brand_html(d)}</div>
+<h1>{_e(d['name'])}</h1><p class="hl">{_e(d['headline'])}</p>
+<p class="ct">{contact}</p>
+{_brand_block(d, brand)}
 <h2>Summary</h2><p>{_e(d['summary'])}</p>
 {f'<h2>Scope of leadership</h2>{scope}' if scope else ''}
-<h2>Core skills</h2>{skills}
+<h2>Skills</h2>{skills}
 <h2>Experience</h2>{exp}
-{f'<h2>Selected AI work</h2><ul>{proj}</ul>' if proj else ''}
-<h2>Certifications</h2><ul class="certs">{certs}</ul>
-{f'<h2>Recognition</h2><ul>{awards}</ul>' if awards else ''}
+{f'<h2>Projects</h2><ul>{proj}</ul>' if proj else ''}
+<h2>Certifications</h2>{certs}
+{f'<h2>Awards and recognition</h2><ul>{awards}</ul>' if awards else ''}
 <h2>Education</h2><p>{_e(d['education'])}</p>
 </body></html>"""
 
 
-def build_pdf(d, path):
+def _brand_block(d, brand):
+    """Same rasterised strip as the Word file, so logos stay out of the PDF text layer."""
+    if not brand:
+        return brand_html(d)
+    img, width_in = brand
+    data = base64.b64encode(pathlib.Path(img).read_bytes()).decode()
+    return f'<img alt="" src="data:image/png;base64,{data}" style="width:{width_in:.3f}in;display:block;margin-top:1pt">'
+
+
+def build_pdf(d, path, phone=None, brand=None):
     from playwright.sync_api import sync_playwright
     with sync_playwright() as p:
         b = p.chromium.launch()
         pg = b.new_page()
-        pg.set_content(build_html(d), wait_until="networkidle")
+        pg.set_content(build_html(d, phone, brand), wait_until="networkidle")
         pg.evaluate("document.fonts.ready")
         pg.pdf(path=str(path), format="Letter", print_background=True, prefer_css_page_size=True)
         b.close()
@@ -352,29 +378,41 @@ def build_pdf(d, path):
 
 def main():
     d = json.loads(SRC.read_text())
-    OUT.mkdir(parents=True, exist_ok=True)
-    docx_path = OUT / f"{BASENAME}.docx"
+    out, phone = OUT, None
+    if "--private" in sys.argv:
+        i = sys.argv.index("--private")
+        if i + 1 >= len(sys.argv):
+            sys.exit("--private needs an output directory outside the repo")
+        out = pathlib.Path(sys.argv[i + 1]).expanduser().resolve()
+        if ROOT in out.parents or out == ROOT:
+            sys.exit("refusing to write the private resume inside the repo")
+        phone = os.environ.get("RESUME_PHONE", "").strip()
+        if not phone:
+            sys.exit("set RESUME_PHONE for the private build")
+    out.mkdir(parents=True, exist_ok=True)
+    show = (lambda p: p.relative_to(ROOT)) if ROOT in out.parents else (lambda p: p)
+
+    docx_path = out / f"{BASENAME}.docx"
     with tempfile.TemporaryDirectory() as td:
-        img = None
+        brand = None
         try:
             img = pathlib.Path(td) / "brands.png"
-            brand_png(d, img)
+            brand = (img, brand_png(d, img))
         except Exception as exc:  # Playwright missing: build the Word file without logos
-            print(f"warning: certification logos skipped in Word file ({exc})")
-            img = None
-        build_docx(d, docx_path, img)
-    print(f"wrote {docx_path.relative_to(ROOT)}")
-    if "--no-pdf" not in sys.argv:
-        pdf_path = OUT / f"{BASENAME}.pdf"
-        with tempfile.TemporaryDirectory() as td:
-            tmp = pathlib.Path(td) / "resume.pdf"
-            pages = build_pdf(d, tmp)
-            if pages != 2:
-                sys.exit(f"expected 2 pages, got {pages}; {pdf_path.name} left unchanged")
-            if b"Carlito" not in tmp.read_bytes():
-                sys.exit(f"Carlito font did not load (offline?); {pdf_path.name} left unchanged")
-            shutil.move(str(tmp), pdf_path)
-        print(f"wrote {pdf_path.relative_to(ROOT)} ({pages} pages)")
+            print(f"warning: certification logos skipped ({exc})")
+        build_docx(d, docx_path, phone, brand)
+        print(f"wrote {show(docx_path)}")
+        if "--no-pdf" in sys.argv:
+            return
+        pdf_path = out / f"{BASENAME}.pdf"
+        tmp = pathlib.Path(td) / "resume.pdf"
+        pages = build_pdf(d, tmp, phone, brand)
+        if pages != 2:
+            sys.exit(f"expected 2 pages, got {pages}; {pdf_path.name} left unchanged")
+        if b"Carlito" not in tmp.read_bytes():
+            sys.exit(f"Carlito font did not load (offline?); {pdf_path.name} left unchanged")
+        shutil.move(str(tmp), pdf_path)
+        print(f"wrote {show(pdf_path)} ({pages} pages)")
 
 
 if __name__ == "__main__":
