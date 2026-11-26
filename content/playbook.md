@@ -12,6 +12,9 @@ This playbook is the framework I use to close that gap. It treats an agent as a 
 
 ## 1. Why agent pilots stall before production
 
+<!-- brief: Prototypes take days, but production sign-off takes months: pilots stall on unproven quality, late controls, single-instance designs, per-request cost models and nobody owning life after launch. -->
+<!-- takeaways: The 2025 data points the same way: one analyst firm forecasts that over 40% of agentic AI projects will be cancelled by 2027, and a widely cited (non-random) study found most generative-AI pilots showed no measurable P&L impact. | Teams can see what their agents do, but far fewer run the evaluations that prove the agents do it well. | An enterprise agent is a small reasoning core inside a large, deterministic shell, and most of the risk reduction lives in the shell. -->
+
 The 2025 data all points the same way. One analyst firm predicts that more than 40% of agentic AI projects will be cancelled by the end of 2027, because of rising costs, unclear business value or weak risk controls [1]. An MIT study reported that about 95% of enterprise generative-AI pilots showed no measurable P&L impact [2]. Its sample wasn't random, so treat the exact figure with care. Its diagnosis still rings true: the failures came from a "learning gap" and poor fit with how work actually gets done, not from model quality. A late-2025 enterprise survey found 11% of organisations using agentic AI in production, 38% piloting, and 35% with no formal strategy [3]. Another study put only 5% of companies in the group getting value at scale, while 60% reported hardly any material value [4].
 
 Practitioners are more upbeat, but they name the same bottleneck. In a survey of 1,340 people building agents, 57.3% said they had agents in production, and quality was the top barrier (about 32%). The telling detail: 89% had observability, but only 52.4% ran offline evaluations and 37.3% ran online evaluations [5]. Teams can see what their agents do. Far fewer can prove the agents do it well.
@@ -34,6 +37,9 @@ From my own projects, pilots stall in five places:
 ---
 
 ## 2. The reference architecture: layers of an enterprise agent
+
+<!-- brief: Six stacked layers, a cross-cutting control plane and a delivery plane, plus the three structural moves that separate a 2026 architecture from a first-generation one. -->
+<!-- takeaways: Six layers (channels, orchestration, harness, model access, tools, knowledge and state), with a control plane across all of them and a delivery plane underneath. | Keep deterministic work deterministic: the agent takes a typed request and returns a typed result. | Enforcement moves out of the agent process, state moves out of memory, and the harness becomes configurable per agent. -->
 
 <figure class="pb-fig" aria-labelledby="fig-arch-cap">
 <div class="pb-fig-frame">
@@ -98,6 +104,9 @@ Three structural moves separate a 2026 architecture from a first-generation one.
 
 ## 3. Build principles
 
+<!-- brief: Nine principles, from using the lowest complexity that reliably works to denying by default and failing closed. -->
+<!-- takeaways: Use the lowest complexity that works: a function, then a workflow, then a single agent; go multi-agent only for a clear reason. | Least agency, context treated as an engineered budget, and a stateless harness over durable state. | Business rules and authorisation live in code, not prompts; typed contracts everywhere; every policy check fails closed. -->
+
 1. **Use the lowest complexity that reliably works.** If a function can do the job, write the function. If a fixed workflow with one LLM step can do it, build that. A single agent with tools is the usual enterprise default. Go multi-agent only for a clear reason: parallel breadth-first work, separate security boundaries, or tool overload that better tool design can't fix [6][7][8].
 2. **Least agency.** OWASP now pairs least privilege with *least agency*: don't give a system autonomy it doesn't need, because extra autonomy widens the attack surface without adding value [33].
 3. **Treat context as an engineered budget.** Reliability falls as input grows. A study of 18 models found that every one did better on short, focused prompts than on very long ones [13]. The goal is the smallest set of high-signal tokens that gets the outcome you want [12]. Build context assembly as a testable pipeline step, with a token budget, ordering rules and a stable prefix that can be cached.
@@ -111,6 +120,9 @@ Three structural moves separate a 2026 architecture from a first-generation one.
 ---
 
 ## 4. The production control stack
+
+<!-- brief: The nine production controls: resilience, budgets, audit, policy, kill switch, telemetry, tenancy, identity, and PII protection. -->
+<!-- takeaways: Budgets are set in tokens and money per run, user and tenant, and enforced at the gateway. | Authorise every tool call and its arguments, and keep a signed, externally anchored, central audit trail keyed to one workflow ID. | Each agent gets its own non-human identity with short-lived credentials, and PII protection wraps every source that feeds the context. -->
 
 <figure class="pb-fig" aria-labelledby="fig-stack-cap">
 <ol class="cs-grid" aria-label="The production control stack">
@@ -129,15 +141,21 @@ Three structural moves separate a 2026 architecture from a first-generation one.
 
 ### 4.1 Resilience
 
+<!-- brief: Typed retries, one retry budget, idempotency keys, checkpoints. -->
+
 **The established baseline** is standard distributed-systems practice. Split errors into ones worth retrying and ones that aren't. Retry with exponential backoff and jitter. Put a circuit breaker on each dependency. Degrade gracefully when a source fails. The agent-specific twist: when the agent falls back to cached or static information, it must say so. Tag every piece of data with its source and freshness, so the model can't present stale data as current and the user knows what they are looking at.
 
 **What 2026 practice adds.** Decide what to retry from typed errors and status codes, not from exception text, and honour `Retry-After`. Set one retry budget across the SDK, the framework and the gateway. Otherwise the three layers multiply into retry storms. Put an *idempotency key* on every tool that has side effects, so a repeated call doesn't repeat the action, and never let the model choose the retry count. For long tasks, checkpoint and resume from the point of failure instead of starting over. One provider's research-agent team found that because agents carry state across many tool calls, "minor system failures can be catastrophic" [11]. Fail over between models and providers at the gateway [76].
 
 ### 4.2 Limits and budgets
 
+<!-- brief: Tokens and money per run, user and tenant; an operating envelope. -->
+
 First-generation agents usually limited requests per minute and capped loop iterations. Requests and steps are poor proxies for spend. Today, budgets are set in **tokens and money**, per run, per user and per tenant, and enforced at the gateway. Add wall-clock deadlines, and detect real loops, such as the same tool call repeating or a state that flips back and forth. For consequential workflows, set an *operating envelope* before the run starts. That means caps on records changed, money at stake, recipients, sub-agents, delegation depth and credential lifetime [46]. Government guidance now frames managing token consumption as an operational-resilience issue, and names *denial-of-wallet* attacks (running up your bill) [79]. OWASP lists unbounded consumption as a top-ten LLM risk [34].
 
 ### 4.3 Audit
+
+<!-- brief: Signed, externally anchored, central, keyed to one workflow ID. -->
 
 **The established baseline:** keep two separate records. One is an operational log of what happened. The other is tamper-evident evidence that the log wasn't altered.
 
@@ -145,11 +163,15 @@ First-generation agents usually limited requests per minute and capped loop iter
 
 ### 4.4 Policy
 
+<!-- brief: Authorise every tool call and its arguments; graded outcomes. -->
+
 **The established baseline:** deny by default, and decide before the model runs, so a blocked request costs nothing.
 
 **What 2026 practice adds.** Authorise *every tool call and its arguments*, not just the incoming request. Ship policies as signed, versioned bundles with unit tests in CI. Go beyond allow and deny. OWASP's Agent Control Standard (still a v0.1 specification) defines five outcomes: allow, deny, *modify*, *ask* (send to an approver) and *defer* (decide later) [84]. Another industry body uses a different set: allow, constrain, throttle, require approval and suspend [46]. So the vocabulary isn't settled yet, but the idea of graded outcomes is. Use an LLM judge only as an optional second layer.
 
 ### 4.5 Kill switch, preflight and dry-run
+
+<!-- brief: Suspend at fleet, tenant, agent and tool level; plan → approve → apply. -->
 
 - **Suspend at every level: fleet, tenant, agent and tool.** Activation must be authenticated and audited. Suspension must reject new requests, cancel queued work, block new sub-agents and refuse to renew credentials. As one guide puts it, "an alert after 10,000 calls does not stop call 10,001" [46]. Add automatic triggers on velocity, cost and anomalies. The EU AI Act asks for a "stop" procedure that brings a high-risk system to a halt in a safe state [64].
 - **Preflight checks** before destructive actions should get their facts from the system of record, not from whatever the tool's caller asserts.
@@ -157,17 +179,23 @@ First-generation agents usually limited requests per minute and capped loop iter
 
 ### 4.6 Health and telemetry
 
+<!-- brief: Local-only readiness; OpenTelemetry GenAI conventions. -->
+
 Readiness checks should test only local health. If readiness depends on a shared model gateway, one blip takes the whole fleet out of service at once. Handle dependency failures with degradation and circuit breakers instead.
 
 For telemetry, use the **OpenTelemetry GenAI semantic conventions**. They now define `invoke_agent`, `plan` and `execute_tool` spans, MCP spans, and a `gen_ai.evaluation.result` event that attaches quality scores to the trace being scored [53]. They have moved to their own repository, with a first v0.1.0 release, and are still at *Development* stability. Pin a version and normalise attribute names in your collector. Capturing prompts and tool arguments is opt-in, and it should stay that way unless you redact. There is no standard cost metric, so compute cost centrally from token metrics. Alert when telemetry stops arriving. Losing observability silently is an incident in its own right.
 
 ### 4.7 Multi-tenancy
 
+<!-- brief: Tenant from authenticated context only, carried end to end. -->
+
 **The established baseline:** resolve the tenant on every request; scope thread IDs, cache keys and storage by tenant; check access at resource boundaries; audit cross-tenant attempts.
 
 **What 2026 practice adds.** Take the tenant from authenticated server-side context *only*. Never take it from a tool argument the model fills in, or from the prompt. Carry it end to end: request, agent, tools, MCP and A2A calls, telemetry and billing. A2A 1.0 has a native tenant field [30]. Isolate prompt caches by tenant. One provider recommends separate cache keys per customer, partly to prevent cache-hit probing across users [78]. Scope memory and retrieval by tenant, and decide whether to give each tenant its own stack or share one (silo or pool) according to risk.
 
 ### 4.8 Secrets and identity
+
+<!-- brief: Its own non-human identity per agent; short-lived credentials. -->
 
 Keeping secrets in a vault behind a provider-neutral interface is still right.
 
@@ -193,17 +221,26 @@ The major clouds now document identity services built for agents. Microsoft Azur
 
 ### 4.9 PII and DLP
 
+<!-- brief: Wrap every context source; egress control. -->
+
 Many first-generation designs redact personal data only in user input. The gap is everything else: tool results, retrieved documents and memory all flow into the context unredacted. Wrap **every** source that feeds the context. Prefer reversible pseudonymisation backed by a vault, so the model reasons over consistent placeholders and authorised outputs can be re-identified. Scan streamed output as it is produced. Route data by classification, for example sending sensitive data only to in-region endpoints. Treat egress control as a primary data-loss-prevention (DLP) measure. Private data, untrusted content and a way to send data out, all in one session, is the "lethal trifecta" [40].
 
 ---
 
 ## 5. Integration and interoperability
 
+<!-- brief: How agents connect to tools and to each other: tool design, the current stateless MCP, A2A delegation, a gateway with a curated registry, and multi-agent used with restraint. -->
+<!-- takeaways: Build a few consolidated, namespaced tools around high-impact workflows instead of wrapping every API endpoint. | MCP connects agents to tools and context; A2A delegates work to agents owned by someone else. | Send all agent traffic through a central gateway backed by a private, curated registry, and go multi-agent only deliberately. -->
+
 ### 5.1 Tool design
+
+<!-- brief: Consolidated, namespaced tools; definitions loaded on demand; split agents on security boundaries, not tool count. -->
 
 Build a few consolidated, namespaced tools around high-impact workflows instead of wrapping every API endpoint. Have them return high-signal fields, paginate by default, and give error messages the agent can act on [21]. Return structured results with explicit error flags, not plain strings. For large tool catalogues, load tool definitions on demand through a search step. In one provider's test with more than 50 tools, this cut the tokens spent on tool definitions by about 85% [18]. Letting agents call tool APIs from code in a sandbox cut one worked example from about 150,000 tokens to about 2,000 [22]. That is a single case, not a benchmark. Package procedural knowledge as versioned skills, using the open Agent Skills format [23]. Don't split agents on tool count alone. Split them along security, ownership and permission boundaries.
 
 ### 5.2 MCP: what's current
+
+<!-- brief: The 2026-07-28 revision makes the core stateless and hardens authorisation; plan an upgrade cycle twice a year. -->
 
 The current MCP revision is **2026-07-28**, and it makes the protocol core stateless [24]. The initialize handshake and protocol sessions are gone. Every request carries its own version and capabilities, servers expose a `server/discover` call, and routing headers let gateways meter traffic without parsing request bodies. List results can be cached, and servers should return tools in a fixed order, which helps prompt caching. Broken streams are no longer resumed, so make tool calls idempotent and let clients re-issue them. The legacy HTTP+SSE transport is deprecated, and so are Roots, Sampling and protocol Logging. Route model calls through your own model gateway, and send tool telemetry through OpenTelemetry instead.
 
@@ -213,19 +250,28 @@ The current MCP revision is **2026-07-28**, and it makes the protocol core state
 
 ### 5.3 A2A for agent-to-agent delegation
 
+<!-- brief: A2A 1.0 adds signed Agent Cards and a tenant field; treat remote agents as untrusted. -->
+
 A2A reached v1.0.0 on 2026-03-12, a breaking release [30]. A v1.0.1 bug-fix release followed in May 2026 [85]. Version 1.0 added Agent Cards signed with JSON Web Signatures (JWS), modern OAuth flows (PKCE and device code; the implicit and password flows are gone), mutual TLS (mTLS, where both sides present certificates), a native tenant field, and three functionally equivalent bindings [30]. A2A joined the Agentic AI Foundation in August 2026 [31]. The division of labour is now clear: **MCP connects agents to tools and context, and A2A delegates work to agents owned by someone else.** Verify card signatures. Pin the minor protocol version and take patch releases. Treat a remote agent's self-description and outputs as untrusted. Pasting a remote card's text straight into your model's tool description is a poisoning vector.
 
 ### 5.4 Gateway and registry
 
+<!-- brief: One central gateway and a private, curated registry; pin and hash tool definitions. -->
+
 Send all agent traffic through a central gateway for authentication, credential injection, policy, audit and tool search [42]. Make a **private, curated registry** your only source of approved MCP servers and agents. The official MCP Registry holds public servers only, is still in preview, and leaves security scanning to others [29]. Pin and hash tool definitions, and re-approve a tool whenever its definition changes. That catches a "rug pull", where a tool approved in one form is quietly changed later. Treat annotations such as "read-only" as hints, not controls [27]. Tool misuse and the agentic supply chain both appear in OWASP's agentic top ten [33].
 
 ### 5.5 Multi-agent, used deliberately
+
+<!-- brief: The evidence calls for restraint: verify centrally, use typed handoffs and cap delegation depth. -->
 
 Cloud providers' architecture guides describe overlapping patterns (for example [8][86][87]): sequential pipelines, concurrent fan-out, review-and-critique (maker-checker), handoff, and a coordinator or manager agent that routes work dynamically. One model provider's guide separates two ways to delegate: a manager agent that calls other agents as tools, and decentralised handoffs where one agent passes control to another [7]. The evidence calls for restraint. Across 260 configurations, multi-agent setups ranged from 80.8% better to 70.0% worse than a single agent, depending on how the task was structured [9]. A study of more than 1,600 traces catalogued 14 multi-agent failure modes [10]. One provider measured multi-agent systems using about 15 times the tokens of chat [11]. If you do go multi-agent, verify results centrally, use typed handoffs, carry identity, trace context and budget across every hop, and cap delegation depth.
 
 ---
 
 ## 6. Quality: evals and observability
+
+<!-- brief: Move from testing how an agent is assembled to measuring how it behaves: real tasks, end-state grading, consistency, separate evaluators and continuous evaluation. -->
+<!-- takeaways: Start with 20–50 real tasks, grade the end state of the real system, and measure consistency with pass^k. | Keep the evaluator separate from the generator, apply statistics, and read transcripts. | Curate user feedback into eval datasets with human review, never straight into production prompts. -->
 
 First-generation test suites mostly checked how an agent was *assembled*: unit tests for each tool, tests that the configuration loads, and a few integration tests that needed real credentials. They said little about how the agent *behaves*. Here is what to add.
 
@@ -261,6 +307,9 @@ Curate feedback, scope it to a tenant, have a human review it, and add it to *ev
 
 ## 7. Security for agents
 
+<!-- brief: Treat prompt injection as a residual risk and contain the agent by architecture, with the OWASP agentic top ten as the threat checklist. -->
+<!-- takeaways: Prompt injection may never be fully mitigated, and pattern-matching deny-lists miss indirect injection. | Rule of Two: in one session, an agent gets at most two of untrusted input, sensitive data, and the ability to change state or communicate externally. | Contain first, approve second: sandbox agent-generated code, treat egress allowlists as capability grants, and red-team continuously. -->
+
 **Threat model.** Use the OWASP Top 10 for Agentic Applications (December 2025) as your agent threat checklist. It covers goal hijack, tool misuse, identity and privilege abuse, the agentic supply chain, unexpected code execution, memory and context poisoning, insecure inter-agent communication, cascading failures, exploitation of human trust in the agent, and rogue agents [33]. Use the LLM Top 10 for model-level risks [34].
 
 **Prompt injection is a residual risk, not a bug you fix.** The UK NCSC says LLMs have no boundary between instructions and data, so injection "may never be totally mitigated" the way SQL injection can [35]. Adaptive attacks bypassed 12 published defences, with success rates above 90% against most of them [36]. A NIST-run competition with more than 250,000 attack attempts found at least one successful hijack against every one of the 13 frontier models tested [37].
@@ -292,6 +341,9 @@ Keep classifiers only as one layer that makes attacks harder.
 ---
 
 ## 8. Governance and the autonomy ladder
+
+<!-- brief: Make autonomy an explicit, policy-enforced decision on a five-level ladder, backed by real approvals, an agent registry and a view of current regulation. -->
+<!-- takeaways: Every agent has a recorded, approved autonomy level, from operator to observer, paired with an impact assessment. | Pre-authorised policy is the default; a real approval pauses durably and is bound to the exact arguments. | The agent registry is the system of record, from owner and autonomy level through to decommissioning. -->
 
 **Make autonomy an explicit design decision.** Every agent should have a recorded, approved level of autonomy that is enforced by policy, not just implied by its code. The clearest public scale I know defines five levels by the role the user plays [48]. The level names and descriptions below follow that paper. The controls column is my own mapping.
 
@@ -329,6 +381,9 @@ Pair the autonomy level with an impact assessment: what is the worst plausible o
 
 ## 9. The delivery pipeline: commit to production
 
+<!-- brief: Good software delivery still applies to agents; what's new is eval gates, the agent's wider supply chain, and treating prompts and model pins as code. -->
+<!-- takeaways: Build one immutable, signed artefact and promote the same artefact through every environment, with an eval and security gate in staging. | Ship an AI-BOM with each agent version and sign your models. | Keep agent definitions in Git, never point production at a floating "latest" label, and treat every model swap as an eval-gated, canaried release. -->
+
 Good software delivery practice still applies to agents: separation of duties, review by the code owners for the area being changed, human release approval in proportion to risk, and building an immutable artefact once and promoting that same artefact through every environment, with a GitOps controller reconciling the declared state [74][69]. What's new is evals, the agent's wider supply chain, and the non-code artefacts.
 
 <figure class="pb-fig" aria-labelledby="fig-pipe-cap">
@@ -364,6 +419,9 @@ Good software delivery practice still applies to agents: separation of duties, r
 
 ## 10. Scaling and cost
 
+<!-- brief: Choose the runtime deliberately, make the model gateway the control point, and manage cost per successful task. -->
+<!-- takeaways: Choose between managed runtimes, serverless containers and Kubernetes on duration, state, isolation, residency and cost; autoscale on concurrency or queue depth. | Cost levers: tier your models, design for prompt caching, batch non-interactive work, and report cost per successful outcome. | A platform team owns the shell; product teams own the reasoning core. -->
+
 **Choose the runtime deliberately.** Managed agent runtimes from the major clouds (for example Google Cloud, Microsoft Azure and AWS) now bundle sessions, memory, identity, tool gateways and evals. They are the fastest route to production but also the most opinionated. Serverless containers scale to zero but are stateless and have request timeouts. Kubernetes gives full control at a real operational cost [82]. Decide based on task duration, statefulness, isolation and residency needs, cost model, and whether you must host your own MCP servers. Wherever the agent runs, autoscale on concurrency or queue depth, not CPU. Agents spend most of their time waiting on I/O.
 
 **Make the model gateway the control point.** It handles token-based quotas, priority queues, failover, chargeback per tenant, and centrally managed canaries. Plan for its trade-offs: added latency, a possible single point of failure, and prompts that now fall within compliance scope [76]. For self-hosted models, Kubernetes now has model-aware inference routing [77].
@@ -380,6 +438,9 @@ Good software delivery practice still applies to agents: separation of duties, r
 ---
 
 ## 11. Getting started: crawl, walk, run
+
+<!-- brief: You don't need the whole architecture before your first agent ships, only the parts that are expensive to retrofit; then grow in three stages. -->
+<!-- takeaways: Crawl: one agent at operator or collaborator level, behind a model gateway, with its own identity, budgets, traces and 20–50 real eval tasks. | Walk: policy-as-code on every tool call, durable approvals, a curated tool registry and eval gates in CI. | Run: a platform team, golden paths, an agent registry as the system of record, online evals and a standing red team. -->
 
 <div class="callout callout-key" role="note" markdown="1">
 <p class="callout-label">Key takeaway</p>
@@ -418,6 +479,9 @@ You don't need the whole architecture before your first agent ships. You need th
 
 ## 12. What's outdated, what's new
 
+<!-- brief: A side-by-side table of first-generation (2023–24) agent patterns to retire or update, and the current approach for each. -->
+<!-- takeaways: Retire deny-lists as the injection defence, identity taken from tool arguments, shared static keys and approval by notification. | Update prompt engineering to context engineering, request caps to token and cost budgets, and local logs to signed, anchored central audit. | Replace each team building its own stack with a platform-owned shell, golden paths and a crawl-walk-run rollout. -->
+
 <p class="chip-legend"><span><span class="chip chip-retire">retire</span> stop doing it</span> <span><span class="chip chip-update">update</span> keep the intent, change how it is done</span> <span><span class="chip chip-new">new</span> the current approach</span></p>
 
 | First-generation pattern (2023–24) | Current approach <span class="chip chip-new">new</span> |
@@ -445,6 +509,9 @@ You don't need the whole architecture before your first agent ships. You need th
 ---
 
 ## 13. Production-readiness checklist
+
+<!-- brief: A tiered checklist where controls scale with autonomy and impact: a baseline for every agent, more for agents that act, more again for high-autonomy ones. -->
+<!-- takeaways: Every agent: registry entry, its own identity, gateway budgets, central audit, pinned versions, CI evals and fail-closed policy. | Agents that take actions: policy on every tool call, argument-bound approvals, idempotency keys, PII protection on every source, curated tools. | High-autonomy agents: an enforced operating envelope, a drilled kill switch, continuous red-teaming and rehearsed runbooks. -->
 
 Controls should scale with autonomy and impact. A read-only summariser doesn't need the same bar as an agent that moves money. Apply each tier on top of the ones before it.
 
@@ -482,6 +549,8 @@ Controls should scale with autonomy and impact. A read-only summariser doesn't n
 
 ## 14. Glossary
 
+<!-- brief: Plain-language definitions of the acronyms and terms used throughout the playbook. -->
+
 - **A2A (Agent2Agent):** an open protocol for one agent to delegate work to another, independently owned agent.
 - **AI-BOM:** an AI bill of materials, an inventory of the models, prompts, tools and datasets in a release.
 - **Annex I / Annex III (EU AI Act):** the two routes by which a system counts as high-risk. Annex I covers AI in products under existing EU product-safety law; Annex III lists use-case areas such as employment and credit.
@@ -500,6 +569,8 @@ Controls should scale with autonomy and impact. A read-only summariser doesn't n
 ---
 
 ## 15. Sources
+
+<!-- brief: The numbered sources behind every citation in the playbook. -->
 
 1. The Register, "AI agents get office tasks wrong around 70% of the time, and a lot of them aren't AI at all" (reports Gartner's 2025-06-25 prediction that over 40% of agentic AI projects will be cancelled by end of 2027), 2025-06-29. https://www.theregister.com/2025/06/29/ai_agents_fail_a_lot/
 2. Fortune (reporting MIT NANDA), "MIT report: 95% of generative AI pilots at companies are failing", 2025-08-18. https://fortune.com/2025/08/18/mit-report-95-percent-generative-ai-pilots-at-companies-failing-cfo/

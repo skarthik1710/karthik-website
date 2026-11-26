@@ -1,0 +1,468 @@
+<!DOCTYPE html>
+<!--
+  Story video source for karthikeyanselvam.com.
+  Every pixel is a pure function of time: window.render(t) draws frame t (seconds).
+  - Open with ?play to watch it live in a browser (1920x1080 stage, scaled to fit).
+  - scripts/render_story.py captures it frame by frame into public/media/story.mp4.
+  - Optional AI b-roll: drop Veo/Flow clips at public/media/clips/{intro,turn,finale}.mp4;
+    they're picked up automatically as low-opacity backgrounds for those scenes.
+  Facts used here must match the site (index.html / experience.html). Don't add new claims.
+-->
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<title>Story · Karthikeyan Selvam</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=block" rel="stylesheet"/>
+<style>
+    :root { --bg:#0E0B0A; --text:#F3EDE7; --muted:#A69C92; --dim:#75695E; --line:#2E2724; --accent:#FF6B35; --soft:#FFB48A; }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    html, body { background: #000; overflow: hidden; }
+    #stage { position: absolute; left: 0; top: 0; width: 1920px; height: 1080px; overflow: hidden; background: var(--bg);
+        font-family: 'Inter', sans-serif; color: var(--text); transform-origin: 0 0; }
+    .abs { position: absolute; will-change: transform, opacity, filter; }
+    canvas#fx { position: absolute; inset: 0; width: 1920px; height: 1080px; }
+    video.clip { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; opacity: 0; mix-blend-mode: screen; }
+    .vignette { position: absolute; inset: 0; pointer-events: none;
+        background: radial-gradient(ellipse at center, transparent 45%, rgba(0,0,0,.65) 100%); }
+    .grain { position: absolute; inset: 0; opacity: .05; pointer-events: none;
+        background-image: repeating-linear-gradient(0deg, rgba(255,255,255,.4) 0 1px, transparent 1px 3px); }
+    .floor { position: absolute; left: -20%; right: -20%; bottom: -4px; height: 46%; opacity: 0;
+        background-image: linear-gradient(rgba(255,107,53,.22) 1px, transparent 1px), linear-gradient(90deg, rgba(255,107,53,.22) 1px, transparent 1px);
+        background-size: 90px 90px; transform: perspective(700px) rotateX(64deg); transform-origin: bottom center;
+        -webkit-mask-image: linear-gradient(to top, #000, transparent 85%); }
+    .mono { font-family: 'JetBrains Mono', monospace; }
+    .disp { font-family: 'Space Grotesk', sans-serif; letter-spacing: -0.03em; }
+    .accent { color: var(--accent); }
+    .kick { font-family: 'JetBrains Mono', monospace; font-size: 22px; letter-spacing: .22em; text-transform: uppercase; color: var(--accent); }
+
+    /* S1 terminal */
+    #term { left: 560px; top: 420px; width: 800px; border: 1px solid #3A322D; border-radius: 14px; background: rgba(20,16,14,.88);
+        box-shadow: 0 0 0 1px rgba(255,107,53,.08), 0 30px 120px rgba(255,107,53,.18); overflow: hidden; }
+    #term .bar { height: 44px; border-bottom: 1px solid #2E2724; display: flex; align-items: center; gap: 9px; padding: 0 18px; }
+    #term .bar i { width: 12px; height: 12px; border-radius: 50%; background: #3A322D; } #term .bar i:first-child { background: rgba(255,107,53,.6); }
+    #term .bar span { margin-left: 10px; font-family: 'JetBrains Mono'; font-size: 15px; color: var(--dim); }
+    #term .body { padding: 26px 30px 30px; font-family: 'JetBrains Mono'; font-size: 24px; line-height: 1.9; color: var(--muted); }
+    #term .body b { color: var(--text); font-weight: 500; } #term .body .p { color: var(--accent); }
+    .caret { display: inline-block; width: 12px; height: 26px; background: var(--accent); vertical-align: -4px; margin-left: 4px; }
+
+    /* S2 lesson */
+    #lesson { left: 0; right: 0; top: 400px; text-align: center; }
+    #lesson .kick { margin-bottom: 34px; }
+    #lesson .big { font-size: 112px; font-weight: 700; line-height: 1.05; }
+    #lesson .big span { display: inline-block; margin: 0 .12em; }
+
+    /* S3 journey */
+    #jTitle { left: 160px; top: 150px; font-size: 64px; font-weight: 700; width: 1500px; line-height: 1.08; }
+    #jTrack { left: 200px; top: 470px; width: 1520px; height: 3px; background: #2E2724; border-radius: 3px; }
+    #jFill { left: 200px; top: 470px; height: 3px; width: 0; background: linear-gradient(90deg, rgba(255,107,53,.3), var(--accent)); box-shadow: 0 0 18px rgba(255,107,53,.8); border-radius: 3px; }
+    .jNode { top: 458px; width: 27px; height: 27px; margin-left: -13px; border-radius: 50%; border: 3px solid #3A322D; background: var(--bg); }
+    .jNode.lit { border-color: var(--soft); background: var(--accent); box-shadow: 0 0 0 9px rgba(255,107,53,.16), 0 0 34px rgba(255,107,53,.95); }
+    .jCard { top: 520px; width: 300px; margin-left: -150px; text-align: center; }
+    .jCard .yr { font-family: 'Space Grotesk'; font-size: 50px; font-weight: 700; letter-spacing: -.02em; }
+    .jCard .org { font-family: 'JetBrains Mono'; font-size: 15px; letter-spacing: .14em; color: var(--accent); margin: 6px 0 16px; text-transform: uppercase; }
+    .jCard .what { font-size: 23px; line-height: 1.4; color: var(--text); font-weight: 500; }
+    .jCard .stat { display: inline-block; margin-top: 16px; font-family: 'JetBrains Mono'; font-size: 17px; color: var(--accent); border: 1px solid rgba(255,107,53,.45); background: rgba(255,107,53,.08); border-radius: 6px; padding: 5px 12px; }
+    .meter { margin: 16px auto 0; width: 240px; height: 10px; border-radius: 6px; background: #2E2724; position: relative; overflow: hidden; }
+    .meter i { position: absolute; left: 0; top: 0; bottom: 0; border-radius: 6px; }
+    .meter .a { background: #4A403A; } .meter .b { background: linear-gradient(90deg, rgba(255,107,53,.5), var(--accent)); box-shadow: 0 0 12px rgba(255,107,53,.7); }
+
+    /* S4 turn */
+    .turnLine { left: 0; right: 0; text-align: center; font-family: 'Space Grotesk'; font-weight: 700; letter-spacing: -.03em; }
+    #turn1 { top: 110px; font-size: 96px; }
+    #turn2 { top: 790px; font-size: 52px; font-weight: 600; }
+    #turn3 { top: 870px; font-size: 52px; font-weight: 600; }
+    .dimt { color: var(--dim); }
+
+    /* S5 practice */
+    #nowKick { left: 160px; top: 140px; }
+    #nowTitle { left: 160px; top: 186px; font-size: 92px; font-weight: 700; }
+    #nowSub { left: 164px; top: 306px; font-size: 26px; color: var(--muted); }
+    .pillar { top: 420px; width: 500px; height: 440px; border: 1px solid #3A322D; border-radius: 18px; padding: 40px 38px;
+        background: linear-gradient(180deg, rgba(32,27,24,.95), rgba(20,16,14,.8)); box-shadow: 0 30px 90px rgba(0,0,0,.45); }
+    .pillar .n { font-family: 'JetBrains Mono'; font-size: 18px; color: var(--accent); letter-spacing: .16em; }
+    .pillar h3 { font-family: 'Space Grotesk'; font-size: 40px; line-height: 1.1; margin: 22px 0 22px; letter-spacing: -.02em; }
+    .pillar p { font-size: 22px; line-height: 1.6; color: var(--muted); }
+    .pillar .big { font-family: 'Space Grotesk'; font-size: 84px; font-weight: 700; color: var(--text); letter-spacing: -.03em; line-height: 1; margin-top: 18px; }
+    .pillar .big em { font-style: normal; color: var(--accent); }
+    .pillar .glow { position: absolute; inset: -1px; border-radius: 18px; border: 1px solid var(--accent); opacity: 0; box-shadow: 0 0 40px rgba(255,107,53,.35); }
+
+    /* S6 architecture */
+    #aTitle { left: 160px; top: 120px; font-size: 80px; font-weight: 700; }
+    #aSub { left: 164px; top: 222px; font-size: 26px; color: var(--muted); }
+    .layer { left: 160px; width: 1060px; height: 76px; border: 1px solid #3A322D; border-radius: 12px; background: rgba(26,22,20,.92);
+        display: flex; align-items: center; gap: 26px; padding: 0 30px; }
+    .layer .num { font-family: 'JetBrains Mono'; font-size: 20px; color: var(--accent); width: 26px; }
+    .layer .nm { font-family: 'Space Grotesk'; font-size: 30px; font-weight: 600; }
+    .layer .hint { margin-left: auto; font-family: 'JetBrains Mono'; font-size: 17px; color: var(--dim); }
+    .layer.hot { border-color: var(--accent); box-shadow: 0 0 0 1px rgba(255,107,53,.25), 0 0 46px rgba(255,107,53,.35); background: rgba(48,30,22,.95); }
+    #plane { left: 1250px; top: 300px; width: 510px; height: 526px; border: 1px dashed rgba(255,107,53,.6); border-radius: 18px; background: rgba(255,107,53,.05); padding: 34px; }
+    #plane .t { font-family: 'Space Grotesk'; font-size: 34px; font-weight: 700; color: var(--accent); }
+    #plane .s { font-family: 'JetBrains Mono'; font-size: 19px; color: var(--muted); line-height: 2.1; margin-top: 18px; }
+    #plane .s div { opacity: 0; }
+    #delivery { left: 160px; top: 850px; width: 1600px; height: 70px; border: 1px solid #3A322D; border-radius: 12px; background: rgba(26,22,20,.9);
+        display: flex; align-items: center; padding: 0 30px; gap: 26px; }
+    #delivery .nm { font-family: 'Space Grotesk'; font-size: 26px; font-weight: 600; } #delivery .hint { font-family: 'JetBrains Mono'; font-size: 17px; color: var(--dim); }
+    #packet { width: 22px; height: 22px; margin: -11px 0 0 -11px; border-radius: 50%; background: #FFD2B8; box-shadow: 0 0 0 6px rgba(255,107,53,.35), 0 0 40px 10px rgba(255,107,53,.85); }
+    #aCap { left: 160px; top: 950px; font-size: 30px; font-weight: 600; font-family: 'Space Grotesk'; }
+
+    /* S7 finale */
+    #fin1 { left: 0; right: 0; top: 330px; text-align: center; font-size: 132px; font-weight: 700; line-height: 1.02; }
+    #finName { left: 0; right: 0; top: 640px; text-align: center; font-family: 'Space Grotesk'; font-size: 54px; font-weight: 700; letter-spacing: -.02em; }
+    #finRole { left: 0; right: 0; top: 720px; text-align: center; }
+    #finUrl { left: 0; right: 0; top: 800px; text-align: center; font-family: 'JetBrains Mono'; font-size: 30px; color: var(--muted); }
+    #finUrl b { color: var(--text); font-weight: 500; }
+    #flash { inset: 0; background: radial-gradient(circle at 50% 50%, rgba(255,190,150,.9), rgba(255,107,53,.4) 30%, transparent 60%); opacity: 0; }
+    #black { inset: 0; background: #000; opacity: 0; }
+    .grad { background: linear-gradient(100deg, #FF6B35 0%, #FFB48A 50%, #FF6B35 100%); -webkit-background-clip: text; background-clip: text; color: transparent; }
+</style>
+</head>
+<body>
+<div id="stage">
+    <video class="clip" id="clip-intro" muted playsinline preload="auto" data-src="/media/clips/intro.mp4" data-start="0"></video>
+    <video class="clip" id="clip-turn" muted playsinline preload="auto" data-src="/media/clips/turn.mp4" data-start="30"></video>
+    <video class="clip" id="clip-finale" muted playsinline preload="auto" data-src="/media/clips/finale.mp4" data-start="64"></video>
+    <div class="floor" id="floor"></div>
+    <canvas id="fx" width="1920" height="1080"></canvas>
+
+    <!-- S1 -->
+    <div class="abs kick" id="s1kick" style="left:560px; top:350px;">2007 · Where it starts</div>
+    <div class="abs" id="term">
+        <div class="bar"><i></i><i></i><i></i><span>tcs — session · 2007</span></div>
+        <div class="body">
+            <div class="tl" data-t="&gt; platform: IBM AS/400 · sales-audit recon"></div>
+            <div class="tl" data-t="&gt; job: nightly batch → oracle · millions moving"></div>
+            <div class="tl" data-t="&gt; tolerance: zero errors"></div>
+            <div class="tl" data-t="&gt; status: balanced by morning. every morning."></div>
+        </div>
+    </div>
+
+    <!-- S2 -->
+    <div class="abs" id="lesson">
+        <div class="kick">lesson_01</div>
+        <div class="big disp"><span>Trust</span><span>is</span><span>earned</span><span>in</span><span class="accent">production.</span></div>
+    </div>
+
+    <!-- S3 -->
+    <div class="abs disp" id="jTitle">Fourteen years of shipping things <span class="accent">that had to work.</span></div>
+    <div class="abs" id="jTrack"></div>
+    <div class="abs" id="jFill"></div>
+    <div id="jNodes"></div>
+
+    <!-- S4 -->
+    <div class="abs turnLine" id="turn1">Then the industry <span class="grad">turned.</span></div>
+    <div class="abs turnLine" id="turn2">Enterprises stopped asking <span class="dimt">whether AI works…</span></div>
+    <div class="abs turnLine" id="turn3">…and started asking <span class="accent">who can make it work.</span></div>
+
+    <!-- S5 -->
+    <div class="abs kick" id="nowKick">Now · Atos · North America</div>
+    <div class="abs disp" id="nowTitle">Practice Head, <span class="accent">AI &amp; Automation</span></div>
+    <div class="abs" id="nowSub">Reporting to the VP, Head of Technology, North America.</div>
+    <div class="abs pillar" id="pil1" style="left:160px;"><div class="glow"></div><div class="n">01 · DEALS</div><h3>The AI side of the bid</h3><p>Business cases with costed investment options · governed agentic pilots · SOW reviews · security-review architecture</p></div>
+    <div class="abs pillar" id="pil2" style="left:710px;"><div class="glow"></div><div class="n">02 · USE CASES</div><h3>From idea to roadmap</h3><div class="big"><span id="cnt">0</span><em>+</em></div><p>AI use-case submissions consolidated into <b style="color:#F3EDE7">20 agent families</b></p></div>
+    <div class="abs pillar" id="pil3" style="left:1260px;"><div class="glow"></div><div class="n">03 · THE TEAM</div><h3>A governed agent team</h3><p>An engineering team building agents on one common, governed framework: the patterns, standards and skills I set.</p></div>
+
+    <!-- S6 -->
+    <div class="abs disp" id="aTitle">Governed <span class="accent">by design.</span></div>
+    <div class="abs" id="aSub">The layered architecture behind every agent the team builds.</div>
+    <div id="layers"></div>
+    <div class="abs" id="plane"><div class="t">Control plane</div><div class="s"><div>› identity &amp; secrets</div><div>› policy &amp; autonomy limits</div><div>› audit trail</div><div>› evals &amp; observability</div><div>› kill switch</div></div></div>
+    <div class="abs" id="delivery"><span class="nm">Delivery plane</span><span class="hint">CI/CD · supply chain · release gates</span></div>
+    <div class="abs" id="packet"></div>
+    <div class="abs" id="aCap">Read-only or human-approved. <span class="accent">Every time.</span></div>
+
+    <!-- S7 -->
+    <div class="abs" id="flash"></div>
+    <div class="abs disp" id="fin1">From slideware<br/>to <span class="grad">shipped.</span></div>
+    <div class="abs" id="finName">Karthikeyan Selvam</div>
+    <div class="abs kick" id="finRole">AI &amp; Automation Practice Leader</div>
+    <div class="abs" id="finUrl"><b>karthikeyanselvam.com</b></div>
+
+    <div class="vignette"></div>
+    <div class="grain"></div>
+    <div class="abs" id="black"></div>
+</div>
+
+<script>
+(function () {
+    'use strict';
+    var DURATION = 76;
+    var $ = function (id) { return document.getElementById(id); };
+    var clamp = function (x, a, b) { return Math.min(b === undefined ? 1 : b, Math.max(a || 0, x)); };
+    var p = function (t, a, b) { return clamp((t - a) / (b - a)); };
+    var eOut = function (x) { return 1 - Math.pow(1 - x, 3); };
+    var eIO = function (x) { return x < .5 ? 4 * x * x * x : 1 - Math.pow(-2 * x + 2, 3) / 2; };
+    // visibility envelope: fade in over [a,b], out over [c,d]
+    var env = function (t, a, b, c, d) { return Math.min(eOut(p(t, a, b)), 1 - eIO(p(t, c, d))); };
+    function set(el, o, x, y, s, blur) {
+        el.style.opacity = o.toFixed(3);
+        el.style.visibility = o <= 0.001 ? 'hidden' : 'visible';
+        el.style.transform = 'translate(' + (x || 0).toFixed(1) + 'px,' + (y || 0).toFixed(1) + 'px) scale(' + (s === undefined ? 1 : s).toFixed(4) + ')';
+        el.style.filter = blur > 0.05 ? 'blur(' + blur.toFixed(2) + 'px)' : 'none';
+    }
+    // entrance: rise + unblur
+    function rise(el, t, a, b, c, d, dist) {
+        var o = env(t, a, b, c, d), k = eOut(p(t, a, b)), out = eIO(p(t, c, d));
+        set(el, o, 0, (1 - k) * (dist || 40) - out * 30, 1, (1 - k) * 12 + out * 10);
+    }
+    function rng(seed) { return function () { seed |= 0; seed = seed + 0x6D2B79F5 | 0; var t = Math.imul(seed ^ seed >>> 15, 1 | seed); t = t + Math.imul(t ^ t >>> 7, 61 | t) ^ t; return ((t ^ t >>> 14) >>> 0) / 4294967296; }; }
+
+    /* ---------- build dynamic DOM ---------- */
+    var JOURNEY = [
+        { yr: '2011', org: 'Hewlett-Packard', what: 'Finance, mainly supporting automation initiatives', stat: 'data & automation' },
+        { yr: '2017', org: 'Atos · RPA lead', what: 'Teaching software to do the work', stat: '50+ automations' },
+        { yr: '2023', org: 'Energy utility · AIOps', what: 'Predictive operations at estate scale', stat: '40,000 devices' },
+        { yr: '2024', org: 'Microsoft · Copilot for Entra', what: 'Grading an AI before the world used it', stat: 'satisfaction ~42% → 57%', meter: true },
+        { yr: '2025', org: 'Atos · program delivery', what: 'Windows 11 migration, AI in the toolkit', stat: '12,000 devices' }
+    ];
+    var JX = [260, 610, 960, 1310, 1660], JT0 = 15.2, JSTEP = 2.55;
+    var jn = $('jNodes');
+    JOURNEY.forEach(function (j, i) {
+        var n = document.createElement('div'); n.className = 'abs jNode'; n.style.left = JX[i] + 'px'; n.id = 'jn' + i; jn.appendChild(n);
+        var c = document.createElement('div'); c.className = 'abs jCard'; c.style.left = JX[i] + 'px'; c.id = 'jc' + i;
+        c.innerHTML = '<div class="yr">' + j.yr + '</div><div class="org">' + j.org + '</div><div class="what">' + j.what + '</div>' +
+            (j.meter ? '<div class="meter"><i class="a" id="ma"></i><i class="b" id="mb"></i></div>' : '') +
+            '<div class="stat">' + j.stat + '</div>';
+        jn.appendChild(c);
+    });
+    var LAYERS = [
+        ['1', 'Channels & experience', 'where people meet the agent'],
+        ['2', 'Orchestration', 'routing · workflows · handoffs'],
+        ['3', 'Agent harness', 'the reasoning loop, bounded'],
+        ['4', 'Model access', 'gateway · model choice · budgets'],
+        ['5', 'Tools & interoperability', 'MCP · A2A · typed tools'],
+        ['6', 'Knowledge & state', 'retrieval · memory · data']
+    ];
+    var LY0 = 300, LSTEP = 88;
+    var ly = $('layers');
+    LAYERS.forEach(function (l, i) {
+        var d = document.createElement('div'); d.className = 'abs layer'; d.id = 'ly' + i; d.style.top = (LY0 + i * LSTEP) + 'px';
+        d.innerHTML = '<span class="num">' + l[0] + '</span><span class="nm">' + l[1].replace('&', '&amp;') + '</span><span class="hint">' + l[2] + '</span>';
+        ly.appendChild(d);
+    });
+    var lessonWords = Array.prototype.slice.call(document.querySelectorAll('#lesson .big span'));
+    var termLines = Array.prototype.slice.call(document.querySelectorAll('#term .tl'));
+    var planeItems = Array.prototype.slice.call(document.querySelectorAll('#plane .s div'));
+
+    /* ---------- canvas: embers, network, convergence ---------- */
+    var cv = $('fx'), cx = cv.getContext('2d'), W = 1920, H = 1080;
+    var R = rng(1710);
+    var EMB = [];
+    for (var i = 0; i < 170; i++) EMB.push({ x: R() * W, y: R() * H, v: 14 + R() * 46, r: .7 + R() * 2.4, a: .2 + R() * .6, ph: R() * 6.28, sw: 10 + R() * 30 });
+    // network nodes: a loose 3D sphere projected, rotating slowly
+    var NET = [];
+    for (var k = 0; k < 90; k++) {
+        var u = R() * 2 - 1, th = R() * 6.283, rr = Math.sqrt(1 - u * u);
+        NET.push({ x: rr * Math.cos(th), y: u, z: rr * Math.sin(th), sx: R() * W, sy: R() * H });
+    }
+    var EDGES = [];
+    for (var a = 0; a < NET.length; a++) for (var b = a + 1; b < NET.length; b++) {
+        var dx = NET[a].x - NET[b].x, dy = NET[a].y - NET[b].y, dz = NET[a].z - NET[b].z;
+        if (dx * dx + dy * dy + dz * dz < 0.28) EDGES.push([a, b, R()]);
+    }
+
+    function drawEmbers(t, alpha, converge) {
+        if (alpha <= 0) return;
+        for (var i = 0; i < EMB.length; i++) {
+            var e = EMB[i];
+            var y = ((e.y - e.v * t) % (H + 40) + H + 40) % (H + 40) - 20;
+            var x = e.x + Math.sin(t * .6 + e.ph) * e.sw;
+            if (converge > 0) { var c = eIO(converge); x = x + (W / 2 - x) * c; y = y + (H / 2 - y) * c; }
+            var tw = .7 + .3 * Math.sin(t * 2.2 + e.ph);
+            var g = cx.createRadialGradient(x, y, 0, x, y, e.r * 5);
+            g.addColorStop(0, 'rgba(255,' + (150 + (e.r * 20 | 0)) + ',90,' + (e.a * tw * alpha).toFixed(3) + ')');
+            g.addColorStop(1, 'rgba(255,107,53,0)');
+            cx.fillStyle = g; cx.beginPath(); cx.arc(x, y, e.r * 5, 0, 6.283); cx.fill();
+        }
+    }
+    function glow(x, y, r, a) {
+        var g = cx.createRadialGradient(x, y, 0, x, y, r);
+        g.addColorStop(0, 'rgba(255,214,190,' + a + ')'); g.addColorStop(.25, 'rgba(255,140,80,' + (a * .55) + ')'); g.addColorStop(1, 'rgba(255,107,53,0)');
+        cx.fillStyle = g; cx.beginPath(); cx.arc(x, y, r, 0, 6.283); cx.fill();
+    }
+    function drawNet(t) {
+        var form = eIO(p(t, 30, 33.2)), edges = p(t, 31.8, 35), out = eIO(p(t, 39.2, 40.2));
+        if (form <= 0 || out >= 1) return;
+        var rot = t * .22, cxn = W / 2, cyn = 520, rad = 225;
+        var pts = NET.map(function (n) {
+            var x = n.x * Math.cos(rot) - n.z * Math.sin(rot), z = n.x * Math.sin(rot) + n.z * Math.cos(rot);
+            var s = 1 / (1.9 - z * .6);
+            var px = cxn + x * rad * s * 1.6, py = cyn + n.y * rad * s * 1.6;
+            return { x: n.sx + (px - n.sx) * form, y: n.sy + (py - n.sy) * form, z: z };
+        });
+        var fade = 1 - out;
+        cx.lineWidth = 1.2;
+        EDGES.forEach(function (e, i) {
+            var show = clamp((edges * 1.4 - e[2] * .4));
+            if (show <= 0) return;
+            var A = pts[e[0]], B = pts[e[1]], dep = (A.z + B.z) / 2;
+            cx.strokeStyle = 'rgba(255,140,90,' + ((.12 + .25 * (dep + 1) / 2) * show * fade).toFixed(3) + ')';
+            cx.beginPath(); cx.moveTo(A.x, A.y); cx.lineTo(A.x + (B.x - A.x) * show, A.y + (B.y - A.y) * show); cx.stroke();
+            // signal pulses after the mesh forms
+            if (t > 33 && e[2] < .35) {
+                var ph = ((t - 33) * .7 + e[2] * 7) % 1;
+                var qx = A.x + (B.x - A.x) * ph, qy = A.y + (B.y - A.y) * ph;
+                glow(qx, qy, 9, .8 * fade);
+            }
+        });
+        pts.forEach(function (q) { glow(q.x, q.y, 6 + 6 * (q.z + 1), (.35 + .5 * (q.z + 1) / 2) * fade); });
+    }
+
+    /* ---------- AI b-roll clips (optional) ---------- */
+    var clips = Array.prototype.slice.call(document.querySelectorAll('video.clip'));
+    var clipWin = { 'clip-intro': [0, 13, .32], 'clip-turn': [30, 40, .38], 'clip-finale': [64, 76, .3] };
+    function loadClips() {
+        return Promise.all(clips.map(function (v) {
+            return fetch(v.dataset.src, { method: 'HEAD' }).then(function (r) {
+                if (!r.ok || !(r.headers.get('content-type') || '').startsWith('video')) return;
+                return new Promise(function (res) { v.onloadeddata = function () { v.dataset.ok = '1'; res(); }; v.onerror = res; v.src = v.dataset.src; });
+            }).catch(function () {});
+        }));
+    }
+    function seekClips(t) {
+        var waits = [];
+        clips.forEach(function (v) {
+            var w = clipWin[v.id];
+            if (!v.dataset.ok) return;
+            var o = env(t, w[0], w[0] + 1.2, w[1] - 1.2, w[1]) * w[2];
+            v.style.opacity = o.toFixed(3);
+            if (o > 0) {
+                var lt = Math.min(Math.max(0, t - w[0]), Math.max(0, (v.duration || 8) - .05));
+                if (Math.abs(v.currentTime - lt) > .001) waits.push(new Promise(function (res) { v.onseeked = res; v.currentTime = lt; }));
+            }
+        });
+        return Promise.all(waits);
+    }
+
+    /* ---------- the timeline ---------- */
+    function render(t) {
+        cx.clearRect(0, 0, W, H);
+
+        // ambient embers across the whole piece; they converge into the finale ember at 64–65.6
+        var conv = p(t, 64, 65.6);
+        var embA = Math.min(1, .25 + p(t, 0, 3)) * (t > 65.6 ? .55 : 1) * (1 - p(t, 75, 76));
+        drawEmbers(t, embA, t < 65.6 ? conv : 0);
+
+        // S1: the first ember
+        var ign = eOut(p(t, .2, 2.2)) * (1 - eIO(p(t, 7.2, 8.2)));
+        if (ign > 0) glow(W / 2, 250, 60 + 60 * ign + 6 * Math.sin(t * 5), .9 * ign);
+        rise($('s1kick'), t, 1.0, 2.0, 7.2, 8);
+        rise($('term'), t, 1.4, 2.4, 7.2, 8, 60);
+        termLines.forEach(function (el, i) {
+            var full = el.dataset.t, a = 2.4 + i * 1.15, k = p(t, a, a + .95), n = Math.round(full.length * k);
+            var txt = full.slice(0, n).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/^&gt;/, '<span class="p">&gt;</span>');
+            if (i === 3 && n > 10) txt = txt.replace('status:', 'status:<b>') + '</b>';
+            var cur = (k > 0 && k < 1) || (i === 3 && k >= 1 && Math.floor(t * 2.4) % 2 === 0);
+            el.innerHTML = txt + (cur ? '<span class="caret"></span>' : '') || '&nbsp;';
+        });
+
+        // S2: lesson
+        set($('lesson').querySelector('.kick'), env(t, 8.2, 9, 12.3, 13), 0, 0, 1, 0);
+        lessonWords.forEach(function (w, i) {
+            var a = 8.5 + i * .32, k = eOut(p(t, a, a + .7)), o = Math.min(k, 1 - eIO(p(t, 12.3, 13.1)));
+            set(w, o, 0, (1 - k) * 34, 1 + (1 - k) * .06, (1 - k) * 16 + eIO(p(t, 12.3, 13.1)) * 14);
+        });
+
+        // S3: journey
+        var floorO = Math.max(env(t, 13.2, 15, 29, 30.2), env(t, 52, 54, 63.2, 64.2)) * .7;
+        $('floor').style.opacity = floorO.toFixed(3);
+        $('floor').style.backgroundPosition = '0 ' + (t * 40 % 90) + 'px, 0 0';
+        rise($('jTitle'), t, 13.3, 14.4, 29, 30);
+        var trackO = env(t, 14, 14.8, 29, 30);
+        var drawK = eIO(p(t, 14, 15.2));
+        set($('jTrack'), trackO, 0, 0, 1, 0); $('jTrack').style.width = (1520 * drawK) + 'px';
+        var fillTo = 0;
+        JOURNEY.forEach(function (j, i) {
+            var a = JT0 + i * JSTEP;
+            var lit = t >= a;
+            if (lit) fillTo = JX[i] - 200;
+            var n = $('jn' + i);
+            set(n, trackO * eOut(p(t, 14.4 + i * .12, 15 + i * .12)), 0, 0, lit ? 1 + .25 * (1 - eOut(p(t, a, a + .5))) : .85, 0);
+            n.classList.toggle('lit', lit);
+            rise($('jc' + i), t, a, a + .8, 29, 30, 50);
+        });
+        var fillK = 0; // smooth fill between nodes
+        for (var q = 0; q < JOURNEY.length; q++) { var aa = JT0 + q * JSTEP; fillK = Math.max(fillK, (JX[q] - 200) * eIO(p(t, aa - .6, aa))); }
+        set($('jFill'), trackO, 0, 0, 1, 0); $('jFill').style.width = fillK + 'px';
+        if ($('ma')) {
+            var m0 = JT0 + 3 * JSTEP;
+            $('ma').style.width = (240 * .42 * eOut(p(t, m0 + .3, m0 + 1))) + 'px';
+            $('mb').style.width = (240 * .57 * eOut(p(t, m0 + 1, m0 + 2))) + 'px';
+        }
+
+        // S4: the turn
+        drawNet(t);
+        rise($('turn1'), t, 30.4, 31.6, 39.2, 40);
+        rise($('turn2'), t, 33.4, 34.4, 39.2, 40);
+        rise($('turn3'), t, 35.8, 36.8, 39.2, 40);
+
+        // S5: the practice
+        rise($('nowKick'), t, 40.2, 41, 51.2, 52);
+        rise($('nowTitle'), t, 40.4, 41.4, 51.2, 52);
+        rise($('nowSub'), t, 41, 42, 51.2, 52);
+        ['pil1', 'pil2', 'pil3'].forEach(function (id, i) {
+            var a = 42.2 + i * 1.1, el = $(id);
+            var k = eOut(p(t, a, a + 1)), out = eIO(p(t, 51.2, 52));
+            set(el, Math.min(k, 1 - out), 0, (1 - k) * 120 - out * 40, .94 + .06 * k, (1 - k) * 10 + out * 10);
+            el.querySelector('.glow').style.opacity = (Math.max(0, 1 - Math.abs(t - (a + 1.1)) / .9) * .9).toFixed(3);
+        });
+        var c0 = 43.6;
+        $('cnt').textContent = Math.round(150 * eOut(p(t, c0, c0 + 1.6)));
+
+        // S6: architecture
+        rise($('aTitle'), t, 52.2, 53.2, 63.2, 64);
+        rise($('aSub'), t, 52.6, 53.6, 63.2, 64);
+        var down0 = 56.6, down1 = 59.4, up1 = 62.0;
+        var pk = t < down1 ? p(t, down0, down1) : 1 - p(t, down1 + .2, up1);
+        var pkY = LY0 + 38 + pk * (5 * LSTEP);
+        LAYERS.forEach(function (l, i) {
+            var a = 53.2 + (5 - i) * .32, el = $('ly' + i);
+            var k = eOut(p(t, a, a + .8)), out = eIO(p(t, 63.2, 64));
+            set(el, Math.min(k, 1 - out), 0, (1 - k) * 160, 1, (1 - k) * 8 + out * 8);
+            var hot = t > down0 && t < up1 + .2 && Math.abs(pkY - (LY0 + 38 + i * LSTEP)) < 46;
+            el.classList.toggle('hot', hot);
+        });
+        rise($('plane'), t, 55, 56, 63.2, 64, 40);
+        planeItems.forEach(function (d, i) { var k = eOut(p(t, 56.6 + i * .55, 57.2 + i * .55)); d.style.opacity = k.toFixed(3); d.style.transform = 'translateX(' + ((1 - k) * 20) + 'px)'; });
+        $('plane').style.boxShadow = '0 0 ' + (30 + 30 * Math.sin(t * 3)) + 'px rgba(255,107,53,' + (.18 * env(t, 56, 57, 63, 64)).toFixed(3) + ')';
+        rise($('delivery'), t, 55.4, 56.4, 63.2, 64, 40);
+        var pkO = env(t, down0 - .2, down0 + .2, up1 - .1, up1 + .3);
+        set($('packet'), pkO, 690, pkY, 1 + .2 * Math.sin(t * 9), 0);
+        rise($('aCap'), t, 60.2, 61.2, 63.2, 64);
+
+        // S7: finale
+        var fl = Math.max(0, 1 - Math.abs(t - 65.6) / .5);
+        $('flash').style.opacity = (fl * .9).toFixed(3);
+        if (t > 64 && t < 66.4) glow(W / 2, H / 2, 40 + 220 * eOut(p(t, 64.2, 65.6)), .9 * (1 - p(t, 65.6, 66.4)));
+        var finOut = p(t, 75, 76);
+        var f1 = eOut(p(t, 65.7, 67)); set($('fin1'), Math.min(f1, 1 - finOut), 0, (1 - f1) * 30, 1.04 - .04 * f1, (1 - f1) * 18);
+        rise($('finName'), t, 67.6, 68.6, 75, 76);
+        rise($('finRole'), t, 68.2, 69.2, 75, 76);
+        rise($('finUrl'), t, 69, 70, 75, 76);
+        $('black').style.opacity = Math.max(1 - p(t, 0, .6), p(t, 75.2, 76)).toFixed(3);
+
+        return seekClips(t);
+    }
+
+    function fit() {
+        var s = Math.min(window.innerWidth / 1920, window.innerHeight / 1080);
+        $('stage').style.transform = 'translate(' + ((window.innerWidth - 1920 * s) / 2) + 'px,' + ((window.innerHeight - 1080 * s) / 2) + 'px) scale(' + s + ')';
+    }
+
+    window.STORY = { duration: DURATION, render: render, loadClips: loadClips };
+    var qs = new URLSearchParams(location.search);
+    if (qs.has('play') || qs.has('t')) {
+        fit(); window.addEventListener('resize', fit);
+        loadClips().then(function () {
+            document.fonts.ready.then(function () {
+                if (qs.has('t')) { render(parseFloat(qs.get('t'))); return; }
+                var t0 = performance.now();
+                (function loop(now) { var t = ((now - t0) / 1000) % DURATION; render(t); requestAnimationFrame(loop); })(t0);
+            });
+        });
+    }
+})();
+</script>
+</body>
+</html>

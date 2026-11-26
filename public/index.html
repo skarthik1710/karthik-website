@@ -104,7 +104,7 @@
 
         /* ─────────────────────────  SHARED ACT / SECTION BITS  ───────────────────────── */
         section { border-bottom: 1px solid var(--line); }
-        .act { padding: 4rem 0; }
+        .act { padding-top: 4rem; padding-bottom: 4rem; }
         .act-kicker {
             font-family: var(--font-mono); font-size: 0.74rem; font-weight: 500;
             letter-spacing: 0.16em; text-transform: uppercase; color: var(--accent);
@@ -824,7 +824,7 @@
             .nav-links li:not(:has(.nav-cta)) { display: none; }
             .nav-inner { padding: 0 1.25rem; }
             .brand, .nav-cta { white-space: nowrap; }
-            .act { padding: 3.2rem 0; }
+            .act { padding-top: 3.2rem; padding-bottom: 3.2rem; }
             .ship-head { padding-top: 3.2rem; }
             .term-body { font-size: 0.68rem; }
             .story-modal { max-width: 100%; max-height: 100vh; height: 100vh; border-radius: 0; }
@@ -832,8 +832,235 @@
             .viz-stats { gap: 1.4rem; }
             .viz-stats .stat .num { font-size: 2rem; }
         }
+
+        /* ═════════════════════  2026-11 REDESIGN: curiosity-first homepage  ═════════════════════ */
+        .hx { overflow: hidden; isolation: isolate; }
+        .hx::before { /* warm core glow behind the headline */
+            content: ""; position: absolute; z-index: -1; pointer-events: none;
+            width: 900px; height: 900px; left: -260px; top: -280px;
+            background: radial-gradient(closest-side, rgba(255,107,53,.13), transparent 70%);
+        }
+        .hx-floor { /* receding perspective grid */
+            position: absolute; left: -10%; right: -10%; bottom: -2px; height: 46%; z-index: -1; pointer-events: none;
+            background-image:
+                linear-gradient(rgba(255,107,53,.16) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(255,107,53,.16) 1px, transparent 1px);
+            background-size: 64px 64px;
+            transform: perspective(520px) rotateX(62deg);
+            transform-origin: bottom center;
+            -webkit-mask-image: linear-gradient(to top, rgba(0,0,0,.85), transparent 85%);
+                    mask-image: linear-gradient(to top, rgba(0,0,0,.85), transparent 85%);
+            animation: hxFloor 9s linear infinite;
+        }
+        @keyframes hxFloor { to { background-position: 0 64px, 0 0; } }
+        .hero-grid, .hx-cue { position: relative; z-index: 1; }
+        .hx .kicker .fx-pulse { margin-right: .2rem; }
+        .hx .kicker::before { display: none; }
+        .btn-play { border: 0; cursor: pointer; box-shadow: 0 0 0 0 rgba(255,107,53,.5), 0 10px 40px rgba(255,107,53,.25); }
+        .btn-play:hover { box-shadow: 0 0 0 6px rgba(255,107,53,.15), 0 14px 50px rgba(255,107,53,.35); }
+        .play-ico { width: 22px; height: 22px; border-radius: 50%; background: #210D02; display: inline-grid; place-items: center; }
+        .play-ico svg { width: 12px; height: 12px; fill: var(--accent); margin-left: 2px; }
+        .btn-meta { font-family: var(--font-mono); font-weight: 500; font-size: .74rem; opacity: .75; }
+        .btn-sm { padding: .6rem 1.1rem; font-size: .84rem; }
+
+        .hx-side { display: flex; flex-direction: column; align-items: center; gap: 1.6rem; }
+        .hx-orbit { position: relative; width: 290px; height: 290px; display: grid; place-items: center; }
+        .hx-portrait {
+            width: 168px; height: 168px; border-radius: 50%; object-fit: cover;
+            border: 2px solid rgba(255,107,53,.55);
+            box-shadow: 0 0 0 6px rgba(255,107,53,.07), 0 0 60px rgba(255,107,53,.28);
+            filter: grayscale(18%); transition: filter .4s; position: relative; z-index: 2;
+        }
+        .hx-portrait:hover { filter: none; }
+        .hx-ring { position: absolute; inset: 0; border-radius: 50%; pointer-events: none; }
+        .hx-ring.r1 { border: 1px dashed rgba(255,107,53,.35); animation: hxSpin 48s linear infinite; }
+        .hx-ring.r2 {
+            inset: 34px; padding: 1px;
+            background: conic-gradient(from 0deg, transparent 0 62%, rgba(255,140,90,.95) 78%, transparent 80%);
+            -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+            -webkit-mask-composite: xor; mask-composite: exclude;
+            animation: hxSpin 6s linear infinite;
+        }
+        .hx-sat { position: absolute; left: 50%; top: 50%; width: 8px; height: 8px; margin: -4px; border-radius: 50%;
+            background: var(--accent); box-shadow: 0 0 12px 3px rgba(255,107,53,.75); }
+        .hx-sat.s1 { animation: hxOrbit 14s linear infinite; --r: 145px; }
+        .hx-sat.s2 { animation: hxOrbit 22s linear infinite reverse; --r: 145px; width: 5px; height: 5px; }
+        .hx-sat.s3 { animation: hxOrbit 9s linear infinite; --r: 111px; width: 4px; height: 4px; opacity: .8; }
+        @keyframes hxSpin { to { transform: rotate(360deg); } }
+        @keyframes hxOrbit { from { transform: rotate(0) translateX(var(--r)); } to { transform: rotate(360deg) translateX(var(--r)); } }
+        .hx-stats { display: grid; grid-template-columns: repeat(3, 1fr); gap: .9rem; width: 100%; }
+        .hx-stat { text-align: center; padding: .9rem .5rem; border: 1px solid var(--line); border-radius: 10px; background: rgba(26,22,20,.6); backdrop-filter: blur(4px); }
+        .hx-num { font-family: var(--font-display); font-size: 1.7rem; font-weight: 700; letter-spacing: -.02em; line-height: 1; }
+        .hx-num em { font-style: normal; color: var(--accent); }
+        .hx-lbl { font-size: .72rem; color: var(--muted); line-height: 1.35; margin-top: .45rem; }
+        .hx-cue { position: absolute; left: 50%; bottom: 1.6rem; width: 24px; height: 38px; margin-left: -12px;
+            border: 1.5px solid var(--line-strong); border-radius: 14px; }
+        .hx-cue span { position: absolute; left: 50%; top: 7px; width: 4px; height: 8px; margin-left: -2px; border-radius: 2px;
+            background: var(--accent); animation: hxCue 1.8s ease-in-out infinite; }
+        @keyframes hxCue { 0% { opacity: 0; transform: translateY(0); } 30% { opacity: 1; } 100% { opacity: 0; transform: translateY(14px); } }
+
+        /* at-a-glance recruiter strip */
+        .glance { padding: 0; border-bottom: 1px solid var(--line); }
+        .glance .wrap { padding-top: 2.6rem; padding-bottom: 2.6rem; }
+        .glance-card { border: 1px solid var(--line-strong); border-radius: 14px; background: linear-gradient(180deg, var(--surface), rgba(26,22,20,.4)); padding: 1.6rem 1.8rem; }
+        .glance-head { display: flex; align-items: baseline; gap: .9rem; margin-bottom: 1.1rem; }
+        .glance-tag { font-family: var(--font-mono); font-size: .74rem; letter-spacing: .14em; text-transform: uppercase; color: var(--accent); }
+        .glance-hint { font-size: .78rem; color: var(--dim); }
+        .glance-grid { display: grid; grid-template-columns: 1.25fr 1fr 1.5fr .7fr; gap: 1rem 1.6rem; margin: 0 0 1.3rem; }
+        .glance-grid > div.wide { grid-column: 1 / -1; }
+        .glance-grid dt { font-family: var(--font-mono); font-size: .68rem; letter-spacing: .12em; text-transform: uppercase; color: var(--dim); margin-bottom: .25rem; }
+        .glance-grid dd { margin: 0; font-size: .92rem; color: var(--text); line-height: 1.5; }
+        .glance-grid dd .dim { color: var(--muted); }
+        .glance-grid dd.accent-dd { color: var(--accent); font-family: var(--font-mono); font-size: .8rem; }
+        .glance-actions { display: flex; flex-wrap: wrap; gap: .7rem; }
+
+        /* chapter rail */
+        .rail { position: relative; display: grid; grid-template-columns: repeat(7, 1fr); margin: 2.2rem 0 1.6rem; }
+        .rail-track { position: absolute; left: calc(100% / 14); right: calc(100% / 14); top: 9px; height: 2px; background: var(--line-strong); border-radius: 2px; }
+        .rail-fill { height: 100%; width: var(--p, 0%); background: linear-gradient(90deg, rgba(255,107,53,.4), var(--accent)); box-shadow: 0 0 12px rgba(255,107,53,.6); border-radius: 2px; transition: width .6s cubic-bezier(.2,.7,.2,1); }
+        .rail-node { position: relative; background: none; border: 0; color: var(--muted); cursor: pointer; padding: 28px 2px 6px; font: inherit; display: flex; flex-direction: column; align-items: center; gap: .15rem; }
+        .rail-node::before { content: ""; position: absolute; top: 3px; left: 50%; width: 14px; height: 14px; margin-left: -7px; border-radius: 50%;
+            background: var(--bg); border: 2px solid var(--line-strong); transition: all .3s; }
+        .rail-node b { font-family: var(--font-display); font-size: 1.05rem; color: var(--text); font-weight: 600; transition: color .3s; }
+        .rail-node span { font-size: .72rem; font-family: var(--font-mono); letter-spacing: .04em; }
+        .rail-node:hover::before, .rail-node.passed::before { border-color: var(--accent); }
+        .rail-node.passed::before { background: var(--accent); }
+        .rail-node[aria-selected="true"]::before { background: var(--accent); border-color: #FFB48A; box-shadow: 0 0 0 5px rgba(255,107,53,.18), 0 0 18px rgba(255,107,53,.9); transform: scale(1.15); }
+        .rail-node[aria-selected="true"] b { color: var(--accent); }
+        .rail-node:focus-visible { outline: 2px solid var(--accent); outline-offset: 4px; border-radius: 6px; }
+        .chapters { position: relative; min-height: 270px; }
+        .chapter { border: 1px solid var(--line); border-radius: 14px; background: var(--surface); padding: 2rem 2.1rem; }
+        .chapter.active { animation: chIn .55s cubic-bezier(.2,.7,.2,1) both; border-color: rgba(255,107,53,.28); box-shadow: 0 0 0 1px rgba(255,107,53,.05), 0 20px 60px rgba(0,0,0,.35); }
+        @keyframes chIn { from { opacity: 0; transform: translateY(12px); filter: blur(4px); } to { opacity: 1; transform: none; filter: none; } }
+        .chapter h3 { font-family: var(--font-display); font-size: 1.5rem; font-weight: 600; letter-spacing: -.01em; margin: .3rem 0 .7rem; }
+        .chapter p { color: var(--muted); max-width: 46em; line-height: 1.75; margin-bottom: 1rem; }
+        .chapter-grid { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.1fr); gap: 2.4rem; align-items: center; }
+        .chapter .terminal .t-line { animation: tType .9s steps(40) both; }
+        .chapter .terminal .t-line:nth-child(2) { animation-delay: .35s; } .chapter .terminal .t-line:nth-child(3) { animation-delay: .7s; }
+        .chapter .terminal .t-line:nth-child(4) { animation-delay: 1.05s; } .chapter .terminal .t-line:nth-child(5) { animation-delay: 1.4s; }
+        @keyframes tType { from { clip-path: inset(0 100% 0 0); } to { clip-path: inset(0 0 0 0); } }
+        .chip-row { display: flex; flex-wrap: wrap; gap: .5rem; }
+        .chapter-links { display: flex; gap: 1.4rem; margin-top: 1.2rem; }
+        .chapter-links a { color: var(--accent); text-decoration: none; font-weight: 500; font-size: .92rem; }
+        .chapter-links a:hover { text-decoration: underline; }
+        .turn-lines { display: flex; flex-direction: column; gap: .2rem; font-family: var(--font-display); font-size: clamp(1.1rem, 2.2vw, 1.5rem); font-weight: 600; letter-spacing: -.01em; margin-bottom: 1.6rem; padding-bottom: 1.4rem; border-bottom: 1px dashed var(--line-strong); }
+        .turn-lines > span { opacity: 0; animation: chIn .6s ease both; }
+        .turn-lines > span:nth-child(2) { animation-delay: .35s; } .turn-lines > span:nth-child(3) { animation-delay: .7s; }
+        .turn-lines .dim-t { color: var(--dim); } .turn-lines .accent { color: var(--accent); }
+        .meter { max-width: 420px; margin: .4rem 0 1.1rem; }
+        .meter-bar { position: relative; height: 10px; border-radius: 6px; background: var(--line); overflow: hidden; }
+        .meter-bar span { position: absolute; left: 0; top: 0; bottom: 0; width: 0; border-radius: 6px; }
+        .chapter.active .meter-before { background: var(--line-strong); animation: mGrow 1s .2s ease forwards; }
+        .chapter.active .meter-after { background: linear-gradient(90deg, rgba(255,107,53,.5), var(--accent)); box-shadow: 0 0 12px rgba(255,107,53,.6); animation: mGrow 1.2s .9s cubic-bezier(.2,.7,.2,1) forwards; }
+        @keyframes mGrow { to { width: var(--w); } }
+        .meter-lbl { display: flex; justify-content: space-between; font-family: var(--font-mono); font-size: .72rem; color: var(--dim); margin-top: .4rem; }
+        .meter-lbl .accent { color: var(--accent); }
+        .rail-hint { font-family: var(--font-mono); font-size: .7rem; color: var(--dim); margin-top: .9rem; }
+        .rail-hint kbd { border: 1px solid var(--line-strong); border-radius: 4px; padding: 0 .35rem; margin-right: .25rem; font-family: inherit; }
+
+        /* expandable tiles (what I lead / how I operate / CEP) */
+        .tiles { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1rem; align-items: start; }
+        .tile, .op, .cep { border: 1px solid var(--line); border-radius: 12px; background: var(--surface); transition: border-color .3s, background .3s; }
+        .tile.open, .op.open, .cep.open { border-color: rgba(255,107,53,.35); background: var(--surface-2, #201B18); }
+        .tile-head, .op-head, .cep-head { all: unset; box-sizing: border-box; cursor: pointer; display: grid; width: 100%; position: relative; }
+        .tile-head { padding: 1.6rem 1.6rem 1.4rem; gap: .5rem; }
+        .tile-head:focus-visible, .op-head:focus-visible, .cep-head:focus-visible { outline: 2px solid var(--accent); outline-offset: -2px; border-radius: 12px; }
+        .tile-title { font-family: var(--font-display); font-size: 1.12rem; font-weight: 600; color: var(--text); }
+        .tile-hook { color: var(--muted); font-size: .9rem; line-height: 1.6; padding-right: 1.6rem; }
+        .tile-more { position: absolute; right: 1.2rem; top: 1.2rem; width: 26px; height: 26px; border-radius: 50%; border: 1px solid var(--line-strong);
+            display: grid; place-items: center; color: var(--accent); font-family: var(--font-mono); font-size: 1rem; line-height: 1; transition: transform .35s, border-color .3s, background .3s; }
+        .open > button .tile-more { transform: rotate(45deg); border-color: var(--accent); background: var(--accent-faint); }
+        .tile-body { display: grid; grid-template-rows: 0fr; transition: grid-template-rows .45s cubic-bezier(.2,.7,.2,1); }
+        .tile-body > div { overflow: hidden; }
+        .open > .tile-body { grid-template-rows: 1fr; }
+        .tile-body p { color: var(--muted); font-size: .9rem; line-height: 1.7; margin-bottom: .9rem; }
+        .tile .tile-body > div { padding: 0 1.6rem; } .tile.open .tile-body > div { padding-bottom: 1.5rem; }
+        .ops { display: grid; grid-template-columns: 1fr 1fr; gap: .8rem; align-items: start; }
+        .op-head { grid-template-columns: auto 1fr; align-items: center; gap: 1rem; padding: 1.2rem 3.4rem 1.2rem 1.4rem; }
+        .op-head .tile-more { top: 50%; margin-top: -13px; }
+        .op-title { font-family: var(--font-display); font-weight: 600; font-size: 1.05rem; color: var(--text); }
+        .op .tile-body > div { padding: 0 1.4rem 0 4.3rem; } .op.open .tile-body > div { padding-bottom: 1.1rem; }
+        .cep { margin-top: 1.6rem; }
+        .cep-head { padding: 1.6rem 4rem 1.6rem 1.7rem; gap: .45rem; }
+        .cep-kicker { font-family: var(--font-mono); font-size: .7rem; letter-spacing: .14em; text-transform: uppercase; color: var(--accent); }
+        .cep-title { font-family: var(--font-display); font-size: 1.3rem; font-weight: 700; color: var(--text); }
+        .cep-sub { color: var(--muted); font-size: .92rem; line-height: 1.65; max-width: 44em; }
+        .cep-weeks { position: relative; display: block; height: 30px; margin-top: .8rem; border-radius: 6px; background: repeating-linear-gradient(90deg, var(--line) 0 1px, transparent 1px calc(100% / 12)); }
+        .cep-weeks i { position: absolute; top: 4px; bottom: 4px; left: calc(var(--s) / 12 * 100%); width: calc((var(--e) - var(--s)) / 12 * 100% - 4px);
+            border-radius: 4px; background: rgba(255,107,53,.12); border: 1px solid rgba(255,107,53,.4); font-style: normal; font-family: var(--font-mono); font-size: .62rem;
+            color: var(--accent); display: flex; align-items: center; padding: 0 .5rem; white-space: nowrap; overflow: hidden; }
+        .cep-weeks i:nth-child(odd) { top: 2px; bottom: 15px; } .cep-weeks i:nth-child(even) { top: 16px; bottom: 1px; }
+        .cep-weeks i { font-size: 0; } /* labels appear on wide screens only */
+        @media (min-width: 900px) { .cep-weeks { height: 44px; } .cep-weeks i { font-size: .62rem; } .cep-weeks i:nth-child(odd) { top: 2px; bottom: 23px; } .cep-weeks i:nth-child(even) { top: 23px; bottom: 2px; } }
+        .cep .tile-body > div { padding: 0 1.7rem; } .cep.open .tile-body > div { padding-bottom: 1.6rem; }
+        .phase-tag { font-family: var(--font-mono); font-size: .72rem; color: var(--accent); letter-spacing: .12em; margin-bottom: .9rem; }
+        .roadmap-line { font-family: var(--font-mono); font-size: .74rem; color: var(--dim); margin-top: 1.2rem; letter-spacing: .02em; }
+
+        /* proof */
+        .award-card { position: relative; }
+        .creds { display: grid; grid-template-columns: 1.2fr 1fr; gap: 2.4rem; margin-top: 2.4rem; }
+        .creds .brand-grid { grid-template-columns: repeat(3, 1fr); }
+
+        /* doorways */
+        .doors { display: grid; grid-template-columns: 1fr 1fr; gap: 1.2rem; margin-top: 1rem; }
+        .door { display: flex; flex-direction: column; gap: .45rem; text-decoration: none; color: var(--text); border: 1px solid var(--line); border-radius: 14px;
+            background: linear-gradient(180deg, var(--surface), rgba(20,17,16,.6)); padding: 1.7rem 1.8rem 1.6rem; transition: transform .3s, border-color .3s; }
+        .door:hover { transform: translateY(-3px); border-color: rgba(255,107,53,.4); }
+        .door:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; }
+        .door-art { width: 100%; max-width: 260px; height: auto; margin-bottom: .6rem; }
+        .door-art rect { fill: rgba(255,107,53,.06); stroke: var(--line-strong); stroke-width: 1; transition: stroke .3s, fill .3s; }
+        .door:hover .door-art rect { stroke: rgba(255,107,53,.6); }
+        .door-art .stack rect:nth-child(1) { animation: dGlow 4s ease-in-out infinite; } .door-art .stack rect:nth-child(2) { animation: dGlow 4s .5s ease-in-out infinite; }
+        .door-art .stack rect:nth-child(3) { animation: dGlow 4s 1s ease-in-out infinite; } .door-art .stack rect:nth-child(4) { animation: dGlow 4s 1.5s ease-in-out infinite; }
+        .door-art .ladder rect:nth-child(1) { animation: dGlow 4s ease-in-out infinite; } .door-art .ladder rect:nth-child(2) { animation: dGlow 4s .5s ease-in-out infinite; }
+        .door-art .ladder rect:nth-child(3) { animation: dGlow 4s 1s ease-in-out infinite; } .door-art .ladder rect:nth-child(4) { animation: dGlow 4s 1.5s ease-in-out infinite; }
+        @keyframes dGlow { 0%, 100% { fill: rgba(255,107,53,.05); } 20% { fill: rgba(255,107,53,.22); stroke: rgba(255,107,53,.7); } }
+        .door-art .flow { stroke: var(--accent); stroke-width: 1.5; fill: none; stroke-dasharray: 4 5; opacity: .7; animation: dDash 1.2s linear infinite; }
+        @keyframes dDash { to { stroke-dashoffset: -18; } }
+        .door-art .pkt { fill: var(--accent); filter: drop-shadow(0 0 4px var(--accent)); animation: dPkt 3s ease-in-out infinite; }
+        @keyframes dPkt { 0% { transform: translateY(0); opacity: 0; } 10% { opacity: 1; } 90% { opacity: 1; } 100% { transform: translateY(106px); opacity: 0; } }
+        .door-kicker { font-family: var(--font-mono); font-size: .72rem; letter-spacing: .14em; text-transform: uppercase; color: var(--accent); }
+        .door-title { font-family: var(--font-display); font-size: 1.35rem; font-weight: 700; letter-spacing: -.01em; }
+        .door-text { color: var(--muted); font-size: .9rem; line-height: 1.65; }
+        .door-go { color: var(--accent); font-weight: 600; font-size: .92rem; margin-top: .5rem; transition: transform .25s; }
+        .door:hover .door-go { transform: translateX(4px); }
+
+        .contact { position: relative; overflow: hidden; }
+
+        @media (max-width: 900px) {
+            .hx-side { flex-direction: column; }
+            .hx-orbit { width: 230px; height: 230px; }
+            .hx-portrait { width: 132px; height: 132px; }
+            .hx-sat.s1, .hx-sat.s2 { --r: 115px; } .hx-sat.s3 { --r: 86px; }
+            .hx-ring.r2 { inset: 28px; }
+            .hx-cue { display: none; }
+            .glance-grid { grid-template-columns: 1fr 1fr; }
+            .rail { grid-template-columns: repeat(7, minmax(64px, 1fr)); overflow-x: auto; scrollbar-width: none; padding-bottom: .4rem; }
+            .rail::-webkit-scrollbar { display: none; }
+            .rail-track { left: 32px; right: 32px; min-width: calc(7 * 64px - 64px); }
+            .chapter-grid { grid-template-columns: 1fr; gap: 1.6rem; }
+            .tiles, .ops, .doors, .creds { grid-template-columns: 1fr; }
+            .creds .brand-grid { grid-template-columns: 1fr 1fr; }
+        }
+        @media (max-width: 600px) {
+            .wrap { padding-left: 1.25rem; padding-right: 1.25rem; }
+            .glance-grid { grid-template-columns: 1fr; }
+            .chapter { padding: 1.5rem 1.3rem; }
+            .chapter h3 { font-size: 1.25rem; }
+            .hx-stats { gap: .5rem; }
+            .hx-num { font-size: 1.4rem; }
+            .op .tile-body > div { padding-left: 1.4rem; }
+        }
+        @media (prefers-reduced-motion: reduce) {
+            .hx-floor, .hx-ring, .hx-sat, .hx-cue span, .door-art *, .turn-lines > span, .chapter.active, .chapter .terminal .t-line { animation: none !important; opacity: 1; }
+            .chapter.active .meter-before, .chapter.active .meter-after { animation: none; width: var(--w); }
+            .tile-body { transition: none; }
+        }
+
     </style>
     <link rel="stylesheet" href="/chat.css?v=20261125"/>
+    <link rel="stylesheet" href="/fx.css?v=20261126"/>
+    <script src="/fx.js?v=20261126" defer></script>
 </head>
 <body>
 
@@ -855,29 +1082,288 @@
 </nav>
 
 <!-- ── PROLOGUE · HERO ── -->
-<header class="hero">
+<header class="hero hx">
+    <canvas class="fx-embers" data-density="1.1" aria-hidden="true"></canvas>
+    <div class="hx-floor" aria-hidden="true"></div>
     <div class="wrap hero-grid">
-        <div>
-            <div class="kicker" data-spark>Prologue · AI &amp; Automation Practice Leader</div>
-            <h1>I take enterprise AI from slideware to <span class="accent">shipped</span>.</h1>
-            <p class="hero-sub">
-                19+ years in enterprise IT — now leading an AI &amp; automation practice and the team building
+        <div class="hx-copy">
+            <div class="kicker" data-spark><span class="fx-pulse" aria-hidden="true"></span>AI &amp; Automation Practice Leader</div>
+            <h1 data-reveal>I take enterprise AI from slideware to <span class="fx-gradient-text">shipped</span>.</h1>
+            <p class="hero-sub" data-reveal data-reveal-delay="0.12">
+                19+ years in enterprise IT. Today I lead an AI &amp; automation practice and the team building
                 <strong>governed enterprise AI agents</strong>.
-                This page tells that story the way I ship: start to finish, with evidence.
             </p>
-            <div class="hero-actions">
-                <a href="#origin" class="btn btn-solid">Read the story</a>
-                <a href="/projects.html" class="btn btn-ghost">See the projects</a>
+            <div class="hero-actions" data-reveal data-reveal-delay="0.24">
+                <button type="button" class="btn btn-solid btn-play" data-fx-video="/media/story.mp4" data-fx-poster="/media/story-poster.jpg">
+                    <span class="play-ico" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg></span>
+                    Watch the story <span class="btn-meta">· 75s</span>
+                </button>
+                <a href="/projects.html" class="btn btn-ghost">See the projects →</a>
             </div>
         </div>
-        <div class="hero-side">
-            <div style="display:flex; align-items:center; gap:1.3rem;">
-                <img class="portrait" src="Profile.jpg" alt="Karthikeyan Selvam"/>
+        <div class="hx-side" data-reveal data-reveal-delay="0.3">
+            <div class="hx-orbit" aria-hidden="false">
+                <span class="hx-ring r1" aria-hidden="true"></span>
+                <span class="hx-ring r2" aria-hidden="true"></span>
+                <span class="hx-sat s1" aria-hidden="true"></span>
+                <span class="hx-sat s2" aria-hidden="true"></span>
+                <span class="hx-sat s3" aria-hidden="true"></span>
+                <img class="hx-portrait" src="Profile.jpg" alt="Karthikeyan Selvam"/>
+            </div>
+            <div class="hx-stats">
+                <div class="hx-stat"><div class="hx-num"><span data-count="19">19</span><em>+</em></div><div class="hx-lbl">years in enterprise IT</div></div>
+                <div class="hx-stat"><div class="hx-num"><span data-count="150">150</span><em>+</em></div><div class="hx-lbl">AI use cases shaped into 20 agent families</div></div>
+                <div class="hx-stat"><div class="hx-num"><span data-count="50">50</span><em>+</em></div><div class="hx-lbl">RPA automations led</div></div>
+            </div>
+        </div>
+    </div>
+    <a class="hx-cue" href="#brief" aria-label="Scroll to the summary"><span></span></a>
+</header>
+
+<!-- ── AT A GLANCE (recruiter strip) ── -->
+<section id="brief" class="glance">
+    <div class="wrap">
+        <div class="glance-card fx-spot fx-scan" data-reveal>
+            <div class="glance-head">
+                <span class="glance-tag">At a glance</span>
+                <span class="glance-hint">the 10-second version</span>
+            </div>
+            <dl class="glance-grid">
+                <div><dt>Now</dt><dd>Practice Head, AI &amp; Automation <span class="dim">(Business Manager)</span> · Atos</dd></div>
+                <div><dt>Reports to</dt><dd>VP, Head of Technology, North America</dd></div>
+                <div><dt>Leads</dt><dd>The regional AI &amp; automation practice, and an engineering team building governed AI agents</dd></div>
+                <div><dt>Based</dt><dd>Delaware, USA</dd></div>
+                <div class="wide"><dt>Open to</dt><dd class="accent-dd">AI &amp; Automation Practice Leadership · AI Manager · AI Deployment · AI Enablement &amp; Adoption · AI Program Management</dd></div>
+            </dl>
+            <div class="glance-actions">
+                <a href="/resume/Karthikeyan-Selvam-Resume.pdf" class="btn btn-solid btn-sm" download>Download résumé (PDF)</a>
+                <a href="https://www.linkedin.com/in/karthikeyan-selvam-567b52157/" target="_blank" rel="noopener" class="btn btn-ghost btn-sm">LinkedIn</a>
+                <a href="/experience.html" class="btn btn-ghost btn-sm">Full experience →</a>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- ── THE STORY · CHAPTER RAIL ── -->
+<section id="origin" class="story">
+    <div class="wrap act">
+        <div class="act-kicker" data-spark>The story · pick a chapter</div>
+        <h2 class="act-title" data-reveal>Every AI story I trust starts in production. Mine starts on an <span class="accent">AS/400</span>.</h2>
+
+        <div class="rail" role="tablist" aria-label="Career chapters" data-reveal>
+            <div class="rail-track" aria-hidden="true"><div class="rail-fill"></div></div>
+            <button class="rail-node" role="tab" id="t-2007" aria-controls="p-2007" aria-selected="true"><b>2007</b><span>Origin</span></button>
+            <button class="rail-node" role="tab" id="t-2011" aria-controls="p-2011" aria-selected="false" tabindex="-1"><b>2011</b><span>Data</span></button>
+            <button class="rail-node" role="tab" id="t-2017" aria-controls="p-2017" aria-selected="false" tabindex="-1"><b>2017</b><span>Automation</span></button>
+            <button class="rail-node" role="tab" id="t-2023" aria-controls="p-2023" aria-selected="false" tabindex="-1"><b>2023</b><span>AIOps</span></button>
+            <button class="rail-node" role="tab" id="t-2024" aria-controls="p-2024" aria-selected="false" tabindex="-1"><b>2024</b><span>First AI role</span></button>
+            <button class="rail-node" role="tab" id="t-2025" aria-controls="p-2025" aria-selected="false" tabindex="-1"><b>2025</b><span>Scale</span></button>
+            <button class="rail-node now" role="tab" id="t-now" aria-controls="p-now" aria-selected="false" tabindex="-1"><b>Now</b><span>The practice</span></button>
+        </div>
+
+        <div class="chapters">
+            <article class="chapter active" role="tabpanel" id="p-2007" aria-labelledby="t-2007">
+                <div class="chapter-grid">
+                    <div>
+                        <div class="m-year">2007 · TATA CONSULTANCY SERVICES</div>
+                        <h3>The books had to balance by morning</h3>
+                        <p>Sales-audit reconciliation posting to Oracle — millions moving nightly, and the books had to balance by morning. No slideware, no shortcuts. Just systems that either worked or didn't. That standard never left.</p>
+                    </div>
+                    <div class="terminal">
+                        <div class="term-bar"><i></i><i></i><i></i><span class="term-title">tcs — session · 2007</span></div>
+                        <div class="term-body">
+                            <div class="t-line"><span class="p">&gt;</span> login: <b>karthikeyan.s</b> · chennai</div>
+                            <div class="t-line"><span class="p">&gt;</span> platform: <b>IBM AS/400</b> · sales-audit recon</div>
+                            <div class="t-line"><span class="p">&gt;</span> job: nightly batch → <b>oracle</b> · zero-error tolerance</div>
+                            <div class="t-line"><span class="p">&gt;</span> status: <b>balanced by morning. every morning.</b></div>
+                            <div class="t-line lesson">&gt; lesson_01: trust is earned in production</div>
+                        </div>
+                    </div>
+                </div>
+            </article>
+            <article class="chapter" role="tabpanel" id="p-2011" aria-labelledby="t-2011" hidden>
+                <div class="m-year">2011 · HEWLETT-PACKARD</div>
+                <h3>Learning to read an enterprise through its data</h3>
+                <p>Financial Analyst / Assistant Manager, Corporate Finance — mainly supporting automation initiatives alongside P&amp;L and data-warehouse reporting, functional design and change controls. Where process discipline met automation.</p>
+                <span class="m-chip">data &amp; automation</span>
+            </article>
+            <article class="chapter" role="tabpanel" id="p-2017" aria-labelledby="t-2017" hidden>
+                <div class="m-year">2017 · ATOS — RPA LEAD</div>
+                <h3>Teaching software to do the work</h3>
+                <p>50+ RPA automations across HR, Finance, and Procurement — leading consultants, business analysts, and developers.</p>
+                <span class="m-chip">50+ automations</span>
+            </article>
+            <article class="chapter" role="tabpanel" id="p-2023" aria-labelledby="t-2023" hidden>
+                <div class="m-year">2023 · ENERGY UTILITY — AIOPS</div>
+                <h3>Predictive operations across a 40,000-device estate</h3>
+                <p>AIOps (Nexthink / ServiceNow) plus enterprise backup &amp; recovery — turning reactive IT operations into measured, proactive ones.</p>
+                <span class="m-chip">40,000-device estate</span>
+            </article>
+            <article class="chapter" role="tabpanel" id="p-2024" aria-labelledby="t-2024" hidden>
+                <div class="m-year">2024 · MICROSOFT — COPILOT FOR ENTRA</div>
+                <h3>Grading an AI before the world used it</h3>
+                <p>My first direct step into AI — straight off the AIOps program. Leading the team running rubric-driven evaluation of Microsoft Copilot for Entra with Microsoft Engineering: accuracy, correctness, user satisfaction. 83 bugs logged, 19 resolved — 6 critical — before general availability; response satisfaction up from about 42% to 57%.</p>
+                <div class="meter" aria-label="Response satisfaction rose from about 42% to 57%">
+                    <div class="meter-bar"><span class="meter-before" style="--w:42%"></span><span class="meter-after" style="--w:57%"></span></div>
+                    <div class="meter-lbl"><span>~42% before</span><span class="accent">57% after</span></div>
+                </div>
+                <span class="m-chip">42% → 57% satisfaction · first AI role</span>
+            </article>
+            <article class="chapter" role="tabpanel" id="p-2025" aria-labelledby="t-2025" hidden>
+                <div class="m-year">2025 · ATOS — PROGRAM DELIVERY · THE INTERIM</div>
+                <h3>12,000 devices, moved with AI in the toolkit</h3>
+                <p>In the interim, I ran delivery for a Windows 11 migration ahead of Windows 10 end of support — with AI-assisted analytics sharpening hardware-compatibility and app-readiness assessment. Delivery at scale, now AI-informed.</p>
+                <span class="m-chip">12,000 devices</span>
+            </article>
+            <article class="chapter" role="tabpanel" id="p-now" aria-labelledby="t-now" hidden>
+                <div class="turn-lines">
+                    <span>Then the industry <span class="accent">turned</span>.</span>
+                    <span>Enterprises stopped asking <span class="dim-t">whether AI works…</span></span>
+                    <span>…and started asking <span class="accent">who can make it work</span>.</span>
+                </div>
+                <div class="m-year">OCT 2025 – PRESENT · ATOS</div>
+                <h3>Practice Head, AI &amp; Automation</h3>
+                <p>Reporting to the VP, Head of Technology, North America, I lead the AI and automation practice across the region. On large deals I supply the AI side of the bid: business cases with costed investment options, proposals for governed agentic pilots, statement-of-work reviews, and the architecture discussion in security reviews. With customers and internal teams I work out which use cases suit an agent and which are better as a simple workflow, and say so when nothing fits yet. And I lead an engineering team that builds agents on a common, governed framework.</p>
+                <div class="chip-row">
+                    <span class="m-chip">150+ use cases → 20 agent families</span>
+                    <span class="m-chip">deal-winning use-case &amp; savings analysis</span>
+                </div>
+                <p class="chapter-links"><a href="/experience.html">Full role →</a><a href="/projects.html">What the team builds →</a></p>
+            </article>
+        </div>
+        <div class="rail-hint" aria-hidden="true"><kbd>←</kbd><kbd>→</kbd> or tap a year</div>
+    </div>
+</section>
+
+<!-- ── WHAT I LEAD ── -->
+<section id="lead">
+    <div class="wrap act">
+        <div class="act-kicker" data-spark>What I lead</div>
+        <h2 class="act-title" data-reveal>Three disciplines, one throughline.</h2>
+        <p class="act-desc" data-reveal>Getting AI and automation adopted, governed, and paying for itself.</p>
+        <div class="tiles" data-reveal-stagger="0.1">
+            <div class="tile fx-spot" data-reveal>
+                <button class="tile-head" aria-expanded="false" aria-controls="lead-1">
+                    <svg class="pillar-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2l3 5.5 6 .9-4.4 4.3 1 6.1L12 16l-5.6 2.8 1-6.1L3 8.4l6-.9L12 2z" stroke-linejoin="round"/></svg>
+                    <span class="tile-title">AI Practice &amp; Platforms</span>
+                    <span class="tile-hook">The AI side of deals, and the team that builds the agents.</span>
+                    <span class="tile-more" aria-hidden="true">+</span>
+                </button>
+                <div class="tile-body" id="lead-1"><div>
+                    <p>Supplying the AI side of deals and turning agentic use-case analysis into pilot plans and roadmaps, with an engineering team that builds agents on a common, governed framework — and still building them hands-on.</p>
+                    <div class="pillar-where"><b>Where:</b> Proposals, bids &amp; architecture reviews · governed AI agents (see <a href="/projects.html">Projects</a>)</div>
+                </div></div>
+            </div>
+            <div class="tile fx-spot" data-reveal>
+                <button class="tile-head" aria-expanded="false" aria-controls="lead-2">
+                    <svg class="pillar-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2M9 11a4 4 0 1 0 0-8 4 4 0 0 0 0 8zM23 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                    <span class="tile-title">AI Enablement &amp; Adoption</span>
+                    <span class="tile-hook">From AI curiosity to dependable, everyday use.</span>
+                    <span class="tile-more" aria-hidden="true">+</span>
+                </button>
+                <div class="tile-body" id="lead-2"><div>
+                    <p>Moving organizations from AI curiosity to dependable, everyday use — structured enablement, peer champions, leaders modeling the change, and adoption that's measured, not assumed.</p>
+                    <div class="pillar-where"><b>Where:</b> Copilot Enablement Playbook · role-based AI bootcamp proposal · Most Impactful Business Solution, Atos North America AI challenge (2025)</div>
+                </div></div>
+            </div>
+            <div class="tile fx-spot" data-reveal>
+                <button class="tile-head" aria-expanded="false" aria-controls="lead-3">
+                    <svg class="pillar-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 20V10M18 20V4M6 20v-4" stroke-linecap="round"/></svg>
+                    <span class="tile-title">Enterprise Program Delivery</span>
+                    <span class="tile-hook">Programs from $200K to $20M, with cross-functional teams.</span>
+                    <span class="tile-more" aria-hidden="true">+</span>
+                </button>
+                <div class="tile-body" id="lead-3"><div>
+                    <p>Programs from $200K to $20M with cross-functional teams — migrations, AIOps, backup &amp; recovery, and RPA at scale. The ones I led, I owned end to end from budget to executive stakeholder; on a $20M program, I was a major revenue contributor.</p>
+                    <div class="pillar-where"><b>Where:</b> Windows 11 (12,000 devices) · Energy-utility AIOps (40,000) · 50+ RPA automations</div>
+                </div></div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- ── HOW I OPERATE ── -->
+<section id="playbook">
+    <div class="wrap act">
+        <div class="act-kicker" data-spark>How I operate</div>
+        <h2 class="act-title" data-reveal>The operating system behind every engagement.</h2>
+        <p class="act-desc" data-reveal>Pilot to production without the stall. Four rules; open any one.</p>
+        <div class="ops" data-reveal-stagger="0.08">
+            <div class="op fx-spot" data-reveal>
+                <button class="op-head" aria-expanded="false" aria-controls="op-1"><span class="p-idx">/01</span><span class="op-title">Evaluate before you ship</span><span class="tile-more" aria-hidden="true">+</span></button>
+                <div class="tile-body" id="op-1"><div><p>Rubric-driven LLM evaluation — accuracy, technical correctness, user satisfaction — before anything reaches users. It's how my team helped lift Microsoft Copilot for Entra response satisfaction from about 42% to 57%.</p></div></div>
+            </div>
+            <div class="op fx-spot" data-reveal>
+                <button class="op-head" aria-expanded="false" aria-controls="op-2"><span class="p-idx">/02</span><span class="op-title">Governance is a feature</span><span class="tile-more" aria-hidden="true">+</span></button>
+                <div class="tile-body" id="op-2"><div><p>Role-based access, audit-logged actions, and an automated model-lifecycle steward that migrates agents off retired LLMs — compliance without manual toil.</p></div></div>
+            </div>
+            <div class="op fx-spot" data-reveal>
+                <button class="op-head" aria-expanded="false" aria-controls="op-3"><span class="p-idx">/03</span><span class="op-title">Adoption is the product</span><span class="tile-more" aria-hidden="true">+</span></button>
+                <div class="tile-body" id="op-3"><div><p>Technology is 30% of a transformation. Readiness measurement, communications, and executive alignment are what make the other 70% land.</p></div></div>
+            </div>
+            <div class="op fx-spot" data-reveal>
+                <button class="op-head" aria-expanded="false" aria-controls="op-4"><span class="p-idx">/04</span><span class="op-title">Cost is architecture</span><span class="tile-more" aria-hidden="true">+</span></button>
+                <div class="tile-body" id="op-4"><div><p>Scale-to-zero services, token budgeting per output, regional-only infrastructure. Efficiency is engineered in from day one — the same discipline at every program scale.</p></div></div>
+            </div>
+        </div>
+
+        <!-- Copilot Enablement Playbook (collapsed) -->
+        <div class="cep fx-spot" data-reveal>
+            <button class="cep-head" aria-expanded="false" aria-controls="cep-body">
+                <span class="cep-kicker">12-week program</span>
+                <span class="cep-title">The Copilot Enablement Playbook</span>
+                <span class="cep-sub">A structured 12-week program I authored for moving an organization from Copilot curiosity to dependable, everyday use — because access is no longer the constraint; intentional adoption is.</span>
+                <span class="cep-weeks" aria-hidden="true">
+                    <i style="--s:0;--e:2">Mobilize</i><i style="--s:2;--e:6">Skill foundation</i><i style="--s:5;--e:9">Embedded enablement</i><i style="--s:9;--e:12">Review &amp; direction</i>
+                </span>
+                <span class="tile-more" aria-hidden="true">+</span>
+            </button>
+            <div class="tile-body" id="cep-body"><div>
+                <div class="pillars">
+                    <div class="pillar">
+                        <div class="phase-tag">01 · BUILD</div>
+                        <h3>Practical confidence</h3>
+                        <p>Copilot introduced through the work people already do — email, meetings, documents — including where it fails, how to guide it without over-engineering prompts, and how enterprise data shapes results.</p>
+                    </div>
+                    <div class="pillar">
+                        <div class="phase-tag">02 · ACTION</div>
+                        <h3>Real work, real stakes</h3>
+                        <p>Copilot applied against actual emails, documents, and deliverables in small-group sessions that surface real friction points, encourage shared learning, and normalize AI-assisted work within teams.</p>
+                    </div>
+                    <div class="pillar">
+                        <div class="phase-tag">03 · SUSTAIN</div>
+                        <h3>Make it stick</h3>
+                        <p>Credible peer champions, leaders modeling usage visibly, reinforcement through relevant examples — adoption sustained by influence rather than enforcement, measured and adjusted as it grows.</p>
+                    </div>
+                </div>
+                <p class="roadmap-line">12-WEEK ROADMAP&nbsp;&nbsp;·&nbsp;&nbsp;Mobilization (wk 1–2) → Skill Foundation (3–6) → Embedded Enablement (6–9) → Review &amp; Direction (10–12)</p>
+            </div></div>
+        </div>
+    </div>
+</section>
+
+<!-- ── PROOF: recognition + credentials ── -->
+<section id="proof">
+    <div class="wrap act">
+        <div class="act-kicker" data-spark>Proof</div>
+        <h2 class="act-title" data-reveal>Recognized in the field. Certified across the stack.</h2>
+        <div class="award-band" data-reveal-stagger="0.1">
+            <div class="award-card fx-spot" data-reveal>
+                <div class="award-ico"><svg viewBox="0 0 24 24"><path d="M8 21h8M12 17v4M7 4h10v5a5 5 0 0 1-10 0V4z"/><path d="M7 5H4a3 3 0 0 0 3 4M17 5h3a3 3 0 0 1-3 4"/></svg></div>
                 <div>
-                    <div class="fact-num">19<em>+</em></div>
-                    <div class="fact-lbl">years in<br/>enterprise IT</div>
+                    <div class="award-title">Winner — Most Impactful Business Solution</div>
+                    <div class="award-sub">ATOS NORTH AMERICA AI CHALLENGE · 2025</div>
                 </div>
             </div>
+            <div class="award-card fx-spot" data-reveal>
+                <div class="award-ico"><svg viewBox="0 0 24 24"><circle cx="12" cy="15" r="4.5"/><path d="M10 11 7.5 3M14 11l2.5-8M7.5 3h4M16.5 3h-4"/></svg></div>
+                <div>
+                    <div class="award-title">Bronze — Atos Copilot challenge (2024)</div>
+                    <div class="award-sub">TEAM AWARD · ATOS</div>
+                </div>
+            </div>
+        </div>
+        <div class="creds" data-reveal>
             <div>
                 <div class="side-label">Core skills</div>
                 <div class="skill-tags">
@@ -925,247 +1411,53 @@
             </div>
         </div>
     </div>
-</header>
-
-<!-- ── ACT I · ORIGIN ── -->
-<section id="origin">
-    <div class="wrap act">
-        <div class="origin-stage">
-            <div>
-                <div class="act-kicker" data-spark>Act I — Origin · 2007</div>
-                <h2 class="act-title">Every AI story I trust starts in production. Mine starts on an <span class="accent">AS/400</span>.</h2>
-                <p class="act-desc">
-                    Tata Consultancy Services. Sales-audit reconciliation posting to Oracle —
-                    millions moving nightly, and the books had to balance by morning.
-                    No slideware, no shortcuts. Just systems that either worked or didn't.
-                    That standard never left.
-                </p>
-            </div>
-            <div class="terminal reveal">
-                <div class="term-bar"><i></i><i></i><i></i><span class="term-title">tcs — session · 2007</span></div>
-                <div class="term-body">
-                    <div class="t-line"><span class="p">&gt;</span> login: <b>karthikeyan.s</b> · chennai</div>
-                    <div class="t-line"><span class="p">&gt;</span> platform: <b>IBM AS/400</b> · sales-audit recon</div>
-                    <div class="t-line"><span class="p">&gt;</span> job: nightly batch → <b>oracle</b> · zero-error tolerance</div>
-                    <div class="t-line"><span class="p">&gt;</span> status: <b>balanced by morning. every morning.</b></div>
-                    <div class="t-line lesson">&gt; lesson_01: trust is earned in production</div>
-                </div>
-            </div>
-        </div>
-    </div>
 </section>
 
-<!-- ── ACT II · THE CLIMB ── -->
-<section id="climb">
+<!-- ── DOORWAYS: projects + playbook ── -->
+<section id="turn" class="doors-sec">
     <div class="wrap act">
-        <div class="act-kicker" data-spark>Act II — The Climb · 2011–2025</div>
-        <h2 class="act-title">Fourteen years of shipping things that had to work.</h2>
-        <p class="act-desc">
-            Not a straight line — a widening one. Data and automation, then
-            programs measured in tens of thousands of devices. Follow the ember.
-        </p>
-        <div class="climb-rail">
-            <div class="climb-line"></div>
-            <div class="climb-line-fill"></div>
-            <div class="milestone reveal">
-                <span class="m-node" data-spark></span>
-                <div class="m-card">
-                    <div class="m-year">2011 · HEWLETT-PACKARD</div>
-                    <h3>Learning to read an enterprise through its data</h3>
-                    <p>Financial Analyst / Assistant Manager, Corporate Finance — mainly supporting automation initiatives alongside P&amp;L and data-warehouse reporting, functional design and change controls. Where process discipline met automation.</p>
-                    <span class="m-chip">data &amp; automation</span>
-                </div>
-            </div>
-            <div class="milestone reveal">
-                <span class="m-node" data-spark></span>
-                <div class="m-card">
-                    <div class="m-year">2017 · ATOS — RPA LEAD</div>
-                    <h3>Teaching software to do the work</h3>
-                    <p>50+ RPA automations across HR, Finance, and Procurement — leading consultants, business analysts, and developers.</p>
-                    <span class="m-chip">50+ automations</span>
-                </div>
-            </div>
-            <div class="milestone reveal">
-                <span class="m-node" data-spark></span>
-                <div class="m-card">
-                    <div class="m-year">2023 · ENERGY UTILITY — AIOPS</div>
-                    <h3>Predictive operations across a 40,000-device estate</h3>
-                    <p>AIOps (Nexthink / ServiceNow) plus enterprise backup &amp; recovery — turning reactive IT operations into measured, proactive ones.</p>
-                    <span class="m-chip">40,000-device estate</span>
-                </div>
-            </div>
-            <div class="milestone reveal">
-                <span class="m-node" data-spark></span>
-                <div class="m-card">
-                    <div class="m-year">2024 · MICROSOFT — COPILOT FOR ENTRA</div>
-                    <h3>Grading an AI before the world used it</h3>
-                    <p>My first direct step into AI — straight off the AIOps program. Leading the team running rubric-driven evaluation of Microsoft Copilot for Entra with Microsoft Engineering: accuracy, correctness, user satisfaction. 83 bugs logged, 19 resolved — 6 critical — before general availability; response satisfaction up from about 42% to 57%.</p>
-                    <span class="m-chip">42% → 57% satisfaction · first AI role</span>
-                </div>
-            </div>
-            <div class="milestone reveal">
-                <span class="m-node" data-spark></span>
-                <div class="m-card">
-                    <div class="m-year">2025 · ATOS — PROGRAM DELIVERY · THE INTERIM</div>
-                    <h3>12,000 devices, moved with AI in the toolkit</h3>
-                    <p>In the interim, I ran delivery for a Windows 11 migration ahead of Windows 10 end of support — with AI-assisted analytics sharpening hardware-compatibility and app-readiness assessment. Delivery at scale, now AI-informed.</p>
-                    <span class="m-chip">12,000 devices</span>
-                </div>
-            </div>
-        </div>
-    </div>
-</section>
-
-<!-- ── ACT III · THE TURN ── -->
-<section id="turn">
-    <div class="wrap">
-        <div class="turn-stage" id="turn-stage">
-            <div class="beat">Then the industry <span class="accent">turned</span>.</div>
-            <div class="beat">Enterprises stopped asking <span class="dim-t">whether AI works…</span></div>
-            <div class="beat">…and started asking <span class="accent">who can make it work</span>.</div>
-            <div class="beat">So I built the answer.<br/><span class="dim-t" style="font-size:0.5em; font-weight:500; letter-spacing:0;">— architecture, agents, and governance.</span></div>
-        </div>
-    </div>
-    <div class="wrap" style="padding-bottom:4rem;">
-        <div class="act-kicker" data-spark>Act III — The Turn · What I built</div>
-        <h2 class="act-title">The work has its own page.</h2>
-        <p class="act-desc">
-            Every AI project I've built or led — governed agent platforms, the agents that run on them, and the patterns behind
-            them — is on the <a href="/projects.html">Projects</a> page, with each architecture laid out layer by layer.
-        </p>
-        <p><a href="/projects.html" class="btn btn-solid">See the projects →</a></p>
-    </div>
-</section>
-
-<!-- ── WHAT I LEAD (today) ── -->
-<section id="lead">
-    <div class="wrap act">
-        <div class="act-kicker" data-spark>Meanwhile — what I lead</div>
-        <h2 class="act-title">Three disciplines, one throughline.</h2>
-        <p class="act-desc">
-            Getting AI and automation adopted, governed, and paying for itself.
-        </p>
-        <div class="pillars reveal">
-            <div class="pillar">
-                <svg class="pillar-icon" viewBox="0 0 24 24"><path d="M12 2l3 5.5 6 .9-4.4 4.3 1 6.1L12 16l-5.6 2.8 1-6.1L3 8.4l6-.9L12 2z" stroke-linejoin="round"/></svg>
-                <h3>AI Practice &amp; Platforms</h3>
-                <p>Supplying the AI side of deals and turning agentic use-case analysis into pilot plans and roadmaps, with an engineering team that builds agents on a common, governed framework — and still building them hands-on.</p>
-                <div class="pillar-where"><b>Where:</b> Proposals, bids &amp; architecture reviews · governed AI agents (see <a href="/projects.html">Projects</a>)</div>
-            </div>
-            <div class="pillar">
-                <svg class="pillar-icon" viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2M9 11a4 4 0 1 0 0-8 4 4 0 0 0 0 8zM23 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75" stroke-linecap="round" stroke-linejoin="round"/></svg>
-                <h3>AI Enablement &amp; Adoption</h3>
-                <p>Moving organizations from AI curiosity to dependable, everyday use — structured enablement, peer champions, leaders modeling the change, and adoption that's measured, not assumed.</p>
-                <div class="pillar-where"><b>Where:</b> Copilot Enablement Playbook · role-based AI bootcamp proposal · Most Impactful Business Solution, Atos North America AI challenge (2025)</div>
-            </div>
-            <div class="pillar">
-                <svg class="pillar-icon" viewBox="0 0 24 24"><path d="M12 20V10M18 20V4M6 20v-4" stroke-linecap="round"/></svg>
-                <h3>Enterprise Program Delivery</h3>
-                <p>Programs from $200K to $20M with cross-functional teams — migrations, AIOps, backup &amp; recovery, and RPA at scale. The ones I led, I owned end to end from budget to executive stakeholder; on a $20M program, I was a major revenue contributor.</p>
-                <div class="pillar-where"><b>Where:</b> Windows 11 (12,000 devices) · Energy-utility AIOps (40,000) · 50+ RPA automations</div>
-            </div>
-        </div>
-    </div>
-</section>
-
-<!-- ── ACT IV · HOW I OPERATE ── -->
-<section id="playbook">
-    <div class="wrap act">
-        <div class="act-kicker" data-spark>Act IV — How I operate</div>
-        <h2 class="act-title">The operating system behind every engagement.</h2>
-        <p class="act-desc">
-            Pilot to production without the stall.
-        </p>
-        <div class="principles">
-            <div class="principle reveal">
-                <span class="p-idx">/01</span>
-                <div>
-                    <h3>Evaluate before you ship</h3>
-                    <p>Rubric-driven LLM evaluation — accuracy, technical correctness, user satisfaction — before anything reaches users. It's how my team helped lift Microsoft Copilot for Entra response satisfaction from about 42% to 57%.</p>
-                </div>
-            </div>
-            <div class="principle reveal">
-                <span class="p-idx">/02</span>
-                <div>
-                    <h3>Governance is a feature</h3>
-                    <p>Role-based access, audit-logged actions, and an automated model-lifecycle steward that migrates agents off retired LLMs — compliance without manual toil.</p>
-                </div>
-            </div>
-            <div class="principle reveal">
-                <span class="p-idx">/03</span>
-                <div>
-                    <h3>Adoption is the product</h3>
-                    <p>Technology is 30% of a transformation. Readiness measurement, communications, and executive alignment are what make the other 70% land.</p>
-                </div>
-            </div>
-            <div class="principle reveal">
-                <span class="p-idx">/04</span>
-                <div>
-                    <h3>Cost is architecture</h3>
-                    <p>Scale-to-zero services, token budgeting per output, regional-only infrastructure. Efficiency is engineered in from day one — the same discipline at every program scale.</p>
-                </div>
-            </div>
-        </div>
-
-        <!-- Copilot Enablement Playbook -->
-        <div style="margin-top:2.6rem;">
-            <h3 style="font-family:var(--font-display); font-size:1.35rem; font-weight:700; letter-spacing:-0.01em; margin-bottom:0.6rem;">The Copilot Enablement Playbook</h3>
-            <p class="act-desc" style="margin-bottom:2rem;">
-                A structured 12-week program I authored for moving an organization from Copilot curiosity
-                to dependable, everyday use — because access is no longer the constraint; intentional adoption is.
-            </p>
-            <div class="pillars reveal">
-                <div class="pillar">
-                    <div style="font-family:var(--font-mono); font-size:0.72rem; color:var(--accent); letter-spacing:0.12em; margin-bottom:0.9rem;">01 · BUILD</div>
-                    <h3>Practical confidence</h3>
-                    <p>Copilot introduced through the work people already do — email, meetings, documents — including where it fails, how to guide it without over-engineering prompts, and how enterprise data shapes results.</p>
-                </div>
-                <div class="pillar">
-                    <div style="font-family:var(--font-mono); font-size:0.72rem; color:var(--accent); letter-spacing:0.12em; margin-bottom:0.9rem;">02 · ACTION</div>
-                    <h3>Real work, real stakes</h3>
-                    <p>Copilot applied against actual emails, documents, and deliverables in small-group sessions that surface real friction points, encourage shared learning, and normalize AI-assisted work within teams.</p>
-                </div>
-                <div class="pillar">
-                    <div style="font-family:var(--font-mono); font-size:0.72rem; color:var(--accent); letter-spacing:0.12em; margin-bottom:0.9rem;">03 · SUSTAIN</div>
-                    <h3>Make it stick</h3>
-                    <p>Credible peer champions, leaders modeling usage visibly, reinforcement through relevant examples — adoption sustained by influence rather than enforcement, measured and adjusted as it grows.</p>
-                </div>
-            </div>
-            <p style="font-family:var(--font-mono); font-size:0.74rem; color:var(--dim); margin-top:1.4rem; letter-spacing:0.02em;">
-                12-WEEK ROADMAP&nbsp;&nbsp;·&nbsp;&nbsp;Mobilization (wk 1–2) → Skill Foundation (3–6) → Embedded Enablement (6–9) → Review &amp; Direction (10–12)
-            </p>
-        </div>
-
-        <!-- Recognition -->
-        <div style="margin-top:2.8rem;">
-            <div class="side-label" style="margin-top:0;">Recognition — earned in the field</div>
-            <div class="award-band reveal">
-                <div class="award-card">
-                    <div class="award-ico"><svg viewBox="0 0 24 24"><path d="M8 21h8M12 17v4M7 4h10v5a5 5 0 0 1-10 0V4z"/><path d="M7 5H4a3 3 0 0 0 3 4M17 5h3a3 3 0 0 1-3 4"/></svg></div>
-                    <div>
-                        <div class="award-title">Winner — Most Impactful Business Solution</div>
-                        <div class="award-sub">ATOS NORTH AMERICA AI CHALLENGE · 2025 · BUILT ON MICROSOFT COPILOT STUDIO</div>
-                    </div>
-                </div>
-                <div class="award-card">
-                    <div class="award-ico"><svg viewBox="0 0 24 24"><circle cx="12" cy="15" r="4.5"/><path d="M10 11 7.5 3M14 11l2.5-8M7.5 3h4M16.5 3h-4"/></svg></div>
-                    <div>
-                        <div class="award-title">Bronze — Atos Copilot challenge (2024)</div>
-                        <div class="award-sub">TEAM AWARD · ATOS</div>
-                    </div>
-                </div>
-            </div>
+        <div class="act-kicker" data-spark>Go deeper</div>
+        <h2 class="act-title" data-reveal>The work has its own page. So does the method.</h2>
+        <div class="doors" data-reveal-stagger="0.12">
+            <a class="door fx-spot" href="/projects.html" data-reveal>
+                <svg class="door-art" viewBox="0 0 220 120" aria-hidden="true">
+                    <g class="stack">
+                        <rect x="30" y="14" width="160" height="16" rx="4"/><rect x="30" y="38" width="160" height="16" rx="4"/>
+                        <rect x="30" y="62" width="160" height="16" rx="4"/><rect x="30" y="86" width="160" height="16" rx="4"/>
+                    </g>
+                    <path class="flow" d="M110 6 V112"/>
+                    <circle class="pkt" r="3.5" cx="110" cy="6"/>
+                </svg>
+                <span class="door-kicker">Projects</span>
+                <span class="door-title">Every AI build, architecture first.</span>
+                <span class="door-text">Governed agent platforms, the agents that run on them, and the patterns behind them. Start at the high level; click down into layers, flows and controls.</span>
+                <span class="door-go">Explore the projects →</span>
+            </a>
+            <a class="door fx-spot" href="/playbook.html" data-reveal>
+                <svg class="door-art" viewBox="0 0 220 120" aria-hidden="true">
+                    <g class="ladder">
+                        <rect x="40" y="88" width="34" height="20" rx="3"/><rect x="82" y="66" width="34" height="42" rx="3"/>
+                        <rect x="124" y="42" width="34" height="66" rx="3"/><rect x="166" y="16" width="34" height="92" rx="3"/>
+                    </g>
+                    <path class="flow" d="M30 100 L57 82 L99 60 L141 36 L183 10"/>
+                </svg>
+                <span class="door-kicker">Playbook</span>
+                <span class="door-title">Building agents that survive production.</span>
+                <span class="door-text">The vendor-neutral framework behind the work: a layered reference architecture, the controls that matter, and a crawl-walk-run path. Brief first, depth on demand.</span>
+                <span class="door-go">Read the playbook →</span>
+            </a>
         </div>
     </div>
 </section>
 
 <!-- ── EPILOGUE · CONTACT + ASK MY AI ── -->
 <section id="contact" class="contact">
-    <div class="wrap" style="padding-top:4rem;">
+    <canvas class="fx-embers" data-density="0.6" aria-hidden="true"></canvas>
+    <div class="wrap" style="padding-top:4rem; position:relative; z-index:1;">
         <div>
             <div id="ask">
-                <div class="act-kicker">Epilogue — your move</div>
-                <h2>You've read the story. Now <span class="accent">interrogate</span> it.</h2>
+                <div class="act-kicker">Your move</div>
+                <h2>You've seen the story. Now <span class="accent">interrogate</span> it.</h2>
                 <p class="contact-sub">
                     Consulting engagement, a leadership conversation, or a hard question about
                     where enterprise AI is really headed — I'm open to all three.
@@ -1186,6 +1478,7 @@
         </div>
     </div>
 </section>
+
 
 <!-- ── CHAT LAUNCHER + POPOVER ── -->
 <div id="chat-pop" role="dialog" aria-label="Skipper chat">
@@ -1251,99 +1544,53 @@
     </div>
 </footer>
 
-<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
 <script src="/chat.js?v=20261125"></script>
 <script>
     const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-    const gsapOK = typeof gsap !== 'undefined' && typeof ScrollTrigger !== 'undefined' && !reduceMotion;
-    if (!gsapOK) document.body.classList.add('no-anim');
 
-    // ── Scroll reveal (IO — all viewports) ──
-    const revealEls = document.querySelectorAll('.reveal');
-    if ('IntersectionObserver' in window && revealEls.length) {
-        const io = new IntersectionObserver((entries, obs) => {
-            entries.forEach(entry => {
-                if (entry.isIntersecting) {
-                    entry.target.style.transitionDelay = (entry.target.dataset.d || 0) + 's';
-                    entry.target.classList.add('in');
-                    obs.unobserve(entry.target);
-                }
+    // ── Chapter rail (tabs) ──
+    (function initRail() {
+        const tabs = Array.from(document.querySelectorAll('.rail-node'));
+        const fill = document.querySelector('.rail-fill');
+        if (!tabs.length) return;
+        function select(i, focus) {
+            tabs.forEach((t, j) => {
+                const on = j === i;
+                t.setAttribute('aria-selected', on);
+                t.tabIndex = on ? 0 : -1;
+                t.classList.toggle('passed', j < i);
+                const panel = document.getElementById(t.getAttribute('aria-controls'));
+                panel.hidden = !on;
+                panel.classList.toggle('active', on);
             });
-        }, { threshold: 0.15 });
-        revealEls.forEach((el, i) => { el.dataset.d = (i % 2) * 0.12; io.observe(el); });
-    } else {
-        revealEls.forEach(el => el.classList.add('in'));
-    }
-
-    // ── Count-up numbers (IO) ──
-    const countEls = document.querySelectorAll('[data-countup]');
-    if ('IntersectionObserver' in window && countEls.length && !reduceMotion) {
-        const cio = new IntersectionObserver((entries, obs) => {
-            entries.forEach(entry => {
-                if (!entry.isIntersecting) return;
-                obs.unobserve(entry.target);
-                const el = entry.target, target = parseFloat(el.dataset.countup);
-                const pre = el.dataset.prefix || '', suf = el.dataset.suffix || '';
-                if (target === 0) { el.textContent = pre + '0' + suf; return; }
-                const dur = 1100, t0 = performance.now();
-                (function tick(now) {
-                    const p = Math.min((now - t0) / dur, 1);
-                    el.textContent = pre + Math.round(target * (1 - Math.pow(1 - p, 3))) + suf;
-                    if (p < 1) requestAnimationFrame(tick);
-                })(t0);
-            });
-        }, { threshold: 0.5 });
-        countEls.forEach(el => cio.observe(el));
-    }
-
-    // ── GSAP story choreography ──
-    if (gsapOK) {
-        gsap.registerPlugin(ScrollTrigger);
-        const mm = gsap.matchMedia();
-
-        // Terminal lines wipe in (all sizes)
-        gsap.utils.toArray('#origin .t-line').forEach((line, i) => {
-            gsap.from(line, {
-                clipPath: 'inset(0 100% 0 0)',
-                ease: 'none',
-                scrollTrigger: { trigger: line, start: 'top 88%', end: 'top 55%', scrub: 0.4 }
+            if (fill) fill.style.setProperty('--p', (i / (tabs.length - 1) * 100) + '%');
+            if (focus) tabs[i].focus();
+            tabs[i].scrollIntoView({ block: 'nearest', inline: 'center', behavior: reduceMotion ? 'auto' : 'smooth' });
+        }
+        tabs.forEach((t, i) => {
+            t.addEventListener('click', () => select(i));
+            t.addEventListener('keydown', e => {
+                const cur = tabs.indexOf(document.activeElement);
+                if (e.key === 'ArrowRight') { e.preventDefault(); select((cur + 1) % tabs.length, true); }
+                if (e.key === 'ArrowLeft') { e.preventDefault(); select((cur - 1 + tabs.length) % tabs.length, true); }
+                if (e.key === 'Home') { e.preventDefault(); select(0, true); }
+                if (e.key === 'End') { e.preventDefault(); select(tabs.length - 1, true); }
             });
         });
+        // initial state without scrolling the page
+        tabs.forEach((t, j) => t.classList.toggle('passed', false));
+        if (fill) fill.style.setProperty('--p', '0%');
+    })();
 
-        // Climb rail fill (all sizes)
-        gsap.from('.climb-line-fill', {
-            scaleY: 0,
-            ease: 'none',
-            scrollTrigger: { trigger: '.climb-rail', start: 'top 72%', end: 'bottom 55%', scrub: 0.5 }
+    // ── Expandable tiles ──
+    document.querySelectorAll('.tile-head, .op-head, .cep-head').forEach(btn => {
+        btn.addEventListener('click', () => {
+            const box = btn.parentElement;
+            const open = !box.classList.contains('open');
+            box.classList.toggle('open', open);
+            btn.setAttribute('aria-expanded', open);
         });
-        // Milestone nodes ignite as the fill passes
-        gsap.utils.toArray('.milestone').forEach(m => {
-            ScrollTrigger.create({
-                trigger: m, start: 'top 62%',
-                onEnter: () => m.classList.add('lit'),
-                onLeaveBack: () => m.classList.remove('lit')
-            });
-        });
-
-        mm.add('(min-width: 900px)', () => {
-            // Act III beats — pinned title cards
-            const beats = gsap.utils.toArray('#turn-stage .beat');
-            gsap.set(beats, { autoAlpha: 0, y: 30 });
-            const tl = gsap.timeline({
-                scrollTrigger: { trigger: '#turn-stage', start: 'top 64px', end: '+=' + (beats.length * 620), pin: true, scrub: 0.45 }
-            });
-            beats.forEach((b, i) => {
-                tl.to(b, { autoAlpha: 1, y: 0, duration: 1 });
-                if (i < beats.length - 1) tl.to(b, { autoAlpha: 0, y: -30, duration: 1 }, '+=0.6');
-                else tl.to(b, { autoAlpha: 1, duration: 0.6 }); // last beat holds
-            });
-
-            return () => { /* matchMedia cleanup handled by GSAP */ };
-        });
-
-        window.addEventListener('load', () => ScrollTrigger.refresh());
-    }
+    });
 
     // ── Ember spark guide (desktop, fine pointer, motion OK) ──
     (function initSpark() {

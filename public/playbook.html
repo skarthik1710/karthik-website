@@ -591,7 +591,175 @@
             .prose h2 { font-size: 1.4rem; }
         }
     </style>
+    <style>
+
+        /* ── PROGRESSIVE DISCLOSURE ── */
+        .pb-progress { position: fixed; top: 0; left: 0; right: 0; height: 2px; z-index: 120; pointer-events: none; }
+        .pb-progress i { display: block; height: 100%; width: 100%; transform-origin: 0 50%; transform: scaleX(var(--p, 0));
+            background: linear-gradient(90deg, rgba(255,107,53,0.35), var(--accent) 70%, #FFB08F);
+            box-shadow: 0 0 10px rgba(255,107,53,0.7); }
+        .pb-hero { position: relative; overflow: hidden; }
+        .pb-hero .wrap { position: relative; z-index: 1; }
+        .pb-hero::after { content: ""; position: absolute; inset: auto 0 0 0; height: 40%; pointer-events: none;
+            background: linear-gradient(transparent, var(--bg)); z-index: 0; }
+
+        .pb-glance { padding: 3.2rem 0 3.4rem; border-bottom: 1px solid var(--line);
+            background: radial-gradient(900px 340px at 85% 0%, rgba(255,107,53,0.07), transparent 70%); }
+        .pb-glance-top { display: flex; justify-content: space-between; align-items: flex-end; gap: 2rem; flex-wrap: wrap; margin-bottom: 2rem; }
+        .pb-kicker { font-family: var(--font-mono); font-size: 0.72rem; letter-spacing: 0.16em; text-transform: uppercase; color: var(--accent);
+            display: flex; align-items: center; gap: 0.6rem; }
+        .pb-kicker::before { content: ""; width: 22px; height: 1px; background: var(--accent); }
+        .pb-glance-h { font-family: var(--font-display); color: var(--text); font-size: clamp(1.45rem, 2.6vw, 2rem); letter-spacing: -0.02em;
+            line-height: 1.2; margin: 0.7rem 0 0.6rem; }
+        .pb-glance-p { color: var(--muted); max-width: 40em; font-size: 0.95rem; line-height: 1.7; }
+        .pb-tools { display: flex; flex-direction: column; align-items: flex-end; gap: 0.7rem; }
+        .pb-meter { display: flex; align-items: center; gap: 0.7rem; font-family: var(--font-mono); font-size: 0.72rem; color: var(--dim); letter-spacing: 0.04em; }
+        .pb-meter b { color: var(--accent); font-weight: 600; }
+        .pb-meter-bar { position: relative; width: 120px; height: 4px; border-radius: 4px; background: var(--line); overflow: hidden; }
+        .pb-meter-bar i { position: absolute; inset: 0; transform-origin: 0 50%; transform: scaleX(var(--e, 0)); background: var(--accent);
+            box-shadow: 0 0 8px rgba(255,107,53,0.8); transition: transform 0.5s cubic-bezier(.2,.7,.2,1); }
+        .pb-seg, .pb-toc-tools { display: inline-flex; border: 1px solid var(--line-strong); border-radius: 999px; overflow: hidden; background: var(--surface); }
+        .pb-seg button, .pb-toc-tools button { font: 500 0.78rem var(--font-body); color: var(--muted); background: none; border: none; cursor: pointer;
+            padding: 0.5rem 0.95rem; transition: color 0.15s, background 0.15s; }
+        .pb-seg button + button, .pb-toc-tools button + button { border-left: 1px solid var(--line-strong); }
+        .pb-seg button:hover, .pb-toc-tools button:hover { color: var(--text); background: var(--surface-2); }
+        .pb-seg button:focus-visible, .pb-toc-tools button:focus-visible { outline: 2px solid var(--accent); outline-offset: -2px; }
+        .pb-toc-tools { margin-bottom: 1.1rem; }
+        .pb-toc-tools button { font-size: 0.72rem; padding: 0.38rem 0.7rem; }
+
+        .pb-groups { display: flex; flex-direction: column; gap: 1.1rem; }
+        .pb-group { display: grid; grid-template-columns: 150px minmax(0, 1fr); gap: 1.2rem; align-items: start; }
+        .pb-group-l { position: sticky; top: 90px; display: flex; flex-direction: column; gap: 0.2rem; padding-top: 0.9rem;
+            border-top: 1px solid var(--accent-dim); }
+        .pb-group-n { font-family: var(--font-mono); font-size: 0.68rem; color: var(--accent); letter-spacing: 0.08em; }
+        .pb-group-t { font-family: var(--font-display); font-size: 0.98rem; font-weight: 600; color: var(--text); }
+        .pb-cards { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 0.75rem; }
+        /* A lone card on the last row stretches across it rather than leaving a hole */
+        .pb-cards > .pb-card:last-child:nth-child(3n+1) { grid-column: 1 / -1; }
+        .pb-cards > .pb-card:last-child:nth-child(3n+2) { grid-column: span 2; }
+        .pb-card { display: flex; flex-direction: column; gap: 0.45rem; padding: 1rem 1.05rem 0.95rem; border-radius: 12px; text-decoration: none;
+            border: 1px solid var(--line); background: linear-gradient(180deg, var(--surface-2), var(--surface));
+            transition: border-color 0.25s, transform 0.25s, box-shadow 0.25s; }
+        .pb-card:hover, .pb-card:focus-visible { border-color: var(--accent-dim); transform: translateY(-2px);
+            box-shadow: 0 10px 30px -12px rgba(255,107,53,0.35); outline: none; }
+        .pb-card-top { display: flex; justify-content: space-between; align-items: center; }
+        .pb-card-n { font-family: var(--font-mono); font-size: 0.78rem; font-weight: 600; color: var(--accent); letter-spacing: 0.06em; }
+        .pb-card-seen { font-family: var(--font-mono); font-size: 0.6rem; letter-spacing: 0.12em; text-transform: uppercase; color: #6CCF9C;
+            opacity: 0; transition: opacity 0.3s; }
+        .pb-card-seen::before { content: "● "; }
+        .pb-card.is-visited .pb-card-seen { opacity: 1; }
+        .pb-card-t { font-family: var(--font-display); font-size: 1rem; font-weight: 600; color: var(--text); line-height: 1.3; }
+        .pb-card-b { font-size: 0.8rem; line-height: 1.5; color: var(--muted); flex: 1; }
+        .pb-card-go { font-family: var(--font-mono); font-size: 0.66rem; letter-spacing: 0.08em; text-transform: uppercase; color: var(--dim);
+            transition: color 0.2s, letter-spacing 0.25s; }
+        .pb-card:hover .pb-card-go { color: var(--accent); letter-spacing: 0.12em; }
+
+        /* Sections: collapsed to a summary card, full text on demand */
+        .pb-intro > * + * { margin-top: 1.05em; }
+        .prose .pb-sec { margin-top: 1.4rem; position: relative; border: 1px solid var(--line); border-radius: 14px; background: var(--surface);
+            transition: border-color 0.3s, box-shadow 0.3s; }
+        .prose .pb-intro + .pb-sec { margin-top: 2.4rem; }
+        .pb-sec::before { content: ""; position: absolute; left: -1px; top: 18px; bottom: 18px; width: 2px; border-radius: 2px;
+            background: var(--accent); opacity: 0; box-shadow: 0 0 12px 1px rgba(255,107,53,0.7); transition: opacity 0.3s; }
+        .pb-sec.is-open { border-color: var(--line-strong); box-shadow: 0 0 0 1px rgba(255,107,53,0.08), 0 24px 60px -30px rgba(255,107,53,0.25); }
+        .pb-sec.is-open::before, .pb-sec.pb-flash::before { opacity: 1; }
+        .pb-sec.pb-flash, .pb-sub.pb-flash { animation: pbFlash 1.6s ease-out; }
+        @keyframes pbFlash { 0% { box-shadow: 0 0 0 1px var(--accent), 0 0 40px -6px rgba(255,107,53,0.55); } 100% { box-shadow: 0 0 0 1px transparent, 0 0 0 0 transparent; } }
+        .pb-head { padding: 1.4rem 1.6rem 1.3rem; cursor: pointer; }
+        .pb-sec.is-open .pb-head { cursor: default; }
+        .prose .pb-head h2 { margin: 0; padding: 0; border: none; font-size: 1.45rem; display: flex; gap: 0.7rem; align-items: baseline; }
+        .pb-head h2 .pb-n, .pb-sub-toggle .pb-n { font-family: var(--font-mono); color: var(--accent); font-weight: 600; font-size: 0.72em;
+            letter-spacing: 0.04em; flex: none; }
+        .prose .pb-summary { margin-top: 0.85rem; }
+        .prose .pb-summary-l { font-family: var(--font-mono); font-size: 0.66rem; letter-spacing: 0.14em; text-transform: uppercase; color: var(--dim); margin-bottom: 0.45rem; }
+        .prose .pb-takeaways { list-style: none; padding-left: 0; font-size: 0.93rem; line-height: 1.6; }
+        .prose .pb-takeaways li { position: relative; padding-left: 1.2rem; color: var(--text); opacity: 0.88; }
+        .prose .pb-takeaways li + li { margin-top: 0.4rem; }
+        .pb-takeaways li::before { content: ""; position: absolute; left: 0.1rem; top: 0.62em; width: 6px; height: 6px; border-radius: 50%;
+            background: var(--accent); box-shadow: 0 0 8px rgba(255,107,53,0.8); }
+        .prose .pb-lede { font-size: 0.93rem; color: var(--muted); margin: 0; }
+        .pb-toggle, .pb-collapse { display: inline-flex; align-items: center; gap: 0.5rem; margin-top: 1.05rem; cursor: pointer;
+            font: 600 0.82rem var(--font-body); color: var(--accent); background: var(--accent-faint); border: 1px solid var(--accent-dim);
+            border-radius: 999px; padding: 0.5rem 1rem; transition: background 0.2s, box-shadow 0.2s, color 0.2s; }
+        .pb-toggle:hover, .pb-collapse:hover { background: rgba(255,107,53,0.16); box-shadow: 0 0 18px -4px rgba(255,107,53,0.6); color: #FFB08F; }
+        .pb-toggle:focus-visible, .pb-collapse:focus-visible, .pb-sub-toggle:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+        .pb-chev { display: inline-block; transition: transform 0.35s cubic-bezier(.2,.7,.2,1); }
+        .pb-toggle[aria-expanded="true"] .pb-chev { transform: rotate(180deg); }
+        .pb-toggle[aria-expanded="true"] { background: transparent; border-color: var(--line-strong); color: var(--muted); }
+        .pb-body { overflow: clip; }
+        .pb-sec > .pb-body > .pb-inner { padding: 0.2rem 1.6rem 1.6rem; border-top: 1px dashed var(--line); }
+        .pb-sec > .pb-body > .pb-inner > :first-child { margin-top: 1.3rem; }
+        .pb-inner > * + * { margin-top: 1.05em; }
+        .pb-collapse { margin-top: 1.8rem; background: transparent; border-color: var(--line-strong); color: var(--muted); }
+        .pb-sec.is-open > .pb-body > .pb-inner > * { animation: pbIn 0.55s cubic-bezier(.2,.7,.2,1) both; }
+        .pb-sec.is-open > .pb-body > .pb-inner > :nth-child(2) { animation-delay: 0.05s; }
+        .pb-sec.is-open > .pb-body > .pb-inner > :nth-child(3) { animation-delay: 0.1s; }
+        .pb-sec.is-open > .pb-body > .pb-inner > :nth-child(n+4) { animation-delay: 0.15s; }
+        @keyframes pbIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: none; } }
+
+        /* Subsections: clickable rows */
+        .prose .pb-sub { border: 1px solid var(--line); border-radius: 10px; background: var(--bg); transition: border-color 0.25s, box-shadow 0.25s; }
+        .prose .pb-sub + .pb-sub { margin-top: 0.55rem; }
+        .pb-sub:hover { border-color: var(--line-strong); }
+        .pb-sub.is-open { border-color: var(--accent-dim); box-shadow: 0 0 24px -12px rgba(255,107,53,0.55); }
+        .pb-sub-head { padding: 0.15rem 1rem 0.75rem; cursor: pointer; }
+        .pb-sub.is-open .pb-sub-head { cursor: default; }
+        .prose .pb-sub-head h3 { margin: 0; font-size: 1.02rem; }
+        .pb-sub-toggle { all: unset; box-sizing: border-box; display: flex; align-items: baseline; gap: 0.6rem; width: 100%; cursor: pointer;
+            padding: 0.7rem 0 0.15rem; color: var(--text); font: inherit; font-family: var(--font-display); font-weight: 600; }
+        .pb-sub-t { flex: 1; }
+        .pb-plus { position: relative; width: 12px; height: 12px; flex: none; align-self: center; }
+        .pb-plus::before, .pb-plus::after { content: ""; position: absolute; left: 0; top: 5px; width: 12px; height: 2px; border-radius: 2px;
+            background: var(--accent); transition: transform 0.3s cubic-bezier(.2,.7,.2,1); }
+        .pb-plus::after { transform: rotate(90deg); }
+        .pb-sub-toggle[aria-expanded="true"] .pb-plus::after { transform: rotate(0deg); }
+        .prose .pb-sub-brief { margin: 0.1rem 0 0; font-size: 0.84rem; line-height: 1.5; color: var(--muted); }
+        .pb-sub-body > .pb-inner { padding: 0.2rem 1rem 1.1rem; }
+        .pb-sub-body > .pb-inner > :first-child { margin-top: 0.4rem; }
+        .pb-toc li a.is-open::after { content: ""; display: inline-block; width: 5px; height: 5px; margin-left: 0.4rem; vertical-align: 0.15em;
+            border-radius: 50%; background: var(--accent); box-shadow: 0 0 6px rgba(255,107,53,0.9); }
+
+        @media (max-width: 1100px) and (min-width: 641px) {
+            .pb-cards { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+            .pb-cards > .pb-card:last-child:nth-child(3n+1), .pb-cards > .pb-card:last-child:nth-child(3n+2) { grid-column: auto; }
+            .pb-cards > .pb-card:last-child:nth-child(2n+1) { grid-column: 1 / -1; }
+        }
+        @media (max-width: 960px) {
+            .pb-group { grid-template-columns: minmax(0, 1fr); gap: 0.6rem; }
+            .pb-group-l { position: static; flex-direction: row; align-items: baseline; gap: 0.6rem; padding-top: 0.7rem; }
+            .pb-tools { align-items: flex-start; }
+            .pb-toc-tools { margin-bottom: 0.8rem; }
+        }
+        @media (max-width: 640px) {
+            .pb-glance { padding: 2.2rem 0 2.4rem; }
+            .pb-cards { grid-template-columns: minmax(0, 1fr); gap: 0.5rem; }
+            .pb-cards > .pb-card:last-child:nth-child(n) { grid-column: auto; }
+            .pb-card { padding: 0.8rem 0.95rem; gap: 0.3rem; }
+            .pb-card-b { font-size: 0.78rem; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+            .pb-card-go { display: none; }
+            .pb-head { padding: 1.1rem 1.1rem 1.1rem; }
+            .prose .pb-head h2 { font-size: 1.22rem; }
+            .pb-sec > .pb-body > .pb-inner { padding: 0.2rem 1.1rem 1.3rem; }
+            .pb-sub-head { padding: 0.1rem 0.85rem 0.7rem; }
+            .pb-sub-body > .pb-inner { padding: 0.2rem 0.85rem 1rem; }
+        }
+        @media (prefers-reduced-motion: reduce) {
+            .pb-card, .pb-chev, .pb-plus::before, .pb-plus::after, .pb-meter-bar i, .pb-sec, .pb-sub { transition: none; }
+            .pb-card:hover { transform: none; }
+            .pb-sec.is-open > .pb-body > .pb-inner > *, .pb-sec.pb-flash, .pb-sub.pb-flash { animation: none; }
+        }
+        @media print {
+            .pb-progress, .pb-glance, .pb-toc, .pb-toggle, .pb-collapse, .pb-plus, canvas.fx-embers, #chat-launcher, #chat-pop { display: none !important; }
+            .pb-body, .pb-body[hidden] { display: block !important; content-visibility: visible !important; height: auto !important; overflow: visible !important; }
+            .pb-layout { display: block; }
+            .prose .pb-sec, .prose .pb-sub { border: none; box-shadow: none; background: none; }
+        }
+
+    </style>
     <link rel="stylesheet" href="/chat.css?v=20261125"/>
+    <link rel="stylesheet" href="/fx.css"/>
+    <noscript><style>.pb-body[hidden] { display: block !important; content-visibility: visible !important; }
+        .pb-toggle, .pb-collapse, .pb-tools, .pb-toc-tools, .pb-plus { display: none !important; }</style></noscript>
     <script type="application/ld+json">
     {"@context": "https://schema.org", "@type": "TechArticle", "headline": "Building Enterprise Agents That Survive Production",
       "description": "A vendor-neutral playbook for building and scaling enterprise AI agents: a layered reference architecture, the production controls that matter, evals, security, governance, delivery and cost, plus what to retire from first-generation agent patterns.", "author": {"@type": "Person", "name": "Karthikeyan Selvam",
@@ -599,6 +767,8 @@
     </script>
 </head>
 <body>
+
+<div class="pb-progress" aria-hidden="true"><i></i></div>
 
 <!-- ── NAV ── -->
 <nav class="nav">
@@ -615,19 +785,148 @@
 </nav>
 
 <!-- ── PAGE HERO ── -->
-<header class="page-hero">
+<header class="page-hero pb-hero">
+    <canvas class="fx-embers" aria-hidden="true"></canvas>
     <div class="wrap">
         <div class="kicker">Playbook · November 2026</div>
         <h1>Building enterprise agents that <span class="accent">survive production</span></h1>
         <p>A vendor-neutral guide for leaders and architects: a layered reference architecture, the production
         controls that matter, a crawl-walk-run path to scale, and a plain list of first-generation patterns to retire.</p>
-        <div class="pb-meta"><span>By <b>Karthikeyan Selvam</b></span><span><b>~34 min</b> read</span><span><b>94</b> cited sources</span></div>
+        <div class="pb-meta"><span>By <b>Karthikeyan Selvam</b></span><span><b>~34 min</b> full read</span><span><b>~6 min</b> in brief</span><span><b>94</b> cited sources</span></div>
     </div>
 </header>
+
+<!-- ── AT A GLANCE ── -->
+<section class="pb-glance" aria-label="Playbook at a glance">
+    <div class="wrap">
+        <div class="pb-glance-top">
+            <div>
+                <div class="pb-kicker">Playbook at a glance</div>
+                <h2 class="pb-glance-h">15 sections. Start with the one you need.</h2>
+                <p class="pb-glance-p">Each card opens its section. Every section starts as a short summary, so you can skim the whole
+                playbook in a few minutes and read the full text only where you want depth.</p>
+            </div>
+            <div class="pb-tools" role="group" aria-label="Reading controls">
+                <div class="pb-meter"><span><b data-pb-count>0</b> / 15 explored</span><span class="pb-meter-bar"><i data-pb-bar></i></span></div>
+                <div class="pb-seg"><button type="button" data-pb-all="open">Expand all</button><button type="button" data-pb-all="close">Collapse all</button></div>
+            </div>
+        </div>
+        <div class="pb-groups">
+<div class="pb-group">
+<div class="pb-group-l"><span class="pb-group-n">01–03</span><span class="pb-group-t">Foundations</span></div>
+<div class="pb-cards" data-reveal-stagger="0.06">
+<a class="pb-card fx-spot" data-reveal href="#why-agent-pilots-stall-before-production" data-card="why-agent-pilots-stall-before-production">
+<span class="pb-card-top"><span class="pb-card-n">01</span><span class="pb-card-seen" aria-hidden="true">explored</span></span>
+<span class="pb-card-t">Why agent pilots stall before production</span>
+<span class="pb-card-b">Prototypes take days, but production sign-off takes months: pilots stall on unproven quality, late controls, single-instance designs, per-request cost models and nobody owning life after launch.</span>
+<span class="pb-card-go" aria-hidden="true">Open section →</span>
+</a><a class="pb-card fx-spot" data-reveal href="#the-reference-architecture-layers-of-an-enterprise-agent" data-card="the-reference-architecture-layers-of-an-enterprise-agent">
+<span class="pb-card-top"><span class="pb-card-n">02</span><span class="pb-card-seen" aria-hidden="true">explored</span></span>
+<span class="pb-card-t">The reference architecture: layers of an enterprise agent</span>
+<span class="pb-card-b">Six stacked layers, a cross-cutting control plane and a delivery plane, plus the three structural moves that separate a 2026 architecture from a first-generation one.</span>
+<span class="pb-card-go" aria-hidden="true">Open section →</span>
+</a><a class="pb-card fx-spot" data-reveal href="#build-principles" data-card="build-principles">
+<span class="pb-card-top"><span class="pb-card-n">03</span><span class="pb-card-seen" aria-hidden="true">explored</span></span>
+<span class="pb-card-t">Build principles</span>
+<span class="pb-card-b">Nine principles, from using the lowest complexity that reliably works to denying by default and failing closed.</span>
+<span class="pb-card-go" aria-hidden="true">Open section →</span>
+</a>
+</div>
+</div>
+<div class="pb-group">
+<div class="pb-group-l"><span class="pb-group-n">04–07</span><span class="pb-group-t">Build it safely</span></div>
+<div class="pb-cards" data-reveal-stagger="0.06">
+<a class="pb-card fx-spot" data-reveal href="#the-production-control-stack" data-card="the-production-control-stack">
+<span class="pb-card-top"><span class="pb-card-n">04</span><span class="pb-card-seen" aria-hidden="true">explored</span></span>
+<span class="pb-card-t">The production control stack</span>
+<span class="pb-card-b">The nine production controls: resilience, budgets, audit, policy, kill switch, telemetry, tenancy, identity, and PII protection.</span>
+<span class="pb-card-go" aria-hidden="true">Open section →</span>
+</a><a class="pb-card fx-spot" data-reveal href="#integration-and-interoperability" data-card="integration-and-interoperability">
+<span class="pb-card-top"><span class="pb-card-n">05</span><span class="pb-card-seen" aria-hidden="true">explored</span></span>
+<span class="pb-card-t">Integration and interoperability</span>
+<span class="pb-card-b">How agents connect to tools and to each other: tool design, the current stateless MCP, A2A delegation, a gateway with a curated registry, and multi-agent used with restraint.</span>
+<span class="pb-card-go" aria-hidden="true">Open section →</span>
+</a><a class="pb-card fx-spot" data-reveal href="#quality-evals-and-observability" data-card="quality-evals-and-observability">
+<span class="pb-card-top"><span class="pb-card-n">06</span><span class="pb-card-seen" aria-hidden="true">explored</span></span>
+<span class="pb-card-t">Quality: evals and observability</span>
+<span class="pb-card-b">Move from testing how an agent is assembled to measuring how it behaves: real tasks, end-state grading, consistency, separate evaluators and continuous evaluation.</span>
+<span class="pb-card-go" aria-hidden="true">Open section →</span>
+</a><a class="pb-card fx-spot" data-reveal href="#security-for-agents" data-card="security-for-agents">
+<span class="pb-card-top"><span class="pb-card-n">07</span><span class="pb-card-seen" aria-hidden="true">explored</span></span>
+<span class="pb-card-t">Security for agents</span>
+<span class="pb-card-b">Treat prompt injection as a residual risk and contain the agent by architecture, with the OWASP agentic top ten as the threat checklist.</span>
+<span class="pb-card-go" aria-hidden="true">Open section →</span>
+</a>
+</div>
+</div>
+<div class="pb-group">
+<div class="pb-group-l"><span class="pb-group-n">08–10</span><span class="pb-group-t">Run it at scale</span></div>
+<div class="pb-cards" data-reveal-stagger="0.06">
+<a class="pb-card fx-spot" data-reveal href="#governance-and-the-autonomy-ladder" data-card="governance-and-the-autonomy-ladder">
+<span class="pb-card-top"><span class="pb-card-n">08</span><span class="pb-card-seen" aria-hidden="true">explored</span></span>
+<span class="pb-card-t">Governance and the autonomy ladder</span>
+<span class="pb-card-b">Make autonomy an explicit, policy-enforced decision on a five-level ladder, backed by real approvals, an agent registry and a view of current regulation.</span>
+<span class="pb-card-go" aria-hidden="true">Open section →</span>
+</a><a class="pb-card fx-spot" data-reveal href="#the-delivery-pipeline-commit-to-production" data-card="the-delivery-pipeline-commit-to-production">
+<span class="pb-card-top"><span class="pb-card-n">09</span><span class="pb-card-seen" aria-hidden="true">explored</span></span>
+<span class="pb-card-t">The delivery pipeline: commit to production</span>
+<span class="pb-card-b">Good software delivery still applies to agents; what's new is eval gates, the agent's wider supply chain, and treating prompts and model pins as code.</span>
+<span class="pb-card-go" aria-hidden="true">Open section →</span>
+</a><a class="pb-card fx-spot" data-reveal href="#scaling-and-cost" data-card="scaling-and-cost">
+<span class="pb-card-top"><span class="pb-card-n">10</span><span class="pb-card-seen" aria-hidden="true">explored</span></span>
+<span class="pb-card-t">Scaling and cost</span>
+<span class="pb-card-b">Choose the runtime deliberately, make the model gateway the control point, and manage cost per successful task.</span>
+<span class="pb-card-go" aria-hidden="true">Open section →</span>
+</a>
+</div>
+</div>
+<div class="pb-group">
+<div class="pb-group-l"><span class="pb-group-n">11–13</span><span class="pb-group-t">Get started</span></div>
+<div class="pb-cards" data-reveal-stagger="0.06">
+<a class="pb-card fx-spot" data-reveal href="#getting-started-crawl-walk-run" data-card="getting-started-crawl-walk-run">
+<span class="pb-card-top"><span class="pb-card-n">11</span><span class="pb-card-seen" aria-hidden="true">explored</span></span>
+<span class="pb-card-t">Getting started: crawl, walk, run</span>
+<span class="pb-card-b">You don't need the whole architecture before your first agent ships, only the parts that are expensive to retrofit; then grow in three stages.</span>
+<span class="pb-card-go" aria-hidden="true">Open section →</span>
+</a><a class="pb-card fx-spot" data-reveal href="#what-s-outdated-what-s-new" data-card="what-s-outdated-what-s-new">
+<span class="pb-card-top"><span class="pb-card-n">12</span><span class="pb-card-seen" aria-hidden="true">explored</span></span>
+<span class="pb-card-t">What&#x27;s outdated, what&#x27;s new</span>
+<span class="pb-card-b">A side-by-side table of first-generation (2023–24) agent patterns to retire or update, and the current approach for each.</span>
+<span class="pb-card-go" aria-hidden="true">Open section →</span>
+</a><a class="pb-card fx-spot" data-reveal href="#production-readiness-checklist" data-card="production-readiness-checklist">
+<span class="pb-card-top"><span class="pb-card-n">13</span><span class="pb-card-seen" aria-hidden="true">explored</span></span>
+<span class="pb-card-t">Production-readiness checklist</span>
+<span class="pb-card-b">A tiered checklist where controls scale with autonomy and impact: a baseline for every agent, more for agents that act, more again for high-autonomy ones.</span>
+<span class="pb-card-go" aria-hidden="true">Open section →</span>
+</a>
+</div>
+</div>
+<div class="pb-group">
+<div class="pb-group-l"><span class="pb-group-n">14–15</span><span class="pb-group-t">Reference</span></div>
+<div class="pb-cards" data-reveal-stagger="0.06">
+<a class="pb-card fx-spot" data-reveal href="#glossary" data-card="glossary">
+<span class="pb-card-top"><span class="pb-card-n">14</span><span class="pb-card-seen" aria-hidden="true">explored</span></span>
+<span class="pb-card-t">Glossary</span>
+<span class="pb-card-b">Plain-language definitions of the acronyms and terms used throughout the playbook.</span>
+<span class="pb-card-go" aria-hidden="true">Open section →</span>
+</a><a class="pb-card fx-spot" data-reveal href="#sources" data-card="sources">
+<span class="pb-card-top"><span class="pb-card-n">15</span><span class="pb-card-seen" aria-hidden="true">explored</span></span>
+<span class="pb-card-t">Sources</span>
+<span class="pb-card-b">The numbered sources behind every citation in the playbook.</span>
+<span class="pb-card-go" aria-hidden="true">Open section →</span>
+</a>
+</div>
+</div>
+        </div>
+    </div>
+</section>
 
 <!-- ── ARTICLE ── -->
 <div class="pb-layout">
     <nav class="pb-toc" aria-label="Contents">
+        <div class="pb-toc-tools" role="group" aria-label="Expand or collapse every section">
+            <button type="button" data-pb-all="open">Expand all</button><button type="button" data-pb-all="close">Collapse all</button>
+        </div>
         <details open>
             <summary>Contents</summary>
             <ol>
@@ -650,11 +949,19 @@
         </details>
     </nav>
     <article class="prose" id="playbook">
+<div class="pb-intro">
 <p>For the last couple of years I have built agents for real enterprise work. Some read sensitive admin and operational data. Some draft decisions for a human to sign off. The same thing happens every time. Getting an agent to work in a prototype takes days. Getting one that security, audit, finance and operations will all sign off for production takes months, and most teams never get there.</p>
 <p>This playbook is the framework I use to close that gap. It treats an agent as a small reasoning core wrapped in production controls, and it lays that out as a layered reference architecture. I have checked each part against what changed in standards, research and platforms over the past eighteen months. Throughout, I compare it with the <strong>first-generation (2023–24) agent patterns</strong> that many teams across the industry still run. Where one of those patterns should be retired, I say so.</p>
 <p><strong>On vendors.</strong> I don't recommend products. Where an example helps, I name two or three side by side, as illustrations only. I do name open standards and specifications (MCP, A2A, OpenTelemetry, OWASP, NIST, ISO/IEC, the EU AI Act, SLSA), because they aren't vendors. They are the shared language you should build to. A short glossary near the end explains the acronyms.</p>
-<hr>
-<h2 id="why-agent-pilots-stall-before-production">1. Why agent pilots stall before production</h2>
+</div>
+<section class="pb-sec" data-sec="why-agent-pilots-stall-before-production">
+<div class="pb-head">
+<h2 id="why-agent-pilots-stall-before-production"><span class="pb-n">1.</span> Why agent pilots stall before production</h2>
+<div class="pb-summary"><p class="pb-summary-l">Key takeaways</p><ul class="pb-takeaways"><li>The 2025 data points the same way: one analyst firm forecasts that over 40% of agentic AI projects will be cancelled by 2027, and a widely cited (non-random) study found most generative-AI pilots showed no measurable P&amp;L impact.</li><li>Teams can see what their agents do, but far fewer run the evaluations that prove the agents do it well.</li><li>An enterprise agent is a small reasoning core inside a large, deterministic shell, and most of the risk reduction lives in the shell.</li></ul></div>
+<button type="button" class="pb-toggle" aria-expanded="false" aria-controls="pb-b-why-agent-pilots-stall-before-production" data-open="Read the full section" data-close="Collapse section"><span class="pb-tl">Read the full section</span><span class="pb-chev" aria-hidden="true">↓</span></button>
+</div>
+<div class="pb-body" id="pb-b-why-agent-pilots-stall-before-production" hidden="until-found"><div class="pb-inner">
+
 <p>The 2025 data all points the same way. One analyst firm predicts that more than 40% of agentic AI projects will be cancelled by the end of 2027, because of rising costs, unclear business value or weak risk controls <a class="cite" href="#src-1" aria-label="Source 1">[1]</a>. An MIT study reported that about 95% of enterprise generative-AI pilots showed no measurable P&amp;L impact <a class="cite" href="#src-2" aria-label="Source 2">[2]</a>. Its sample wasn't random, so treat the exact figure with care. Its diagnosis still rings true: the failures came from a "learning gap" and poor fit with how work actually gets done, not from model quality. A late-2025 enterprise survey found 11% of organisations using agentic AI in production, 38% piloting, and 35% with no formal strategy <a class="cite" href="#src-3" aria-label="Source 3">[3]</a>. Another study put only 5% of companies in the group getting value at scale, while 60% reported hardly any material value <a class="cite" href="#src-4" aria-label="Source 4">[4]</a>.</p>
 <p>Practitioners are more upbeat, but they name the same bottleneck. In a survey of 1,340 people building agents, 57.3% said they had agents in production, and quality was the top barrier (about 32%). The telling detail: 89% had observability, but only 52.4% ran offline evaluations and 37.3% ran online evaluations <a class="cite" href="#src-5" aria-label="Source 5">[5]</a>. Teams can see what their agents do. Far fewer can prove the agents do it well.</p>
 <p>From my own projects, pilots stall in five places:</p>
@@ -669,8 +976,18 @@
 <p class="callout-label">Key takeaway</p>
 <p><strong>The core idea: a small reasoning core inside a deterministic shell.</strong> An enterprise agent is a small, non-deterministic reasoning core inside a large, deterministic and deliberately boring shell. Most of the engineering, and nearly all of the risk reduction, lives in the shell. First-generation frameworks already put production capabilities in layers around the model, so that part holds up. What has changed is <em>where</em> those layers should sit.</p>
 </div>
-<hr>
-<h2 id="the-reference-architecture-layers-of-an-enterprise-agent">2. The reference architecture: layers of an enterprise agent</h2>
+<button type="button" class="pb-collapse" data-collapse="pb-b-why-agent-pilots-stall-before-production">Collapse section <span aria-hidden="true">↑</span></button>
+</div></div>
+</section>
+
+<section class="pb-sec" data-sec="the-reference-architecture-layers-of-an-enterprise-agent">
+<div class="pb-head">
+<h2 id="the-reference-architecture-layers-of-an-enterprise-agent"><span class="pb-n">2.</span> The reference architecture: layers of an enterprise agent</h2>
+<div class="pb-summary"><p class="pb-summary-l">Key takeaways</p><ul class="pb-takeaways"><li>Six layers (channels, orchestration, harness, model access, tools, knowledge and state), with a control plane across all of them and a delivery plane underneath.</li><li>Keep deterministic work deterministic: the agent takes a typed request and returns a typed result.</li><li>Enforcement moves out of the agent process, state moves out of memory, and the harness becomes configurable per agent.</li></ul></div>
+<button type="button" class="pb-toggle" aria-expanded="false" aria-controls="pb-b-the-reference-architecture-layers-of-an-enterprise-agent" data-open="Read the full section" data-close="Collapse section"><span class="pb-tl">Read the full section</span><span class="pb-chev" aria-hidden="true">↓</span></button>
+</div>
+<div class="pb-body" id="pb-b-the-reference-architecture-layers-of-an-enterprise-agent" hidden="until-found"><div class="pb-inner">
+
 <figure class="pb-fig" aria-labelledby="fig-arch-cap">
 <div class="pb-fig-frame">
 <svg class="pb-arch pb-arch-wide" viewBox="0 0 760 468" role="img" aria-labelledby="fig-arch-title fig-arch-desc">
@@ -763,8 +1080,18 @@
 <p><strong>Enforcement moves out of process.</strong> First-generation frameworks usually put guardrails in library code inside the agent process. That is easy to teach. But anything inside the process can be misconfigured, skipped, or switched off by the very code it is meant to constrain. Keep in the process only what has to be there, such as context assembly and output validation, and use explicit middleware hooks for it. Policy, quotas, credential injection and audit belong in gateways and <em>policy decision points</em> (services that answer "is this action allowed?"), which the agent can't disable. OWASP's Agent Control Standard is an early attempt to standardise those hooks around tool calls and other agent steps <a class="cite" href="#src-44" aria-label="Source 44">[44]</a><a class="cite" href="#src-84" aria-label="Source 84">[84]</a>. CoSAI recommends centralising enforcement in a gateway at its higher assurance levels <a class="cite" href="#src-42" aria-label="Source 42">[42]</a>.</p>
 <p><strong>State moves out of memory.</strong> The session becomes a durable, append-only event log. Memory and large artifacts are stored separately, and the working context is rebuilt for every model call <a class="cite" href="#src-14" aria-label="Source 14">[14]</a>. One model provider moved the session log outside both the harness and the model's context window, which turned the harness into a restartable, stateless process. It reported median (p50) time-to-first-token falling by about 60%, and 95th-percentile (p95) by more than 90% <a class="cite" href="#src-15" aria-label="Source 15">[15]</a>. Every counter, breaker, approval and audit record belongs in a shared store.</p>
 <p><strong>The harness becomes configurable.</strong> Compaction, context resets, planning modes and evaluator passes each assume something the model can't yet do well. Those assumptions expire as models improve <a class="cite" href="#src-16" aria-label="Source 16">[16]</a>. The length of tasks agents can complete keeps growing exponentially, and METR reports no evidence of the trend slowing <a class="cite" href="#src-81" aria-label="Source 81">[81]</a>. Make each harness feature a per-agent setting, and re-run your evals after every model upgrade to decide which ones to keep.</p>
-<hr>
-<h2 id="build-principles">3. Build principles</h2>
+<button type="button" class="pb-collapse" data-collapse="pb-b-the-reference-architecture-layers-of-an-enterprise-agent">Collapse section <span aria-hidden="true">↑</span></button>
+</div></div>
+</section>
+
+<section class="pb-sec" data-sec="build-principles">
+<div class="pb-head">
+<h2 id="build-principles"><span class="pb-n">3.</span> Build principles</h2>
+<div class="pb-summary"><p class="pb-summary-l">Key takeaways</p><ul class="pb-takeaways"><li>Use the lowest complexity that works: a function, then a workflow, then a single agent; go multi-agent only for a clear reason.</li><li>Least agency, context treated as an engineered budget, and a stateless harness over durable state.</li><li>Business rules and authorisation live in code, not prompts; typed contracts everywhere; every policy check fails closed.</li></ul></div>
+<button type="button" class="pb-toggle" aria-expanded="false" aria-controls="pb-b-build-principles" data-open="Read the full section" data-close="Collapse section"><span class="pb-tl">Read the full section</span><span class="pb-chev" aria-hidden="true">↓</span></button>
+</div>
+<div class="pb-body" id="pb-b-build-principles" hidden="until-found"><div class="pb-inner">
+
 <ol>
 <li><strong>Use the lowest complexity that reliably works.</strong> If a function can do the job, write the function. If a fixed workflow with one LLM step can do it, build that. A single agent with tools is the usual enterprise default. Go multi-agent only for a clear reason: parallel breadth-first work, separate security boundaries, or tool overload that better tool design can't fix <a class="cite" href="#src-6" aria-label="Source 6">[6]</a><a class="cite" href="#src-7" aria-label="Source 7">[7]</a><a class="cite" href="#src-8" aria-label="Source 8">[8]</a>.</li>
 <li><strong>Least agency.</strong> OWASP now pairs least privilege with <em>least agency</em>: don't give a system autonomy it doesn't need, because extra autonomy widens the attack surface without adding value <a class="cite" href="#src-33" aria-label="Source 33">[33]</a>.</li>
@@ -776,8 +1103,18 @@
 <li><strong>Own your control flow.</strong> Use frameworks as libraries, not as black boxes that hide your prompts and loop <a class="cite" href="#src-17" aria-label="Source 17">[17]</a><a class="cite" href="#src-6" aria-label="Source 6">[6]</a>.</li>
 <li><strong>Deny by default and fail closed.</strong> Convenience defaults have a way of reaching production. Make fail-closed the default for every policy check, and have CI reject any bypass or fail-open flag in a production configuration.</li>
 </ol>
-<hr>
-<h2 id="the-production-control-stack">4. The production control stack</h2>
+<button type="button" class="pb-collapse" data-collapse="pb-b-build-principles">Collapse section <span aria-hidden="true">↑</span></button>
+</div></div>
+</section>
+
+<section class="pb-sec" data-sec="the-production-control-stack">
+<div class="pb-head">
+<h2 id="the-production-control-stack"><span class="pb-n">4.</span> The production control stack</h2>
+<div class="pb-summary"><p class="pb-summary-l">Key takeaways</p><ul class="pb-takeaways"><li>Budgets are set in tokens and money per run, user and tenant, and enforced at the gateway.</li><li>Authorise every tool call and its arguments, and keep a signed, externally anchored, central audit trail keyed to one workflow ID.</li><li>Each agent gets its own non-human identity with short-lived credentials, and PII protection wraps every source that feeds the context.</li></ul></div>
+<button type="button" class="pb-toggle" aria-expanded="false" aria-controls="pb-b-the-production-control-stack" data-open="Read the full section" data-close="Collapse section"><span class="pb-tl">Read the full section</span><span class="pb-chev" aria-hidden="true">↓</span></button>
+</div>
+<div class="pb-body" id="pb-b-the-production-control-stack" hidden="until-found"><div class="pb-inner">
+
 <figure class="pb-fig" aria-labelledby="fig-stack-cap">
 <ol class="cs-grid" aria-label="The production control stack">
 <li><a href="#resilience"><span class="cs-n">4.1</span><span class="cs-t">Resilience</span><span class="cs-d">Typed retries, one retry budget, idempotency keys, checkpoints</span></a></li>
@@ -793,30 +1130,99 @@
 <figcaption id="fig-stack-cap">The nine controls in this section, at a glance. Each tile jumps to its subsection.</figcaption>
 </figure>
 
-<h3 id="resilience">4.1 Resilience</h3>
+<div class="pb-sub" data-sub="resilience">
+<div class="pb-sub-head">
+<h3 id="resilience"><button type="button" class="pb-sub-toggle" aria-expanded="false" aria-controls="pb-b-resilience"><span class="pb-n">4.1</span> <span class="pb-sub-t">Resilience</span><span class="pb-plus" aria-hidden="true"></span></button></h3>
+<p class="pb-sub-brief">Typed retries, one retry budget, idempotency keys, checkpoints.</p>
+</div>
+<div class="pb-body pb-sub-body" id="pb-b-resilience" hidden="until-found"><div class="pb-inner">
+
 <p><strong>The established baseline</strong> is standard distributed-systems practice. Split errors into ones worth retrying and ones that aren't. Retry with exponential backoff and jitter. Put a circuit breaker on each dependency. Degrade gracefully when a source fails. The agent-specific twist: when the agent falls back to cached or static information, it must say so. Tag every piece of data with its source and freshness, so the model can't present stale data as current and the user knows what they are looking at.</p>
 <p><strong>What 2026 practice adds.</strong> Decide what to retry from typed errors and status codes, not from exception text, and honour <code>Retry-After</code>. Set one retry budget across the SDK, the framework and the gateway. Otherwise the three layers multiply into retry storms. Put an <em>idempotency key</em> on every tool that has side effects, so a repeated call doesn't repeat the action, and never let the model choose the retry count. For long tasks, checkpoint and resume from the point of failure instead of starting over. One provider's research-agent team found that because agents carry state across many tool calls, "minor system failures can be catastrophic" <a class="cite" href="#src-11" aria-label="Source 11">[11]</a>. Fail over between models and providers at the gateway <a class="cite" href="#src-76" aria-label="Source 76">[76]</a>.</p>
-<h3 id="limits-and-budgets">4.2 Limits and budgets</h3>
+
+</div></div>
+</div>
+<div class="pb-sub" data-sub="limits-and-budgets">
+<div class="pb-sub-head">
+<h3 id="limits-and-budgets"><button type="button" class="pb-sub-toggle" aria-expanded="false" aria-controls="pb-b-limits-and-budgets"><span class="pb-n">4.2</span> <span class="pb-sub-t">Limits and budgets</span><span class="pb-plus" aria-hidden="true"></span></button></h3>
+<p class="pb-sub-brief">Tokens and money per run, user and tenant; an operating envelope.</p>
+</div>
+<div class="pb-body pb-sub-body" id="pb-b-limits-and-budgets" hidden="until-found"><div class="pb-inner">
+
 <p>First-generation agents usually limited requests per minute and capped loop iterations. Requests and steps are poor proxies for spend. Today, budgets are set in <strong>tokens and money</strong>, per run, per user and per tenant, and enforced at the gateway. Add wall-clock deadlines, and detect real loops, such as the same tool call repeating or a state that flips back and forth. For consequential workflows, set an <em>operating envelope</em> before the run starts. That means caps on records changed, money at stake, recipients, sub-agents, delegation depth and credential lifetime <a class="cite" href="#src-46" aria-label="Source 46">[46]</a>. Government guidance now frames managing token consumption as an operational-resilience issue, and names <em>denial-of-wallet</em> attacks (running up your bill) <a class="cite" href="#src-79" aria-label="Source 79">[79]</a>. OWASP lists unbounded consumption as a top-ten LLM risk <a class="cite" href="#src-34" aria-label="Source 34">[34]</a>.</p>
-<h3 id="audit">4.3 Audit</h3>
+
+</div></div>
+</div>
+<div class="pb-sub" data-sub="audit">
+<div class="pb-sub-head">
+<h3 id="audit"><button type="button" class="pb-sub-toggle" aria-expanded="false" aria-controls="pb-b-audit"><span class="pb-n">4.3</span> <span class="pb-sub-t">Audit</span><span class="pb-plus" aria-hidden="true"></span></button></h3>
+<p class="pb-sub-brief">Signed, externally anchored, central, keyed to one workflow ID.</p>
+</div>
+<div class="pb-body pb-sub-body" id="pb-b-audit" hidden="until-found"><div class="pb-inner">
+
 <p><strong>The established baseline:</strong> keep two separate records. One is an operational log of what happened. The other is tamper-evident evidence that the log wasn't altered.</p>
 <p><strong>What 2026 practice adds.</strong> A hash chain with no external anchor only catches naive edits, because anyone with write access can recompute every hash. Sign entries with keys held outside the system. Periodically anchor the latest hash in a separate trust domain. Write to one central, serialised sink so replicas can't produce diverging records. Each record should capture the originating human, the agent's identity, the delegated authority, the model and prompt versions, every tool call and policy decision, and the budget consumed, all keyed to one workflow ID <a class="cite" href="#src-46" aria-label="Source 46">[46]</a>. Redact by content before you store anything, not just by field name. For high-risk systems, the EU AI Act requires automatic logging over the system's lifetime, and deployers must keep logs for at least six months <a class="cite" href="#src-65" aria-label="Source 65">[65]</a><a class="cite" href="#src-66" aria-label="Source 66">[66]</a>. And don't claim a logging library "satisfies" a compliance regime. Auditors want evidence of process, not code.</p>
-<h3 id="policy">4.4 Policy</h3>
+
+</div></div>
+</div>
+<div class="pb-sub" data-sub="policy">
+<div class="pb-sub-head">
+<h3 id="policy"><button type="button" class="pb-sub-toggle" aria-expanded="false" aria-controls="pb-b-policy"><span class="pb-n">4.4</span> <span class="pb-sub-t">Policy</span><span class="pb-plus" aria-hidden="true"></span></button></h3>
+<p class="pb-sub-brief">Authorise every tool call and its arguments; graded outcomes.</p>
+</div>
+<div class="pb-body pb-sub-body" id="pb-b-policy" hidden="until-found"><div class="pb-inner">
+
 <p><strong>The established baseline:</strong> deny by default, and decide before the model runs, so a blocked request costs nothing.</p>
 <p><strong>What 2026 practice adds.</strong> Authorise <em>every tool call and its arguments</em>, not just the incoming request. Ship policies as signed, versioned bundles with unit tests in CI. Go beyond allow and deny. OWASP's Agent Control Standard (still a v0.1 specification) defines five outcomes: allow, deny, <em>modify</em>, <em>ask</em> (send to an approver) and <em>defer</em> (decide later) <a class="cite" href="#src-84" aria-label="Source 84">[84]</a>. Another industry body uses a different set: allow, constrain, throttle, require approval and suspend <a class="cite" href="#src-46" aria-label="Source 46">[46]</a>. So the vocabulary isn't settled yet, but the idea of graded outcomes is. Use an LLM judge only as an optional second layer.</p>
-<h3 id="kill-switch-preflight-and-dry-run">4.5 Kill switch, preflight and dry-run</h3>
+
+</div></div>
+</div>
+<div class="pb-sub" data-sub="kill-switch-preflight-and-dry-run">
+<div class="pb-sub-head">
+<h3 id="kill-switch-preflight-and-dry-run"><button type="button" class="pb-sub-toggle" aria-expanded="false" aria-controls="pb-b-kill-switch-preflight-and-dry-run"><span class="pb-n">4.5</span> <span class="pb-sub-t">Kill switch, preflight and dry-run</span><span class="pb-plus" aria-hidden="true"></span></button></h3>
+<p class="pb-sub-brief">Suspend at fleet, tenant, agent and tool level; plan → approve → apply.</p>
+</div>
+<div class="pb-body pb-sub-body" id="pb-b-kill-switch-preflight-and-dry-run" hidden="until-found"><div class="pb-inner">
+
 <ul>
 <li><strong>Suspend at every level: fleet, tenant, agent and tool.</strong> Activation must be authenticated and audited. Suspension must reject new requests, cancel queued work, block new sub-agents and refuse to renew credentials. As one guide puts it, "an alert after 10,000 calls does not stop call 10,001" <a class="cite" href="#src-46" aria-label="Source 46">[46]</a>. Add automatic triggers on velocity, cost and anomalies. The EU AI Act asks for a "stop" procedure that brings a high-risk system to a halt in a safe state <a class="cite" href="#src-64" aria-label="Source 64">[64]</a>.</li>
 <li><strong>Preflight checks</strong> before destructive actions should get their facts from the system of record, not from whatever the tool's caller asserts.</li>
 <li><strong>Dry-run</strong> becomes plan → approve → apply for each request, with a diff the reviewer can read.</li>
 </ul>
-<h3 id="health-and-telemetry">4.6 Health and telemetry</h3>
+
+</div></div>
+</div>
+<div class="pb-sub" data-sub="health-and-telemetry">
+<div class="pb-sub-head">
+<h3 id="health-and-telemetry"><button type="button" class="pb-sub-toggle" aria-expanded="false" aria-controls="pb-b-health-and-telemetry"><span class="pb-n">4.6</span> <span class="pb-sub-t">Health and telemetry</span><span class="pb-plus" aria-hidden="true"></span></button></h3>
+<p class="pb-sub-brief">Local-only readiness; OpenTelemetry GenAI conventions.</p>
+</div>
+<div class="pb-body pb-sub-body" id="pb-b-health-and-telemetry" hidden="until-found"><div class="pb-inner">
+
 <p>Readiness checks should test only local health. If readiness depends on a shared model gateway, one blip takes the whole fleet out of service at once. Handle dependency failures with degradation and circuit breakers instead.</p>
 <p>For telemetry, use the <strong>OpenTelemetry GenAI semantic conventions</strong>. They now define <code>invoke_agent</code>, <code>plan</code> and <code>execute_tool</code> spans, MCP spans, and a <code>gen_ai.evaluation.result</code> event that attaches quality scores to the trace being scored <a class="cite" href="#src-53" aria-label="Source 53">[53]</a>. They have moved to their own repository, with a first v0.1.0 release, and are still at <em>Development</em> stability. Pin a version and normalise attribute names in your collector. Capturing prompts and tool arguments is opt-in, and it should stay that way unless you redact. There is no standard cost metric, so compute cost centrally from token metrics. Alert when telemetry stops arriving. Losing observability silently is an incident in its own right.</p>
-<h3 id="multi-tenancy">4.7 Multi-tenancy</h3>
+
+</div></div>
+</div>
+<div class="pb-sub" data-sub="multi-tenancy">
+<div class="pb-sub-head">
+<h3 id="multi-tenancy"><button type="button" class="pb-sub-toggle" aria-expanded="false" aria-controls="pb-b-multi-tenancy"><span class="pb-n">4.7</span> <span class="pb-sub-t">Multi-tenancy</span><span class="pb-plus" aria-hidden="true"></span></button></h3>
+<p class="pb-sub-brief">Tenant from authenticated context only, carried end to end.</p>
+</div>
+<div class="pb-body pb-sub-body" id="pb-b-multi-tenancy" hidden="until-found"><div class="pb-inner">
+
 <p><strong>The established baseline:</strong> resolve the tenant on every request; scope thread IDs, cache keys and storage by tenant; check access at resource boundaries; audit cross-tenant attempts.</p>
 <p><strong>What 2026 practice adds.</strong> Take the tenant from authenticated server-side context <em>only</em>. Never take it from a tool argument the model fills in, or from the prompt. Carry it end to end: request, agent, tools, MCP and A2A calls, telemetry and billing. A2A 1.0 has a native tenant field <a class="cite" href="#src-30" aria-label="Source 30">[30]</a>. Isolate prompt caches by tenant. One provider recommends separate cache keys per customer, partly to prevent cache-hit probing across users <a class="cite" href="#src-78" aria-label="Source 78">[78]</a>. Scope memory and retrieval by tenant, and decide whether to give each tenant its own stack or share one (silo or pool) according to risk.</p>
-<h3 id="secrets-and-identity">4.8 Secrets and identity</h3>
+
+</div></div>
+</div>
+<div class="pb-sub" data-sub="secrets-and-identity">
+<div class="pb-sub-head">
+<h3 id="secrets-and-identity"><button type="button" class="pb-sub-toggle" aria-expanded="false" aria-controls="pb-b-secrets-and-identity"><span class="pb-n">4.8</span> <span class="pb-sub-t">Secrets and identity</span><span class="pb-plus" aria-hidden="true"></span></button></h3>
+<p class="pb-sub-brief">Its own non-human identity per agent; short-lived credentials.</p>
+</div>
+<div class="pb-body pb-sub-body" id="pb-b-secrets-and-identity" hidden="until-found"><div class="pb-inner">
+
 <p>Keeping secrets in a vault behind a provider-neutral interface is still right.</p>
 <div class="callout-pair">
 <div class="callout callout-retire" role="note">
@@ -829,24 +1235,101 @@
 </div>
 </div>
 <p>The major clouds now document identity services built for agents. Microsoft Azure, Google Cloud and AWS are examples <a class="cite" href="#src-90" aria-label="Source 90">[90]</a><a class="cite" href="#src-91" aria-label="Source 91">[91]</a><a class="cite" href="#src-92" aria-label="Source 92">[92]</a>. The open standards are still emerging. The IETF has an OAuth working-group draft for identity-provider-brokered "cross-app access" <a class="cite" href="#src-49" aria-label="Source 49">[49]</a>, and a Transaction Tokens draft for carrying identity through chains of calls <a class="cite" href="#src-50" aria-label="Source 50">[50]</a>. The NIST agent standards initiative had published no final standards as of November 2026 <a class="cite" href="#src-51" aria-label="Source 51">[51]</a>. Keep credentials out of sandboxes and out of the model's context <a class="cite" href="#src-41" aria-label="Source 41">[41]</a>, and never copy vault secrets back into environment variables to keep an SDK happy.</p>
-<h3 id="pii-and-dlp">4.9 PII and DLP</h3>
+
+</div></div>
+</div>
+<div class="pb-sub" data-sub="pii-and-dlp">
+<div class="pb-sub-head">
+<h3 id="pii-and-dlp"><button type="button" class="pb-sub-toggle" aria-expanded="false" aria-controls="pb-b-pii-and-dlp"><span class="pb-n">4.9</span> <span class="pb-sub-t">PII and DLP</span><span class="pb-plus" aria-hidden="true"></span></button></h3>
+<p class="pb-sub-brief">Wrap every context source; egress control.</p>
+</div>
+<div class="pb-body pb-sub-body" id="pb-b-pii-and-dlp" hidden="until-found"><div class="pb-inner">
+
 <p>Many first-generation designs redact personal data only in user input. The gap is everything else: tool results, retrieved documents and memory all flow into the context unredacted. Wrap <strong>every</strong> source that feeds the context. Prefer reversible pseudonymisation backed by a vault, so the model reasons over consistent placeholders and authorised outputs can be re-identified. Scan streamed output as it is produced. Route data by classification, for example sending sensitive data only to in-region endpoints. Treat egress control as a primary data-loss-prevention (DLP) measure. Private data, untrusted content and a way to send data out, all in one session, is the "lethal trifecta" <a class="cite" href="#src-40" aria-label="Source 40">[40]</a>.</p>
-<hr>
-<h2 id="integration-and-interoperability">5. Integration and interoperability</h2>
-<h3 id="tool-design">5.1 Tool design</h3>
+</div></div>
+</div>
+
+<button type="button" class="pb-collapse" data-collapse="pb-b-the-production-control-stack">Collapse section <span aria-hidden="true">↑</span></button>
+</div></div>
+</section>
+
+<section class="pb-sec" data-sec="integration-and-interoperability">
+<div class="pb-head">
+<h2 id="integration-and-interoperability"><span class="pb-n">5.</span> Integration and interoperability</h2>
+<div class="pb-summary"><p class="pb-summary-l">Key takeaways</p><ul class="pb-takeaways"><li>Build a few consolidated, namespaced tools around high-impact workflows instead of wrapping every API endpoint.</li><li>MCP connects agents to tools and context; A2A delegates work to agents owned by someone else.</li><li>Send all agent traffic through a central gateway backed by a private, curated registry, and go multi-agent only deliberately.</li></ul></div>
+<button type="button" class="pb-toggle" aria-expanded="false" aria-controls="pb-b-integration-and-interoperability" data-open="Read the full section" data-close="Collapse section"><span class="pb-tl">Read the full section</span><span class="pb-chev" aria-hidden="true">↓</span></button>
+</div>
+<div class="pb-body" id="pb-b-integration-and-interoperability" hidden="until-found"><div class="pb-inner">
+
+<div class="pb-sub" data-sub="tool-design">
+<div class="pb-sub-head">
+<h3 id="tool-design"><button type="button" class="pb-sub-toggle" aria-expanded="false" aria-controls="pb-b-tool-design"><span class="pb-n">5.1</span> <span class="pb-sub-t">Tool design</span><span class="pb-plus" aria-hidden="true"></span></button></h3>
+<p class="pb-sub-brief">Consolidated, namespaced tools; definitions loaded on demand; split agents on security boundaries, not tool count.</p>
+</div>
+<div class="pb-body pb-sub-body" id="pb-b-tool-design" hidden="until-found"><div class="pb-inner">
+
 <p>Build a few consolidated, namespaced tools around high-impact workflows instead of wrapping every API endpoint. Have them return high-signal fields, paginate by default, and give error messages the agent can act on <a class="cite" href="#src-21" aria-label="Source 21">[21]</a>. Return structured results with explicit error flags, not plain strings. For large tool catalogues, load tool definitions on demand through a search step. In one provider's test with more than 50 tools, this cut the tokens spent on tool definitions by about 85% <a class="cite" href="#src-18" aria-label="Source 18">[18]</a>. Letting agents call tool APIs from code in a sandbox cut one worked example from about 150,000 tokens to about 2,000 <a class="cite" href="#src-22" aria-label="Source 22">[22]</a>. That is a single case, not a benchmark. Package procedural knowledge as versioned skills, using the open Agent Skills format <a class="cite" href="#src-23" aria-label="Source 23">[23]</a>. Don't split agents on tool count alone. Split them along security, ownership and permission boundaries.</p>
-<h3 id="mcp-what-s-current">5.2 MCP: what's current</h3>
+
+</div></div>
+</div>
+<div class="pb-sub" data-sub="mcp-what-s-current">
+<div class="pb-sub-head">
+<h3 id="mcp-what-s-current"><button type="button" class="pb-sub-toggle" aria-expanded="false" aria-controls="pb-b-mcp-what-s-current"><span class="pb-n">5.2</span> <span class="pb-sub-t">MCP: what's current</span><span class="pb-plus" aria-hidden="true"></span></button></h3>
+<p class="pb-sub-brief">The 2026-07-28 revision makes the core stateless and hardens authorisation; plan an upgrade cycle twice a year.</p>
+</div>
+<div class="pb-body pb-sub-body" id="pb-b-mcp-what-s-current" hidden="until-found"><div class="pb-inner">
+
 <p>The current MCP revision is <strong>2026-07-28</strong>, and it makes the protocol core stateless <a class="cite" href="#src-24" aria-label="Source 24">[24]</a>. The initialize handshake and protocol sessions are gone. Every request carries its own version and capabilities, servers expose a <code>server/discover</code> call, and routing headers let gateways meter traffic without parsing request bodies. List results can be cached, and servers should return tools in a fixed order, which helps prompt caching. Broken streams are no longer resumed, so make tool calls idempotent and let clients re-issue them. The legacy HTTP+SSE transport is deprecated, and so are Roots, Sampling and protocol Logging. Route model calls through your own model gateway, and send tool telemetry through OpenTelemetry instead.</p>
 <p><strong>Authorisation</strong> is a hardened OAuth 2.1 profile. Use resource indicators and audience validation, and never pass tokens through to downstream services. Dynamic Client Registration is deprecated in favour of Client ID Metadata Documents, though it is still allowed for backwards compatibility. Clients must validate the <code>iss</code> parameter when the authorisation server sends it, which prevents mix-up attacks <a class="cite" href="#src-24" aria-label="Source 24">[24]</a><a class="cite" href="#src-25" aria-label="Source 25">[25]</a>. The <strong>Enterprise-Managed Authorization</strong> extension is stable. It lets the corporate identity provider grant or deny agent access to MCP servers centrally, so users don't click through a consent screen for every server <a class="cite" href="#src-26" aria-label="Source 26">[26]</a>.</p>
 <p><strong>Governance:</strong> MCP is now part of the Linux Foundation's Agentic AI Foundation <a class="cite" href="#src-32" aria-label="Source 32">[32]</a>. It ships on a six-month cadence, with the next revision targeted for 2027-03-30 <a class="cite" href="#src-28" aria-label="Source 28">[28]</a>. Under the new feature-lifecycle policy, deprecated features get at least 12 months before removal <a class="cite" href="#src-24" aria-label="Source 24">[24]</a>. Plan an MCP upgrade cycle twice a year.</p>
-<h3 id="a2a-for-agent-to-agent-delegation">5.3 A2A for agent-to-agent delegation</h3>
+
+</div></div>
+</div>
+<div class="pb-sub" data-sub="a2a-for-agent-to-agent-delegation">
+<div class="pb-sub-head">
+<h3 id="a2a-for-agent-to-agent-delegation"><button type="button" class="pb-sub-toggle" aria-expanded="false" aria-controls="pb-b-a2a-for-agent-to-agent-delegation"><span class="pb-n">5.3</span> <span class="pb-sub-t">A2A for agent-to-agent delegation</span><span class="pb-plus" aria-hidden="true"></span></button></h3>
+<p class="pb-sub-brief">A2A 1.0 adds signed Agent Cards and a tenant field; treat remote agents as untrusted.</p>
+</div>
+<div class="pb-body pb-sub-body" id="pb-b-a2a-for-agent-to-agent-delegation" hidden="until-found"><div class="pb-inner">
+
 <p>A2A reached v1.0.0 on 2026-03-12, a breaking release <a class="cite" href="#src-30" aria-label="Source 30">[30]</a>. A v1.0.1 bug-fix release followed in May 2026 <a class="cite" href="#src-85" aria-label="Source 85">[85]</a>. Version 1.0 added Agent Cards signed with JSON Web Signatures (JWS), modern OAuth flows (PKCE and device code; the implicit and password flows are gone), mutual TLS (mTLS, where both sides present certificates), a native tenant field, and three functionally equivalent bindings <a class="cite" href="#src-30" aria-label="Source 30">[30]</a>. A2A joined the Agentic AI Foundation in August 2026 <a class="cite" href="#src-31" aria-label="Source 31">[31]</a>. The division of labour is now clear: <strong>MCP connects agents to tools and context, and A2A delegates work to agents owned by someone else.</strong> Verify card signatures. Pin the minor protocol version and take patch releases. Treat a remote agent's self-description and outputs as untrusted. Pasting a remote card's text straight into your model's tool description is a poisoning vector.</p>
-<h3 id="gateway-and-registry">5.4 Gateway and registry</h3>
+
+</div></div>
+</div>
+<div class="pb-sub" data-sub="gateway-and-registry">
+<div class="pb-sub-head">
+<h3 id="gateway-and-registry"><button type="button" class="pb-sub-toggle" aria-expanded="false" aria-controls="pb-b-gateway-and-registry"><span class="pb-n">5.4</span> <span class="pb-sub-t">Gateway and registry</span><span class="pb-plus" aria-hidden="true"></span></button></h3>
+<p class="pb-sub-brief">One central gateway and a private, curated registry; pin and hash tool definitions.</p>
+</div>
+<div class="pb-body pb-sub-body" id="pb-b-gateway-and-registry" hidden="until-found"><div class="pb-inner">
+
 <p>Send all agent traffic through a central gateway for authentication, credential injection, policy, audit and tool search <a class="cite" href="#src-42" aria-label="Source 42">[42]</a>. Make a <strong>private, curated registry</strong> your only source of approved MCP servers and agents. The official MCP Registry holds public servers only, is still in preview, and leaves security scanning to others <a class="cite" href="#src-29" aria-label="Source 29">[29]</a>. Pin and hash tool definitions, and re-approve a tool whenever its definition changes. That catches a "rug pull", where a tool approved in one form is quietly changed later. Treat annotations such as "read-only" as hints, not controls <a class="cite" href="#src-27" aria-label="Source 27">[27]</a>. Tool misuse and the agentic supply chain both appear in OWASP's agentic top ten <a class="cite" href="#src-33" aria-label="Source 33">[33]</a>.</p>
-<h3 id="multi-agent-used-deliberately">5.5 Multi-agent, used deliberately</h3>
+
+</div></div>
+</div>
+<div class="pb-sub" data-sub="multi-agent-used-deliberately">
+<div class="pb-sub-head">
+<h3 id="multi-agent-used-deliberately"><button type="button" class="pb-sub-toggle" aria-expanded="false" aria-controls="pb-b-multi-agent-used-deliberately"><span class="pb-n">5.5</span> <span class="pb-sub-t">Multi-agent, used deliberately</span><span class="pb-plus" aria-hidden="true"></span></button></h3>
+<p class="pb-sub-brief">The evidence calls for restraint: verify centrally, use typed handoffs and cap delegation depth.</p>
+</div>
+<div class="pb-body pb-sub-body" id="pb-b-multi-agent-used-deliberately" hidden="until-found"><div class="pb-inner">
+
 <p>Cloud providers' architecture guides describe overlapping patterns (for example <a class="cite" href="#src-8" aria-label="Source 8">[8]</a><a class="cite" href="#src-86" aria-label="Source 86">[86]</a><a class="cite" href="#src-87" aria-label="Source 87">[87]</a>): sequential pipelines, concurrent fan-out, review-and-critique (maker-checker), handoff, and a coordinator or manager agent that routes work dynamically. One model provider's guide separates two ways to delegate: a manager agent that calls other agents as tools, and decentralised handoffs where one agent passes control to another <a class="cite" href="#src-7" aria-label="Source 7">[7]</a>. The evidence calls for restraint. Across 260 configurations, multi-agent setups ranged from 80.8% better to 70.0% worse than a single agent, depending on how the task was structured <a class="cite" href="#src-9" aria-label="Source 9">[9]</a>. A study of more than 1,600 traces catalogued 14 multi-agent failure modes <a class="cite" href="#src-10" aria-label="Source 10">[10]</a>. One provider measured multi-agent systems using about 15 times the tokens of chat <a class="cite" href="#src-11" aria-label="Source 11">[11]</a>. If you do go multi-agent, verify results centrally, use typed handoffs, carry identity, trace context and budget across every hop, and cap delegation depth.</p>
-<hr>
-<h2 id="quality-evals-and-observability">6. Quality: evals and observability</h2>
+</div></div>
+</div>
+
+<button type="button" class="pb-collapse" data-collapse="pb-b-integration-and-interoperability">Collapse section <span aria-hidden="true">↑</span></button>
+</div></div>
+</section>
+
+<section class="pb-sec" data-sec="quality-evals-and-observability">
+<div class="pb-head">
+<h2 id="quality-evals-and-observability"><span class="pb-n">6.</span> Quality: evals and observability</h2>
+<div class="pb-summary"><p class="pb-summary-l">Key takeaways</p><ul class="pb-takeaways"><li>Start with 20–50 real tasks, grade the end state of the real system, and measure consistency with pass^k.</li><li>Keep the evaluator separate from the generator, apply statistics, and read transcripts.</li><li>Curate user feedback into eval datasets with human review, never straight into production prompts.</li></ul></div>
+<button type="button" class="pb-toggle" aria-expanded="false" aria-controls="pb-b-quality-evals-and-observability" data-open="Read the full section" data-close="Collapse section"><span class="pb-tl">Read the full section</span><span class="pb-chev" aria-hidden="true">↓</span></button>
+</div>
+<div class="pb-body" id="pb-b-quality-evals-and-observability" hidden="until-found"><div class="pb-inner">
+
 <p>First-generation test suites mostly checked how an agent was <em>assembled</em>: unit tests for each tool, tests that the configuration loads, and a few integration tests that needed real credentials. They said little about how the agent <em>behaves</em>. Here is what to add.</p>
 <ul>
 <li><strong>Start small and real.</strong> Begin with 20–50 tasks taken from real failures. Keep a <em>capability</em> suite, which starts with a low pass rate and gives you something to climb, separate from a <em>regression</em> suite that should pass at close to 100% <a class="cite" href="#src-54" aria-label="Source 54">[54]</a>.</li>
@@ -868,8 +1351,18 @@
 </div>
 </div>
 <p><strong>The dashboard I insist on:</strong> task success and pass^k, escalation rate, tool-error rate, tokens per run, cost per successful outcome <a class="cite" href="#src-75" aria-label="Source 75">[75]</a>, time to first token, guardrail hits and cache hit rate, all broken down by agent version.</p>
-<hr>
-<h2 id="security-for-agents">7. Security for agents</h2>
+<button type="button" class="pb-collapse" data-collapse="pb-b-quality-evals-and-observability">Collapse section <span aria-hidden="true">↑</span></button>
+</div></div>
+</section>
+
+<section class="pb-sec" data-sec="security-for-agents">
+<div class="pb-head">
+<h2 id="security-for-agents"><span class="pb-n">7.</span> Security for agents</h2>
+<div class="pb-summary"><p class="pb-summary-l">Key takeaways</p><ul class="pb-takeaways"><li>Prompt injection may never be fully mitigated, and pattern-matching deny-lists miss indirect injection.</li><li>Rule of Two: in one session, an agent gets at most two of untrusted input, sensitive data, and the ability to change state or communicate externally.</li><li>Contain first, approve second: sandbox agent-generated code, treat egress allowlists as capability grants, and red-team continuously.</li></ul></div>
+<button type="button" class="pb-toggle" aria-expanded="false" aria-controls="pb-b-security-for-agents" data-open="Read the full section" data-close="Collapse section"><span class="pb-tl">Read the full section</span><span class="pb-chev" aria-hidden="true">↓</span></button>
+</div>
+<div class="pb-body" id="pb-b-security-for-agents" hidden="until-found"><div class="pb-inner">
+
 <p><strong>Threat model.</strong> Use the OWASP Top 10 for Agentic Applications (December 2025) as your agent threat checklist. It covers goal hijack, tool misuse, identity and privilege abuse, the agentic supply chain, unexpected code execution, memory and context poisoning, insecure inter-agent communication, cascading failures, exploitation of human trust in the agent, and rogue agents <a class="cite" href="#src-33" aria-label="Source 33">[33]</a>. Use the LLM Top 10 for model-level risks <a class="cite" href="#src-34" aria-label="Source 34">[34]</a>.</p>
 <p><strong>Prompt injection is a residual risk, not a bug you fix.</strong> The UK NCSC says LLMs have no boundary between instructions and data, so injection "may never be totally mitigated" the way SQL injection can <a class="cite" href="#src-35" aria-label="Source 35">[35]</a>. Adaptive attacks bypassed 12 published defences, with success rates above 90% against most of them <a class="cite" href="#src-36" aria-label="Source 36">[36]</a>. A NIST-run competition with more than 250,000 attack attempts found at least one successful hijack against every one of the 13 frontier models tested <a class="cite" href="#src-37" aria-label="Source 37">[37]</a>.</p>
 <div class="callout-pair">
@@ -885,8 +1378,18 @@
 <p><strong>Contain the agent by architecture.</strong> Under the "Rule of Two", within one session an agent should have at most two of three things: untrusted input, access to sensitive data, and the ability to change state or communicate externally. If it needs all three, it needs human supervision <a class="cite" href="#src-38" aria-label="Source 38">[38]</a>. Published design patterns such as plan-then-execute, dual-LLM, action-selector and context minimisation keep untrusted data out of the control flow <a class="cite" href="#src-39" aria-label="Source 39">[39]</a>.</p>
 <p><strong>Contain first, approve second.</strong> One provider found users approved about 93% of permission prompts. A sandbox that denies network access by default cut prompts by 84% <a class="cite" href="#src-41" aria-label="Source 41">[41]</a>. Treat egress allowlists as capability grants: in one case, data was exfiltrated through an <em>approved</em> domain using an attacker's key. Run agent-generated code in a strongly isolated sandbox: never as root, no <code>eval</code>, isolated from the network, and with no direct path to production <a class="cite" href="#src-33" aria-label="Source 33">[33]</a>.</p>
 <p><strong>Close the remaining surfaces.</strong> Scan memory writes before committing them, and require provenance <a class="cite" href="#src-33" aria-label="Source 33">[33]</a>. Use zero trust between agents: mutual authentication, signed messages and replay protection. Use agent-aware detection, because host-level endpoint monitoring sees nothing wrong when trusted binaries run under valid credentials <a class="cite" href="#src-33" aria-label="Source 33">[33]</a>. Red-team continuously. In NIST tests, new attacks raised hijack success from 11% to 81%, and simply repeating attacks raised it from 57% to 80% <a class="cite" href="#src-61" aria-label="Source 61">[61]</a>.</p>
-<hr>
-<h2 id="governance-and-the-autonomy-ladder">8. Governance and the autonomy ladder</h2>
+<button type="button" class="pb-collapse" data-collapse="pb-b-security-for-agents">Collapse section <span aria-hidden="true">↑</span></button>
+</div></div>
+</section>
+
+<section class="pb-sec" data-sec="governance-and-the-autonomy-ladder">
+<div class="pb-head">
+<h2 id="governance-and-the-autonomy-ladder"><span class="pb-n">8.</span> Governance and the autonomy ladder</h2>
+<div class="pb-summary"><p class="pb-summary-l">Key takeaways</p><ul class="pb-takeaways"><li>Every agent has a recorded, approved autonomy level, from operator to observer, paired with an impact assessment.</li><li>Pre-authorised policy is the default; a real approval pauses durably and is bound to the exact arguments.</li><li>The agent registry is the system of record, from owner and autonomy level through to decommissioning.</li></ul></div>
+<button type="button" class="pb-toggle" aria-expanded="false" aria-controls="pb-b-governance-and-the-autonomy-ladder" data-open="Read the full section" data-close="Collapse section"><span class="pb-tl">Read the full section</span><span class="pb-chev" aria-hidden="true">↓</span></button>
+</div>
+<div class="pb-body" id="pb-b-governance-and-the-autonomy-ladder" hidden="until-found"><div class="pb-inner">
+
 <p><strong>Make autonomy an explicit design decision.</strong> Every agent should have a recorded, approved level of autonomy that is enforced by policy, not just implied by its code. The clearest public scale I know defines five levels by the role the user plays <a class="cite" href="#src-48" aria-label="Source 48">[48]</a>. The level names and descriptions below follow that paper. The controls column is my own mapping.</p>
 <figure class="pb-fig" aria-labelledby="fig-ladder-cap">
 <div class="al-wrap">
@@ -942,8 +1445,18 @@
 <p><strong>Governance in the loop, not a human on every step.</strong> Requiring approval for everything leads to rubber-stamping. Current guidance makes pre-authorised policy the default. It reserves a named human approver for actions that can't be undone, disrupt production, are visible outside the organisation, or attest to something on the organisation's behalf. It also says to measure how well approvers actually perform <a class="cite" href="#src-45" aria-label="Source 45">[45]</a>. The EU AI Act names automation bias as a risk human overseers must be made aware of <a class="cite" href="#src-64" aria-label="Source 64">[64]</a>. An approval step that only sends a notification is not an approval. A real one pauses durably (for days if needed), binds the approval to a hash of the exact arguments, records the authenticated approver, enforces separation of duties, and has an expiry and an escalation path.</p>
 <p><strong>The agent registry is the system of record.</strong> A spreadsheet doesn't scale. For each agent, record the owner and sponsor, autonomy level, impact rating, impact assessment, allowed tools and MCP servers, the pinned model and its end-of-life date, the AI-BOM, and its signed Agent Card. Replace calendar-based recertification with continuous control monitoring that gathers evidence from CI, runtime policy decisions and evals. Detect unused agents, reduce their privileges, then decommission them, including revoking their credentials. One industry body reports, from its own survey, that 82% of enterprises found previously unknown agents in the past year, and only 21% have formal decommissioning processes <a class="cite" href="#src-47" aria-label="Source 47">[47]</a>.</p>
 <p><strong>Regulation, as of November 2026 (not legal advice).</strong> The EU AI Omnibus entered into force on 27 July 2026. It moved high-risk obligations to 2 December 2027 for use cases listed in Annex III (areas such as employment and credit) and to 2 August 2028 for AI in products covered by Annex I (existing EU product-safety law). General-purpose AI obligations have applied since August 2025, and transparency rules since August 2026 <a class="cite" href="#src-63" aria-label="Source 63">[63]</a>. The first harmonised standard, EN 18286 for AI quality management, now gives a presumption of conformity with the Act's Article 17 quality-management-system requirements for providers of high-risk systems, and maps to ISO/IEC 42001 <a class="cite" href="#src-67" aria-label="Source 67">[67]</a>. If you operate in Annex III areas, start building to these requirements now rather than waiting for 2027. NIST's AI RMF 1.0 is under revision <a class="cite" href="#src-68" aria-label="Source 68">[68]</a>.</p>
-<hr>
-<h2 id="the-delivery-pipeline-commit-to-production">9. The delivery pipeline: commit to production</h2>
+<button type="button" class="pb-collapse" data-collapse="pb-b-governance-and-the-autonomy-ladder">Collapse section <span aria-hidden="true">↑</span></button>
+</div></div>
+</section>
+
+<section class="pb-sec" data-sec="the-delivery-pipeline-commit-to-production">
+<div class="pb-head">
+<h2 id="the-delivery-pipeline-commit-to-production"><span class="pb-n">9.</span> The delivery pipeline: commit to production</h2>
+<div class="pb-summary"><p class="pb-summary-l">Key takeaways</p><ul class="pb-takeaways"><li>Build one immutable, signed artefact and promote the same artefact through every environment, with an eval and security gate in staging.</li><li>Ship an AI-BOM with each agent version and sign your models.</li><li>Keep agent definitions in Git, never point production at a floating "latest" label, and treat every model swap as an eval-gated, canaried release.</li></ul></div>
+<button type="button" class="pb-toggle" aria-expanded="false" aria-controls="pb-b-the-delivery-pipeline-commit-to-production" data-open="Read the full section" data-close="Collapse section"><span class="pb-tl">Read the full section</span><span class="pb-chev" aria-hidden="true">↓</span></button>
+</div>
+<div class="pb-body" id="pb-b-the-delivery-pipeline-commit-to-production" hidden="until-found"><div class="pb-inner">
+
 <p>Good software delivery practice still applies to agents: separation of duties, review by the code owners for the area being changed, human release approval in proportion to risk, and building an immutable artefact once and promoting that same artefact through every environment, with a GitOps controller reconciling the declared state <a class="cite" href="#src-74" aria-label="Source 74">[74]</a><a class="cite" href="#src-69" aria-label="Source 69">[69]</a>. What's new is evals, the agent's wider supply chain, and the non-code artefacts.</p>
 <figure class="pb-fig" aria-labelledby="fig-pipe-cap">
 <ol class="pp" aria-label="Delivery pipeline stages, in order">
@@ -1012,8 +1525,18 @@
 </table></div>
 <p><strong>Supply chain.</strong> SLSA v1.2 added a Source Track <a class="cite" href="#src-69" aria-label="Source 69">[69]</a>. In May 2026 an attack on a package registry shipped malicious packages that carried <em>valid</em> provenance from a poisoned pipeline. SLSA's own analysis concluded that Build L3 isolation would have blocked the cache-poisoning step <a class="cite" href="#src-70" aria-label="Source 70">[70]</a>. Ship an AI-BOM with each agent version (CycloneDX ML-BOM is one format) <a class="cite" href="#src-71" aria-label="Source 71">[71]</a>, sign your models <a class="cite" href="#src-72" aria-label="Source 72">[72]</a>, and raise attestation maturity in stages <a class="cite" href="#src-73" aria-label="Source 73">[73]</a>. NIST SP 800-218A remains the secure-development baseline for generative AI <a class="cite" href="#src-83" aria-label="Source 83">[83]</a>.</p>
 <p><strong>Agent definitions as code.</strong> The prompt, model pin, toolbox version, quotas and eval thresholds are kept in Git as declarative state that is pulled and reconciled <a class="cite" href="#src-74" aria-label="Source 74">[74]</a>. Turn off in-place prompt edits in registry UIs, and never point production at a floating "latest" label. Model retirement is a scheduled event. One major provider keeps generally available models for at least 12 months and gives at least 45 days' notice for short-term models <a class="cite" href="#src-80" aria-label="Source 80">[80]</a>. Treat every model swap as an eval-gated, canaried release. For long-running agents, use "rainbow" deployments, which run several versions at once and shift traffic gradually so in-flight sessions survive <a class="cite" href="#src-11" aria-label="Source 11">[11]</a>. Rollback has to cover prompts, model pins and indexes. For side effects that can't be undone, define compensating actions.</p>
-<hr>
-<h2 id="scaling-and-cost">10. Scaling and cost</h2>
+<button type="button" class="pb-collapse" data-collapse="pb-b-the-delivery-pipeline-commit-to-production">Collapse section <span aria-hidden="true">↑</span></button>
+</div></div>
+</section>
+
+<section class="pb-sec" data-sec="scaling-and-cost">
+<div class="pb-head">
+<h2 id="scaling-and-cost"><span class="pb-n">10.</span> Scaling and cost</h2>
+<div class="pb-summary"><p class="pb-summary-l">Key takeaways</p><ul class="pb-takeaways"><li>Choose between managed runtimes, serverless containers and Kubernetes on duration, state, isolation, residency and cost; autoscale on concurrency or queue depth.</li><li>Cost levers: tier your models, design for prompt caching, batch non-interactive work, and report cost per successful outcome.</li><li>A platform team owns the shell; product teams own the reasoning core.</li></ul></div>
+<button type="button" class="pb-toggle" aria-expanded="false" aria-controls="pb-b-scaling-and-cost" data-open="Read the full section" data-close="Collapse section"><span class="pb-tl">Read the full section</span><span class="pb-chev" aria-hidden="true">↓</span></button>
+</div>
+<div class="pb-body" id="pb-b-scaling-and-cost" hidden="until-found"><div class="pb-inner">
+
 <p><strong>Choose the runtime deliberately.</strong> Managed agent runtimes from the major clouds (for example Google Cloud, Microsoft Azure and AWS) now bundle sessions, memory, identity, tool gateways and evals. They are the fastest route to production but also the most opinionated. Serverless containers scale to zero but are stateless and have request timeouts. Kubernetes gives full control at a real operational cost <a class="cite" href="#src-82" aria-label="Source 82">[82]</a>. Decide based on task duration, statefulness, isolation and residency needs, cost model, and whether you must host your own MCP servers. Wherever the agent runs, autoscale on concurrency or queue depth, not CPU. Agents spend most of their time waiting on I/O.</p>
 <p><strong>Make the model gateway the control point.</strong> It handles token-based quotas, priority queues, failover, chargeback per tenant, and centrally managed canaries. Plan for its trade-offs: added latency, a possible single point of failure, and prompts that now fall within compliance scope <a class="cite" href="#src-76" aria-label="Source 76">[76]</a>. For self-hosted models, Kubernetes now has model-aware inference routing <a class="cite" href="#src-77" aria-label="Source 77">[77]</a>.</p>
 <p><strong>Model cost per task.</strong> One provider measured agents using about 4 times the tokens of chat, and multi-agent systems about 15 times <a class="cite" href="#src-11" aria-label="Source 11">[11]</a>. The levers:</p>
@@ -1024,8 +1547,18 @@
 <li><strong>Report cost per successful outcome,</strong> not cost per call, and attribute spend by key, team and tenant <a class="cite" href="#src-75" aria-label="Source 75">[75]</a>.</li>
 </ul>
 <p><strong>Scaling the organisation.</strong> A platform team owns the shell: gateways, control plane, golden-path templates (pre-approved starter projects with the controls already wired in) and pipelines. Product teams own the reasoning core: context, tools and evals. That split is what lets you go from three agents to thirty without thirty separate security reviews.</p>
-<hr>
-<h2 id="getting-started-crawl-walk-run">11. Getting started: crawl, walk, run</h2>
+<button type="button" class="pb-collapse" data-collapse="pb-b-scaling-and-cost">Collapse section <span aria-hidden="true">↑</span></button>
+</div></div>
+</section>
+
+<section class="pb-sec" data-sec="getting-started-crawl-walk-run">
+<div class="pb-head">
+<h2 id="getting-started-crawl-walk-run"><span class="pb-n">11.</span> Getting started: crawl, walk, run</h2>
+<div class="pb-summary"><p class="pb-summary-l">Key takeaways</p><ul class="pb-takeaways"><li>Crawl: one agent at operator or collaborator level, behind a model gateway, with its own identity, budgets, traces and 20–50 real eval tasks.</li><li>Walk: policy-as-code on every tool call, durable approvals, a curated tool registry and eval gates in CI.</li><li>Run: a platform team, golden paths, an agent registry as the system of record, online evals and a standing red team.</li></ul></div>
+<button type="button" class="pb-toggle" aria-expanded="false" aria-controls="pb-b-getting-started-crawl-walk-run" data-open="Read the full section" data-close="Collapse section"><span class="pb-tl">Read the full section</span><span class="pb-chev" aria-hidden="true">↓</span></button>
+</div>
+<div class="pb-body" id="pb-b-getting-started-crawl-walk-run" hidden="until-found"><div class="pb-inner">
+
 <div class="callout callout-key" role="note">
 <p class="callout-label">Key takeaway</p>
 <p>You don't need the whole architecture before your first agent ships. You need the parts that are expensive to retrofit.</p>
@@ -1053,8 +1586,18 @@
 <li><em>Quality and delivery:</em> an eval set of about 40 historical exceptions with known resolutions, graded on the end state and run at pass^3, then a canary on one business unit.</li>
 <li><em>Autonomy:</em> it launches at collaborator level (it proposes, a clerk decides), moves to approver level for small adjustments once eval and production evidence supports it, and never goes to observer level.</li>
 </ul>
-<hr>
-<h2 id="what-s-outdated-what-s-new">12. What's outdated, what's new</h2>
+<button type="button" class="pb-collapse" data-collapse="pb-b-getting-started-crawl-walk-run">Collapse section <span aria-hidden="true">↑</span></button>
+</div></div>
+</section>
+
+<section class="pb-sec" data-sec="what-s-outdated-what-s-new">
+<div class="pb-head">
+<h2 id="what-s-outdated-what-s-new"><span class="pb-n">12.</span> What's outdated, what's new</h2>
+<div class="pb-summary"><p class="pb-summary-l">Key takeaways</p><ul class="pb-takeaways"><li>Retire deny-lists as the injection defence, identity taken from tool arguments, shared static keys and approval by notification.</li><li>Update prompt engineering to context engineering, request caps to token and cost budgets, and local logs to signed, anchored central audit.</li><li>Replace each team building its own stack with a platform-owned shell, golden paths and a crawl-walk-run rollout.</li></ul></div>
+<button type="button" class="pb-toggle" aria-expanded="false" aria-controls="pb-b-what-s-outdated-what-s-new" data-open="Read the full section" data-close="Collapse section"><span class="pb-tl">Read the full section</span><span class="pb-chev" aria-hidden="true">↓</span></button>
+</div>
+<div class="pb-body" id="pb-b-what-s-outdated-what-s-new" hidden="until-found"><div class="pb-inner">
+
 <p class="chip-legend"><span><span class="chip chip-retire">retire</span> stop doing it</span> <span><span class="chip chip-update">update</span> keep the intent, change how it is done</span> <span><span class="chip chip-new">new</span> the current approach</span></p>
 
 <div class="table-wrap"><table>
@@ -1143,8 +1686,18 @@
 </tr>
 </tbody>
 </table></div>
-<hr>
-<h2 id="production-readiness-checklist">13. Production-readiness checklist</h2>
+<button type="button" class="pb-collapse" data-collapse="pb-b-what-s-outdated-what-s-new">Collapse section <span aria-hidden="true">↑</span></button>
+</div></div>
+</section>
+
+<section class="pb-sec" data-sec="production-readiness-checklist">
+<div class="pb-head">
+<h2 id="production-readiness-checklist"><span class="pb-n">13.</span> Production-readiness checklist</h2>
+<div class="pb-summary"><p class="pb-summary-l">Key takeaways</p><ul class="pb-takeaways"><li>Every agent: registry entry, its own identity, gateway budgets, central audit, pinned versions, CI evals and fail-closed policy.</li><li>Agents that take actions: policy on every tool call, argument-bound approvals, idempotency keys, PII protection on every source, curated tools.</li><li>High-autonomy agents: an enforced operating envelope, a drilled kill switch, continuous red-teaming and rehearsed runbooks.</li></ul></div>
+<button type="button" class="pb-toggle" aria-expanded="false" aria-controls="pb-b-production-readiness-checklist" data-open="Read the full section" data-close="Collapse section"><span class="pb-tl">Read the full section</span><span class="pb-chev" aria-hidden="true">↓</span></button>
+</div>
+<div class="pb-body" id="pb-b-production-readiness-checklist" hidden="until-found"><div class="pb-inner">
+
 <p>Controls should scale with autonomy and impact. A read-only summariser doesn't need the same bar as an agent that moves money. Apply each tier on top of the ones before it.</p>
 <p><strong>Baseline: every agent</strong>
 - [ ] Simplest viable pattern chosen and written down (workflow, single agent or multi-agent)
@@ -1173,8 +1726,18 @@
 - [ ] Online evaluation of sampled traces and continuous control monitoring
 - [ ] Build on isolated (SLSA Build L3) builders
 - [ ] Rehearsed runbooks for suspending the agent, revoking its credentials, rolling back prompt, model and tool versions, switching to a manual process, and notifying affected users</p>
-<hr>
-<h2 id="glossary">14. Glossary</h2>
+<button type="button" class="pb-collapse" data-collapse="pb-b-production-readiness-checklist">Collapse section <span aria-hidden="true">↑</span></button>
+</div></div>
+</section>
+
+<section class="pb-sec" data-sec="glossary">
+<div class="pb-head">
+<h2 id="glossary"><span class="pb-n">14.</span> Glossary</h2>
+<div class="pb-summary"><p class="pb-lede">Plain-language definitions of the acronyms and terms used throughout the playbook.</p></div>
+<button type="button" class="pb-toggle" aria-expanded="false" aria-controls="pb-b-glossary" data-open="Read the full section" data-close="Collapse section"><span class="pb-tl">Read the full section</span><span class="pb-chev" aria-hidden="true">↓</span></button>
+</div>
+<div class="pb-body" id="pb-b-glossary" hidden="until-found"><div class="pb-inner">
+
 <ul>
 <li><strong>A2A (Agent2Agent):</strong> an open protocol for one agent to delegate work to another, independently owned agent.</li>
 <li><strong>AI-BOM:</strong> an AI bill of materials, an inventory of the models, prompts, tools and datasets in a release.</li>
@@ -1191,8 +1754,18 @@
 <li><strong>Rug pull:</strong> a tool that is approved in one form and changed later without re-approval.</li>
 <li><strong>SLSA Build L3:</strong> a supply-chain security level where builds run on isolated, hardened builders that produce verifiable provenance.</li>
 </ul>
-<hr>
-<h2 id="sources">15. Sources</h2>
+<button type="button" class="pb-collapse" data-collapse="pb-b-glossary">Collapse section <span aria-hidden="true">↑</span></button>
+</div></div>
+</section>
+
+<section class="pb-sec" data-sec="sources">
+<div class="pb-head">
+<h2 id="sources"><span class="pb-n">15.</span> Sources</h2>
+<div class="pb-summary"><p class="pb-lede">The numbered sources behind every citation in the playbook.</p></div>
+<button type="button" class="pb-toggle" aria-expanded="false" aria-controls="pb-b-sources" data-open="Read the full section" data-close="Collapse section"><span class="pb-tl">Read the full section</span><span class="pb-chev" aria-hidden="true">↓</span></button>
+</div>
+<div class="pb-body" id="pb-b-sources" hidden="until-found"><div class="pb-inner">
+
 <ol class="sources">
 <li id="src-1">The Register, "AI agents get office tasks wrong around 70% of the time, and a lot of them aren't AI at all" (reports Gartner's 2025-06-25 prediction that over 40% of agentic AI projects will be cancelled by end of 2027), 2025-06-29. <a href="https://www.theregister.com/2025/06/29/ai_agents_fail_a_lot/" target="_blank" rel="noopener">https://www.theregister.com/2025/06/29/ai_agents_fail_a_lot/</a></li>
 <li id="src-2">Fortune (reporting MIT NANDA), "MIT report: 95% of generative AI pilots at companies are failing", 2025-08-18. <a href="https://fortune.com/2025/08/18/mit-report-95-percent-generative-ai-pilots-at-companies-failing-cfo/" target="_blank" rel="noopener">https://fortune.com/2025/08/18/mit-report-95-percent-generative-ai-pilots-at-companies-failing-cfo/</a></li>
@@ -1289,6 +1862,10 @@
 <li id="src-93">OpenAI, "Batch API" ("50% cost discount compared to synchronous APIs"; accessed 2026-11-25). <a href="https://developers.openai.com/api/docs/guides/batch" target="_blank" rel="noopener">https://developers.openai.com/api/docs/guides/batch</a></li>
 <li id="src-94">Google AI for Developers, "Batch API" ("50% of the standard cost"; accessed 2026-11-25). <a href="https://aistudio.google.com/docs/batch-api" target="_blank" rel="noopener">https://aistudio.google.com/docs/batch-api</a></li>
 </ol>
+<button type="button" class="pb-collapse" data-collapse="pb-b-sources">Collapse section <span aria-hidden="true">↑</span></button>
+</div></div>
+</section>
+
         <aside class="pb-cta">
             <h2>Building agents in your organisation?</h2>
             <p>I'm happy to compare notes on architecture, governance or getting a first agent to production —
@@ -1347,25 +1924,222 @@
 </footer>
 
 <script>
-    // Collapse the contents list by default on small screens; highlight the current section on wide ones.
-    (function () {
-        var toc = document.querySelector('.pb-toc details');
-        if (toc && window.matchMedia('(max-width: 960px)').matches) toc.removeAttribute('open');
-        var links = document.querySelectorAll('.pb-toc a');
-        if (!('IntersectionObserver' in window) || !links.length) return;
-        var map = {};
-        links.forEach(function (a) { map[a.getAttribute('href').slice(1)] = a; });
-        var io = new IntersectionObserver(function (entries) {
-            entries.forEach(function (e) {
-                if (e.isIntersecting && map[e.target.id]) {
-                    links.forEach(function (a) { a.classList.remove('on'); });
-                    map[e.target.id].classList.add('on');
-                }
+
+(function () {
+    var doc = document, root = doc.documentElement;
+    var reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    var bodies = [].slice.call(doc.querySelectorAll('.pb-body'));
+    var secs = [].slice.call(doc.querySelectorAll('.pb-sec'));
+    var visited = {};
+
+    function host(body) { return body.parentElement; }  // .pb-sec or .pb-sub
+    function isOpen(body) { return !body.hasAttribute('hidden'); }
+
+    function sync(body) {
+        var open = isOpen(body), h = host(body);
+        doc.querySelectorAll('[aria-controls="' + body.id + '"]').forEach(function (b) {
+            b.setAttribute('aria-expanded', open ? 'true' : 'false');
+            var l = b.querySelector('.pb-tl');
+            if (l && b.dataset.open) l.textContent = open ? b.dataset.close : b.dataset.open;
+        });
+        h.classList.toggle('is-open', open);
+        if (h.classList.contains('pb-sec')) {
+            var sid = h.getAttribute('data-sec');
+            var t = doc.querySelector('.pb-toc a[href="#' + sid + '"]');
+            if (t) t.classList.toggle('is-open', open);
+            if (open && !visited[sid]) {
+                visited[sid] = true;
+                var c = doc.querySelector('.pb-card[data-card="' + sid + '"]');
+                if (c) c.classList.add('is-visited');
+            }
+            meter();
+        }
+    }
+
+    function meter() {
+        var n = Object.keys(visited).length, total = secs.length;
+        doc.querySelectorAll('[data-pb-count]').forEach(function (el) { el.textContent = n; });
+        doc.querySelectorAll('[data-pb-bar]').forEach(function (el) { el.style.setProperty('--e', total ? n / total : 0); });
+    }
+
+    function afterTransition(el, fn) {
+        var done = false;
+        function f(e) {
+            if (e && e.target !== el) return;
+            if (done) return;
+            done = true;
+            el.removeEventListener('transitionend', f);
+            fn();
+        }
+        el.addEventListener('transitionend', f);
+        setTimeout(f, 700);
+    }
+
+    function open(body, animate) {
+        if (isOpen(body)) { sync(body); return; }
+        body.removeAttribute('hidden');
+        sync(body);
+        if (animate && !reduce) {
+            var h = body.scrollHeight;
+            body.style.height = '0px';
+            void body.offsetHeight;
+            body.style.transition = 'height .5s cubic-bezier(.2,.7,.2,1)';
+            body.style.height = h + 'px';
+            afterTransition(body, function () { body.style.height = ''; body.style.transition = ''; });
+        }
+    }
+
+    function close(body, animate) {
+        if (!isOpen(body)) { sync(body); return; }
+        function fin() {
+            body.setAttribute('hidden', 'until-found');
+            body.style.height = ''; body.style.transition = '';
+            sync(body);
+        }
+        if (animate && !reduce) {
+            body.style.height = body.scrollHeight + 'px';
+            void body.offsetHeight;
+            body.style.transition = 'height .38s cubic-bezier(.4,0,.2,1)';
+            body.style.height = '0px';
+            host(body).classList.remove('is-open');
+            afterTransition(body, fin);
+        } else fin();
+    }
+
+    function toggle(body) { if (isOpen(body)) close(body, true); else open(body, true); }
+
+    function flash(el) {
+        if (!el) return;
+        el.classList.remove('pb-flash'); void el.offsetWidth; el.classList.add('pb-flash');
+        setTimeout(function () { el.classList.remove('pb-flash'); }, 1700);
+    }
+
+    // Open whatever contains the element with this id (plus the section/subsection it heads), then scroll to it.
+    function reveal(id, scroll, smooth) {
+        var el = id && doc.getElementById(id);
+        if (!el) return false;
+        var own = null;
+        if (/^H[23]$/.test(el.tagName)) {
+            var h = el.closest('.pb-sec, .pb-sub');
+            if (h && (h.querySelector(':scope > .pb-head > h2') === el || h.querySelector(':scope > .pb-sub-head > h3') === el)) {
+                own = h.querySelector(':scope > .pb-body');
+            }
+        }
+        var chain = [], p = el.parentElement && el.parentElement.closest('.pb-body');
+        while (p) { chain.unshift(p); p = p.parentElement && p.parentElement.closest('.pb-body'); }
+        if (own) chain.push(own);
+        chain.forEach(function (b) { open(b, false); });
+        if (scroll) {
+            requestAnimationFrame(function () {
+                el.scrollIntoView({ block: 'start', behavior: smooth && !reduce ? 'smooth' : 'instant' });
+                flash(el.closest('.pb-sub') || el.closest('.pb-sec'));
             });
-        }, { rootMargin: '-80px 0px -70% 0px' });
-        document.querySelectorAll('.prose h2[id]').forEach(function (h) { io.observe(h); });
-    })();
+        }
+        return true;
+    }
+
+    // Toggle buttons, collapsible heads, collapse-at-end, expand/collapse all
+    doc.addEventListener('click', function (e) {
+        var t = e.target;
+        var btn = t.closest('.pb-toggle, .pb-sub-toggle');
+        if (btn) { toggle(doc.getElementById(btn.getAttribute('aria-controls'))); return; }
+        var c = t.closest('.pb-collapse');
+        if (c) {
+            var b = doc.getElementById(c.getAttribute('data-collapse'));
+            var head = host(b).querySelector('h2');
+            close(b, false);
+            head.scrollIntoView({ block: 'start', behavior: 'instant' });
+            return;
+        }
+        var all = t.closest('[data-pb-all]');
+        if (all) {
+            var anchorTop = all.getBoundingClientRect().top;
+            var want = all.getAttribute('data-pb-all') === 'open';
+            bodies.forEach(function (b) { want ? open(b, false) : close(b, false); });
+            var shift = all.getBoundingClientRect().top - anchorTop;
+            if (shift) window.scrollBy(0, shift);
+            return;
+        }
+        // Clicking a collapsed head (not a link) opens it
+        var hd = t.closest('.pb-head, .pb-sub-head');
+        if (hd && !t.closest('a, button')) {
+            var hb = host(hd).querySelector(':scope > .pb-body');
+            if (hb && !isOpen(hb)) { open(hb, true); return; }
+        }
+        // In-page links (cards, contents, figure tiles, citations): open the target first
+        var a = t.closest('a[href^="#"]');
+        if (a && e.button === 0 && !e.metaKey && !e.ctrlKey && !e.shiftKey && !e.altKey) {
+            var id = decodeURIComponent(a.getAttribute('href').slice(1));
+            if (id && doc.getElementById(id)) {
+                e.preventDefault();
+                if (location.hash !== '#' + id) history.pushState(null, '', '#' + id);
+                reveal(id, true, true);
+            }
+        }
+    });
+
+    window.addEventListener('hashchange', function () { reveal(decodeURIComponent(location.hash.slice(1)), true, true); });
+    // Find-in-page opens hidden="until-found" content itself; keep buttons and state in step.
+    doc.addEventListener('beforematch', function (e) {
+        var b = e.target.closest && e.target.closest('.pb-body');
+        if (b) setTimeout(function () { sync(b); }, 0);
+    }, true);
+    window.addEventListener('beforeprint', function () { bodies.forEach(function (b) { open(b, false); }); });
+
+    // Deep link on load (e.g. /playbook.html#secrets-and-identity from the Projects page)
+    if (location.hash) {
+        var hid = decodeURIComponent(location.hash.slice(1));
+        if (reveal(hid, false)) {
+            var flashed = false;
+            var go = function () {
+                var el = doc.getElementById(hid);
+                if (!el) return;
+                el.scrollIntoView({ block: 'start', behavior: 'instant' });
+                if (!flashed) { flashed = true; flash(el.closest('.pb-sub') || el.closest('.pb-sec')); }
+            };
+            requestAnimationFrame(go);
+            // Re-pin after web fonts and late layout settle (only if the reader hasn't scrolled away).
+            window.addEventListener('load', function () {
+                var el = doc.getElementById(hid);
+                if (el && Math.abs(el.getBoundingClientRect().top - 84) < 400) go();
+            });
+        }
+    }
+    bodies.forEach(sync);
+
+    // Reading progress bar
+    var bar = doc.querySelector('.pb-progress');
+    var ticking = false;
+    function progress() {
+        ticking = false;
+        var max = root.scrollHeight - window.innerHeight;
+        bar.style.setProperty('--p', max > 0 ? Math.min(1, window.scrollY / max) : 0);
+    }
+    window.addEventListener('scroll', function () { if (!ticking) { ticking = true; requestAnimationFrame(progress); } }, { passive: true });
+    window.addEventListener('resize', progress);
+    progress();
+
+    // Contents: collapsed by default on small screens; highlight the section in view on wide ones.
+    var toc = doc.querySelector('.pb-toc details');
+    if (toc && window.matchMedia('(max-width: 960px)').matches) toc.removeAttribute('open');
+    var links = doc.querySelectorAll('.pb-toc li a');
+    if (!('IntersectionObserver' in window) || !links.length) return;
+    var map = {};
+    links.forEach(function (a) { map[a.getAttribute('href').slice(1)] = a; });
+    var io = new IntersectionObserver(function (entries) {
+        entries.forEach(function (en) {
+            var sid = en.target.getAttribute('data-sec');
+            if (en.isIntersecting && map[sid]) {
+                links.forEach(function (a) { a.classList.remove('on'); });
+                map[sid].classList.add('on');
+            }
+        });
+    }, { rootMargin: '-80px 0px -70% 0px' });
+    secs.forEach(function (s) { io.observe(s); });
+})();
+
 </script>
+<script src="/fx.js" defer></script>
 <script src="/chat.js?v=20261125"></script>
 </body>
 </html>

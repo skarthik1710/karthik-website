@@ -4,9 +4,16 @@
     python3 scripts/build_projects.py
 
 Inputs (all in content/projects/):
-  template.html          page frame with <!--PROJECT_INDEX--> and <!--PROJECT_SECTIONS--> markers
+  template.html          page frame with <!--PROJECT_CARDS-->, <!--PROJECT_DETAILS-->, <!--PROJECT_STATS--> and
+                         <!--PROJECT_COUNT--> markers
   projects.json          "order" (rank, best first), index labels, and specs for projects rendered here
   legacy-<id>.html       hand-built sections kept verbatim (only their "NN / MM" index is renumbered)
+
+The page is progressive: a card grid first; a card opens the project in a dialog (deep-linkable by #id) showing
+role, problem/what/value and the layers at a glance; layers expand to their components, and "Go deeper" toggles
+reveal the detailed diagram with its numbered flow, the controls, human in the loop and the stack. Every section,
+spec or legacy, is rendered as before and then split into those parts, and the build fails if any content would
+fall outside them.
 
 Each component or control with a "pb" anchor links to that Playbook section. Anchors are checked
 against public/playbook.html so a renamed heading fails the build instead of shipping a dead link.
@@ -235,10 +242,142 @@ def section(p):
     return "\n".join(out)
 
 
+# ── progressive disclosure: parse each rendered section into parts ──────────────────────
+def balanced_end(s, start, tag):
+    """s[start:] opens <tag ...>; return the index just past its matching </tag>."""
+    depth = 0
+    for m in re.finditer(rf"<{tag}\b|</{tag}>", s[start:]):
+        depth += -1 if m.group(0).startswith("</") else 1
+        if depth == 0:
+            return start + m.end()
+    raise ValueError(f"unbalanced <{tag}> at {start}")
+
+
+class Parts:
+    def __init__(self, sec, pid):
+        self.pid, self.rest = pid, sec
+        self.head = self.pull(r'<div class="proj-head">', "div")
+        self.role = self.pull(r'<div class="built-on">', "div", required=False)
+        self.pwv = self.pull(r'<div class="pwv">', "div")
+        self.arch = self.pull(r'<figure class="arch">', "figure")
+        self.flows, self.components, self.controls = [], None, None
+        while True:
+            b = self.pull(r'<div class="block">', "div", required=False)
+            if b is None:
+                break
+            kind = re.search(r'<span class="bt-k">([^<]+)</span>', b).group(1)
+            if kind == "Flow":
+                self.flows.append(b)
+            elif kind == "Components":
+                self.components = b
+            elif kind == "Controls":
+                self.controls = b
+            else:
+                sys.exit(f"build_projects: {pid}: unknown block kind {kind!r}")
+        self.hitl = self.pull(r'<div class="hitl">', "div", required=False)
+        self.foot = self.pull(r'<div class="foot-grid">', "div", required=False)
+        self.pull(r'<a class="to-index"', "a", required=False)   # navigation only; the dialog has its own
+        left = re.sub(r"<section[^>]*>|</section>", "", self.rest)
+        if re.sub(r"<[^>]+>", "", left).strip():
+            sys.exit(f"build_projects: {pid}: content outside the known parts would be lost: {left.strip()[:200]!r}")
+        if not (self.flows and self.components and self.controls):
+            sys.exit(f"build_projects: {pid}: missing flow, components or controls block")
+        # head fields
+        self.idx = re.search(r'<span class="sec-idx">([^<]+)</span>', self.head).group(1)
+        meta = re.search(r'<div class="proj-meta">(.*?)</div>', self.head, re.S).group(1)
+        self.chips = re.sub(r'<span class="sec-idx">[^<]*</span>', "", meta).strip()
+        self.title = re.search(r'<h2 class="proj-title"[^>]*>(.*?)</h2>', self.head, re.S).group(1).strip()
+        self.tagline = re.search(r'<p class="proj-tagline">(.*?)</p>', self.head, re.S).group(1).strip()
+        # layers from the components block
+        self.layers = []
+        comp = self.components
+        for m in re.finditer(r'<div class="comp-layer">', comp):
+            layer = comp[m.start():balanced_end(comp, m.start(), "div")]
+            nm = re.search(r'<div class="comp-layer-name">', layer)
+            name_html = layer[nm.end():balanced_end(layer, nm.start(), "div") - len("</div>")]
+            name_html = re.sub(r'<span class="cl-n">[^<]*</span>\s*', "", name_html).strip()
+            short = re.sub(r"<[^>]+>", "", re.sub(r'<span class="cl-sub">.*?</span>', "", name_html, flags=re.S)).strip()
+            cards = []
+            for cm in re.finditer(r'<div class="comp-card', layer):
+                if cards and cm.start() < cards[-1][1]:
+                    continue
+                cards.append((cm.start(), balanced_end(layer, cm.start(), "div")))
+            cards = [layer[a:b] for a, b in cards]
+            names = [re.sub(r"<[^>]+>", "", re.search(r"<h4>(.*?)</h4>", c, re.S).group(1)).strip() for c in cards]
+            self.layers.append({"name_html": name_html, "short": short, "cards": cards, "names": names})
+        if not self.layers:
+            sys.exit(f"build_projects: {pid}: no component layers found")
+
+    def pull(self, opener, tag, required=True):
+        m = re.search(opener, self.rest)
+        if not m:
+            if required:
+                sys.exit(f"build_projects: {self.pid}: missing {opener}")
+            return None
+        e = balanced_end(self.rest, m.start(), tag)
+        frag = self.rest[m.start():e]
+        self.rest = self.rest[:m.start()] + self.rest[e:]
+        return frag
+
+    @property
+    def ncomp(self):
+        return sum(len(L["cards"]) for L in self.layers)
+
+
+def card(p):
+    mx = max(len(L["cards"]) for L in p.layers)
+    bands = "".join(f'<span style="--w:{30 + round(70 * len(L["cards"]) / mx)}%"><i></i><em>{L["short"]}</em></span>'
+                    for L in p.layers)
+    n = p.idx.split("/")[0].strip()
+    # The whole card is a link, so chip links (kept in the detail view) render as plain chips here.
+    chips = re.sub(r'<a class="proj-chip[^"]*"[^>]*>(.*?)</a>', r'<span class="proj-chip">\1</span>', p.chips, flags=re.S)
+    return (f'<li><a class="pcard fx-spot" data-reveal href="#{p.pid}" aria-haspopup="dialog" aria-controls="proj-dialog">'
+            f'<span class="pc-top"><span class="pc-n">{n}</span><span class="pc-chips">{chips}</span></span>'
+            f'<h3 class="pc-name">{p.title}</h3><span class="pc-tag">{p.tagline}</span>'
+            f'<span class="pc-glyph" aria-hidden="true">{bands}</span>'
+            f'<span class="pc-foot"><span>{len(p.layers)} layers · {p.ncomp} components</span>'
+            f'<span class="pc-go">Explore <span aria-hidden="true">→</span></span></span></a></li>')
+
+
+def detail(p):
+    pid = p.pid
+    bands = []
+    for i, L in enumerate(p.layers):
+        names = " · ".join(E(x) for x in L["names"])
+        bands.append(
+            f'<li class="band" style="--i:{i}"><button type="button" class="band-btn" aria-expanded="true" aria-controls="{pid}-L{i + 1}">'
+            f'<span class="band-n">{i + 1:02d}</span><span class="band-name">{L["name_html"]}</span>'
+            f'<span class="band-comps">{names}</span>'
+            f'<span class="band-count" aria-label="{len(L["cards"])} components">{len(L["cards"])}</span>'
+            f'<span class="band-chev" aria-hidden="true"></span></button>'
+            f'<div class="band-body" id="{pid}-L{i + 1}"><div class="comp-grid">\n' + "\n".join(L["cards"]) + "\n</div></div></li>")
+    hl = (f'<section class="hl-arch" aria-label="{E(re.sub(r"<[^>]+>", "", p.title))}: architecture at a glance">'
+          f'<div class="hl-head"><span class="arch-dot" aria-hidden="true"></span><span>Architecture at a glance</span>'
+          f'<span class="hl-stack">{len(p.layers)} layers · {p.ncomp} components</span>'
+          f'<button type="button" class="hl-all" aria-pressed="false">Expand all layers</button></div>'
+          f'<p class="hl-hint">Top to bottom, from the person using it down to data and delivery. Open a layer to see its components.</p>'
+          f'<ol class="bands">\n' + "\n".join(bands) + "\n</ol></section>")
+    panels = [("flow", "Request flow", p.arch + "\n" + "\n".join(p.flows)),
+              ("controls", "Controls", p.controls)]
+    if p.hitl:
+        panels.append(("hitl", "Human in the loop", p.hitl))
+    if p.foot:
+        panels.append(("stack", "Stack", p.foot))
+    btns = "".join(f'<button type="button" class="dx-btn" aria-expanded="true" aria-controls="{pid}-p-{k}">{lab}</button>'
+                   for k, lab, _ in panels)
+    bodies = "\n".join(f'<div class="dx-panel" id="{pid}-p-{k}" role="region" aria-label="{lab}">\n{body}\n</div>'
+                       for k, lab, body in panels)
+    return "\n".join([
+        f'<article class="proj" id="{pid}" aria-labelledby="{pid}-title">',
+        p.head, p.role or "", p.pwv, hl,
+        f'<div class="dx"><div class="dx-k">Go deeper</div><div class="dx-btns">{btns}</div></div>',
+        bodies, "</article>"])
+
+
 def main():
     spec = json.load(open(os.path.join(SRC, "projects.json"), encoding="utf-8"))
     new = {p["id"]: p for p in spec["projects"]}
-    order, labels = spec["order"], spec["index_labels"]
+    order = spec["order"]
     sections = []
     for pid in order:
         if pid in new:
@@ -251,10 +390,18 @@ def main():
     total = len(sections)
     sections = [re.sub(r'<span class="sec-idx">\d+ / \d+</span>', f'<span class="sec-idx">{i:02d} / {total:02d}</span>', s, count=1)
                 for i, s in enumerate(sections, 1)]
-    index = "<ol>" + "".join(f'<li><a href="#{pid}"><span class="pi-n">{i:02d}</span>{E(labels[pid])}</a></li>'
-                             for i, pid in enumerate(order, 1)) + "</ol>"
+    parts = [Parts(s, pid) for s, pid in zip(sections, order)]
+    cards = '<ol class="pgrid">\n' + "\n".join(card(p) for p in parts) + "\n</ol>"
+    details = "\n".join(detail(p) for p in parts)
+    stats = (f'<div class="ph-stat"><b>{total}</b><span>projects</span></div>'
+             f'<div class="ph-stat"><b>{sum(len(p.layers) for p in parts)}</b><span>architecture layers</span></div>'
+             f'<div class="ph-stat"><b>{sum(p.ncomp for p in parts)}</b><span>components mapped</span></div>')
     tpl = open(os.path.join(SRC, "template.html"), encoding="utf-8").read()
-    page = tpl.replace("<!--PROJECT_INDEX-->", index).replace("<!--PROJECT_SECTIONS-->", "\n".join(sections))
+    for marker in ("<!--PROJECT_CARDS-->", "<!--PROJECT_DETAILS-->", "<!--PROJECT_STATS-->", "<!--PROJECT_COUNT-->"):
+        if marker not in tpl:
+            sys.exit(f"build_projects: template is missing {marker}")
+    page = (tpl.replace("<!--PROJECT_CARDS-->", cards).replace("<!--PROJECT_DETAILS-->", details)
+            .replace("<!--PROJECT_STATS-->", stats).replace("<!--PROJECT_COUNT-->", str(total)))
     ids = re.findall(r'\sid="([^"]+)"', page)
     dupes = sorted({i for i in ids if ids.count(i) > 1})
     if dupes:

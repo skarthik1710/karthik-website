@@ -1,0 +1,168 @@
+/* fx.css: shared futuristic motion layer for karthikeyanselvam.com.
+   Everything here is progressive enhancement: pages look complete without it,
+   and all motion is disabled under prefers-reduced-motion. */
+
+/* ---------- Ember / neural canvas ---------- */
+canvas.fx-embers {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    z-index: 0;
+    opacity: 0;
+    transition: opacity 1.6s ease;
+}
+canvas.fx-embers.fx-on { opacity: 1; }
+
+/* ---------- Scroll reveal ----------
+   fx.js adds .fx-armed to <html> before hiding anything, so content stays
+   visible if the script never runs. */
+.fx-armed [data-reveal] {
+    opacity: 0;
+    transform: translateY(18px);
+    filter: blur(6px);
+    transition:
+        opacity .8s cubic-bezier(.2,.7,.2,1),
+        transform .8s cubic-bezier(.2,.7,.2,1),
+        filter .8s cubic-bezier(.2,.7,.2,1);
+    transition-delay: var(--fx-delay, 0s);
+}
+.fx-armed [data-reveal].fx-in {
+    opacity: 1;
+    transform: none;
+    filter: none;
+}
+
+/* ---------- Cursor spotlight cards ---------- */
+.fx-spot {
+    position: relative;
+    isolation: isolate;
+}
+.fx-spot::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    pointer-events: none;
+    z-index: -1;
+    opacity: 0;
+    transition: opacity .35s ease;
+    background: radial-gradient(420px circle at var(--mx, 50%) var(--my, 50%),
+                rgba(255, 107, 53, 0.10), transparent 45%);
+}
+.fx-spot::after {
+    /* glowing border that follows the cursor */
+    content: "";
+    position: absolute;
+    inset: -1px;
+    border-radius: inherit;
+    pointer-events: none;
+    padding: 1px;
+    opacity: 0;
+    transition: opacity .35s ease;
+    background: radial-gradient(260px circle at var(--mx, 50%) var(--my, 50%),
+                rgba(255, 140, 90, 0.85), rgba(255, 107, 53, 0.15) 40%, transparent 70%);
+    -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+    -webkit-mask-composite: xor;
+            mask-composite: exclude;
+}
+.fx-spot:hover::before,
+.fx-spot:hover::after,
+.fx-spot:focus-within::after { opacity: 1; }
+
+/* ---------- Text effects ---------- */
+.fx-gradient-text {
+    background: linear-gradient(100deg, #FF6B35 0%, #FFB48A 45%, #FF6B35 90%);
+    background-size: 200% 100%;
+    -webkit-background-clip: text;
+            background-clip: text;
+    color: transparent;
+    animation: fx-sheen 6s ease-in-out infinite;
+}
+@keyframes fx-sheen {
+    0%, 100% { background-position: 0% 50%; }
+    50% { background-position: 100% 50%; }
+}
+
+/* scanline sweep used on hero panels */
+.fx-scan { position: relative; overflow: hidden; }
+.fx-scan::after {
+    content: "";
+    position: absolute;
+    left: 0; right: 0; top: -40%;
+    height: 40%;
+    pointer-events: none;
+    background: linear-gradient(180deg, transparent, rgba(255,107,53,.06), transparent);
+    animation: fx-scan 7s linear infinite;
+}
+@keyframes fx-scan { to { top: 120%; } }
+
+/* pulsing status dot */
+.fx-pulse {
+    display: inline-block;
+    width: 8px; height: 8px;
+    border-radius: 50%;
+    background: #FF6B35;
+    box-shadow: 0 0 0 0 rgba(255,107,53,.6);
+    animation: fx-pulse 2.4s ease-out infinite;
+}
+@keyframes fx-pulse {
+    0% { box-shadow: 0 0 0 0 rgba(255,107,53,.55); }
+    70% { box-shadow: 0 0 0 12px rgba(255,107,53,0); }
+    100% { box-shadow: 0 0 0 0 rgba(255,107,53,0); }
+}
+
+/* ---------- Video modal ---------- */
+.fx-modal {
+    position: fixed;
+    inset: 0;
+    z-index: 1000;
+    display: grid;
+    place-items: center;
+    padding: 4vmin;
+    background: rgba(8, 6, 5, 0.86);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity .35s ease;
+}
+.fx-modal.fx-open { opacity: 1; pointer-events: auto; }
+.fx-modal-inner {
+    position: relative;
+    width: min(1200px, 100%);
+    aspect-ratio: 16 / 9;
+    border-radius: 14px;
+    overflow: hidden;
+    border: 1px solid rgba(255,107,53,.35);
+    box-shadow: 0 0 0 1px rgba(255,107,53,.08), 0 30px 120px rgba(255,107,53,.18);
+    transform: scale(.96);
+    transition: transform .45s cubic-bezier(.2,.7,.2,1);
+    background: #0c0a09;
+}
+.fx-modal.fx-open .fx-modal-inner { transform: none; }
+.fx-modal video { width: 100%; height: 100%; display: block; }
+.fx-modal-close {
+    position: absolute;
+    top: -46px; right: 0;
+    background: transparent;
+    border: 1px solid rgba(255,255,255,.18);
+    color: #F3EDE7;
+    border-radius: 999px;
+    padding: 6px 14px;
+    font: 500 .85rem 'Inter', sans-serif;
+    cursor: pointer;
+}
+.fx-modal-close:hover, .fx-modal-close:focus-visible { border-color: #FF6B35; color: #FF6B35; }
+
+@media (prefers-reduced-motion: reduce) {
+    .fx-armed [data-reveal] { opacity: 1; transform: none; filter: none; transition: none; }
+    .fx-gradient-text, .fx-scan::after, .fx-pulse { animation: none; }
+    canvas.fx-embers { display: none; }
+}
+
+@media print {
+    canvas.fx-embers, .fx-modal { display: none !important; }
+    .fx-armed [data-reveal] { opacity: 1 !important; transform: none !important; filter: none !important; }
+}
