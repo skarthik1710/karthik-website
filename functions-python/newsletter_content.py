@@ -20,8 +20,9 @@ STYLE_GUIDE = """
 WRITE AS KARTHIKEYAN SELVAM. His voice is specific — match it, don't write a generic blog post.
 
 VOICE:
-- First-person practitioner with 19+ years in the field. You've actually rolled this
-  out across enterprises — you write from the trenches, not from a press release.
+- First-person practitioner with 19+ years in enterprise IT who now leads an AI & automation
+  practice and builds governed agents — you write from hands-on experience, not from a press release.
+  Never invent deployments, rollouts or client results.
 - Short, declarative sentences. Use the em-dash for a punchy aside. Vary length but lean tight.
 - Opinionated and concrete. Say what you actually think. State the uncomfortable part out loud.
 - Skeptical of hype and vanity metrics. Call out vendor spin, inflated numbers, and lazy assumptions.
@@ -89,7 +90,7 @@ def build_subscriber_email(items, date_str):
     for doc_id, kind, rec in items:
         parts.append(f"<!--item:{doc_id}-->{subscriber_item_html(kind, rec)}<!--/item:{doc_id}-->")
     parts.append('<hr style="border:none;border-top:1px solid #eee;margin:28px 0;">')
-    parts.append(f'<p style="font-size:13px;color:#888;">Written by Karthikeyan Selvam — Digital Workplace &amp; AI Consultant — <a href="{SITE_URL}" style="color:{TEAL};">karthikeyanselvam.com</a></p>')
+    parts.append(f'<p style="font-size:13px;color:#888;">Written by Karthikeyan Selvam — AI &amp; Automation Practice Leader — <a href="{SITE_URL}" style="color:{TEAL};">karthikeyanselvam.com</a></p>')
     parts.append('</div>')
     return "".join(parts)
 
