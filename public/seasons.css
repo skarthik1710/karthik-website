@@ -1,0 +1,65 @@
+/* seasons.css: one season per inner page, set by <html data-season="...">.
+     Experience = spring · Projects = summer · Playbook = monsoon · Newsletter = winter
+   Retints the page tokens (background, surfaces, lines) so cards sit in the season's tone; the
+   ember accent stays as the brand colour. seasons.js draws the moving layer on top of this. */
+
+html[data-season="spring"] {
+    --bg: #0f1511; --surface: #151d17; --surface-2: #1b251d; --line: #243026; --line-strong: #314034;
+    --season-nav: 15, 21, 17;
+    --season-sky:
+        radial-gradient(1100px 650px at 88% -8%, rgba(246, 168, 198, 0.16), transparent 62%),
+        radial-gradient(900px 600px at -5% 105%, rgba(118, 186, 128, 0.16), transparent 60%),
+        linear-gradient(180deg, #121a14 0%, #0e130f 100%);
+}
+html[data-season="summer"] {
+    --bg: #17110a; --surface: #1e170f; --surface-2: #261d13; --line: #33281b; --line-strong: #433424;
+    --season-nav: 23, 17, 10;
+    --season-sky:
+        radial-gradient(1000px 700px at 86% -6%, rgba(255, 186, 96, 0.14), transparent 60%),
+        radial-gradient(900px 500px at 0% 100%, rgba(214, 120, 48, 0.08), transparent 60%),
+        linear-gradient(180deg, #1a130b 0%, #140f09 100%);
+}
+html[data-season="monsoon"] {
+    --bg: #0b1016; --surface: #111820; --surface-2: #162029; --line: #1f2a35; --line-strong: #2b3846;
+    --season-nav: 11, 16, 22;
+    --season-sky:
+        radial-gradient(1200px 600px at 50% -12%, rgba(120, 150, 182, 0.16), transparent 62%),
+        radial-gradient(800px 500px at 100% 100%, rgba(60, 96, 120, 0.12), transparent 60%),
+        linear-gradient(180deg, #0f161e 0%, #0a0e13 100%);
+}
+html[data-season="winter"] {
+    --bg: #0c1019; --surface: #121826; --surface-2: #18202f; --line: #222b3b; --line-strong: #2f3a4e;
+    --season-nav: 12, 16, 25;
+    --season-sky:
+        radial-gradient(1100px 650px at 15% -10%, rgba(176, 206, 246, 0.14), transparent 62%),
+        radial-gradient(900px 600px at 100% 110%, rgba(120, 150, 210, 0.10), transparent 60%),
+        linear-gradient(180deg, #111725 0%, #0a0d15 100%);
+}
+
+html[data-season] body {
+    background-color: var(--bg);
+    background-image: var(--season-sky);
+    background-attachment: fixed;
+}
+html[data-season] ::-webkit-scrollbar-track { background: var(--bg); }
+html[data-season] .nav { background: rgba(var(--season-nav), 0.86); }
+
+/* the seasonal layer replaces the hero's orange ember canvas */
+html[data-season] canvas.fx-embers { display: none !important; }
+
+canvas.season-fx {
+    position: fixed;
+    inset: 0;
+    width: 100vw;
+    height: 100vh;
+    pointer-events: none;
+    z-index: -1;
+    opacity: 0;
+    transition: opacity 1.8s ease;
+}
+canvas.season-fx.season-on { opacity: 1; }
+
+@media print {
+    canvas.season-fx { display: none !important; }
+    html[data-season] body { background: #fff; }
+}

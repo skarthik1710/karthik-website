@@ -620,7 +620,7 @@ def main():
     toc_html = "\n".join(f'<li><a href="#{sid}">{html.escape(t)}</a></li>' for sid, t in toc)
 
     page = f"""<!DOCTYPE html>
-<html lang="en">
+<html lang="en" data-season="monsoon">
 <head>
     <meta charset="UTF-8"/>
     <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
@@ -818,6 +818,8 @@ def main():
     </style>
     <link rel="stylesheet" href="/chat.css?v={ASSET_VERSION}"/>
     <link rel="stylesheet" href="/fx.css"/>
+    <link rel="stylesheet" href="/seasons.css?v=20261126s"/>
+    <script src="/seasons.js?v=20261126s" defer></script>
     <noscript><style>.pb-body[hidden] {{ display: block !important; content-visibility: visible !important; }}
         .pb-toggle, .pb-collapse, .pb-tools, .pb-toc-tools, .pb-plus {{ display: none !important; }}</style></noscript>
     <script type="application/ld+json">
