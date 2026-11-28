@@ -68,11 +68,11 @@
       ]
     },
     {
-      "title": "Technical Service Delivery Manager & Solution Architect — Microsoft Copilot for Entra",
+      "title": "Technical SDM — Microsoft Copilot for Entra",
       "org": "Atos — client: Microsoft (Entra skills in Microsoft Security Copilot)",
       "period": "Jul 2024 – Mar 2025",
       "bullets": [
-        "Led the Atos evaluation team grading Copilot for Entra prompts and responses; authored the delivery plan and rubric (language accuracy, technical correctness, user satisfaction) and ran calibration and grading.",
+        "Worked directly with Microsoft stakeholders and engineering teams on Copilot for Entra assessment, testing, response grading, bug identification, and product-quality improvement; authored the delivery plan and grading rubric (language accuracy, technical correctness, user satisfaction) and ran calibration.",
         "The team logged 83 bugs with Microsoft Engineering, 19 resolved (6 critical) before general availability, and helped lift response satisfaction from about 42% to 57%; packaged the work into a reusable Copilot quality-analysis offering."
       ]
     },
