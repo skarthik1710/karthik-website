@@ -39,9 +39,11 @@ SRC = ROOT / "content" / "resume.json"
 OUT = ROOT / "public" / "resume"
 BASENAME = "Karthikeyan-Selvam-Resume"
 
-ACCENT = RGBColor(0xB4, 0x3A, 0x0E)   # print-safe version of the site orange
-INK = RGBColor(0x1F, 0x1B, 0x18)
-MUTED = RGBColor(0x5A, 0x52, 0x4C)
+ACCENT = RGBColor(0x1B, 0x36, 0x5D)   # executive navy for headings & headline
+ACCENT_HEX = "1B365D"
+LINK_HEX = "0B5CAD"                   # distinct classic blue for clickable links
+INK = RGBColor(0x1E, 0x24, 0x2B)      # crisp charcoal body text
+MUTED = RGBColor(0x52, 0x60, 0x6D)    # cool slate for dates & metadata
 MARGIN_IN = 0.55
 PAGE_W_IN = 8.5
 BODY_PT = 10
@@ -155,7 +157,7 @@ def _run(p, text, bold=False, italic=False, size=None, color=None):
     return r
 
 
-def _bottom_border(p, color="B43A0E", sz=6):
+def _bottom_border(p, color=ACCENT_HEX, sz=6):
     pPr = p._p.get_or_add_pPr()
     bdr = OxmlElement("w:pBdr")
     b = OxmlElement("w:bottom")
@@ -165,7 +167,7 @@ def _bottom_border(p, color="B43A0E", sz=6):
     pPr.append(bdr)
 
 
-def _hyperlink(p, url, text, color="B43A0E"):
+def _hyperlink(p, url, text, color=LINK_HEX):
     rid = p.part.relate_to(url, "http://schemas.openxmlformats.org/officeDocument/2006/relationships/hyperlink", is_external=True)
     h = OxmlElement("w:hyperlink")
     h.set(qn("r:id"), rid)
@@ -174,6 +176,9 @@ def _hyperlink(p, url, text, color="B43A0E"):
     c = OxmlElement("w:color")
     c.set(qn("w:val"), color)
     rpr.append(c)
+    u = OxmlElement("w:u")
+    u.set(qn("w:val"), "single")
+    rpr.append(u)
     r.append(rpr)
     t = OxmlElement("w:t")
     t.text = text
@@ -204,7 +209,7 @@ def _bullet(doc, text, label=None, link_text=None, link_url=None):
         _run(p, text)
     if link_text and link_url:
         _run(p, " (")
-        _hyperlink(p, link_text, link_url)
+        _hyperlink(p, link_url, link_text)
         _run(p, ")")
     return p
 
@@ -338,21 +343,21 @@ def build_html(d, phone=None, brand=None):
 <style>
 @page {{ size: Letter; margin: {MARGIN_IN}in; }}
 * {{ box-sizing: border-box; }}
-body {{ margin: 0; font-family: Carlito, Calibri, sans-serif; font-size: {BODY_PT}pt; color: #1F1B18; line-height: 1.22; }}
-h1 {{ font-size: 20pt; margin: 0; line-height: 1.15; }}
-.hl {{ color: #B43A0E; font-weight: 700; font-size: 11pt; margin: 0 0 1pt; }}
-.ct a, .plink {{ color: #B43A0E; text-decoration: none; }}
-.ct .sep {{ color: #5A524C; padding: 0 6pt; }}
-.ct .loc {{ color: #1F1B18; }}
+body {{ margin: 0; font-family: Carlito, Calibri, sans-serif; font-size: {BODY_PT}pt; color: #1E242B; line-height: 1.22; }}
+h1 {{ font-size: 20pt; margin: 0; line-height: 1.15; color: #1E242B; }}
+.hl {{ color: #{ACCENT_HEX}; font-weight: 700; font-size: 11pt; margin: 0 0 1pt; }}
+.ct a, .plink {{ color: #{LINK_HEX}; text-decoration: underline; text-decoration-thickness: 0.6pt; text-underline-offset: 1.5pt; }}
+.ct .sep {{ color: #52606D; padding: 0 6pt; }}
+.ct .loc {{ color: #1E242B; }}
 .ct {{ margin: 0 0 3pt; }}
-h2 {{ color: #B43A0E; font-size: 10.5pt; text-transform: uppercase; margin: 7pt 0 3pt; padding-bottom: 1pt; border-bottom: 0.75pt solid #B43A0E; break-after: avoid; }}
+h2 {{ color: #{ACCENT_HEX}; font-size: 10.5pt; text-transform: uppercase; margin: 7pt 0 3pt; padding-bottom: 1pt; border-bottom: 0.75pt solid #{ACCENT_HEX}; break-after: avoid; }}
 p {{ margin: 0 0 1pt; line-height: 1.22; }}
 ul {{ margin: 0; padding-left: 0.18in; }}
 li {{ margin: 0 0 1pt; line-height: 1.22; }}
 .job {{ margin-top: 4pt; }}
 .job:first-of-type {{ margin-top: 1pt; }}
 .jh {{ display: flex; justify-content: space-between; break-after: avoid; }}
-.jh span, .org {{ color: #5A524C; }}
+.jh span, .org {{ color: #52606D; }}
 .jh span {{ font-size: 9.5pt; }}
 .org {{ font-style: italic; margin-bottom: 1pt; break-after: avoid; }}
 {BRAND_CSS}
