@@ -192,7 +192,7 @@ def _heading(doc, text):
     return p
 
 
-def _bullet(doc, text, label=None):
+def _bullet(doc, text, label=None, link_text=None, link_url=None):
     p = doc.add_paragraph(style="List Bullet")
     _spacing(p, after=1, line=1.0)
     p.paragraph_format.left_indent = Inches(0.18)
@@ -202,6 +202,10 @@ def _bullet(doc, text, label=None):
         _run(p, " — " + text)
     else:
         _run(p, text)
+    if link_text and link_url:
+        _run(p, " (")
+        _hyperlink(p, link_text, link_url)
+        _run(p, ")")
     return p
 
 
@@ -287,7 +291,7 @@ def build_docx(d, path, phone=None, brand_img=None):
     if d.get("projects"):
         _heading(doc, "Projects")
         for pr in d["projects"]:
-            _bullet(doc, pr["line"], label=pr["name"])
+            _bullet(doc, pr["line"], label=pr["name"], link_text=pr.get("link_text"), link_url=pr.get("link_url"))
 
     _heading(doc, "Certifications")
     for label, items in cert_groups(d):
@@ -324,7 +328,10 @@ def build_html(d, phone=None, brand=None):
         f'<div class="job"><div class="jh"><b>{_e(e["title"])}</b><span>{_e(e["period"])}</span></div>'
         f'<div class="org">{_e(e["org"])}</div><ul>{"".join(f"<li>{_e(b)}</li>" for b in e["bullets"])}</ul></div>'
         for e in d["experience"])
-    proj = "".join(f'<li><b>{_e(p["name"])}</b> — {_e(p["line"])}</li>' for p in d.get("projects", []))
+    def fmt_proj(p):
+        link = f' (<a class="plink" href="{_e(p["link_url"])}">{_e(p["link_text"])}</a>)' if p.get("link_text") and p.get("link_url") else ""
+        return f'<li><b>{_e(p["name"])}</b> — {_e(p["line"])}{link}</li>'
+    proj = "".join(fmt_proj(p) for p in d.get("projects", []))
     awards = "".join(f"<li>{_e(a)}</li>" for a in d.get("awards", []))
     return f"""<!doctype html><html><head><meta charset="utf-8"><title>{_e(d['name'])} — Resume</title>
 {FONT_LINK}
@@ -334,7 +341,7 @@ def build_html(d, phone=None, brand=None):
 body {{ margin: 0; font-family: Carlito, Calibri, sans-serif; font-size: {BODY_PT}pt; color: #1F1B18; line-height: 1.22; }}
 h1 {{ font-size: 20pt; margin: 0; line-height: 1.15; }}
 .hl {{ color: #B43A0E; font-weight: 700; font-size: 11pt; margin: 0 0 1pt; }}
-.ct a {{ color: #B43A0E; text-decoration: none; }}
+.ct a, .plink {{ color: #B43A0E; text-decoration: none; }}
 .ct .sep {{ color: #5A524C; padding: 0 6pt; }}
 .ct .loc {{ color: #1F1B18; }}
 .ct {{ margin: 0 0 3pt; }}

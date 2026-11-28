@@ -5,7 +5,7 @@
   "email": "skarthik1710@gmail.com",
   "links": [
     {
-      "text": "karthikeyanselvam.com",
+      "text": "Portfolio & Architectures: karthikeyanselvam.com",
       "url": "https://karthikeyanselvam.com"
     },
     {
@@ -137,15 +137,19 @@
   "projects": [
     {
       "name": "Governed agent platform",
-      "line": "a Google Cloud platform where agents work on Workspace data without holding credentials or seeing real identities; rules give the verdicts, AI advises, and people approve every change."
+      "line": "a Google Cloud platform where agents work on Workspace data without holding credentials or seeing real identities; rules give the verdicts, AI advises, and people approve every change",
+      "link_text": "interactive architecture & controls: karthikeyanselvam.com/projects.html",
+      "link_url": "https://karthikeyanselvam.com/projects.html"
     },
     {
-      "name": "Agent portfolio",
-      "line": "license right-sizing, security-settings review, ticket enrichment, directory access and outage response agents; co-built a proposal completeness agent with my team, and RevokAI (access-revocation compliance on Copilot Studio) in a sponsored squad."
+      "name": "Agent portfolio & migrations",
+      "line": "license right-sizing, security-settings review, ticket enrichment, directory access, outage response, proposal completeness, and RevokAI agents; led migrations onto governed platforms with automated fidelity contracts."
     },
     {
-      "name": "Platform migrations",
-      "line": "led the move of earlier agents, and of another team's account monitoring agent, onto governed platforms, with an automated fidelity contract proving no business rule was lost."
+      "name": "Enterprise Agent Playbook",
+      "line": "published vendor-neutral guide to production agent architecture, evals, security controls, and an accuracy-gated autonomy ladder",
+      "link_text": "karthikeyanselvam.com/playbook.html",
+      "link_url": "https://karthikeyanselvam.com/playbook.html"
     }
   ],
   "certifications": [
