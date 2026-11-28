@@ -9,8 +9,8 @@
       "url": "https://karthikeyanselvam.com"
     },
     {
-      "text": "linkedin.com/in/karthikeyan-selvam-567b52157",
-      "url": "https://www.linkedin.com/in/karthikeyan-selvam-567b52157/"
+      "text": "linkedin.com/in/skarthik1710",
+      "url": "https://www.linkedin.com/in/skarthik1710/"
     }
   ],
   "summary": "Applied AI and agentic systems leader with 19+ years in enterprise IT (11+ at Atos). Leads the North America AI and automation practice and its engineering team building governed enterprise AI agents and platforms (Python, LangGraph, MCP, OPA), led Atos's pre-GA evaluation of Microsoft Copilot for Entra, turns agentic use-case demand into pilot plans and roadmaps, and was a major contributor to enterprise deal wins from $200K to $20M.",
@@ -48,21 +48,21 @@
   ],
   "experience": [
     {
-      "title": "Practice Head, AI & Automation (Business Manager)",
+      "title": "Business Manager — AI & Automation (Practice Head)",
       "org": "Atos, North America — Cloud & Modern Infrastructure",
-      "period": "Oct 2025 – Present",
+      "period": "Nov 2025 – Present",
       "bullets": [
         "Reporting to the VP, Head of Technology, North America, lead the North America AI and automation practice: set priorities, delivery plans and the governed build framework (patterns, standards, skills); own budget, resourcing, hiring input and performance management.",
         "Supply the AI side of multiple proposals and bids, including the agentic AI use cases and potential-savings analysis that contributed to a deal win; AI business cases with costed investment options, executive proposals for governed agentic pilots, SOW reviews, architecture at client security reviews, and a co-designed agentic architecture on AWS Bedrock AgentCore.",
         "Run agentic use-case analysis with customers and internal teams, separating real agent candidates from simple workflows to shape pilot plans, platform choice and roadmaps.",
         "Recommended go-to-market packaging of the Workspace agents as client services, combining capabilities into offerings rather than selling single agents.",
-        "Still hands-on: built a multi-agent AI platform on Google Cloud whose agents are read-only, human-approved or bound to low-risk rules, with role-based access, audit logs, automated migration off retired models and cost controls; proposed an accuracy-gated autonomy ladder for agents."
+        "Still hands-on: built a multi-agent AI platform on Google Cloud (Python, LangGraph, MCP, OPA) whose agents are read-only, human-approved or bound to low-risk rules, with role-based access, audit logs, automated migration off retired models and cost controls; proposed an accuracy-gated autonomy ladder for agents."
       ]
     },
     {
       "title": "Digital Workplace Consultant — Windows 11 Migration",
       "org": "Atos (interim assignment) — client: a large US healthcare provider",
-      "period": "Apr 2025 – Sep 2025",
+      "period": "Apr 2025 – Nov 2025",
       "bullets": [
         "Ran delivery of a 12,000-device Windows 11 migration before Windows 10 end of support: rollout options set with client senior leadership, AI-assisted readiness analytics, daily leadership calls and weekly executive summaries."
       ]
@@ -77,11 +77,11 @@
       ]
     },
     {
-      "title": "Technical Product Manager — Digital Experience Management & AIOps",
+      "title": "Automation Consultant (Product Owner) — Digital Experience Management & AIOps",
       "org": "Atos — client: a major energy utility (UK & US operations)",
       "period": "Apr 2023 – Jun 2024",
       "bullets": [
-        "Owned the roadmap for a proactive digital-experience capability with Nexthink and ServiceNow AIOps across a 40,000-device estate, building on an AIOps proof of concept delivered on time and on budget (customer: \"lead from the front brilliantly\").",
+        "Served as Product Owner and automation lead for a proactive digital-experience capability with Nexthink and ServiceNow AIOps across a 40,000-device estate, building on an AIOps proof of concept delivered on time and on budget (customer: \"lead from the front brilliantly\").",
         "Delivered a Quest enterprise backup and recovery program: plans, budgets, vendors, restoration drills and failover tests."
       ]
     },
@@ -94,27 +94,35 @@
       ]
     },
     {
-      "title": "RPA Lead — Robotics & Automation Center of Excellence (CoE)",
-      "org": "Atos, Chennai, India (progressed from Business Analyst to Senior Manager)",
-      "period": "Dec 2017 – Mar 2022",
+      "title": "Senior Manager — RPA CoE",
+      "org": "Atos, Chennai, India — Robotics & Automation Center of Excellence",
+      "period": "Apr 2020 – Mar 2022",
       "bullets": [
-        "Led automation consultants, analysts and developers delivering 50+ RPA automations across HR, Finance and Procurement; ran the Group portfolio of 140+ automations across 16 business units."
+        "Promoted to Senior Manager to scale the Robotics & Automation CoE, governing and running the Group automation portfolio of 140+ automations across 16 business units; awarded Silver accolade (2021) for delivering a chatbot in 24 hours."
       ]
     },
     {
-      "title": "Finance Analyst",
+      "title": "Manager — RPA CoE",
+      "org": "Atos, Chennai, India — Robotics & Automation Center of Excellence",
+      "period": "Apr 2017 – Mar 2020",
+      "bullets": [
+        "Built and led a cross-functional team of automation consultants, business analysts and developers delivering 50+ RPA automations across HR, Finance and Procurement."
+      ]
+    },
+    {
+      "title": "Assistant Manager — Finance Automations",
       "org": "Atos, Chennai, India — Group Finance shared services",
-      "period": "Mar 2015 – Dec 2017",
+      "period": "Mar 2015 – Mar 2017",
       "bullets": [
-        "Mainly supported finance automation initiatives alongside FP&A and month-end reporting; led to a move into the Automation CoE."
+        "Supported and drove finance automation initiatives alongside FP&A and month-end reporting, laying the groundwork for scaling enterprise RPA across HR, Finance and Procurement."
       ]
     },
     {
-      "title": "Financial Analyst / Assistant Manager — Corporate Finance",
+      "title": "Assistant Manager — Corporate Finance",
       "org": "Hewlett-Packard, Chennai",
       "period": "Dec 2011 – Mar 2015",
       "bullets": [
-        "Mainly supported automation initiatives in Corporate Finance, alongside P&L and data-warehouse reporting and functional design."
+        "Supported automation initiatives in Corporate Finance alongside P&L and data-warehouse reporting, functional design, test plans and change controls."
       ]
     },
     {

@@ -94,7 +94,7 @@ firebase serve
 
 ## 📧 Contact
 
-- **LinkedIn**: [Karthikeyan Selvam](https://www.linkedin.com/in/karthikeyan-selvam-567b52157/)
+- **LinkedIn**: [Karthikeyan Selvam](https://www.linkedin.com/in/skarthik1710/)
 - **Email**: skarthik1710@gmail.com
 - **Location**: Middletown, DE, USA
 

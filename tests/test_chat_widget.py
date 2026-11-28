@@ -34,7 +34,7 @@ LONG_REPLY = (
     "data is insufficient.\n\n"
     "- Regional-only data residency\n- Scale-to-zero cost engineering\n- Token budgeting\n\n"
     "It runs under a strict regional-only data-residency policy and is cost-engineered end "
-    "to end. Reach him at skarthik1710@gmail.com or https://www.linkedin.com/in/karthikeyan-selvam-567b52157/."
+    "to end. Reach him at skarthik1710@gmail.com or https://www.linkedin.com/in/skarthik1710/."
 )
 FOLLOWUPS = ["What is RevokAI?", "How does he drive Copilot adoption?", "Which certifications does he hold?"]
 

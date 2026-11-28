@@ -887,7 +887,7 @@ def main():
             <h2>Building agents in your organisation?</h2>
             <p>I'm happy to compare notes on architecture, governance or getting a first agent to production —
             <a href="mailto:skarthik1710@gmail.com">email me</a> or connect on
-            <a href="https://www.linkedin.com/in/karthikeyan-selvam-567b52157/" target="_blank" rel="noopener">LinkedIn</a>.
+            <a href="https://www.linkedin.com/in/skarthik1710/" target="_blank" rel="noopener">LinkedIn</a>.
             Or ask Skipper, my AI assistant, in the corner of this page.</p>
         </aside>
     </article>
